@@ -87,20 +87,20 @@ class issuefee:
             noarDate = ''
 
         if reqpat == 'true':
-            adjtxt = 'X',
-            adjfee = 'X',
-            adjfact = 'X',
-            patadjtxt = 'Application for Patent Term Adjustment Under 37 CFR 1.705(b) (1 pg.).'
-            patadjfee = 'Check in the amount of " + IIF(DATE()>={10/02/20}, $210.00, $200.00Appe) + " to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
-            patadjfact = 'Statement of Facts Under 37 CFR 1.705(b)(2) in Support of Application for Patent Term Adjustment'
+            adjtxt = 'X'
+            adjfee = 'X'
+            adjfact = 'X'
+            patadjtxt =  '      Application for Patent Term Adjustment Under 37 CFR 1.705(b) (1 pg.).'
+            patadjfee =  '      Check in the amount of' + '12' + 'to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
+            patadjfact = '      Statement of Facts Under 37 CFR 1.705(b)(2) in Support of Application for Patent Term Adjustment'
         
         else:
-            adjtxt = '',
-            adjfee = '',
-            adjfact = '',
-            patadjtxt = '',
-            patadjfee = '',
-            patadjfact = '',
+            adjtxt = ''
+            adjfee = ''
+            adjfact = ''
+            patadjtxt = ''
+            patadjfee = ''
+            patadjfact = ''
 
         # if feeincrease:
         entitystatus = function_instance.entityfill(matter)
@@ -150,7 +150,13 @@ class issuefee:
             'patentTermAdjText' : patadjtxt,
             'patentTermAdjFee' : patadjfee,
             'patentTermAdjFacts' : patadjfact,
-            
+            'feeTextX' : '',
+            'FeeText' : '',
+            'pubFeeX' : '',
+            'pubFeeText' : '',
+            'previousX' : '',
+            'applyPreviousText' : '',
+
         })
         return replace
     

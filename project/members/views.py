@@ -275,9 +275,9 @@ def combinedoc(path, method, mergeinfo):
     composer = Composer(doc1)
 
     if method == 'issuefee':
-        doc2 = Document_compose("Q:\Contract Developers\SideBar\Merges\Django\SideBar\project\documents\communications\issuefeexmit3.docx")
+        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit3.docx")
         if mergeinfo[5] == 'true':
-            doc3 = Document_compose("Q:\Contract Developers\SideBar\Merges\Django\SideBar\project\documents\communications\issuefeexmit2.docx") 
+            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit2.docx") 
             doc3.add_page_break()
             composer.append(doc3)
             composer.append(doc2) 
@@ -296,8 +296,8 @@ def mergeDoc(matter , mergeinfo):
     curMerge = getattr(module, class_name)
     merge_instance = curMerge()
 
-    input_path = "Q:\Contract Developers\SideBar\Merges\Django\SideBar\project\documents\\" + mergeinfo_list[0]
-    output_path = 'Q:\Contract Developers\SideBar\Merges\Django\SideBar\project\documents\Merged\Document.docx'
+    input_path = "C:/Users/jaburns/SideBar/project/documents/" + mergeinfo_list[0]
+    output_path = 'C:/Users/jaburns/SideBar/project/documents/Merged/Document.docx'
 
     replace = {}
     mergefninfo = mergeinfo.split(",") 
@@ -310,7 +310,7 @@ def mergeDoc(matter , mergeinfo):
     # with multiple docs
     if mergeinfo_list[1] == 'issuefee':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo)
-        input_path = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
+        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
         issbody = 'SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING'
