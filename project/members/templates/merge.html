@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>Merges Page</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .countainter{
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+        }
+        .search-container{
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .sidebar{
+            background-color: #333;
+            color: #b8b8b8;
+            padding: 1px 10px;
+            text-align: left;
+            margin-bottom: 20px;
+            height: 110px;
+        }
+        .sidebar-tabs li{
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .sidebar-tabs li a{
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+        }
+        .sidebar-tabs li a:hover{
+            background-color:#fff;
+            color: #333;
+        }
+        table{
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td{
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th{
+            background-color: #f2f2f2;
+        }
+        .column2{
+            width: 100%;
+        }
+        .merge-button{
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        #recordation .modal-dialog {
+            max-width: 800px;
+        }
+        #contacts .modal-dialog {
+            max-width: 800px;
+            max-height: 150%;
+        }
+        #activities .modal-dialog {
+            max-width: 1000px;
+            max-height: 150%;
+        }
+        #applicationdata_new2 .modal-dialog{
+            max-width: 800px;
+        }
+        #missingpartsNw .modal-dialog{
+            max-width: 600px;
+        }
+        #PatentCoopTreaty2 .modal-dialog{
+            max-width: 800px;
+        }
+        #PctSearchRep .modal-dialog{
+            max-width: 600px;
+        }
+        #mpcapactions .modal-dialog{
+            max-width: 600px;
+        }
+        #LtrSendFmlDocNew .modal-dialog{
+            max-width: 600px;
+        }
+        
+    </style>
+    <style>
+        #recordation .pagecount {
+          margin-top: 10px; /* Adjust the value as needed */
+        }
+      </style>
+
+<style>
+    #corp-button {
+        margin-left: 20px; /* Adjust the value as needed */
+    }
+</style>
+<style>
+    .noBorder {
+        border:none !important;
+    }
+</style>
+
+</head>
+<body>
+    <div class = "sidebar">
+        <h1>SideBar</h1>
+        <ul class = "sidebar-tabs">
+            <li><a href = "#">Matters</a></li>
+            <li><a href = "#">FIP Reports</a></li>
+            <li><a href = "#">Merges</a></li>
+            <li><a href = "#">ToolBox</a></li>
+        </ul>
+    </div>
+    <div class = "container">
+        <div class = "search-container">
+            <input type = "text" id = "mergeSearchInput" placeholder = "Merge Search" onkeyup = "searchMerges()">
+            <label for = "roleFilter">Merge Roles:</label>
+            <select id = "roleFilter" onchange = "filterRoleCategory()">
+                <option value = "all">All</option>
+                {% for MergeRole in roles %}
+                    <option value = "{{ MergeRole.roleid }}">{{ MergeRole.rolename }}</option>
+                {% endfor %}
+            </select>
+            <label for = "categoryFilter">Merge Categories:</label>
+            <select id = "categoryFilter" onchange = "filterRoleCategory()">
+                <option value = "all">All</option>
+                {% for MergeCategory in categories %}
+                    <option value = "{{ MergeCategory.categoryid }}">{{ MergeCategory.categoryname }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <form id = "mergeform" action = "{% url 'merge_doc' %}" method = "post">
+            {% csrf_token %}
+            <div class = "search-container">
+                <input type = "text" name = "matterInput" placeholder = "Matter #" id = "matterInput">
+            </div>
+            <table id = "mergeTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class = "column2">Merge Name</th>
+                    </tr>
+                </thead>
+                {% load catroleedit %}
+                {% for MergeDef in mergedict %}
+                <tbody>
+                    <tr data-category="{{ MergeDef.merge_category_id|categoryparser }}" data-role="{{ MergeDef.merge_role_id|roleparser }}">
+                        <td>               
+                            <button
+                            id="button_{{ MergeDef.mergeid }}"
+                            name="button_key"
+                            type="button"
+                            class="btn btn-primary"
+                            data-mergeid="{{ MergeDef.mergeid }}"
+                            onclick = "fillmerge('{{ MergeDef.mergeid }}','{{ MergeDef.mergepath }}', '{{ MergeDef.mergemethod }}', '{{ MergeDef.esign }}', '{{ MergeDef.contacts }}')">
+                            Merge
+                        </button>
+                        </td>
+                        <td>{{ MergeDef.mergename }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </form>
+        
+    </div>
+    <!-- Esign -->
+    <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Enable Esign?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-footer">
+                    <!-- Pass the button element to the onclick function -->
+                    <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- E report action -->
+    <div id="ereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ereportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">E Report Action?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-footer">
+                    <!-- Pass the button element to the onclick function -->
+                    <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Pending Claims -->
+<div id="pclaims" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pendingClaimsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="pendingClaimsModalLabel">Pending Claims</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pclaimsdateInput">Dates claims are current to:</label>
+                    <input type="text" class="form-control" id="pclaimsdateInput" placeholder="MM/DD/YYYY" title="Date Claims Are Current To: ">
+                </div>
+                <div class="form-group">
+                    <label for="pclaimsdescriptionInput">Enter a description of the date,
+                        e.g.. "application filing date" or "first office action":
+                    </label>
+                    <input type="text" class="form-control" id="pclaimsdescriptionInput" placeholder="Description">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pclaimsdateInput.value, pclaimsdescriptionInput.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Recordation Form -->
+<div class="modal fade" id="recordation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Recordation Form Cover Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
+                <label for="recordationesign">&emsp;&emsp;Esign Enable:</label>
+                <input type="checkbox" id="recordationesign" name="esign">
+                <label for="recordationpagenum">&ensp;&emsp;Number of Pages:</label>
+                <input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
+                <div class="pagecount">
+                    <label for="recordationdepacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="recordationdepacc" name="options" value="depacc">
+                    <label for="recordationcheck">&ensp;Check:</label>
+                    <input type="radio" id="recordationcheck" name="options" value="check">
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Name(s)</th>
+                            <th>Date Assignment Signed</th>
+                            <th>Date Declaration Signed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventor-list"></tbody>
+                </table>
+                <table class="table">
+                    <thead id = "corp-header"></thead>
+                    <tbody id="corp-list"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id = "recordationsub" type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(recordationesign.checked, recordationpagenum.value, recordationdepacc.checked, recordationcheck.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contacts -->
+<div class="modal fade" id="contacts">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Add host matter no here -->
+                <h4 class="modal-title">Select Recipients For: </h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Your modal body content here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>To</th>
+                            <th>CC</th>
+                            <th>BCC</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contact-info"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "contactsnext" >Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Late Submission Of Declaration -->
+<div id="LateSubmissionOfDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LateSubmissionOfDecModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Late Submission of Declaration or Substitute Statement</h6>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="LateSubmissionOfDecbox">&emsp;&emsp;Late Submission of Declaration Surcharge Paid:</label>
+                    <input type="checkbox" id="LateSubmissionOfDecbox">
+                    <label for="LateSubmissionOfDecpagedec">&emsp;&emsp;Pages in Declaration:</label>
+                    <input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'>
+                    <label for="LateSubmissionOfDecpagesub">&emsp;&emsp;Pages in Substitute Statement:</label>
+                    <input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'>
+
+                    <label for="LateSubmissionOfDecesign">&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="LateSubmissionOfDecesign" name="esign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LateSubmissionOfDecbox.value, LateSubmissionOfDecpagedec.value, LateSubmissionOfDecpagesub.value, LateSubmissionOfDecesign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- issue fee Merge Interview Screen -->
+<div id="issuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuefeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Merge Interview Screen</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="account">
+                    <label for="issuefeedepacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="issuefeedepacc" name="account" checked="checked">
+                    <label for="issuefeecheck">&ensp;Check:</label>
+                    <input type="radio" id="issuefeecheck" name="account">
+                </div>
+                <div class="form-group">
+                    <label for="issuefeerequestpat"><br>&emsp;&emsp;Request for Patent Term Adjustment:</label>
+                    <input type="checkbox" id="issuefeerequestpat">
+                </div>
+                <div style="display:none;" id="issuefeefact">
+                    <label for="issuefeepagefacts">&emsp;&emsp;Number of Pages in the Statement of Facts:</label>
+                    <input type="text" id="issuefeepagefacts" size="10" placeholder = '0' value = 0 >   
+                </div>   
+                <div>
+                    <label for="issuefeepagedraw">&emsp;&emsp;Number of Pages of Formal Drawings:&emsp;</label>
+                    <input type="text" id="issuefeepagedraw" size="10" placeholder = '0' value = 0>
+                    <label for="issuefeemrgexam"><br>&emsp;&emsp;Merge "Response to Examiner's Reasons for Allowance"?</label>
+                    <input type="checkbox" id="issuefeemrgexam">
+                    <label for="issuefeeisspaid">&emsp;&emsp;Issue Fee Previously Paid</label>
+                    <input type="checkbox" id="issuefeeisspaid">
+                    <input type="text" id="issuefeeisspaidhide" size="10" placeholder = '  /  /  ' style="display:none; margin-left: 19.5em;"> 
+                </div>
+                <div id="issuefeepagewithhide" style="display:none;">
+                    <label for="issuefeewithfil">&emsp;&emsp;Petition To Withdraw Filed</label>
+                    <input type="checkbox" id="issuefeewithfil"> 
+                    <label for="issuefeepagewith">&emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;</label>
+                    <input type="text" id="issuefeepagewith" size="10" placeholder = '  /  /  '>
+                </div>   
+                
+                <div style="display:none;" id="issuefeeamountinc">
+                    <label for="issuefeeamtinc">&emsp;&emsp;Issue Fee Amount Increased</label>
+                    <input type="checkbox" id="issuefeeamtinc"> 
+                </div>
+                <div style="display:none;" id="issuefeeamtisspay">
+                    <label for="issuefeeamtfrst">&emsp;&emsp;&emsp;&emsp;Amount of First Issue Fee Payment:</label>
+                    <input type="text" id="issuefeeamtfrst" size="10" placeholder = '0.00'>
+                </div>
+                <div>
+                    <label for="issuefeeesign"><br>&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="issuefeeesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked,issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Does not work-->
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const patentTermCheckbox = document.getElementById('issuefeerequestpat');
+      const formGroupDiv = document.querySelector('.form-group');
+  
+      patentTermCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+          const newDiv = document.createElement('div');
+          newDiv.setAttribute('id', 'pagesInStatement');
+          newDiv.innerHTML = `
+            <label for="pagesInStatementOfFacts">&emsp;&emsp;Number of pages in statement of facts:</label>
+            <input type="text" id="pagesInStatementOfFacts" size="10">
+          `;
+          formGroupDiv.insertBefore(newDiv, formGroupDiv.childNodes[formGroupDiv.childNodes.length - 1]);
+        } else {
+          const pagesInStatementDiv = document.getElementById('pagesInStatement');
+          if (pagesInStatementDiv) {
+            formGroupDiv.removeChild(pagesInStatementDiv);
+          }
+        }
+      });
+    });
+</script>
+<!-- Statement Under 3.73(c)-->
+<div id="statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Statement Under 3.73</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="corp">
+                    <label for="statement373ccorprad">&emsp;&emsp;Corporation:</label>
+                    <input type="radio" id="statement373ccorprad" name="options">
+                    <label for="statement373cpartnerrad">&ensp;Partnership:</label>
+                    <input type="radio" id="statement373cpartnerrad" name="options">
+                </div>
+                <div class="account">
+                    <label for="statement373cunirad">&emsp;&emsp;University:</label>
+                    <input type="radio" id="statement373cunirad" name="account">
+                    <label for="statement373cgovrad">&ensp;Government Agency:</label>
+                    <input type="radio" id="statement373cgovrad" name="account">
+                    <label for="statement373cothrad">&ensp;Other:</label>
+                    <input type="radio" id="statement373cothrad" name="account">
+                    <label for="statement373clistoth">&emsp;&emsp;List Other:</label>
+                    <input type="text" id="statement373clistoth" name="listother" size="15">
+                </div>
+                <div class="form-group">
+                    <label for="statement373cSAdrop"><br>&emsp;&emsp;Signing Attorney:</label>
+                    <select id="statement373cSAdrop">
+                </div>
+                <div>
+                    <label for="statement373crecordchk"><br>&emsp;&emsp;There is a recordation occuring concurrently with this filing, or a recordation already occured</label>
+                    <input type="checkbox" id="statement373crecordchk">
+                </div>
+                <div>
+                    <label for="statement373cesign">&emsp;&emsp;E-Signature Enable</label>
+                    <input type="checkbox" id="statement373cesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(filing.value, account.value, requestpat.value, pagedraw.value, mrgexam.value, isspaid.value, esign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Update to app data sheet-->
+<div id="UpdateAppDataSheet" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="UpdateAppDataSheetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update to Application Data Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="updateappdatamarked"><br>&emsp;&emsp;Marked Up Application Data Sheet</label>
+                    <input type="checkbox" id="updateappdatamarked">
+                </div>
+                <div>
+                    <label for="updateappdatapagect">&emsp;&emsp;Number of Pages</label>
+                    <input type="text" id="updateappdatapagect" name="updatepagect" placeholder = '0' size = "5" value = "0">
+                </div>
+                <div>
+                    <label for="updateappdataesign"><br>&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="updateappdataesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(updateappdatamarked.checked, updateappdatapagect.value, updateappdataesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Communication regarding corrected application papers-->
+<div id="corrappln" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="corrapplnModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Communication Regarding Corrected Application Papers</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="corrapplnefile">  E-Filing:</label>
+                    <input type="radio" id="corrapplnefile" name="options">
+                    <label for="corrapplnpaperfile"> Paper Filing:</label>
+                    <input type="radio" id="corrapplnpaperfile" name="options">
+                    <label for="corrapplndepacc">  Deposit Account</label>
+                    <input type="checkbox" id="corrapplndepacc">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Extention of Time:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0" size="5"> Amount</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Substitute Specifications:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnsub" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Abstract:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnabs" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sequence Listing:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnseq" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Formal Drawings:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnfor" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="corrapplnesign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="corrapplnesign">
+                </div>
+                <div>
+                    <label for="corrapplnenclosures"><br>  With Enclosures:</label>
+                    <input type="checkbox" id="corrapplnenclosures">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Application data sheet after sep 16 2012-->
+<div id="applicationdata_new2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_new2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Application Data Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  How many Domestic Benefit/National Stage Information Entries are there?</td>
+                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2entries" name="applicationdata_new2entries" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Total number of drawing sheets?</td>
+                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2draw" name="applicationdata_new2draw" placeholder="0" size="5"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="applicationdata_new2earlypub"><br>  </label>
+                    <input type="checkbox" id="applicationdata_new2earlypub"> Request Early Publication (Fee required at time of Request 37 CFR 1.219)
+                </div>
+                <div>
+                    <label for="applicationdata_new2notpub">  </label>
+                    <input type="checkbox" id="applicationdata_new2notpub"> Request to Not Publish
+                </div>
+                <div>
+                    <label for="applicationdata_new2client">  </label>
+                    <input type="checkbox" id="applicationdata_new2client"> The inventor mailing address is that of the client
+                </div>
+                <div>
+                    <label for="applicationdata_new2app">  </label>
+                    <input type="checkbox" id="applicationdata_new2app"> The inventor mailing address is that of the applicant
+                </div>
+                <div>
+                    <label for="applicationdata_new2claimed">  </label>
+                    <input type="checkbox" id="applicationdata_new2claimed"> Small entity status claimed
+                </div>
+                <div>
+                    <label for="applicationdata_new2incapp"><br>  </label>
+                    <input type="radio" id="applicationdata_new2incapp" name="options"> Include Applicant(Assignment Executed)
+                </div>
+                <div>
+                    <label for="applicationdata_new2incnon">  </label>
+                    <input type="radio" id="applicationdata_new2incnon" name="options">Include Non-Applicant Assignee
+                </div>
+                <div>
+                    <label for="applicationdata_new2noapp">  </label>
+                    <input type="radio" id="applicationdata_new2noapp" name="options">Do Not Include Applicant/Asignee Information (Applicant = Inventor(s))
+                </div>
+                <div>
+                    <label for="applicationdata_new2both">  </label>
+                    <input type="radio" id="applicationdata_new2both" name="options">Include Both Applicant and Assignee Information
+                </div>
+                <div>
+                    <label for="applicationdata_new2esign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="applicationdata_new2esign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(applicationdata_new2entries.value, applicationdata_new2draw.value, applicationdata_new2earlypub.checked, 
+                applicationdata_new2notpub.checked, applicationdata_new2client.checked, applicationdata_new2app.checked, applicationdata_new2claimed.checked, applicationdata_new2incapp.checked, applicationdata_new2incnon.checked, 
+                applicationdata_new2noapp.checked, applicationdata_new2both.checked, applicationdata_new2esign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Missing Parts Response-->
+<div id="missingpartsNw" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="misingpartsNwModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Missing Parts Response</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="misingpartsNwefile">  E-Filing:</label>
+                    <input type="radio" id="misingpartsNwefile" name="options">
+                    <label for="misingpartsNwpaperfile"> Paper Filing:</label>
+                    <input type="radio" id="misingpartsNwpaperfile" name="options">&emsp;&emsp;&emsp;&emsp;
+
+                    <label for="misingpartsNwdepacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="misingpartsNwdepacc" name="options" value="depacc">
+                    <label for="misingpartsNwcheck">&ensp;Check:</label>
+                    <input type="radio" id="misingpartsNwcheck" name="options" value="check">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Total Filing/Search/Exam Fee Amount (if sending):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Extention Fee Amount (if applicable):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Combined Declaration & Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpowpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Declaration Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Preliminary Amendment:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Comm re: Incorrect Filing Receipt Pages (if sending):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwmail" name="updatepagect" placeholder=" /  / " size="5" value = "0"></td>
+                        </tr>
+                    </table>
+                    <h6 class="modal-title">Corrected Application Papers</h6>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Substitute Specification Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Abstract Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sequence Listing Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Formal Drawings Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="misingpartsNwesign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="misingpartsNwesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(misingpartsNwefile.checked, misingpartsNwpaperfile.checked, misingpartsNwdepacc.checked, misingpartsNwcheck.checked, missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, misingpartsNwesign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Efiling/Paper filing and Esign-->
+<div id="filingEsign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filingEsignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Merge Interview Screen</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="filing">
+                    <label for="filingEsignefile">&emsp;&emsp;E-Filing:</label>
+                    <input type="radio" id="filingEsignefile" name="options">
+                    <label for="filingEsignpaperfile">&ensp;Paper Filing:</label>
+                    <input type="radio" id="filingEsignpaperfile" name="options">
+                </div>
+                <div>
+                    <label for="filingEsignesign">&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="filingEsignesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--PatentCoopTreaty2-->
+<div id="PatentCoopTreaty2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PatentCoopTreaty2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PCT Transmittal to WIPO</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="PatentCoopTreaty2mail">  Mode of Filing:  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2mail">Mail
+                    <label for="PatentCoopTreaty2deliver">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2deliver">Delivery Service
+                    <label for="PatentCoopTreaty2fax">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2fax">Fax
+                    <label for="PatentCoopTreaty2hand">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2hand">Hand Delivery
+                    <label for="PatentCoopTreaty2online">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2online">Online
+                </div>
+                <div class="form-group">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Sheets of PCT Safe Request Form:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2pctpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Description(excluding sequence listing):</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2descpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Claims:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2claimpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Abstract:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2abspg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Drawings:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2drwpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Sequence Listing:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2seqpg" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2poapg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2fee"><br>  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2fee">Fee Calculation Sheet Enclosed
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2spoa">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2spoa">Separate Power of Attorney
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2gpoa">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2gpoa">General Power of Attorney
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2pdoc">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2pdoc">Priority Document
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2accl">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2accl">Accompanying Letter
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Report Application Filed-->
+<div id="reportfiled" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportfiledModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Report Application Filed</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="reportfiledapp">&emsp;&emsp;Signed Declaration Filed with the Application</label>
+                    <input type="checkbox" id="reportfiledapp">
+                </div>
+                <div>
+                    <label for="reportfiledefile">&emsp;&emsp;Application was E-Filed</label>
+                    <input type="checkbox" id="reportfiledefile">
+                </div>
+                <div>
+                    <label for="reportfiledexm">&emsp;&emsp;Prioritized Examination Requested?</label>
+                    <input type="checkbox" id="reportfiledexm">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(reportfiledapp.checked, reportfiledefile.checked, reportfiledexm.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--olp Email-->
+<div id="olpemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="olpemailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Is SLW Responsible for Maintenance Fees?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-footer">
+                <!-- Pass the button element to the onclick function -->
+                <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Send formal documents via Adobe Sign-->
+<div id="adobesign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="adobesignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Adobe Sign Email Text</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="adobesigndec">  </label>
+                    <input type="radio" id="adobesigndec" name="options">Declaration
+                </div>
+                <div>
+                    <label for="adobesignassign">  </label>
+                    <input type="radio" id="adobesignassign" name="options">Assignment
+                </div>
+                <div>
+                    <label for="adobesigndecassign">  </label>
+                    <input type="radio" id="adobesigndecassign" name="options">Declaration and Assignment
+                </div>
+                <div>
+                    <label for="adobesignprv">  </label>
+                    <input type="radio" id="adobesignprv" name="options">PRV Assignment
+                </div>
+                <div>
+                    <label for="adobesignpct">  </label>
+                    <input type="radio" id="adobesignpct" name="options">PCT Assignment
+                </div>
+                <div>
+                    <label for="adobesignpoa">  </label>
+                    <input type="radio" id="adobesignpoa" name="options">Power of Attorney
+                </div>
+                <div>
+                    <label for="adobesigndecpoa">  </label>
+                    <input type="radio" id="adobesigndecpoa" name="options">Declaration and Power of Attorney
+                </div>
+                <div>
+                    <label for="adobesignassignpoa">  </label>
+                    <input type="radio" id="adobesignassignpoa" name="options">Assignment and Power of Attorney
+                </div>
+                <div>
+                    <label for="adobesigndecassignpoa">  </label>
+                    <input type="radio" id="adobesigndecassignpoa" name="options">Declaration, Assignment and Power of Attorney
+                </div>
+                <div>
+                    <label for="adobesignprvpoa">  </label>
+                    <input type="radio" id="adobesignprvpoa" name="options">PRV Assignment and Power of Attorney
+                </div>
+                <div>
+                    <label for="adobesignpctpoa">  </label>
+                    <input type="radio" id="adobesignpctpoa" name="options">PCT Assignment and Power of Attorney
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(adobesigndec.checked, adobesignassign.checked, adobesigndecassign.checked, adobesignprv.checked, adobesignpct.checked, adobesignpoa.checked, adobesigndecpoa.checked, adobesignassignpoa.checked, adobesigndecassignpoa.checked, adobesignprvpoa.checked, adobesignpctpoa.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Filing Receipt Received-->
+<div id="filerectreportNw2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filerectreportNw2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Please indicate any errors that were found below.</h5>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <textarea rows="4" cols="60" id = "filerectreportNw2err">We have noted that the ##Insert Incorrect Information Here## is incorrect, and will file the necessary papers to correct this error in due course. </textarea>
+                </div>
+                <div class="filing">
+                    <label for="filerectreportNw2off">&emsp;&emsp;</label>
+                    <input type="radio" id="filerectreportNw2off" name="options"> Official Filing Receipt (FRCT, FRCT-AE)
+                </div>
+                <div class="filing">
+                    <label for="filerectreportNw2rep">&emsp;&emsp;</label>
+                    <input type="radio" id="filerectreportNw2rep" name="options"> Replacement Filing Receipt (FRCT-4)
+                </div>
+                <div class="filing">
+                    <label for="filerectreportNw2upd">&emsp;&emsp;</label>
+                    <input type="radio" id="filerectreportNw2upd" name="options"> Updated Filing Receipt (FRCT-3, UFRR)
+                </div>
+                <div>
+                    <label for="filerectreportNw2inf"><br>&emsp;&emsp;</label>
+                    <input type="checkbox" id="filerectreportNw2inf"> Information Notice Received
+                </div>
+                <div>
+                    <label for="filerectreportNw2not">&emsp;&emsp;</label>
+                    <input type="checkbox" id="filerectreportNw2not"> Notice of Acceptance Received
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--letter - send formal documents-->
+<div id="LtrSendFmlDocNew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LtrSendFmlDocNewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Send Formal Document(s)</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="LtrSendFmlDocNewdec">&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewdec"> The declaration is being sent
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewassign">&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewassign"> The assignment is being sent
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewnot">&emsp;&emsp;&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewnot"> The notary block is included in this assignment
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewsmall">&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewsmall"> Include small entity paragraph
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewallow">&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewallow"> This is in response to a notice of allowability
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewnotall">&emsp;&emsp;&emsp;Notice of allowability response data</label>
+                    <input type="text" id="LtrSendFmlDocNewnotall" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewmis"><br>&emsp;&emsp;</label>
+                    <input type="checkbox" id="LtrSendFmlDocNewmis"> This is in response to a missing part(s)
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewmissp">&emsp;&emsp;Missing parts due date</label>
+                    <input type="text" id="LtrSendFmlDocNewmissp" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                </div>
+                <div>
+                    <label for="LtrSendFmlDocNewdoc">&emsp;&emsp;Document return date</label>
+                    <input type="text" id="LtrSendFmlDocNewdoc" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LtrSendFmlDocNewdec.checked, LtrSendFmlDocNewassign.checked, LtrSendFmlDocNewnot.checked, LtrSendFmlDocNewsmall.checked, LtrSendFmlDocNewallow.checked, LtrSendFmlDocNewnotall.value, LtrSendFmlDocNewmis.checked, LtrSendFmlDocNewmissp.value, LtrSendFmlDocNewdoc.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Change in rights of ownership-->
+<div id="ownerchange" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ownerchangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Change in Rights of Ownership</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="ownerchangeesign">&emsp;&emsp;</label>
+                    <input type="checkbox" id="ownerchangeesign"> E-Sign Enable
+                </div>
+                <div>
+                    <label for="ownerchangeapp">&emsp;&emsp;</label>
+                    <input type="checkbox" id="ownerchangeapp"> Assignee needs to be added as an applicant
+                </div>
+                <div>
+                    <label for="ownerchangenames">&emsp;&emsp;</label>
+                    <select id="ownerchangenames">
+                      <option value="Bradley Scheer">Bradley Scheer</option>
+                      <option value="David Black">David Black</option>
+                      <option value="Marvin Beekman">Marvin Beekman</option>
+                      <option value="Monique Perdok">Monique Perdok</option>
+                      <option value="Suneel Arora">Suneek Arora</option>
+                      <option value="Timothy Bianchi">Timothy Bianchi</option>
+                    </select>
+                  </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ownerchangeesign.checked, ownerchangeapp.checked, ownerchangenames.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--PCT - Report out search report and written opinion-->
+<div id="PctSearchRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctSearchRepModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm/Add Due Dates</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  Instruction Due</td>
+                        <td align="left"style="border: none;"><input type="text" id="PctSearchRepinstr" size="10" placeholder = ' /  / '></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Article 19 Amendment Due</td>
+                        <td align="left"style="border: none;"><input type="text" id="PctSearchRep19" size="10" placeholder = ' /  / '></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Article 34 Amendment Due</td>
+                        <td align="left"style="border: none;"><input type="text" id="PctSearchRep34" size="10" placeholder = ' /  / '></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  National Phase Deadline (30 Month) Due</td>
+                        <td align="left"style="border: none;"><input type="text" id="PctSearchRepnat" size="10" placeholder = ' /  / '></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Report Out - advisory action received-->
+<div id="advisoryreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="advisoryreportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Date Instructions Due</h6>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="advisoryreportdate">&emsp;&emsp;</label>
+                    <input type="text" id="advisoryreportdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(latedecbox.value, pagedecnum.value, pagesubnum.value, esignlate.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Report out - mp/cap/sequence listing actions-->
+<div id="mpcapactions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mpcapactionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Action to Report</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="mpcapactionsmp">  </label>
+                    <input type="radio" id="mpcapactionsmp" name="options"> Missing Parts Action Received
+                </div>
+                <div>
+                    <label for="mpcapactionscorapp">  </label>
+                    <input type="radio" id="mpcapactionscorapp" name="options"> Corrected Application Papers Notice Received
+                </div>
+                <div>
+                    <label for="mpcapactionsseq">  </label>
+                    <input type="radio" id="mpcapactionsseq" name="options"> Sequence Listing Action Received
+                </div>
+                <div>
+                    <label for="mpcapactionsnotmis">  </label>
+                    <input type="radio" id="mpcapactionsnotmis" name="options"> Notice of Missing Requirement Received
+                </div>
+                <div>
+                    <label for="mpcapactionsmiscor">  </label>
+                    <input type="radio" id="mpcapactionsmiscor" name="options"> Missing Parts with Corrected Application Papers Received
+                </div>
+                <div>
+                    <label for="mpcapactionscorseq">  </label>
+                    <input type="radio" id="mpcapactionscorseq" name="options"> Corrected Application Papers with Sequence Listing Received
+                </div>
+                <div>
+                    <label for="mpcapactionsaft">  </label>
+                    <input type="radio" id="mpcapactionsaft" name="options"> Corrected Application Papers Notice Recieved (AFTER ALLOWANCE)
+                </div>
+                <div>
+                    <label for="mpcapactionsnotins">  </label>
+                    <input type="radio" id="mpcapactionsnotins" name="options"> Notification of Insufficiency Under 37 CFR 1.492 and/or 1.495
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(mpcapactionsmp.checked, mpcapactionscorapp.checked, mpcapactionsseq.checked, mpcapactionsnotmis.checked, mpcapactionsmiscor.checked, mpcapactionscorseq.checked, mpcapactionsaft.cheked, mpcapactionsnotins.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--NOT DONE -->
+<!--PCT - 92bis comm: change in inventor address-->
+<div class="modal fade" id="invchange">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Inventors</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Your modal body content here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name(s)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- report out iprp -->
+<div id="PCTRptOutIpRp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PCTRptOutIpRpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Report Out IPRP</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="PCTRptOutIpRpbox">&emsp;&emsp;</label>
+                    <input type="checkbox" id="PCTRptOutIpRpbox"> Ch. II due date still pending and no instructions received
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge( )">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- report out - issue fee -->
+    <div id="rptissuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rptissuefeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Con/Div Instructions Received?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--  -->
+<div class="modal fade" id="activities">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Add host matter no here -->
+                <h4 class="modal-title">Select Activities: </h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Your modal body content here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Activity</th>
+                            <th>Comments</th>
+                            <th>Status</th>
+                            <th>Date 1</th>
+                            <th>Date 2</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activities-info"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "activitiesnext" >Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--report out - notice of allowance-->
+<div id="repnoticeofallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="repnoticeofallowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Notice of Allowance</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>  Restriction Requirement:</div>
+                <div>
+                    <label for="repnoticeofallowyes">  </label>
+                    <input type="radio" id="repnoticeofallowyes" name="options"> Yes
+                </div>
+                <div>
+                    <label for="repnoticeofallowno">  </label>
+                    <input type="radio" id="repnoticeofallowno" name="options"> No
+                </div>
+                <div>
+                    <label for="repnoticeofallowrej">  </label>
+                    <input type="radio" id="repnoticeofallowrej" name="options"> Claims Rejoined
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(repnoticeofallowyes.checked, repnoticeofallowno.checked, repnoticeofallowrej.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="recordedassnreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Is this a CORRECTED Notice of Recordation?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="submitbtnmerge()" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="recordedassnreportnext('TRUE')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="recordedassnreportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportyesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Enter Description of Correction</h6>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="recordedassnreportdesc">&emsp;&emsp;</label>
+                    <textarea id="recordedassnreportdesc" rows="4" cols="50"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(recordedassnreportdesc.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - send provisional assignment-->
+<div id="reportprvassnnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportprvassnnewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Provisional Assignment Report Out</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="reportprvassnnewdate">&emsp;&emsp;</label>
+                    <input type="text" id="reportprvassnnewdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                </div>
+                <div>
+                    <label for="reportprvassnnewbox">&emsp;&emsp;</label>
+                    <input type="checkbox" id="reportprvassnnewbox">Assignment Includes Notary Block
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(reportprvassnnewdate.value, reportprvassnnewbox.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Report out - notice of abandonment-->
+<div id="abandonReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="abandonReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enter Instruction Information</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="abandonReportrec">&emsp;&emsp;Received From: </label>
+                    <input type="text" id="abandonReportrec" size="20">
+                </div>
+                <div>
+                    <label for="abandonReportdate">&emsp;&emsp;Date Received: </label>
+                    <input type="text" id="abandonReportdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(abandonReportrec.value, abandonReportdate.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Report out - issue notification-->
+<div id="issuereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuereportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Have Continuation Instructions Been Recieved?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--PCT - response to invitation to correct defects(pct/ro/106)-->
+<div id="pctcorrect" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctcorrectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PCT - Communication in Response to Correct Defects</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects: </label>
+                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">
+                </div>
+                <div>
+                    <label for="pctcorrectmailext">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectmailext"> Include Extention of Time?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+<script>
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+</script>
+    
+    <script>
+        function searchMerges(){
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("mergeSearchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("mergeTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++){
+                td = tr[i].getElementsByTagName("td")[1];
+                if(td){
+                    txtValue = td.textContent || td.innerText;
+                    if(txtValue.toUpperCase().indexOf(filter) > -1){
+                        tr[i].style.display = "";
+                    } else{
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        function filterRoleCategory(){
+            var selectc, selectr, table, tr, td, i;
+            selectc = document.getElementById("categoryFilter");
+            selectr = document.getElementById("roleFilter");
+            table = document.getElementById("mergeTable");
+            tr = table.getElementsByTagName("tr");
+            var selectedCategory = selectc.value.split(':');
+            var selectedRole = selectr.value.split(':');
+            for(i = 0; i<tr.length; i++){
+                var category = tr[i].dataset.category;
+                var role = tr[i].dataset.role;
+                if(((selectedCategory.includes(category) || selectedCategory.includes('all')) 
+                && (selectedRole.includes(role) || selectedRole.includes('all')))){
+                    tr[i].style.display = "";
+                }else{
+                    tr[i].style.display = "none";
+                }
+            }       
+        }
+
+        // New shared submit button
+        function submitbtnmerge(...args){
+            const merged_data = args.join(',');
+            alert(document.getElementById("mergedata").value);
+            document.getElementById('mergedata').value += merged_data;
+            document.getElementById('mergeform').submit();
+        }
+
+        function fillmerge(mergeid, mergepath, mergemethod, esign, contacts){
+            const Input = document.createElement('input');
+            Input.name = 'merge_info';
+            Input.id = 'mergedata';
+            Input.value += mergepath + ',';
+            // Input.value += mergeid + ',';
+            // mergemethod = 'appealfwd';
+            Input.value += mergemethod + ',';
+            Input.value += contacts + ',';
+            document.getElementById("mergeform").appendChild(Input);
+            // contacts = 'TRUE';
+
+            // Esign popUp
+            if (esign == "TRUE") {
+                $('#esign').modal('show');
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange'){ 
+                $('#' + mergemethod).modal('show');
+            }else if (mergemethod == 'recordation'){ 
+                fillInventor();
+            }else if (contacts == 'TRUE'){ 
+                fillRecipients(mergemethod);
+            }else if (mergemethod == 'Statement373c'){
+                fillSA();
+            }else if (mergemethod == 'UpdateAppDataSheet'){
+                $('#UpdateAppDataSheet').modal('show');
+            }else if (mergemethod == 'incorrectfilerect'){
+                $('#filingEsign').modal('show');
+            }else {
+                document.getElementById("mergeform").submit();
+            }
+        }
+        function fillInventor() {
+            const inputData = document.getElementById("matterInput").value;
+
+            $.ajax({
+                type: 'POST',
+                url: 'merge_inventors/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const corpbutton = document.getElementById('corp-button');
+                    corpbutton.textContent = "Corporation to Corporation";
+                    const inventorList = response.message.split(',');
+                    const tableBody = document.getElementById('inventor-list');
+                    const corpBody = document.getElementById('corp-list');
+                    const corpHeader = document.getElementById('corp-header');
+                    tableBody.innerHTML = '';
+                    corpBody.innerHTML = '';
+                    corpHeader.innerHTML = '';
+                    for(var i = 0; i < inventorList.length; i++){
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td><input type="checkbox" name = "invchk"></td>
+                            <td>${inventorList[i]}</td>
+                            <td contenteditable></td>
+                            <td contenteditable></td>
+                        `;
+                        tableBody.appendChild(newRow);
+                        const dateFields = newRow.querySelectorAll('[contenteditable]');
+                    }
+                    $('#recordation').modal('show');
+
+                    const inventorselname = [];
+                    const inventorselassign = [];
+                    const inventorseldec = [];
+                    const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
+                    checkboxesinv.forEach((checkbox, index) => {
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            inventorselname.push(inventorList[index]);
+
+                            const parentRow = checkbox.closest('tr');
+                            const editableFields = parentRow.querySelectorAll('td[contenteditable]');
+                            editableFields.forEach((field, fieldIndex) => {
+                            field.addEventListener('input', () => {
+                                if (fieldIndex === 0) {
+                                    inventorselassign[index] = field.innerText;
+                                } else if (fieldIndex === 1) {
+                                    inventorseldec[index] = field.innerText;
+                                }
+                            });
+                        });
+                            inventorselassign.push(editableFields[0].innerText);
+                            inventorseldec.push(editableFields[1].innerText);
+                        }
+                    });
+                });
+
+                    document.getElementById("recordationsub").onclick = function() {
+                            document.getElementById("mergedata").value += inventorselname.join(';')  + ',';
+                            document.getElementById("mergedata").value += inventorselassign.join(';')  + ',';
+                            document.getElementById("mergedata").value += inventorseldec.join(';')  + ',';
+                            submitbtnmerge();
+                    };
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        const button = document.getElementById('corp-button');
+        let isClicked = false;
+        button.addEventListener('click', () => {
+            if (isClicked) {
+                fillInventor();
+            } else {
+                const inputData = document.getElementById('matterInput').value;
+                alert(inputData);
+                $.ajax({
+                    type: 'POST',
+                    url: 'merge_corp/',
+                    data: {matterno: JSON.stringify(inputData)},
+                    headers: {
+                        'X-CSRFTOKEN': csrftoken,
+                    },
+                    success: function(response) {
+                        const corpList = response.message.split(';');
+                        const tableBody = document.getElementById('inventor-list');
+                        tableBody.innerHTML = '';
+                        for(var i = 0; i < corpList.length; i++){
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td><input type="checkbox" name = "corpchk1"></td>
+                                <td>${corpList[i]}</td>
+                                <td contenteditable></td>
+                                <td contenteditable></td>
+                            `;
+                            tableBody.appendChild(newRow);
+                            const dateFields = newRow.querySelectorAll('[contenteditable]');
+                        }
+                        const corpHead = document.getElementById('corp-header');
+                        corpHead.innerHTML = '';
+                        const newHead = document.createElement('tr');
+                        newHead.innerHTML = `
+                            <th>Select</th>
+                            <th>Name(s)</th>
+                            <th>Date Assignment Signed</th>
+                            <th>Date Declaration Signed</th>
+                        `;
+                        corpHead.appendChild(newHead);
+                        const corpBody = document.getElementById('corp-list');
+                        corpBody.innerHTML = '';
+                        for(var i = 0; i < corpList.length; i++){
+                            const newRow = document.createElement('tr');
+                                newRow.innerHTML = `
+                                    <td><input type="checkbox" name="corpchk2"></td>
+                                    <td>${corpList[i]}</td>
+                                    <td contenteditable></td>
+                                    <td contenteditable></td>
+                                `;
+                            corpBody.appendChild(newRow);
+                            const dateFields = newRow.querySelectorAll('[contenteditable]');
+                        }
+                        button.textContent = "Inventor(s) to Assignee";
+                        $('#recordation').modal('show');
+                        const corpselname = [];
+                        const corpselassign = [];
+                        const corpseldec = [];
+                        const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"]');
+                        checkboxesinv.forEach((checkbox, index) => {
+                            checkbox.addEventListener('change', () => {
+                                if (checkbox.checked) {
+                                    corpselname.push(corpList[index]);
+
+                                    const parentRow = checkbox.closest('tr');
+                                    const editableFields = parentRow.querySelectorAll('td[contenteditable]');
+                                    editableFields.forEach((field, fieldIndex) => {
+                                    field.addEventListener('input', () => {
+                                        if (fieldIndex === 0) {
+                                            corpselassign[index] = field.innerText;
+                                        } else if (fieldIndex === 1) {
+                                            corpseldec[index] = field.innerText;
+                                        }
+                                    });
+                                });
+                                    corpselassign.push(editableFields[0].innerText);
+                                    corpseldec.push(editableFields[1].innerText);
+                                }
+                            });
+                        });
+
+                        document.getElementById("recordationsub").onclick = function() {
+                                document.getElementById("mergedata").value += corpselname.join(';')  + ',';
+                                document.getElementById("mergedata").value += corpselassign.join(';')  + ',';
+                                document.getElementById("mergedata").value += corpseldec.join(';')  + ',';
+                                submitbtnmerge();
+                        };
+                        },
+                    error: function(error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+            isClicked = !isClicked;
+        });
+
+        function fillRecipients(mergemethod){
+            const inputData = document.getElementById("matterInput").value;
+
+            $.ajax({
+                type: 'POST',
+                url: 'merge_recipients/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const contactList = response.message.split(';');
+                    const nameList = contactList[0].split(',');
+                    const emailList = contactList[1].split(',');
+                    const roleList = contactList[2].split(',');
+                    const tableBody = document.getElementById('contact-info');
+
+                    tableBody.innerHTML = '';
+                    for(var i = 0; i < nameList.length - 1; i++){
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td><input type="checkbox" name = "to"></td>
+                            <td><input type="checkbox" name = "cc"></td>
+                            <td><input type="checkbox" name = "bcc"></td>
+                            <td>${nameList[i]}</td>
+                            <td>${emailList[i]}</td>
+                            <td>${roleList[i]}</td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    }
+                    $('#contacts').modal('show'); 
+
+                    const selectedEmails = {
+                        to: [],
+                        cc: [],
+                        bcc: []
+                    };
+
+                    ['to', 'cc', 'bcc'].forEach(type => {
+                        const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${type}"]`);
+                        checkboxes.forEach((checkbox, index) => {
+                            checkbox.addEventListener('change', () => {
+                                if (checkbox.checked) {
+                                    selectedEmails[type].push(emailList[index]);
+                                }
+                            });
+                        });
+                    });
+                    
+                    document.getElementById("contactsnext").onclick = function() {
+                        document.getElementById("mergedata").value += selectedEmails.to.join(';') + ',';
+                        document.getElementById("mergedata").value += selectedEmails.cc.join(';') + ',';
+                        document.getElementById("mergedata").value += selectedEmails.bcc.join(';') + ',';
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
+                            fillActivities(mergemethod);
+                        }
+                        if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport'){
+                            $('#' + mergemethod).modal('show');
+                        }
+                    };
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function fillActivities(mergemethod){
+            const inputData = document.getElementById("matterInput").value;
+            $.ajax({
+                type: 'POST',
+                url: 'merge_activities/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const activityList = response.message.split(';');
+                    const nameList = activityList[0].split(',');
+                    const commentsList = activityList[1].split(',');
+                    const statusList = activityList[2].split(',');
+                    const date1List = activityList[3].split(',');
+                    const date2List = activityList[4].split(',');
+
+                    const tableBody = document.getElementById('activities-info');
+                    tableBody.innerHTML = '';
+                    for(var i = 0; i < nameList.length - 1; i++){
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td><input type="checkbox" name = "actcheck"></td>
+                            <td>${nameList[i]}</td>
+                            <td>${commentsList[i]}</td>
+                            <td>${statusList[i]}</td>
+                            <td>${date1List[i]}</td>
+                            <td>${date2List[i]}</td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    }
+                    $('#activities').modal('show'); 
+
+                    const selectedNames = [' '];
+                    const selectedComments = [' '];
+                    const selectedStatus = [' '];
+                    const selectedDate1 = [' '];
+                    const selectedDate2 = [' '];
+
+                    // Attach event listener to checkboxes
+                    const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
+                    checkboxesAct.forEach((checkbox, index) => {
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                selectedNames.push(nameList[index]);
+                                selectedComments.push(commentsList[index]);
+                                selectedStatus.push(statusList[index]);
+                                selectedDate1.push(date1List[index]);
+                                selectedDate2.push(date2List[index]);
+                            
+                            }
+                        });
+                    });
+                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport'){
+                        document.getElementById("activitiesnext").onclick = function() {
+                            document.getElementById("mergedata").value += selectedNames.join(';')  + ',';
+                            document.getElementById("mergedata").value += selectedComments.join(';')  + ',';
+                            document.getElementById("mergedata").value += selectedStatus.join(';')  + ',';
+                            document.getElementById("mergedata").value += selectedDate1.join(';')  + ',';
+                            document.getElementById("mergedata").value += selectedDate2.join(';')  + ',';
+                            submitbtnmerge();
+                        };
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function fillSA(){
+            const inputData = '1.003us1';
+            $.ajax({
+                type: 'POST',
+                url: 'merge_SA/',
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    alert('yes');
+                    const sattList = response.message;
+                    var sel = document.getElementById('SAdrop');
+                    for (var i = 0; i < sattList.length; i++) {
+                        var opt = document.createElement('option');
+                        opt.innerHTML = sattList[i];
+                        opt.value = sattList[i];
+                        sel.appendChild(opt);
+                    }
+                    $('#statement373c').modal('show');
+                },
+                error: function(error) {
+                    alert('no');
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function recordedassnreportnext(answer){
+            $('#recordedassnreportyes').modal('show');
+        }
+        // Update app data merge method
+        if(document.getElementById('markedapp')){
+            const updatecheckbox = document.getElementById('markedapp');
+            const updatepagect = document.getElementById('updatepagect');
+
+            updatecheckbox.addEventListener('change', function() {
+                updatepagect.disabled = !updatecheckbox.checked;
+            });
+        }
+        if(document.getElementById('issuefeerequestpat')){
+            const isscheckbox = document.getElementById('issuefeerequestpat');
+            const isspagect = document.getElementById('issuefeefact');
+
+            isscheckbox.addEventListener('change', function() {
+                if (isscheckbox.checked) {
+                    isspagect.style.display = 'block';
+                } else {
+                    isspagect.style.display = 'none';
+                }
+            });
+        }
+        if(document.getElementById('issuefeeisspaid')){
+            const isscheckbox2 = document.getElementById('issuefeeisspaid');
+            const isspagect2 = document.getElementById('issuefeeisspaidhide');
+            const isspagect3 = document.getElementById('issuefeepagewithhide');
+            const isspagect4 = document.getElementById('issuefeeamountinc');
+
+            isscheckbox2.addEventListener('change', function() {
+                if (isscheckbox2.checked) {
+                    isspagect2.style.display = 'block';
+                    isspagect3.style.display = 'block';
+                    isspagect4.style.display = 'block';
+                } else {
+                    isspagect2.style.display = 'none';
+                    isspagect3.style.display = 'none';
+                    isspagect4.style.display = 'none';
+                }
+            });
+        }
+        if(document.getElementById('issuefeeamtinc')){
+            const isscheckbox3 = document.getElementById('issuefeeamtinc');
+            const isspagect1 = document.getElementById('issuefeeamtisspay');
+
+            isscheckbox3.addEventListener('change', function() {
+                if (isscheckbox3.checked) {
+                    isspagect1.style.display = 'block';
+                } else {
+                    isspagect1.style.display = 'none';
+                }
+            });
+        }
+</script>
+</body>
+</html>

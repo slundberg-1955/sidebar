@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+  <!-- Esign -->
+    <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Enable Esign?</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-footer">
+                    <!-- Pass the button element to the onclick function -->
+                    <button type="button" class="btn btn-default" onclick="submitbtnesign('FALSE')" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="submitbtnesign('TRUE')" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Pending Claims -->
+<div id="pclaims" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pendingClaimsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="pendingClaimsModalLabel">Pending Claims</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="dateInput">Dates claims are current to:</label>
+                    <input type="text" class="form-control" id="dateInput" placeholder="MM/DD/YYYY" title="Date Claims Are Current To: ">
+                </div>
+                <div class="form-group">
+                    <label for="descriptionInput">Enter a description of the date,
+                        e.g.. "application filing date" or "first office action":
+                    </label>
+                    <input type="text" class="form-control" id="descriptionInput" placeholder="Description">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnpclaims(dateInput.value, descriptionInput.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Recordation Form -->
+<div class="modal fade" id="recordation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Recordation Form Cover Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
+                <label for="esignrec">&emsp;&emsp;Esign Enable:</label>
+                <input type="checkbox" id="esignrec" name="esign">
+                <label for="pagenum">&ensp;&emsp;Number of Pages:</label>
+                <input type="text" id="pagenum" name="pagenum" size="10">
+                <div class="pagecount">
+                    <label for="depacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="depacc" name="options" value="depacc">
+                    <label for="check">&ensp;Check:</label>
+                    <input type="radio" id="check" name="options" value="check">
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Name(s)</th>
+                            <th>Date Assignment Signed</th>
+                            <th>Date Declaration Signed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventor-list"></tbody>
+                </table>
+                <table class="table">
+                    <thead id = "corp-header"></thead>
+                    <tbody id="corp-list"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contacts -->
+<div class="modal fade" id="contacts">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Add host matter no here -->
+                <h4 class="modal-title">Select Recipients For: </h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Your modal body content here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>To</th>
+                            <th>CC</th>
+                            <th>BCC</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contact-info"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Late Submission Of Declaration -->
+<div id="LateSubmissionOfDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LateSubmissionOfDecModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Late Submission of Declaration or Substitute Statement</h6>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="latedecbox">&emsp;&emsp;Late Submission of Declaration Surcharge Paid:</label>
+                    <input type="checkbox" id="latedecbox">
+                    <label for="pagedecnum">&emsp;&emsp;Pages in Declaration:</label>
+                    <input type="text" id="pagedecnum" name="pagedecnum" size="10" placeholder = '0'>
+                    <label for="pagesubnum">&emsp;&emsp;Pages in Substitute Statement:</label>
+                    <input type="text" id="pagesubnum" name="pagesubnum" size="10" placeholder = '0'>
+
+                    <label for="esignlate">&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="esignlate" name="esign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnLateSubmissionOfDec(latedecbox.value, pagedecnum.value, pagesubnum.value, esignlate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Merge Interview Screen -->
+<div id="mergeinterview" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mergeinterviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Merge Interview Screen</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="filing">
+                    <label for="efile">&emsp;&emsp;E-Filing:</label>
+                    <input type="radio" id="efile" name="options">
+                    <label for="paperfile">&ensp;Paper Filing:</label>
+                    <input type="radio" id="paperfile" name="options">
+                </div>
+                <div class="account">
+                    <label for="depacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="depacc" name="account">
+                    <label for="check">&ensp;Check:</label>
+                    <input type="radio" id="check" name="account">
+                </div>
+                <div class="form-group">
+                    <label for="requestpat"><br>&emsp;&emsp;Request for Patent Term Adjustment:</label>
+                    <input type="checkbox" id="requestpat">
+                    <label for="pagedraw">&emsp;&emsp;Number of Pages of Formal Drawings:</label>
+                    <input type="text" id="pagedraw" name="pagedraw" size="10" placeholder = '0'>
+                    <label for="mrgexam"><br>&emsp;&emsp;Merge "Response to Examiner's Reasons for Allowance"?</label>
+                    <input type="checkbox" id="mrgexam">
+                    <label for="isspaid">&emsp;&emsp;Issue Fee Previously Paid</label>
+                    <input type="checkbox" id="isspaid">
+                </div>
+                <div>
+                    <label for="esign"><br>&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="esign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmergeinterview(filing.value, account.value, requestpat.value, pagedraw.value, mrgexam.value, isspaid.value, esign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Statement Under 3.73(c)-->
+<div id="statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Statement Under 3.73</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="corp">
+                    <label for="corprad">&emsp;&emsp;Corporation:</label>
+                    <input type="radio" id="corprad" name="options">
+                    <label for="partnerrad">&ensp;Partnership:</label>
+                    <input type="radio" id="partnerrad" name="options">
+                </div>
+                <div class="account">
+                    <label for="unirad">&emsp;&emsp;University:</label>
+                    <input type="radio" id="unirad" name="account">
+                    <label for="govrad">&ensp;Government Agency:</label>
+                    <input type="radio" id="govrad" name="account">
+                    <label for="othrad">&ensp;Other:</label>
+                    <input type="radio" id="othrad" name="account">
+                    <label for="listoth">&emsp;&emsp;List Other:</label>
+                    <input type="text" id="listoth" name="listother" size="15">
+                </div>
+                <div class="form-group">
+                    <label for="SAdrop"><br>&emsp;&emsp;Signing Attorney:</label>
+                    <select id="SAdrop">
+                </div>
+                <div>
+                    <label for="recordchk"><br>&emsp;&emsp;There is a recordation occuring concurrently with this filing, or a recordation already occured</label>
+                    <input type="checkbox" id="recordchk">
+                </div>
+                <div>
+                    <label for="373esign">&emsp;&emsp;E-Signature Enable</label>
+                    <input type="checkbox" id="373esign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmergeinterview(filing.value, account.value, requestpat.value, pagedraw.value, mrgexam.value, isspaid.value, esign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Update to app data sheet-->
+<div id="updateappdata" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="updateappdataModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update to Application Data Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="updatemarked"><br>&emsp;&emsp;Marked Up Application Data Sheet</label>
+                    <input type="checkbox" id="updatemarked">
+                </div>
+                <div>
+                    <label for="updatepagect">&emsp;&emsp;Number of Pages</label>
+                    <input type="text" id="updatepagect" name="updatepagect" placeholder = '0' size = "5">
+                </div>
+                <div>
+                    <label for="updateesign"><br>&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="updateesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnupdatetoapp()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Communication regarding corrected application papers-->
+<div id="corrappln" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="corrapplnModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Communication Regarding Corrected Application Papers</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="corrapplnefile">  E-Filing:</label>
+                    <input type="radio" id="corrapplnefile" name="options">
+                    <label for="corrapplnpaperfile"> Paper Filing:</label>
+                    <input type="radio" id="corrapplnpaperfile" name="options">
+                    <label for="corrapplndepacc">  Deposit Account</label>
+                    <input type="checkbox" id="corrapplndepacc">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Extention of Time:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0" size="5"> Amount</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Substitute Specifications:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnsub" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Abstract:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnabs" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sequence Listing:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnseq" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Formal Drawings:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnfor" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="corrapplnesign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="corrapplnesign">
+                </div>
+                <div>
+                    <label for="corrapplnenclosures"><br>  With Enclosures:</label>
+                    <input type="checkbox" id="corrapplnenclosures">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Application data sheet after sep 16 2012-->
+<div id="applicationdata_new2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_new2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Application Data Sheet</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  How many Domestic Benefit/National Stage Information Entries are there?</td>
+                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2entries" name="applicationdata_new2entries" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Total number of drawing sheets?</td>
+                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2draw" name="applicationdata_new2draw" placeholder="0" size="5"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="applicationdata_new2earlypub"><br>  </label>
+                    <input type="checkbox" id="applicationdata_new2earlypub"> Request Early Publication (Fee required at time of Request 37 CFR 1.219)
+                </div>
+                <div>
+                    <label for="applicationdata_new2notpub">  </label>
+                    <input type="checkbox" id="applicationdata_new2notpub"> Request to Not Publish
+                </div>
+                <div>
+                    <label for="applicationdata_new2client">  </label>
+                    <input type="checkbox" id="applicationdata_new2client"> The inventor mailing address is that of the client
+                </div>
+                <div>
+                    <label for="applicationdata_new2app">  </label>
+                    <input type="checkbox" id="applicationdata_new2app"> The inventor mailing address is that of the applicant
+                </div>
+                <div>
+                    <label for="applicationdata_new2claimed">  </label>
+                    <input type="checkbox" id="applicationdata_new2claimed"> Small entity status claimed
+                </div>
+                <div>
+                    <label for="applicationdata_new2incapp"><br>  </label>
+                    <input type="radio" id="applicationdata_new2incapp" name="options"> Include Applicant(Assignment Executed)
+                </div>
+                <div>
+                    <label for="applicationdata_new2incnon">  </label>
+                    <input type="radio" id="applicationdata_new2incnon" name="options">Include Non-Applicant Assignee
+                </div>
+                <div>
+                    <label for="applicationdata_new2noapp">  </label>
+                    <input type="radio" id="applicationdata_new2noapp" name="options">Do Not Include Applicant/Asignee Information (Applicant = Inventor(s))
+                </div>
+                <div>
+                    <label for="applicationdata_new2both">  </label>
+                    <input type="radio" id="applicationdata_new2both" name="options">Include Both Applicant and Assignee Information
+                </div>
+                <div>
+                    <label for="corrapplnesign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="corrapplnesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Missing Parts Response-->
+<div id="missingpartsNw" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="misingpartsNwModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Missing Parts Response</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="misingpartsNwefile">  E-Filing:</label>
+                    <input type="radio" id="misingpartsNwefile" name="options">
+                    <label for="misingpartsNwpaperfile"> Paper Filing:</label>
+                    <input type="radio" id="misingpartsNwpaperfile" name="options">&emsp;&emsp;&emsp;&emsp;
+
+                    <label for="misingpartsNwdepacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="misingpartsNwdepacc" name="options" value="depacc">
+                    <label for="misingpartsNwcheck">&ensp;Check:</label>
+                    <input type="radio" id="misingpartsNwcheck" name="options" value="check">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Total Filing/Search/Exam Fee Amount (if sending):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Extention Fee Amount (if applicable):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Combined Declaration & Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpowpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Declaration Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Preliminary Amendment:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Comm re: Incorrect Filing Receipt Pages (if sending):</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwmail" name="updatepagect" placeholder=" /  / " size="5"></td>
+                        </tr>
+                    </table>
+                    <h6 class="modal-title">Corrected Application Papers</h6>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Substitute Specification Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Abstract Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sequence Listing Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Formal Drawings Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="misingpartsNwesign"><br>  Esign Enable:</label>
+                    <input type="checkbox" id="misingpartsNwesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Efiling/Paper filing and Esign-->
+<div id="filingEsign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filingEsignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Merge Interview Screen</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="filing">
+                    <label for="filingEsignefile">&emsp;&emsp;E-Filing:</label>
+                    <input type="radio" id="filingEsignefile" name="options">
+                    <label for="filingEsignpaperfile">&ensp;Paper Filing:</label>
+                    <input type="radio" id="filingEsignpaperfile" name="options">
+                </div>
+                <div>
+                    <label for="filingEsignesign">&emsp;&emsp;Esign Enable:</label>
+                    <input type="checkbox" id="filingEsignesign">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnfilingEsign()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--PatentCoopTreaty2-->
+<div id="PatentCoopTreaty2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PatentCoopTreaty2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PCT Transmittal to WIPO</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label for="PatentCoopTreaty2mail">  Mode of Filing:  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2mail">Mail
+                    <label for="PatentCoopTreaty2deliver">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2deliver">Delivery Service
+                    <label for="PatentCoopTreaty2fax">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2fax">Fax
+                    <label for="PatentCoopTreaty2hand">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2hand">Hand Delivery
+                    <label for="PatentCoopTreaty2online">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2online">Online
+                </div>
+                <div class="form-group">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Sheets of PCT Safe Request Form:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2pctpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Description(excluding sequence listing):</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2descpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Claims:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2claimpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Abstract:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2abspg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Drawings:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2drwpg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Sheets of Sequence Listing:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2seqpg" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2poapg" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2fee"><br>  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2fee">Fee Calculation Sheet Enclosed
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2spoa">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2spoa">Separate Power of Attorney
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2gpoa">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2gpoa">General Power of Attorney
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2pdoc">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2pdoc">Priority Document
+                </div>
+                <div>
+                    <label for="PatentCoopTreaty2accl">  </label>
+                    <input type="checkbox" id="PatentCoopTreaty2accl">Accompanying Letter
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
