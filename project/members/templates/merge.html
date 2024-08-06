@@ -380,8 +380,8 @@
                 <div id="issuefeepagewithhide" style="display:none;">
                     <label for="issuefeewithfil">&emsp;&emsp;Petition To Withdraw Filed</label>
                     <input type="checkbox" id="issuefeewithfil"> 
-                    <label for="issuefeepagewith">&emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;</label>
-                    <input type="text" id="issuefeepagewith" size="10" placeholder = '  /  /  '>
+                    <label for="issuefeemail">&emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;</label>
+                    <input type="text" id="issuefeemail" size="10" placeholder = '  /  /  '>
                 </div>   
                 
                 <div style="display:none;" id="issuefeeamountinc">
@@ -399,7 +399,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked,issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
             </div>
         </div>
     </div>

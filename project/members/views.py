@@ -276,7 +276,7 @@ def combinedoc(path, method, mergeinfo):
 
     if method == 'issuefee':
         doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit3.docx")
-        if mergeinfo[5] == 'true':
+        if mergeinfo[6] == 'true':
             doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit2.docx") 
             doc3.add_page_break()
             composer.append(doc3)
@@ -319,7 +319,7 @@ def mergeDoc(matter , mergeinfo):
         issBCC = ''
         Email(issbody, isssubject, issTO, issCC, issBCC)
 
-        if mergefninfo[4] == 'true':
+        if mergefninfo[5] == 'true':
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)

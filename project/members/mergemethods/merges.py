@@ -67,8 +67,15 @@ class issuefee:
         dep = mergeinfo[0]
         check = mergeinfo[1]
         reqpat = mergeinfo[2]
-        esign = mergeinfo[6]
-        drawnum = mergeinfo[5]
+        numfact = mergeinfo[3]
+        drawnum = mergeinfo[4]
+        prevpaid = mergeinfo[6]
+        prevpaiddate = mergeinfo[7]
+        withfiled = mergeinfo[8]
+        withmailed = mergeinfo[9]
+        amtinc = mergeinfo[10]
+        amtfrstpay = mergeinfo[11]
+        esign = mergeinfo[12]
 
         try:
             feeactivity = function_instance.getactivityid(matter_data, 'IFEE')
@@ -90,9 +97,9 @@ class issuefee:
             adjtxt = 'X'
             adjfee = 'X'
             adjfact = 'X'
-            patadjtxt =  '      Application for Patent Term Adjustment Under 37 CFR 1.705(b) (1 pg.).'
-            patadjfee =  '      Check in the amount of' + '12' + 'to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
-            patadjfact = '      Statement of Facts Under 37 CFR 1.705(b)(2) in Support of Application for Patent Term Adjustment'
+            patadjtxt =  '         Application for Patent Term Adjustment Under 37 CFR 1.705(b) (1 pg.).'
+            patadjfee =  '         Check in the amount of' + '12' + 'to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
+            patadjfact = '         Statement of Facts Under 37 CFR 1.705(b)(2) in Support of Application for Patent Term Adjustment (' + numfact + ' pgs.).'
         
         else:
             adjtxt = ''
@@ -101,6 +108,16 @@ class issuefee:
             patadjtxt = ''
             patadjfee = ''
             patadjfact = ''
+        
+        if int(drawnum) > 0:
+            drawingX = 'X'
+            drawtxt =    '         Formal Drawings (' + drawnum + ' sheets).'
+        else:
+            drawingX = ''
+            drawtxt = ''
+
+        # if withfiled == 'true':
+            
 
         # if feeincrease:
         entitystatus = function_instance.entityfill(matter)
@@ -138,12 +155,13 @@ class issuefee:
             'SAPhone' : '',
             'nickSA' : '',
             'nickU' : '',
-            'dateIssueFee': '',
+            'dateIssueFee': prevpaiddate,
             'withDrawText' : '',
             'increaseText' : '',
             'dateNOAR' : noarDate,
             'depAccount' : depnum,
-            'formalDrawingText' : drawnum,
+            'drawingX' : drawingX,
+            'formalDrawingText' : drawtxt,
             'adjTextX' : adjtxt,
             'adjFeeX' : adjfee,
             'adjFactsX' : adjfact,
@@ -156,7 +174,8 @@ class issuefee:
             'pubFeeText' : '',
             'previousX' : '',
             'applyPreviousText' : '',
-
+            'commentX' : '',
+            'commentText' : '',
         })
         return replace
     
