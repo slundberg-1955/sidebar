@@ -99,6 +99,9 @@
         #LtrSendFmlDocNew .modal-dialog{
             max-width: 600px;
         }
+        #pctcorrect .modal-dialog{
+            max-width: 800px;
+        }
         
     </style>
     <style>
@@ -455,7 +458,7 @@
                 </div>
                 <div class="form-group">
                     <label for="statement373cSAdrop"><br>&emsp;&emsp;Signing Attorney:</label>
-                    <select id="statement373cSAdrop">
+                    <select id="statement373cSAdrop"></select>
                 </div>
                 <div>
                     <label for="statement373crecordchk"><br>&emsp;&emsp;There is a recordation occuring concurrently with this filing, or a recordation already occured</label>
@@ -1400,13 +1403,55 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
+                <div class="account">
+                    <label for="pctcorrectdepacc">&emsp;&emsp;Deposit Account:</label>
+                    <input type="radio" id="pctcorrectdepacc" name="account" checked="checked">
+                    <label for="pctcorrectcheck">&ensp;Check:</label>
+                    <input type="radio" id="pctcorrectcheck" name="account">
+                    <label for="pctcorrectesign">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectesign"> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
+                </div>  
                 <div>
-                    <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects: </label>
-                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">
+                    <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&emsp;</label>
+                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">&emsp;&emsp;
+                    <select id="statement373cSAdrop"></select>
                 </div>
                 <div>
                     <label for="pctcorrectmailext">&emsp;&emsp;</label>
                     <input type="checkbox" id="pctcorrectmailext"> Include Extention of Time?
+                </div>
+                <div>
+                    <label for="pctcorrectannexa">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectannexa"> Annex A &emsp;&emsp; Document(s) Enclosed
+                </div>
+                <div>
+                    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<textarea rows="3" cols="40" id = "pctcorrecttxtarea"></textarea>
+                </div>
+                <div>
+                    <label for="pctcorrectannexb">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectannexb"> Annex B &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Enter Page Range(s)
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">            Description Replacement Pages </td>
+                            <td align="left"style="border: none;"><input type="text" id="pctcorrectdescpg" size="10"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">            Claim Replacement Pages</td>
+                            <td align="left"style="border: none;"><input type="text" id="pctcorrectclaimpg" size="10"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">            Abstract Replacement Pages</td>
+                            <td align="left"style="border: none;"><input type="text" id="pctcorrectabspg" size="10"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <label for="pctcorrectannexc">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectannexc"> Annex C   
+                    <label for="pctcorrectmail">&emsp;&emsp;Formal Drawing Pages     </label>
+                    <input type="text" id="pctcorrectmail" size="10">&emsp;&emsp;
                 </div>
             </div>
             <div class="modal-footer">
@@ -1483,7 +1528,7 @@
             // Esign popUp
             if (esign == "TRUE") {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();

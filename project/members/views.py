@@ -242,13 +242,15 @@ def DocumentReader(docxpath):
     body = '\n'.join([p.text for p in doc.paragraphs[2:]])
     return subject, body
 
-def Email(body, subject, recipients, cc, bcc): 
+def Email(body, subject, recipients, cc, bcc, attachment): 
     pythoncom.CoInitialize()  
     outlook = win32.Dispatch('outlook.application')
     mail = outlook.CreateItem(0)
     mail.Subject = subject
     mail.Body = body
     mail.To = recipients
+    if(attachment != ''):
+        mail.Attachments.Add(attachment)
 
     # mail.Attachments.Add(attachment)
 
@@ -313,11 +315,12 @@ def mergeDoc(matter , mergeinfo):
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
-        issbody = 'SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING'
+        issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: *bad date* 0, 0 \n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
         issTO = ''
         issCC = ''
         issBCC = ''
-        Email(issbody, isssubject, issTO, issCC, issBCC)
+        attachment = 'C:/Users/jaburns/SideBar/project/documents/attachments/Notice of Allowance Review and Response.pdf'
+        Email(issbody, isssubject, issTO, issCC, issBCC , attachment)
 
         if mergefninfo[5] == 'true':
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
@@ -364,7 +367,7 @@ def mergeDoc(matter , mergeinfo):
 
         subject, body = DocumentReader(output_path)
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
-        Email(body, subject, TO, CC, BCC)
+        Email(body, subject, TO, CC, BCC, '')
 
 def check_email(email):
     pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'

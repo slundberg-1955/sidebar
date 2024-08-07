@@ -249,7 +249,6 @@ class LateSubmissionOfDec:
         custcor = function_instance.corrcustnumFill(matter_data)
         confirm = matter_data.confirmationno
 
-
         if(custcor == ''):
             custcor = 'Unknown'
         if(artunitno == '' or artunitno == 'None'):
