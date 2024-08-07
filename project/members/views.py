@@ -286,7 +286,6 @@ def combinedoc(path, method, mergeinfo):
         else:  
             composer.append(doc2)  
 
-
     composer.save("documents/multidocmerge/" + method +".docx")
 
 # New separate function for merging documents
@@ -326,6 +325,13 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
+
+    # does not work. fix
+    if mergeinfo_list[1] == 'pctcorrect':
+        if mergefninfo[5] == 'true':
+            pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
+            pctext = pctext.replace('pctcorrect', 'pctextention')
+            mergeDoc(matter, pctext)
 
     keys = docx_get_keys2(doc)
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)

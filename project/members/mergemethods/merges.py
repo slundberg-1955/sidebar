@@ -773,10 +773,61 @@ class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        depacc = mergeinfo[0]
+        check = mergeinfo[1]
+        esign = mergeinfo[2]
+        maildate = mergeinfo[3]
+        SignAtt = mergeinfo[4]
+        exttime = mergeinfo[5]
+        annexA = mergeinfo[6]
+        annexAtxt = mergeinfo[7]
+        annexB = mergeinfo[8]
+        descpg = mergeinfo[9]
+        claimpg = mergeinfo[10]
+        abspg = mergeinfo[11]
+        annexC = mergeinfo[12]
+        formalpg = mergeinfo[13]
+
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'mailDate' : maildate,
+            # add phone number at end
+            'cAnnexAText' : annexAtxt + 'which is believed to be in compliance with Annex A of the Invitation. Please direct any inquiry regarding this matter to the undersigned at ',
+            'propperApplicant' : 'Applicant',
+            'encloseText' : 'enclose',
+            'cAnnexBText' : '',
+        })
+        return replace
+
+class applicationdata_new2:
+    def applicationdata_new2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
 
+        })
+        return replace
+    
+class pctextention:
+    def pctextention(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        esign = mergeinfo[2]
+
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
         })
         return replace

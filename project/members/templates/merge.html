@@ -100,7 +100,7 @@
             max-width: 600px;
         }
         #pctcorrect .modal-dialog{
-            max-width: 800px;
+            max-width: 750px;
         }
         
     </style>
@@ -1414,7 +1414,7 @@
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&emsp;</label>
                     <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">&emsp;&emsp;
-                    <select id="statement373cSAdrop"></select>
+                    <select id="pctcorrectSAdrop"></select>
                 </div>
                 <div>
                     <label for="pctcorrectmailext">&emsp;&emsp;</label>
@@ -1428,8 +1428,8 @@
                     &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<textarea rows="3" cols="40" id = "pctcorrecttxtarea"></textarea>
                 </div>
                 <div>
-                    <label for="pctcorrectannexb">&emsp;&emsp;</label>
-                    <input type="checkbox" id="pctcorrectannexb"> Annex B &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Enter Page Range(s)
+                    <br><label for="pctcorrectannexb">&emsp;&emsp;</label>
+                    <input type="checkbox" id="pctcorrectannexb"> Annex B &emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Enter Page Range(s):
                 </div>
                 <div>
                     <table style="border-collapse: collapse; border: none;">
@@ -1448,15 +1448,19 @@
                     </table>
                 </div>
                 <div>
-                    <label for="pctcorrectannexc">&emsp;&emsp;</label>
+                    <br><label for="pctcorrectannexc">&emsp;&emsp;</label>
                     <input type="checkbox" id="pctcorrectannexc"> Annex C   
-                    <label for="pctcorrectmail">&emsp;&emsp;Formal Drawing Pages     </label>
-                    <input type="text" id="pctcorrectmail" size="10">&emsp;&emsp;
+                    <label for="pctcorrectformalpg">&emsp;&emsp;Formal Drawing Pages     &ensp;</label>
+                    <input type="text" id="pctcorrectformalpg" size="10">&emsp;&emsp;
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectdepacc.checked, pctcorrectcheck.checked, pctcorrectesign.checked, 
+                pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, 
+                pctcorrectannexa.checked, pctcorrecttxtarea.value, pctcorrectannexb.checked, 
+                pctcorrectdescpg.value, pctcorrectclaimpg.value, pctcorrectabspg.value, 
+                pctcorrectannexc.checked, pctcorrectformalpg.value)">Continue</button>
             </div>
         </div>
     </div>
