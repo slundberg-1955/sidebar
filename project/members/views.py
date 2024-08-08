@@ -326,7 +326,6 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
 
-    # does not work. fix
     if mergeinfo_list[1] == 'pctcorrect':
         if mergefninfo[5] == 'true':
             pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')

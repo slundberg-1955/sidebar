@@ -1412,13 +1412,24 @@
                     <input type="checkbox" id="pctcorrectesign"> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
                 </div>  
                 <div>
-                    <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&emsp;</label>
-                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">&emsp;&emsp;
-                    <select id="pctcorrectSAdrop"></select>
+                    <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
+                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">&emsp;
+                    <select id="pctcorrectSAdrop">
+                        <option value="Bradley Scheer">Bradley Scheer</option>
+                        <option value="David Black">David Black</option>
+                        <option value="Marvin Beekman">Marvin Beekman</option>
+                        <option value="Monique Perdok">Monique Perdok</option>
+                        <option value="Suneel Arora">Suneek Arora</option>
+                        <option value="Timothy Bianchi">Timothy Bianchi</option>
+                      </select>
                 </div>
                 <div>
                     <label for="pctcorrectmailext">&emsp;&emsp;</label>
                     <input type="checkbox" id="pctcorrectmailext"> Include Extention of Time?
+                </div>
+                <div style="display:none;" id="pctcorrecthide">
+                    <label for="pctcorrectmonthext">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Number of Months Extended</label>
+                    <input type="text" id="pctcorrectmonthext" size="10">
                 </div>
                 <div>
                     <label for="pctcorrectannexa">&emsp;&emsp;</label>
@@ -1457,7 +1468,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectdepacc.checked, pctcorrectcheck.checked, pctcorrectesign.checked, 
-                pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, 
+                pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, pctcorrectmonthext.value, 
                 pctcorrectannexa.checked, pctcorrecttxtarea.value, pctcorrectannexb.checked, 
                 pctcorrectdescpg.value, pctcorrectclaimpg.value, pctcorrectabspg.value, 
                 pctcorrectannexc.checked, pctcorrectformalpg.value)">Continue</button>
@@ -1931,6 +1942,19 @@
                     isspagect1.style.display = 'block';
                 } else {
                     isspagect1.style.display = 'none';
+                }
+            });
+        }
+
+        if(document.getElementById('pctcorrectmailext')){
+            const pctcorrectcheckbox = document.getElementById('pctcorrectmailext');
+            const pctcorrecttxt = document.getElementById('pctcorrecthide');
+
+            pctcorrectcheckbox.addEventListener('change', function() {
+                if (pctcorrectcheckbox.checked) {
+                    pctcorrecttxt.style.display = 'block';
+                } else {
+                    pctcorrecttxt.style.display = 'none';
                 }
             });
         }

@@ -773,23 +773,38 @@ class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        SAPhone = function_instance.phoneFill(matter_data)
         depacc = mergeinfo[0]
         check = mergeinfo[1]
         esign = mergeinfo[2]
         maildate = mergeinfo[3]
         SignAtt = mergeinfo[4]
         exttime = mergeinfo[5]
-        annexA = mergeinfo[6]
-        annexAtxt = mergeinfo[7]
-        annexB = mergeinfo[8]
-        descpg = mergeinfo[9]
-        claimpg = mergeinfo[10]
-        abspg = mergeinfo[11]
-        annexC = mergeinfo[12]
-        formalpg = mergeinfo[13]
+        annexA = mergeinfo[7]
+        annexAtxt = mergeinfo[8]
+        annexB = mergeinfo[9]
+        descpg = mergeinfo[10]
+        claimpg = mergeinfo[11]
+        abspg = mergeinfo[12]
+        annexC = mergeinfo[13]
+        formalpg = mergeinfo[14]
+
+        if annexA == 'true':
+            Atxt = annexAtxt + 'which is believed to be in compliance with Annex A of the Invitation.'
+        else:
+            Atxt = ''
+
+        if annexB == 'true':
+            Btxt = 'Replacement description pages ' + descpg + ', replacement claims pages ' + claimpg + ' and replacement claims pages ' + abspg + ' which are believed to be in compliance with Annex B1 of the Invitation.'
+        else:
+            Btxt = ''
+
+        if annexC == 'true':
+            Ctxt = 'Formal drawing sheets (' + formalpg + ') which are all believed to be in compliance with Annex C1 of the Invitation.'
+        else:
+            Ctxt = ''
 
         esign_out, esigndate_out = function_instance.esigncheck(esign)
-
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
@@ -797,10 +812,13 @@ class pctcorrect:
             'signatureDate' : esigndate_out,
             'mailDate' : maildate,
             # add phone number at end
-            'cAnnexAText' : annexAtxt + 'which is believed to be in compliance with Annex A of the Invitation. Please direct any inquiry regarding this matter to the undersigned at ',
-            'propperApplicant' : 'Applicant',
+            'cAnnexAText' : Atxt,
+            'cAnnexBText' : Btxt,
+            'cAnnexCText' : Ctxt,
+            'properApplicant' : 'Applicant',
             'encloseText' : 'enclose',
-            'cAnnexBText' : '',
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'SAPhone' : SAPhone,
         })
         return replace
 
@@ -824,10 +842,34 @@ class pctextention:
 
         esign_out, esigndate_out = function_instance.esigncheck(esign)
 
+        annexes = []
+
+        if mergeinfo[7] == 'true':
+            annexes.append('Annex A')
+
+        if mergeinfo[9] == 'true':
+            annexes.append('Annex B')
+
+        if mergeinfo[13] == 'true':
+            annexes.append('Annex C')
+
+        if len(annexes) == 2:
+            annexTxt = ' and '.join(annexes)
+        elif len(annexes) > 2:
+            annexTxt = ', '.join(annexes[:-1]) + ', and ' + annexes[-1]
+        else:
+            annexTxt = ''.join(annexes)
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
+            'extensionLenTextHdr' : function_instance.number_to_words(int(mergeinfo[6])),
+            'mailDate' : mergeinfo[3],
+            'properApplicant' : 'Applicant',
+            'extensionLenText' : function_instance.number_to_words(int(mergeinfo[6])).lower(),
+            'requestText' : 'requests',
+            'annexSelectText' : annexTxt
         })
         return replace

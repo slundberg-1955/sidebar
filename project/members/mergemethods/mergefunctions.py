@@ -303,3 +303,21 @@ class mergefunctions:
         if match:
             return match.group()
         return None
+    
+    def number_to_words(self, n):
+        if not (0 <= n <= 24):
+            return "NUMBER OUT OF RANGE"
+
+        units = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]
+        teens = ["TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"]
+        tens = ["", "", "TWENTY"]
+
+        if 0 <= n < 10:
+            return units[n]
+        elif 10 <= n < 20:
+            return teens[n - 10]
+        elif 20 <= n <= 24:
+            if n % 10 == 0:
+                return tens[n // 10]
+            else:
+                return tens[n // 10] + "-" + units[n % 10]
