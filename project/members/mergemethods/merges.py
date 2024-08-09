@@ -873,3 +873,15 @@ class pctextention:
             'annexSelectText' : annexTxt
         })
         return replace
+
+class nonfinalreportFp:
+    def nonfinalreportFp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
