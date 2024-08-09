@@ -143,6 +143,15 @@ def addSA(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
+def addPA(request):
+    if request.method == 'POST':
+
+
+        return JsonResponse({'message': f'{''}'})
+    
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
 def addactivities(request):
     if request.method == 'POST':
         data = request.POST.get('matterno')

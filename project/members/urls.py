@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import mergeDocButton
-from .views import addinventors, addcorp, addrecipients, addSA, addactivities
+from .views import addinventors, addcorp, addrecipients, addSA, addactivities, addPA
 # from .views import mergeEmailButton
 from .views import testview
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('merge_SA/', addSA, name = 'merge_SA'),
     path('test/', testview, name='test'),
     path('merge_activities/', addactivities, name = 'merge_activities'),
+    path('merge_PA/', addPA, name = 'merge_PA'),
 ]
