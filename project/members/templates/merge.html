@@ -1840,8 +1840,11 @@
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
                             fillActivities(mergemethod);
                         }
-                        if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport' || mergemethod == 'PCTRptFileOfApp'){
+                        if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport'){
                             $('#' + mergemethod).modal('show');
+                        }
+                        if(mergemethod == 'PCTRptFileOfApp'){
+                            fillPA()
                         }
                     };
                 },
@@ -2028,7 +2031,24 @@
                 },
                 success: function(response) {
                     alert('yes');
-                    $('#').modal('show');
+                    const PAlist = response.message.split(';');
+                    const serialnoList = PAlist[0].split('*');
+                    const dateList = PAlist[1].split('*');
+                    const countryList = PAlist[2].split('*');
+
+                    const tableBody = document.getElementById('priorityappselect');
+                    tableBody.innerHTML = '';
+                    for(var i = 0; i < serialnoList.length - 1; i++){
+                        const newRow = document.createElement('tr');
+                        newRow.innerHTML = `
+                            <td><input type="checkbox" name = "PAcheck"></td>
+                            <td>${serialnoList[i]}</td>
+                            <td>${dateList[i]}</td>
+                            <td>${countryList[i]}</td>
+                        `;
+                        tableBody.appendChild(newRow);
+                    }
+                    $('#PCTRptFileOfApp').modal('show'); 
                 },
                 error: function(error) {
                     alert('no');

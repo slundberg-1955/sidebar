@@ -388,3 +388,21 @@ class Activity(models.Model):
     class Meta:
         managed = False
         db_table = 'Activity'
+
+class Relatedmatter(models.Model):
+    primarymatterid = models.IntegerField(db_column='primaryMatterId', primary_key = True)  # Field name made lowercase.
+    relatedmatterid = models.IntegerField(db_column='relatedMatterId')  # Field name made lowercase.
+    relationdesc = models.CharField(db_column='relationDesc', max_length=1024, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    category = models.CharField(max_length=1, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    relatedisparent = models.BooleanField(db_column='relatedIsParent', blank=True, null=True)  # Field name made lowercase.
+    relationtype = models.IntegerField(db_column='relationType')  # Field name made lowercase.
+    rowid = models.IntegerField(db_column='rowId')  # Field name made lowercase.
+    citedtopto = models.BooleanField(db_column='citedToPTO', blank=True, null=True)  # Field name made lowercase.
+    claimspriority = models.BooleanField(db_column='claimsPriority', blank=True, null=True)  # Field name made lowercase.
+    earliestpriority = models.BooleanField(db_column='earliestPriority', blank=True, null=True)  # Field name made lowercase.
+    terminaldisclaimedto = models.BooleanField(db_column='terminalDisclaimedTo')  # Field name made lowercase.
+    terminaldisclaimedby = models.BooleanField(db_column='terminalDisclaimedBy')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'relatedmatter'

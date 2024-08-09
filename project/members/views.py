@@ -12,7 +12,7 @@ from .models import Rvwmatterinventors
 from .models import MergeCategory
 from .models import MergeRole
 from .models import MergeDef
-from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity
+from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity, Relatedmatter
 from docx import Document
 from typing import Any, List
 import re
@@ -25,6 +25,14 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 from python_docx_replace.paragraph import Paragraph
+
+def transform_serialnumber(s):
+    part1 = s[:2]
+    part2 = s[2:]
+    part2 = part2[:-3] + ',' + part2[-3:]
+
+    result = part1 + '/' + part2
+    return result
 
 def docx_replace2(doc, **kwargs: str):
     for key, value in kwargs.items():
@@ -145,9 +153,31 @@ def addSA(request):
     
 def addPA(request):
     if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        matter = Matter.objects.using('FIP').get(hostmatterno = data)
+        relatedmatters = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid, relationdesc = 'Priority')
+        serialnos = transform_serialnumber(matter.serialnumber) + '*'
+        dates = matter.fileddate.strftime("%B %d, %Y") + '*'
+        countries = matter.country + '*'
 
+        for relatedmatter in relatedmatters:
+            relmatter = Matter.objects.using('FIP').get(matterid = relatedmatter.relatedmatterid)
+            serialnos = serialnos + transform_serialnumber(relmatter.serialnumber) + '*'
+            dates = dates + relmatter.fileddate.strftime("%B %d, %Y") + '*'
+            countries = countries + relmatter.country + '*'
 
-        return JsonResponse({'message': f'{''}'})
+        PAout = '' 
+        for number in serialnos:
+            PAout = PAout + number
+        PAout = PAout + ';'
+        for date in dates:
+            PAout = PAout + date
+        PAout = PAout + ';'
+        for country in countries:
+            PAout = PAout + country
+
+        return JsonResponse({'message': f'{PAout}'})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
