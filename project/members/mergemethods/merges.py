@@ -881,7 +881,9 @@ class nonfinalreportFp:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-
+            'cReqPriorExam' : 'We have requested Prioritized Examination in this matter. '
         })
         return replace
