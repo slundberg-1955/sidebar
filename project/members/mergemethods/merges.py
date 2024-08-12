@@ -911,3 +911,26 @@ class PCTAsgnPOALetter:
             'Notary' : '',
         })
         return replace
+    
+class RptInvtPayFees:
+    def RptInvtPayFees(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        partial = ''
+        if mergeinfo[0] == 'true':
+            partial = 'and a Communication Regarding the Results of the Partial International Search'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update({
+            'claimAmt' : mergeinfo[1],
+            'partialSearch' : partial,
+            'groupNbr' : '',
+            'claims' : '',
+            'npdueDate' : '',
+            
+        })
+        return replace

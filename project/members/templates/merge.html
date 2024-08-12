@@ -111,6 +111,9 @@
         #RptInvtPayFees .modal-dialog{
             max-width: 700px;
         }
+        #PctCommRe .modal-dialog{
+            max-width: 700px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -1615,7 +1618,7 @@
             </table>
             <script>
                 const tableBody = document.getElementById('RptInvtPayFees-body');
-                const rows = 10;
+                const rows = 8;
         
                 for (let i = 1; i <= rows; i++) {
                     const row = document.createElement('tr');
@@ -1636,7 +1639,59 @@
             <div>    Enter the Fee per Additional Invention (in US dollars) <input type="text" id="RptInvtPayFeesadd" size="10" placeholder = '0.00'></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="submitbtnmerge()" data-dismiss="modal">Continue</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge(RptInvtPayFeespartial.checked, RptInvtPayFeesadd.value)" data-dismiss="modal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PctCommRe Pct - response to invitation to furnish sequence -->
+<div id="PctCommRe" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctCommReModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Response to Invitation to Furnish Sequence</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                        Confirm the date of the Invitation to Furnish a Sequence Listing: <input type="text" id="PctCommReconfirm" size="10" placeholder = ' /   / '>
+                </div>
+                <div>
+                        Select the PCTOffice for Response:
+                    <input type="radio" id="PctCommReEPN" name="options">  EP (Netherlands)
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> EP (Germany)
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> US
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> KR
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> IB
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> AU
+                </div>
+                <div>
+                                     &ensp;<input type="radio" id="PctCommReEPG" name="options"> RU
+                </div>
+                <div class="filing">
+                        E-Filing:<input type="radio" id="PctCommReefile" name="options">
+                    &ensp;Paper Filing:<input type="radio" id="PctCommRepaperfile" name="options">
+                </div>
+                <div>
+                    <br>    Date of Deposit: <input type="text" id="PctCommRedatedep" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                </div>
+                <div>
+                        Number of pages(paper) in Sequence Listing: <input type="text" id="PctCommRenumseq" size="10" placeholder = "0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
             </div>
         </div>
     </div>
@@ -1708,7 +1763,7 @@
             // Esign popUp
             if (esign == "TRUE") {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
