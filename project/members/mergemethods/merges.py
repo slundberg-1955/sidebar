@@ -887,3 +887,26 @@ class nonfinalreportFp:
             'cReqPriorExam' : 'We have requested Prioritized Examination in this matter. '
         })
         return replace
+    
+class PCTAsgnPOALetter:
+    def PCTAsgnPOALetter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        sendingpoa = ''
+        if mergeinfo[2] == 'true':
+            sendingpoa = 'We have also enclosed a Power of Attorney document for the assignee.'
+
+        if mergeinfo[1] == 'true':
+            sendingpoa = sendingpoa + "This Power of Attorney needs to be signed by an officer of the organization or a person empowered to sign on the organization's behalf."
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update({
+            'cSendingPOA' : '',
+            'pctdueDate' : mergeinfo[0],
+            'cSendingPOA' : sendingpoa,
+        })
+        return replace
