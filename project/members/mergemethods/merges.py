@@ -887,7 +887,8 @@ class nonfinalreportFp:
             'cReqPriorExam' : 'We have requested Prioritized Examination in this matter. '
         })
         return replace
-    
+
+# mergeinfo data not transfering correctly
 class PCTAsgnPOALetter:
     def PCTAsgnPOALetter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -905,8 +906,8 @@ class PCTAsgnPOALetter:
         replace.update(function_instance.parafill(keys, matter))
         replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-            'cSendingPOA' : '',
             'pctdueDate' : mergeinfo[0],
             'cSendingPOA' : sendingpoa,
+            'Notary' : '',
         })
         return replace
