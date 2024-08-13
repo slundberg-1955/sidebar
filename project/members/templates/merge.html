@@ -1658,26 +1658,34 @@
                 </div>
                 <div>
                         Select the PCTOffice for Response:
-                    <input type="radio" id="PctCommReEPN" name="options">  EP (Netherlands)
+                    <input type="radio" id="PctCommReEPN" name="PctCommReoptions">  EP (Netherlands)
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> EP (Germany)
+                                       &ensp;<input type="radio" id="PctCommReEPG" name="PctCommReoptions"> EP (Germany)
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> US
+                                       &ensp;<input type="radio" id="PctCommReUS" name="PctCommReoptions"> US
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> KR
+                                       &ensp;<input type="radio" id="PctCommReKR" name="PctCommReoptions"> KR
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> IB
+                                       &ensp;<input type="radio" id="PctCommReIB" name="PctCommReoptions"> IB
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> AU
+                                       &ensp;<input type="radio" id="PctCommReAU" name="PctCommReoptions"> AU
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="options"> RU
+                                       &ensp;<input type="radio" id="PctCommReRU" name="PctCommReoptions"> RU
                 </div>
+                <script>
+                    const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
+                    for (const radio of radios) {
+                        if (radio.checked) {
+                            document.getElementById('mergedata').value += radio;
+                        }
+                    }
+                </script>
                 <div class="filing">
                         E-Filing:<input type="radio" id="PctCommReefile" name="options">
                     &ensp;Paper Filing:<input type="radio" id="PctCommRepaperfile" name="options">
@@ -1686,13 +1694,13 @@
                     <br>    Date of Deposit: <input type="text" id="PctCommRedatedep" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
                 </div>
                 <div>
-                        Number of pages(paper) in Sequence Listing: <input type="text" id="PctCommRenumseq" size="10" placeholder = "0">
+                        Number of pages(paper) in Sequence Listing: <input type="text" id="PctCommRenumseq" size="10" placeholder = "0" value = "0">
                 </div>
                 <div>
                     <br>    <input type="checkbox" id="PctCommRecpy"> Copy of Sequence Listing in Computer Readable Form Included?
                 </div>
                 <div>
-                        Fee enclosed (if any): <input type="text" id="PctCommRefee" size="10" placeholder = "0.00">
+                        Fee enclosed (if any): <input type="text" id="PctCommRefee" size="10" placeholder = "0.00" value = "0.00">
                 </div>
                 <div>
                     <br>    <input type="checkbox" id="PctCommReesign"> E-Signature Enable?
@@ -1711,7 +1719,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
             </div>
         </div>
     </div>

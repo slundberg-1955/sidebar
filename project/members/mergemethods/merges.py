@@ -346,44 +346,44 @@ class olpemail:
         })
         return replace
     
-    class capactions:
-        def capactions(self, matter, mergeinfo, keys):
-            function_instance = mergefunctions.mergefunctions()
-            radio = mergeinfo[0]
-            replace = {}
-            replace.update(function_instance.mergebasic(keys, matter))
-            replace.update({
+class capactions:
+    def capactions(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        radio = mergeinfo[0]
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
                 
-            })
-            return replace
+        })
+        return replace
 
-    class applicationdata_new2:
-        def applicationdata_new2(self, matter, mergeinfo, keys):
-            function_instance = mergefunctions.mergefunctions()
-            entries = mergeinfo[0]
-            draw = mergeinfo[1]
-            earlypub = mergeinfo[2]
-            nopub = mergeinfo[3]
-            mailclient = mergeinfo[4]
-            mailapp = mergeinfo[5]
-            smallent = mergeinfo[6]
+class applicationdata_new2:
+    def applicationdata_new2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        entries = mergeinfo[0]
+        draw = mergeinfo[1]
+        earlypub = mergeinfo[2]
+        nopub = mergeinfo[3]
+        mailclient = mergeinfo[4]
+        mailapp = mergeinfo[5]
+        smallent = mergeinfo[6]
 
-            includeapp = mergeinfo[7]
-            includenonapp = mergeinfo[8]
-            noinclude = mergeinfo[9]
-            includeboth = mergeinfo[10]
+        includeapp = mergeinfo[7]
+        includenonapp = mergeinfo[8]
+        noinclude = mergeinfo[9]
+        includeboth = mergeinfo[10]
 
-            esign = mergeinfo[11]
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[2])
+        esign = mergeinfo[11]
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[2])
 
-            replace = {}
-            replace.update(function_instance.mergebasic(keys, matter))
-            replace.update({
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
             'drawingSheets' : draw,
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            })
-            return replace
+        })
+        return replace
         
 class stateofallow:
     def stateofallow(self, matter, mergeinfo, keys):
@@ -934,5 +934,45 @@ class RptInvtPayFees:
             'claims' : '',
             'npdueDate' : '',
             
+        })
+        return replace
+
+class PctCommRe:
+    def PctCommRe(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        depnum = function_instance.depnumFill(matter_data)
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[7])
+
+        if int(mergeinfo[4]) > 0:
+            seqpaper = 'Sequence Listing on Paper (' + mergeinfo[4] + ' pgs).'
+            lpX = 'X'
+        else:
+            seqpaper = ''
+            lpX = ''
+
+        cdX = ''
+        Xdepacc = ''
+        if float(mergeinfo[6]) > 0:
+            Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[6]
+            cdX = 'X'
+
+        # if mergeinfo[9]:
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'mailDate' : mergeinfo[0],
+            'lpX' : lpX,
+            'seqListingLine' : seqpaper,
+            'rfX' : '',
+            # 'seqRFLine' : mergeinfo[9],
+            'cdX' : cdX,
+            'chgDepAcct' : Xdepacc,
+            'selSAName' : mergeinfo[8],
+            'depAccountLine' : 'Please charge any additional required fees or credit overpayment to Deposit Account ' + depnum + '.'
         })
         return replace
