@@ -346,6 +346,8 @@ def mergeDoc(matter , mergeinfo):
     mergefninfo.pop(0)
     # without multiple docs
     doc = Document(input_path)
+    keys = docx_get_keys2(doc)
+    replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     # with multiple docs
     if mergeinfo_list[1] == 'issuefee':
@@ -353,7 +355,7 @@ def mergeDoc(matter , mergeinfo):
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
-        issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: *bad date* 0, 0 \n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
+        issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: " + replace.get('dueDate') + "\n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
         issTO = ''
         issCC = ''
         issBCC = ''
@@ -370,9 +372,6 @@ def mergeDoc(matter , mergeinfo):
             pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
             pctext = pctext.replace('pctcorrect', 'pctextention')
             mergeDoc(matter, pctext)
-
-    keys = docx_get_keys2(doc)
-    replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     contacts = mergeinfo_list[2]
 

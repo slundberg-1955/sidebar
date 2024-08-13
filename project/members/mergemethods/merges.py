@@ -77,6 +77,7 @@ class issuefee:
         amtfrstpay = mergeinfo[11]
         esign = mergeinfo[12]
 
+        dateIssueFee = ''
         try:
             feeactivity = function_instance.getactivityid(matter_data, 'IFEE')
             paid = True
@@ -176,6 +177,7 @@ class issuefee:
             'applyPreviousText' : '',
             'commentX' : '',
             'commentText' : '',
+            'dueDate' : dateIssueFee,
         })
         return replace
     
