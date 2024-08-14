@@ -1064,7 +1064,7 @@
                       <option value="David Black">David Black</option>
                       <option value="Marvin Beekman">Marvin Beekman</option>
                       <option value="Monique Perdok">Monique Perdok</option>
-                      <option value="Suneel Arora">Suneek Arora</option>
+                      <option value="Suneel Arora">Suneel Arora</option>
                       <option value="Timothy Bianchi">Timothy Bianchi</option>
                     </select>
                   </div>
@@ -1430,7 +1430,7 @@
                         <option value="David Black">David Black</option>
                         <option value="Marvin Beekman">Marvin Beekman</option>
                         <option value="Monique Perdok">Monique Perdok</option>
-                        <option value="Suneel Arora">Suneek Arora</option>
+                        <option value="Suneel Arora">Suneel Arora</option>
                         <option value="Timothy Bianchi">Timothy Bianchi</option>
                       </select>
                 </div>
@@ -1644,7 +1644,7 @@
         </div>
     </div>
 </div>
-<!-- Pct - response to invitation to furnish sequence -->
+<!-- Pct - response to invitation to furnish sequence  FIX-->
 <div id="PctCommRe" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctCommReModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1658,33 +1658,40 @@
                 </div>
                 <div>
                         Select the PCTOffice for Response:
-                    <input type="radio" id="PctCommReEPN" name="PctCommReoptions">  EP (Netherlands)
+                    <input type="radio" id="PctCommReEPN" name="PctCommReoptions" value = "EP(n)">  EP (Netherlands)
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReEPG" name="PctCommReoptions"> EP (Germany)
+                                       &ensp;<input type="radio" id="PctCommReEPG" name="PctCommReoptions" value = "EP(g)"> EP (Germany)
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReUS" name="PctCommReoptions"> US
+                                       &ensp;<input type="radio" id="PctCommReUS" name="PctCommReoptions" value = "US"> US
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReKR" name="PctCommReoptions"> KR
+                                       &ensp;<input type="radio" id="PctCommReKR" name="PctCommReoptions" value = "KR"> KR
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReIB" name="PctCommReoptions"> IB
+                                       &ensp;<input type="radio" id="PctCommReIB" name="PctCommReoptions" value = "IB"> IB
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReAU" name="PctCommReoptions"> AU
+                                       &ensp;<input type="radio" id="PctCommReAU" name="PctCommReoptions" value = "AU"> AU
                 </div>
                 <div>
-                                       &ensp;<input type="radio" id="PctCommReRU" name="PctCommReoptions"> RU
+                                       &ensp;<input type="radio" id="PctCommReRU" name="PctCommReoptions" value = "RU"> RU
                 </div>
                 <script>
+                    // Need to update to only take the most recently selected radio
                     const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
-                    for (const radio of radios) {
-                        if (radio.checked) {
-                            document.getElementById('mergedata').value += radio;
-                        }
-                    }
+                    radios.forEach(radio => {
+                        radio.addEventListener('change', () => {
+                            if (radio.checked) {
+                                const button = document.querySelector('#PctCommRecontinue');
+                                button.addEventListener('click', () => {
+                                    alert(radio.value);
+                                    document.getElementById('mergedata').value += radio.value;
+                                });
+                            }
+                        });
+                    });
                 </script>
                 <div class="filing">
                         E-Filing:<input type="radio" id="PctCommReefile" name="options">
@@ -1712,14 +1719,14 @@
                       <option value="David Black">David Black</option>
                       <option value="Marvin Beekman">Marvin Beekman</option>
                       <option value="Monique Perdok">Monique Perdok</option>
-                      <option value="Suneel Arora">Suneek Arora</option>
+                      <option value="Suneel Arora">Suneel Arora</option>
                       <option value="Timothy Bianchi">Timothy Bianchi</option>
                     </select>
                   </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "PctCommRecontinue" onclick="submitbtnmerge(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -1771,7 +1778,7 @@
         // New shared submit button
         function submitbtnmerge(...args){
             const merged_data = args.join(',');
-            alert(merged_data);
+            //alert(merged_data);
             document.getElementById('mergedata').value += merged_data;
             document.getElementById('mergeform').submit();
         }
@@ -1886,7 +1893,7 @@
                 fillInventor();
             } else {
                 const inputData = document.getElementById('matterInput').value;
-                alert(inputData);
+                //alert(inputData);
                 $.ajax({
                     type: 'POST',
                     url: 'merge_corp/',
@@ -2124,7 +2131,7 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    alert('yes');
+                    //alert('yes');
                     const sattList = response.message;
                     var sel = document.getElementById('SAdrop');
                     for (var i = 0; i < sattList.length; i++) {
@@ -2221,7 +2228,7 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    alert('yes');
+                    //alert('yes');
                     const PAlist = response.message.split(';');
                     const serialnoList = PAlist[0].split('*');
                     const dateList = PAlist[1].split('*');

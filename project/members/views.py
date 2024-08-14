@@ -347,6 +347,13 @@ def mergeDoc(matter , mergeinfo):
     # without multiple docs
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
+
+    if mergeinfo_list[1] == 'pctcorrect':
+        if mergefninfo[5] == 'true':
+            pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
+            pctext = pctext.replace('pctcorrect', 'pctextention')
+            mergeDoc(matter, pctext)
+
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     # with multiple docs
@@ -366,12 +373,6 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
-
-    if mergeinfo_list[1] == 'pctcorrect':
-        if mergefninfo[5] == 'true':
-            pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
-            pctext = pctext.replace('pctcorrect', 'pctextention')
-            mergeDoc(matter, pctext)
 
     contacts = mergeinfo_list[2]
 

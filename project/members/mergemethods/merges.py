@@ -150,6 +150,7 @@ class issuefee:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
+            'custNoCorresp' : '',
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'upperFirmName' : '',
@@ -942,10 +943,10 @@ class PctCommRe:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[7])
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[8])
 
-        if int(mergeinfo[4]) > 0:
-            seqpaper = 'Sequence Listing on Paper (' + mergeinfo[4] + ' pgs).'
+        if int(mergeinfo[5]) > 0:
+            seqpaper = 'Sequence Listing on Paper (' + mergeinfo[5] + ' pgs).'
             lpX = 'X'
         else:
             seqpaper = ''
@@ -953,26 +954,56 @@ class PctCommRe:
 
         cdX = ''
         Xdepacc = ''
-        if float(mergeinfo[6]) > 0:
-            Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[6]
+        if float(mergeinfo[7]) > 0:
+            Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[7]
             cdX = 'X'
 
-        # if mergeinfo[9]:
+        title = 'In the '
+        if mergeinfo[0] == 'EP(n)':
+            title += 'European Patent Office'
+        if mergeinfo[0] == 'EP(g)':
+            title += 'European Patent Office'
+        # if mergeinfo[-1] == 'US':
 
+        if mergeinfo[0] == 'KR':
+            title += 'Korean Intellectual Property Office'
+        if mergeinfo[0] == 'IB':
+            title += 'The International Bureau of WIPO'
+        if mergeinfo[0] == 'AU':
+            title += 'Australian Patent Office'
+        if mergeinfo[0] == 'RU':
+            title +=  'Russian Federation - Federal Service for Intellectual Property'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'mailDate' : mergeinfo[0],
+            'mailDate' : mergeinfo[1],
             'lpX' : lpX,
             'seqListingLine' : seqpaper,
             'rfX' : '',
             # 'seqRFLine' : mergeinfo[9],
             'cdX' : cdX,
+            'inthePatentOffice' : title,
             'chgDepAcct' : Xdepacc,
-            'selSAName' : mergeinfo[8],
+            'selSAName' : mergeinfo[9],
             'depAccountLine' : 'Please charge any additional required fees or credit overpayment to Deposit Account ' + depnum + '.'
+
+        })
+        return replace
+    
+class PCTRptFileOfApp:
+    def PCTRptFileOfApp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        recoffice = mergeinfo[0]
+        searchingauth = mergeinfo[1]
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
         })
         return replace
