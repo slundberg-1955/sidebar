@@ -921,12 +921,22 @@ class RptInvtPayFees:
         matter_data = function_instance.matterFill(matter)
 
         tabledata = mergeinfo[5]
-        parts = tabledata.split('^')
 
-        split_parts = [part.split('*') for part in parts]
+        pairs = tabledata.split('^')
 
-        groups = '\n  '.join(split_parts[0])
-        claims = '\n'.join(split_parts[1])
+        # Initialize arrays for keys and values
+        keys = []
+        values = []
+
+        # Split each pair by '*' and add to respective arrays
+        for pair in pairs:
+            key, value = pair.split('*')
+            keys.append(key)
+            values.append(value)
+
+        # Convert arrays to strings
+        groups = '\n '.join(keys)
+        claims = '\n                '.join(values)
 
         partial = ''
         if mergeinfo[3] == 'true':
@@ -955,26 +965,26 @@ class PctCommRe:
         depnum = function_instance.depnumFill(matter_data)
         esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[8])
 
-        if int(mergeinfo[5]) > 0:
-            seqpaper = 'Sequence Listing on Paper (' + mergeinfo[5] + ' pgs).'
-            lpX = 'X'
-        else:
-            seqpaper = ''
-            lpX = ''
+        #if int(mergeinfo[5]) > 0:
+        #    seqpaper = 'Sequence Listing on Paper (' + mergeinfo[5] + ' pgs).'
+        #    lpX = 'X'
+        #else:
+        #    seqpaper = ''
+        #    lpX = ''
 
-        cdX = ''
-        Xdepacc = ''
-        if float(mergeinfo[7]) > 0:
-            Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[7]
-            cdX = 'X'
+        #cdX = ''
+        #Xdepacc = ''
+        #if float(mergeinfo[7]) > 0:
+        #    Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[7]
+        #    cdX = 'X'
 
         title = 'In the '
         if mergeinfo[0] == 'EP(n)':
             title += 'European Patent Office'
         if mergeinfo[0] == 'EP(g)':
             title += 'European Patent Office'
-        # if mergeinfo[-1] == 'US':
-
+        if mergeinfo[-1] == 'US':
+            pctadd = 'Mail Stop PCT\nCommissioner of Patents\nP.O. Box 1450\nAlexandria, VA 22313-1450'
         if mergeinfo[0] == 'KR':
             title += 'Korean Intellectual Property Office'
         if mergeinfo[0] == 'IB':
@@ -998,8 +1008,8 @@ class PctCommRe:
             'inthePatentOffice' : title,
             'chgDepAcct' : Xdepacc,
             'selSAName' : mergeinfo[9],
-            'depAccountLine' : 'Please charge any additional required fees or credit overpayment to Deposit Account ' + depnum + '.'
-
+            'depAccountLine' : 'Please charge any additional required fees or credit overpayment to Deposit Account ' + depnum + '.',
+            'pctAddress' : pctadd,
         })
         return replace
     
