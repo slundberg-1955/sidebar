@@ -920,8 +920,16 @@ class RptInvtPayFees:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
+        tabledata = mergeinfo[5]
+        parts = tabledata.split('^')
+
+        split_parts = [part.split('*') for part in parts]
+
+        groups = '\n  '.join(split_parts[0])
+        claims = '\n'.join(split_parts[1])
+
         partial = ''
-        if mergeinfo[0] == 'true':
+        if mergeinfo[3] == 'true':
             partial = 'and a Communication Regarding the Results of the Partial International Search'
 
         replace = {}
@@ -929,10 +937,12 @@ class RptInvtPayFees:
         replace.update(function_instance.parafill(keys, matter))
         replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-            'claimAmt' : mergeinfo[1],
+            'claimAmt' : mergeinfo[4],
             'partialSearch' : partial,
             'groupNbr' : '',
-            'claims' : '',
+            'citedCopies' : '',
+            'groupNbr' : groups,
+            'claims' : claims,
             'npdueDate' : '',
             
         })

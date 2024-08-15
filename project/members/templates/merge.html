@@ -1594,6 +1594,11 @@
         </div>
     </div>
 </div>
+<style>
+    #RptInvtPayFees .modal-content {
+        padding: 15px;
+    }
+</style>
 <!-- PCT - report out invitation to pay additional fees -->
 <div id="RptInvtPayFees" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RptInvtPayFeesModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -1635,11 +1640,37 @@
         
                     tableBody.appendChild(row);
                 }
+                function getRptInvtPayFeesData(partial, add){
+                    const tableBody = document.getElementById('RptInvtPayFees-body');
+                    const rows = tableBody.getElementsByTagName('tr');
+                    let tableData = '';
+
+                    for (let i = 0; i < rows.length; i++) {
+                        const cells = rows[i].getElementsByTagName('td');
+                        let group = cells[0].innerText.trim();
+                        let claims = cells[1].innerText.trim();
+
+                        if (group) {
+                            tableData += group + '*';
+                        }
+                        if (claims) {
+                            tableData += claims + '^';
+                        }
+                    }  
+
+                    // Remove the trailing '^' if it exists
+                    if (tableData.endsWith('^')) {
+                        tableData = tableData.slice(0, -1);
+                    }
+
+                    alert(tableData);
+                    submitbtnmerge(partial, add, tableData);
+                }
             </script>
             <div>    Enter the Fee per Additional Invention (in US dollars) <input type="text" id="RptInvtPayFeesadd" size="10" placeholder = '0.00'></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="submitbtnmerge(RptInvtPayFeespartial.checked, RptInvtPayFeesadd.value)" data-dismiss="modal">Continue</button>
+                <button type="button" class="btn btn-primary" onclick="getRptInvtPayFeesData(RptInvtPayFeespartial.checked, RptInvtPayFeesadd.value)" data-dismiss="modal">Continue</button>
             </div>
         </div>
     </div>
@@ -1778,7 +1809,7 @@
         // New shared submit button
         function submitbtnmerge(...args){
             const merged_data = args.join(',');
-            //alert(merged_data);
+            alert(merged_data);
             document.getElementById('mergedata').value += merged_data;
             document.getElementById('mergeform').submit();
         }
