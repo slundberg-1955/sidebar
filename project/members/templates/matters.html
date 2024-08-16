@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>Merges Page</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .countainter{
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+        }
+        .search-container{
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .sidebar{
+            background-color: #333;
+            color: #b8b8b8;
+            padding: 1px 10px;
+            text-align: left;
+            margin-bottom: 20px;
+            height: 110px;
+        }
+        .sidebar-tabs li{
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .sidebar-tabs li a{
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+        }
+        .sidebar-tabs li a:hover{
+            background-color:#fff;
+            color: #333;
+        }
+        table{
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td{
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th{
+            background-color: #f2f2f2;
+        }
+        .column2{
+            width: 100%;
+        }
+        .merge-button{
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class = "sidebar">
+        <h1>SideBar</h1>
+        <ul class = "sidebar-tabs">
+            <li><a href = "#">Matters</a></li>
+            <li><a href = "#">FIP Reports</a></li>
+            <li><a href = "#">Merges</a></li>
+            <li><a href = "#">ToolBox</a></li>
+        </ul>
+    </div>
+    <div>
+        <b>Matter #: </b><input type="text" id="matternum" size="10">
+    </div>
+</body>
+</html>

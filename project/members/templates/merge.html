@@ -64,10 +64,11 @@
             cursor: pointer;
         }
     </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <style>
         #recordation .modal-dialog {
@@ -134,15 +135,32 @@
 
 </head>
 <body>
-    <div class = "sidebar">
+    <div class="sidebar">
         <h1>SideBar</h1>
-        <ul class = "sidebar-tabs">
-            <li><a href = "#">Matters</a></li>
-            <li><a href = "#">FIP Reports</a></li>
-            <li><a href = "#">Merges</a></li>
-            <li><a href = "#">ToolBox</a></li>
+        <ul class="sidebar-tabs">
+            <li>
+                <form action="{% url 'matters' %}" method="get">
+                    <button type="submit">Matters</button>
+                </form>
+            </li>
+            <li>
+                <form action="{% url 'fip_reports' %}" method="get">
+                    <button type="submit">FIP Reports</button>
+                </form>
+            </li>
+            <li>
+                <form action="{% url 'merges' %}" method="get">
+                    <button type="submit">Merges</button>
+                </form>
+            </li>
+            <li>
+                <form action="{% url 'toolbox' %}" method="get">
+                    <button type="submit">ToolBox</button>
+                </form>
+            </li>
         </ul>
     </div>
+
     <div class = "container">
         <div class = "search-container">
             <input type = "text" id = "mergeSearchInput" placeholder = "Merge Search" onkeyup = "searchMerges()">

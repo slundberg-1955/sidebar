@@ -26,6 +26,31 @@ from docx.oxml.ns import qn
 
 from python_docx_replace.paragraph import Paragraph
 
+def members(request):
+    if request.method == 'POST':
+        matter = request.POST['matterInput']
+        mergeinfo = request.POST['merge_info']
+
+        mergeDoc(matter, mergeinfo)
+
+    mergedict = MergeDef.objects.using('SideBar').all()
+    roles = MergeRole.objects.using('SideBar').all()
+    categories = MergeCategory.objects.using('SideBar').all()
+
+    return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
+
+def matters(request):
+    return render(request, 'matters.html')
+
+def fip_reports(request):
+    return render(request, 'fip_reports.html')
+
+def merges(request):
+    return render(request, 'merges.html')
+
+def toolbox(request):
+    return render(request, 'toolbox.html')
+
 def transform_serialnumber(s):
     part1 = s[:2]
     part2 = s[2:]
@@ -49,19 +74,6 @@ def docx_get_keys2(doc: Any) -> List[str]:
         for match in matches:
             result.add(match.groups()[0])
     return list(result)
-
-def members(request):
-    if request.method == 'POST':
-        matter = request.POST['matterInput']
-        mergeinfo = request.POST['merge_info']
-
-        mergeDoc(matter, mergeinfo)
-
-    mergedict = MergeDef.objects.using('SideBar').all()
-    roles = MergeRole.objects.using('SideBar').all()
-    categories = MergeCategory.objects.using('SideBar').all()
-
-    return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
 
 def addinventors(request):
     if request.method == 'POST':
