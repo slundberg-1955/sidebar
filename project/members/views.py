@@ -51,6 +51,12 @@ def docx_get_keys2(doc: Any) -> List[str]:
     return list(result)
 
 def members(request):
+    if request.method == 'POST':
+        matter = request.POST['matterInput']
+        mergeinfo = request.POST['merge_info']
+
+        mergeDoc(matter, mergeinfo)
+
     mergedict = MergeDef.objects.using('SideBar').all()
     roles = MergeRole.objects.using('SideBar').all()
     categories = MergeCategory.objects.using('SideBar').all()
@@ -261,18 +267,6 @@ def WordMerger(docxpath, replace, output_path):
     doc = Document(docxpath)
     docx_replace2(doc, **replace)
     doc.save(output_path)
-
-def mergeDocButton(request):
-    matter = request.POST['matterInput']
-    mergeinfo = request.POST['merge_info']
-
-    mergeDoc(matter, mergeinfo)
-
-    roles = MergeRole.objects.using('SideBar').all()
-    categories = MergeCategory.objects.using('SideBar').all()
-    mergedict = MergeDef.objects.using('SideBar').all()
-
-    return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
 
 # May have to edit for each merge
 def DocumentReader(docxpath):

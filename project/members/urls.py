@@ -1,13 +1,11 @@
 from django.urls import path
 from . import views
-from .views import mergeDocButton
-from .views import addinventors, addcorp, addrecipients, addSA, addactivities, addPA
+from .views import addinventors, addcorp, addrecipients, addSA, addactivities, addPA, members
 # from .views import mergeEmailButton
 from .views import testview
 
 urlpatterns = [
-    path('', views.members),
-    path('merge_doc/', mergeDocButton, name = 'merge_doc'),
+    path('', members, name='members'),
     path('merge_inventors/', addinventors, name = 'merge_inventors'),
     path('merge_recipients/', addrecipients, name = 'merge_recipients'),
     path('merge_corp/', addcorp, name = 'merge_corp'),

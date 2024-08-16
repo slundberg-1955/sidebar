@@ -162,7 +162,7 @@
             </select>
         </div>
         
-        <form id = "mergeform" action = "{% url 'merge_doc' %}" method = "post">
+        <form id = "mergeform" action = "{% url 'members' %}" method = "post">
             {% csrf_token %}
             <div class = "search-container">
                 <input type = "text" name = "matterInput" placeholder = "Matter #" id = "matterInput">
