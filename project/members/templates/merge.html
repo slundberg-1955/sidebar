@@ -1723,6 +1723,16 @@
                             }
                         });
                     });
+                    function pctcommresub(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names){
+                        const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
+                        var comrad = '';
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                comrad = radio.value;
+                            }
+                        });
+                        submitbtnmerge(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names, comrad)
+                    }
                 </script>
                 <div class="filing">
                         E-Filing:<input type="radio" id="PctCommReefile" name="options">
@@ -1757,7 +1767,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "PctCommRecontinue" onclick="submitbtnmerge(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pctcommresub(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
             </div>
         </div>
     </div>

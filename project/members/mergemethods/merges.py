@@ -963,43 +963,59 @@ class PctCommRe:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[8])
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[7])
 
-        #if int(mergeinfo[5]) > 0:
-        #    seqpaper = 'Sequence Listing on Paper (' + mergeinfo[5] + ' pgs).'
-        #    lpX = 'X'
-        #else:
-        #    seqpaper = ''
-        #    lpX = ''
+        if int(mergeinfo[4]) > 0:
+            seqpaper = 'Sequence Listing on Paper (' + mergeinfo[4] + ' pgs).'
+            lpX = 'X'
+        else:
+            seqpaper = ''
+            lpX = ''
 
-        #cdX = ''
-        #Xdepacc = ''
-        #if float(mergeinfo[7]) > 0:
-        #    Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[7]
-        #    cdX = 'X'
+        cdX = ''
+        Xdepacc = ''
+        if float(mergeinfo[6]) > 0:
+            Xdepacc = 'Please charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[6]
+            cdX = 'X'
 
-        title = 'In the '
-        if mergeinfo[0] == 'EP(n)':
-            title += 'European Patent Office'
-        if mergeinfo[0] == 'EP(g)':
-            title += 'European Patent Office'
-        if mergeinfo[-1] == 'US':
+        title = ''
+        pctadd = ''
+        currency = ''
+        if mergeinfo[9] == 'EP(n)':
+            title = 'In the European Patent Office'
+            currency = 'Euro '
+            pctadd = 'European Patent Office\nP.B. 5818 Patentlaan 2\nNL-2880 HV Rijswijk\nNETHERLANDS'
+        if mergeinfo[9] == 'EP(g)':
+            title = 'In the European Patent Office'
+            currency = 'Euro '
+            pctadd = 'European Patent Office\n27 Erhardtstrasse\nD-80298 Munich\nGERMANY'
+        if mergeinfo[9] == 'US':
+            title = 'IN THE UNITED STATES PATENT AND TRADEMARK OFFICE'
+            currency = '$ '
             pctadd = 'Mail Stop PCT\nCommissioner of Patents\nP.O. Box 1450\nAlexandria, VA 22313-1450'
-        if mergeinfo[0] == 'KR':
-            title += 'Korean Intellectual Property Office'
-        if mergeinfo[0] == 'IB':
-            title += 'The International Bureau of WIPO'
-        if mergeinfo[0] == 'AU':
-            title += 'Australian Patent Office'
-        if mergeinfo[0] == 'RU':
-            title +=  'Russian Federation - Federal Service for Intellectual Property'
+        if mergeinfo[9] == 'KR':
+            title = 'In the Korean Intellectual Property Office'
+            currency = 'KRW '
+            pctadd = 'Korean Intellectual Property Office\nGovernment Complex Daejeon\n189 Cheongsa-ro,\nSeo-gu\nDaejeon 302-701\nRepublic of Korea'
+        if mergeinfo[9] == 'IB':
+            title = 'In The International Bureau of WIPO'
+            currency = 'CHF '
+            pctadd = 'The International Bureau of WIPO\n34, Chemin Des Colombettes\n1211 Geneva 20\nSWITZERLAND'
+        if mergeinfo[9] == 'AU':
+            title = 'In the Australian Patent Office'
+            currency = 'AUD '
+            pctadd = 'Australian Patent Office\nDiscovery House\n47 Bowes Street, Phillip\nCanberra A.C.T. 2606, Australia'
+        if mergeinfo[9] == 'RU':
+            title =  'Russian Federation - Federal Service for Intellectual Property'
+            currency = 'RUB '
+            pctadd = 'Russian Federation - Federal Service for Intellectual Property\nROSPATENT\nBerezhkovskaya nab, 30/1\nMoscow 123995\nRussian Federation'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'mailDate' : mergeinfo[1],
+            'mailDate' : mergeinfo[3],
             'lpX' : lpX,
             'seqListingLine' : seqpaper,
             'rfX' : '',
@@ -1007,9 +1023,10 @@ class PctCommRe:
             'cdX' : cdX,
             'inthePatentOffice' : title,
             'chgDepAcct' : Xdepacc,
-            'selSAName' : mergeinfo[9],
+            'selSAName' : '',
             'depAccountLine' : 'Please charge any additional required fees or credit overpayment to Deposit Account ' + depnum + '.',
             'pctAddress' : pctadd,
+            'tvUSPSDHL' : '',
         })
         return replace
     
