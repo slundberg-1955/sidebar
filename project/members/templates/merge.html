@@ -461,7 +461,7 @@
     });
 </script>
 <!-- Statement Under 3.73(c)-->
-<div id="statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true">
+<div id="Statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -469,38 +469,49 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-                <div class="corp">
+                <div>
                     <label for="statement373ccorprad">&emsp;&emsp;Corporation:</label>
-                    <input type="radio" id="statement373ccorprad" name="options">
+                    <input type="radio" id="statement373ccorprad" name="statement373crad" value="Corporation">
                     <label for="statement373cpartnerrad">&ensp;Partnership:</label>
-                    <input type="radio" id="statement373cpartnerrad" name="options">
+                    <input type="radio" id="statement373cpartnerrad" name="statement373crad" value="Partnership">
                 </div>
-                <div class="account">
+                <div>
                     <label for="statement373cunirad">&emsp;&emsp;University:</label>
-                    <input type="radio" id="statement373cunirad" name="account">
+                    <input type="radio" id="statement373cunirad" name="statement373crad" value="University">
                     <label for="statement373cgovrad">&ensp;Government Agency:</label>
-                    <input type="radio" id="statement373cgovrad" name="account">
+                    <input type="radio" id="statement373cgovrad" name="statement373crad" value="Government Agency">
                     <label for="statement373cothrad">&ensp;Other:</label>
-                    <input type="radio" id="statement373cothrad" name="account">
+                    <input type="radio" id="statement373cothrad" name="statement373crad" value="oth">
                     <label for="statement373clistoth">&emsp;&emsp;List Other:</label>
-                    <input type="text" id="statement373clistoth" name="listother" size="15">
+                    <input type="text" id="statement373clistoth" size="15">
                 </div>
+                <script>
+                    function statement373csub(listoth, recordchk, esign){
+                        const radios = document.querySelectorAll('input[name="statement373crad"]');
+                        var staterad = '';
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                staterad = radio.value;
+                            }
+                        });
+                        submitbtnmerge(recordchk, esign, staterad, listoth);
+                    }
+                </script>
                 <div class="form-group">
                     <label for="statement373cSAdrop"><br>&emsp;&emsp;Signing Attorney:</label>
                     <select id="statement373cSAdrop"></select>
                 </div>
                 <div>
-                    <label for="statement373crecordchk"><br>&emsp;&emsp;There is a recordation occuring concurrently with this filing, or a recordation already occured</label>
-                    <input type="checkbox" id="statement373crecordchk">
+                    &emsp;&emsp;<input type="checkbox" id="statement373crecordchk"> There is a recordation occuring concurrently with this filing, or a recordation already occured
                 </div>
                 <div>
-                    <label for="statement373cesign">&emsp;&emsp;E-Signature Enable</label>
+                    <br><label for="statement373cesign">&emsp;&emsp;E-Signature Enable</label>
                     <input type="checkbox" id="statement373cesign">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(filing.value, account.value, requestpat.value, pagedraw.value, mrgexam.value, isspaid.value, esign.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="statement373csub(statement373clistoth.value, statement373crecordchk.checked, statement373cesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -1728,19 +1739,6 @@
                                        &ensp;<input type="radio" id="PctCommReRU" name="PctCommReoptions" value = "RU"> RU
                 </div>
                 <script>
-                    // Need to update to only take the most recently selected radio
-                    const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
-                    radios.forEach(radio => {
-                        radio.addEventListener('change', () => {
-                            if (radio.checked) {
-                                const button = document.querySelector('#PctCommRecontinue');
-                                button.addEventListener('click', () => {
-                                    alert(radio.value);
-                                    document.getElementById('mergedata').value += radio.value;
-                                });
-                            }
-                        });
-                    });
                     function pctcommresub(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names){
                         const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
                         var comrad = '';
@@ -1749,7 +1747,7 @@
                                 comrad = radio.value;
                             }
                         });
-                        submitbtnmerge(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names, comrad)
+                        submitbtnmerge(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names, comrad);
                     }
                 </script>
                 <div class="filing">
@@ -1857,14 +1855,14 @@
             // Esign popUp
             if (esign == "TRUE") {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
             }else if (contacts == 'TRUE'){ 
                 fillRecipients(mergemethod);
-            }else if (mergemethod == 'Statement373c'){
-                fillSA();
+            //}else if (mergemethod == 'Statement373c'){
+            //    fillSA();
             }else if (mergemethod == 'UpdateAppDataSheet'){
                 $('#UpdateAppDataSheet').modal('show');
             }else if (mergemethod == 'incorrectfilerect'){

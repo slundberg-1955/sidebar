@@ -185,13 +185,15 @@ class issuefee:
 class Statement373c:
     def Statement373c(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        filing = mergeinfo[0]
-        account = mergeinfo[1]
-        requestpat = mergeinfo[2]
-        pagedraw = mergeinfo[3]
-        mrgexam = mergeinfo[4]
-        isspaid = mergeinfo[5]
-        esign = mergeinfo[6]
+
+        esign = mergeinfo[1]
+        recoccur = mergeinfo[0]
+
+        if mergeinfo[2] == 'oth':
+            org = mergeinfo[3]
+        else:
+            if mergeinfo[2]:
+                org = mergeinfo[2]
         
         esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
@@ -199,6 +201,8 @@ class Statement373c:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
+            'orgType' : org,
+            
         })
         return replace
     

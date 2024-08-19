@@ -156,18 +156,18 @@ def addrecipients(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
-def addSA(request):
+""" def addSA(request):
     if request.method == 'POST':
-        # Find a better way to get SA
-        # SAs = Rvwmatterpersonnel.objects.using('FIP').filter(roleid = 34619, orgid = 4).distinct()
-        # for SA in SAs:
-        #     SAarr = SA.personname
+        #Find a better way to get SA
+        SAs = Rvwmatterpersonnel.objects.using('FIP').filter(roleid = 34619, orgid = 4).distinct()
+        SAarr = []  # Initialize an empty list
+        for SA in SAs:
+            SAarr.append(SA.personname)
 
-        MP = Matterparticipant.objects.using('FIP').filter()
         return JsonResponse({'message': f'{SAarr}'})
     
     else:
-        return JsonResponse({'error': 'Invalid request method'})
+        return JsonResponse({'error': 'Invalid request method'}) """
     
 def addPA(request):
     if request.method == 'POST':
