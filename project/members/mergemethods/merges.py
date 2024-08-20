@@ -836,6 +836,7 @@ class applicationdata_new2:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(keys, matter))
         replace.update({
 
         })
@@ -1053,10 +1054,13 @@ class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(keys, matter))
         replace.update({
-
+            'pageDraw' : mergeinfo[3],
+            # get update tag
+            '' : mergeinfo[6]
         })
         return replace

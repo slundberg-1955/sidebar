@@ -1639,10 +1639,22 @@
                     &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewinv"> Inventor Information
                 </div>
                 <div>
-                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="options"> Home
-                    <input type="radio" id="applicationdata_updnewclientmail" name="options"> Client
-                    <input type="radio" id="applicationdata_updnewappmail" name="options"> Applicant
+                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="applicationdata_updnewoptions"> Home
+                    <input type="radio" id="applicationdata_updnewclientmail" name="applicationdata_updnewoptions"> Client
+                    <input type="radio" id="applicationdata_updnewappmail" name="applicationdata_updnewoptions"> Applicant
                 </div>
+                <script>
+                    function applicationdata_updnewsub(inv, corr, app, drw, appinfo, assign, updt, esign){
+                        const radios = document.querySelectorAll('input[name="applicationdata_updnewoptions"]');
+                        var apprad = '';
+                        radios.forEach(radio => {
+                            if (radio.checked) {
+                                apprad = radio.value;
+                            }
+                        });
+                        submitbtnmerge(inv, corr, app, drw, appinfo, assign, updt, esign, apprad);
+                    }
+                </script>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewcorr"> Correspondence Information
                 </div>
@@ -1667,7 +1679,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="applicationdata_updnewsub(applicationdata_updnewinv.checked, applicationdata_updnewcorr.checked, applicationdata_updnewapp.checked, applicationdata_updnewdrw.value, applicationdata_updnewappinfo.checked, applicationdata_updnewassign.checked, applicationdata_updnewupdt.value, applicationdata_updnewesign.checked)">Continue</button>
             </div>
         </div>
     </div>

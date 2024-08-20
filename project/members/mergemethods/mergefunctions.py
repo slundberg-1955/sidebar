@@ -112,10 +112,37 @@ class mergefunctions:
         }
         return info
     
-    # Find inventor address etc
-    #def inventorInfo(self, keys, matter):
+    def inventorInfo(self, keys, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
+        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+        workcontact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
 
-    
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        invCount = len(inventors)
+
+        info = {
+            'inventorCnt' : invCount,
+            'inventor' : '',
+            'invpre' : profile.salutation,
+            'inventorFirstName' : profile.fname,
+            'inventorMiddleInitial' : profile.mname,
+            'inventorLastName' : profile.lname,
+            'inventorSuffix' : profile.namesuffix,
+            'inventorHomeCity' : contact.city,
+            'inventorHomeState' : contact.state,
+            'inventorHomeCountry' : contact.country,
+            'inventorMailingStreet1' : workcontact.address1,
+            'inventorMailingStreet2' : workcontact.address2,
+            'inventorMailingCity' : workcontact.city,
+            'inventorMailingState' : workcontact.state,
+            'inventorMailingZip' : workcontact.zip,
+            'inventorMailingCountry' : workcontact.country,
+        }
+        return info
+
     def entityfill(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
