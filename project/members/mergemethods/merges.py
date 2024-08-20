@@ -1048,3 +1048,15 @@ class PCTRptFileOfApp:
 
         })
         return replace
+    
+class applicationdata_updnew:
+    def applicationdata_updnew(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace

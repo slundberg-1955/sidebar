@@ -112,6 +112,10 @@ class mergefunctions:
         }
         return info
     
+    # Find inventor address etc
+    #def inventorInfo(self, keys, matter):
+
+    
     def entityfill(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)

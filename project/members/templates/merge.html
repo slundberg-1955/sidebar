@@ -115,6 +115,9 @@
         #PctCommRe .modal-dialog{
             max-width: 700px;
         }
+        #applicationdata_updnew .modal-dialog{
+            max-width: 700px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -1623,6 +1626,52 @@
         </div>
     </div>
 </div>
+<!-- pto form - update application data sheet -->
+<div id="applicationdata_updnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_updnewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Sections to Update</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewinv"> Inventor Information
+                </div>
+                <div>
+                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="options"> Home
+                    <input type="radio" id="applicationdata_updnewclientmail" name="options"> Client
+                    <input type="radio" id="applicationdata_updnewappmail" name="options"> Applicant
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewcorr"> Correspondence Information
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewapp"> Application Information
+                </div>
+                <div>
+                        Total number of drawing sheets? <input type="text" id="applicationdata_updnewdrw" size="5" placeholder = '0'>
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewappinfo"> Applicant Information
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewassign"> Assignee Information
+                </div>
+                <div>
+                        Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign"> E-Sign Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 <style>
     #RptInvtPayFees .modal-content {
         padding: 15px;
@@ -1855,7 +1904,7 @@
             // Esign popUp
             if (esign == "TRUE") {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
@@ -2162,7 +2211,7 @@
                             }
                         });
                     });
-                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport'){
+                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
                         document.getElementById("activitiesnext").onclick = function() {
                             document.getElementById("mergedata").value += selectedNames.join(';')  + ',';
                             document.getElementById("mergedata").value += selectedComments.join(';')  + ',';
