@@ -81,6 +81,27 @@ class mergefunctions:
             'assigneeState' : contact.state,
             'assigneeZip' : contact.zip,
             'assigneeCountry' : contact.country,
+            'assigneeStreet1' : contact.address1,
+            'assigneeStreet2' : contact.address2,
+            'assignee' : profile.orgname,
+        }
+        return info
+    
+    # applicant information fill. Update roleid  
+    def applicantfill(self, keys, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617')
+        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+        info = {
+            'applicantCity' : contact.city,
+            'applicantState' : contact.state,
+            'applicantZip' : contact.zip,
+            'applicantCountry' : contact.country,
+            'applicantStreet1' : contact.address1,
+            'applicantStreet2' : contact.address2,
+            'applicant' : profile.orgname,
         }
         return info
 
@@ -122,10 +143,11 @@ class mergefunctions:
 
         inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
         invCount = len(inventors)
+        inventor_data = merge_fn.inventorFill(matter_data)
 
         info = {
             'inventorCnt' : invCount,
-            'inventor' : '',
+            'inventor' : merge_fn.inventoretal(inventor_data.inventor),
             'invpre' : profile.salutation,
             'inventorFirstName' : profile.fname,
             'inventorMiddleInitial' : profile.mname,

@@ -1058,6 +1058,7 @@ class applicationdata_updnew:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.inventorInfo(keys, matter))
+        replace.update(function_instance.assigneefill(keys, matter))
         replace.update({
             'pageDraw' : mergeinfo[3],
             # get update tag
