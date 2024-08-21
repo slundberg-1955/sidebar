@@ -1553,13 +1553,7 @@
                     <input type="radio" id="PCTRptFileOfAppkr" name="excoptions" value="KR"> KR
                 </div>
                 <script>
-                    function PCTRptFileOfAppsub(){
-                        let office = radioFill('officeoptions')
-                        let search = radioFill('searchoptions')
-                        let exc = radioFill('excoptions')
 
-                        submitbtnmerge(office, search, exc);
-                    }
                 </script>
                 <div>
                     <br>&emsp;&emsp;Select the Priority Applications from the PCT Request Form
@@ -1578,7 +1572,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PCTRptFileOfAppsub()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="PCTRptFileOfAppsub">Continue</button>
             </div>
         </div>
     </div>
@@ -2362,6 +2356,47 @@
                         tableBody.appendChild(newRow);
                     }
                     $('#PCTRptFileOfApp').modal('show'); 
+                    let serialArray = [];
+                    let dateArray = [];
+                    let countryArray = [];
+
+                    const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="PAcheck"]`);
+                    checkboxes.forEach((checkbox, index) => {
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                serialArray.push(serialnoList[index]);
+                                dateArray.push(dateList[index]);
+                                countryArray.push(countryList[index]);
+                            }else {
+                                // Find the index of the element to remove
+                                const serialIndex = serialArray.indexOf(serialnoList[index]);
+                                const dateIndex = dateArray.indexOf(dateList[index]);
+                                const countryIndex = countryArray.indexOf(countryList[index]);
+
+                                // Remove the element if it exists in the array
+                                if (serialIndex > -1) {
+                                    serialArray.splice(serialIndex, 1);
+                                }
+                                if (dateIndex > -1) {
+                                    dateArray.splice(dateIndex, 1);
+                                }
+                                if (countryIndex > -1) {
+                                    countryArray.splice(countryIndex, 1);
+                                }
+                            }
+                        });
+                    });
+
+                    document.getElementById("PCTRptFileOfAppsub").onclick = function() {
+                        selserial = serialArray.join(';') + ',';
+                        seldate = dateArray.join(';') + ',';
+                        selcountry = countryArray.join(';') + ',';
+                        let office = radioFill('officeoptions')
+                        let search = radioFill('searchoptions')
+                        let exc = radioFill('excoptions')
+
+                        submitbtnmerge(office, search, exc, selserial, seldate, selcountry);
+                    };
                 },
                 error: function(error) {
                     alert('no');
