@@ -1042,9 +1042,15 @@ class PCTRptFileOfApp:
 
         recoffice = mergeinfo[0]
         searchingauth = mergeinfo[1]
+        exclusion = mergeinfo[2]
+        # selserial = mergeinfo[3]
+        # seldate = mergeinfo[4]
+        # selcountry = mergeinfo[5]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
 
         })
@@ -1059,6 +1065,7 @@ class applicationdata_updnew:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.inventorInfo(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.applicantfill(keys, matter))
         replace.update({
             'pageDraw' : mergeinfo[3],
             # get update tag

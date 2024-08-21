@@ -23,6 +23,7 @@ import pythoncom
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from lxml import etree
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -380,6 +381,22 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
 
+    # need to fix
+    #if mergeinfo_list[1] == 'applicationdata_updnew':
+
+        # Get the first table
+        #first_table = doc.tables[0]
+
+        # Copy the first table and paste it directly below
+        #new_table = first_table._element
+        #doc2 = first_table._element.getparent().insert(first_table._element.getparent().index(first_table._element) + 1, new_table)
+
+        # Save the document with the copied table
+        #doc.save("documents/multidocmerge/" + mergeinfo_list[1] + ".docx")
+
+        # CHECKBOX
+
+ 
     contacts = mergeinfo_list[2]
 
     doccount = 0

@@ -1530,28 +1530,37 @@
             <div class="modal-body">
                 <div>
                     <label for="PCTRptFileOfAppusr">&emsp;&emsp;Indicate Receiving Office:</label>
-                    <input type="radio" id="PCTRptFileOfAppusr" name="options"> US
-                    <input type="radio" id="PCTRptFileOfAppibr" name="options"> IB
-                    <input type="radio" id="PCTRptFileOfAppepr" name="options"> EP
-                    <input type="radio" id="PCTRptFileOfAppotherr" name="options"> Other
+                    <input type="radio" id="PCTRptFileOfAppusr" name="officeoptions" value="US"> US
+                    <input type="radio" id="PCTRptFileOfAppibr" name="officeoptions" value="IB"> IB
+                    <input type="radio" id="PCTRptFileOfAppepr" name="officeoptions" value="EP"> EP
+                    <input type="radio" id="PCTRptFileOfAppotherr" name="officeoptions" value="US"> Other
                 </div>
                 <div>
                     <label for="PCTRptFileOfAppuss">&emsp;&emsp;Select the Searching Authority:</label>
-                    <input type="radio" id="PCTRptFileOfAppuss" name="options"> US
-                    <input type="radio" id="PCTRptFileOfAppeps" name="options"> EP
-                    <input type="radio" id="PCTRptFileOfAppkrs" name="options"> KR
-                    <input type="radio" id="PCTRptFileOfAppaus" name="options"> AU
-                    <input type="radio" id="PCTRptFileOfAppothers" name="options"> Other
+                    <input type="radio" id="PCTRptFileOfAppuss" name="searchoptions" value="US"> US
+                    <input type="radio" id="PCTRptFileOfAppeps" name="searchoptions" value="EP"> EP
+                    <input type="radio" id="PCTRptFileOfAppkrs" name="searchoptions" value="KR"> KR
+                    <input type="radio" id="PCTRptFileOfAppaus" name="searchoptions" value="AU"> AU
+                    <input type="radio" id="PCTRptFileOfAppothers" name="searchoptions" value="Other"> Other
                 </div>
                 <div>
                     <br>&emsp;&emsp;Does Box V-I on the PCT Request Form indicate that any designations were excluded?
                 </div>
                 <div>
                     <label for="PCTRptFileOfAppde">&emsp;&emsp;&emsp;&emsp;If there are, pleace select exclusion:</label>
-                    <input type="radio" id="PCTRptFileOfAppde" name="options"> DE
-                    <input type="radio" id="PCTRptFileOfAppjp" name="options"> JP
-                    <input type="radio" id="PCTRptFileOfAppkr" name="options"> KR
+                    <input type="radio" id="PCTRptFileOfAppde" name="excoptions" value="DE"> DE
+                    <input type="radio" id="PCTRptFileOfAppjp" name="excoptions" value="JP"> JP
+                    <input type="radio" id="PCTRptFileOfAppkr" name="excoptions" value="KR"> KR
                 </div>
+                <script>
+                    function PCTRptFileOfAppsub(){
+                        let office = radioFill('officeoptions')
+                        let search = radioFill('searchoptions')
+                        let exc = radioFill('excoptions')
+
+                        submitbtnmerge(office, search, exc);
+                    }
+                </script>
                 <div>
                     <br>&emsp;&emsp;Select the Priority Applications from the PCT Request Form
                 </div>
@@ -1569,7 +1578,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PCTRptFileOfAppsub()">Continue</button>
             </div>
         </div>
     </div>
@@ -1645,13 +1654,7 @@
                 </div>
                 <script>
                     function applicationdata_updnewsub(inv, corr, app, drw, appinfo, assign, updt, esign){
-                        const radios = document.querySelectorAll('input[name="applicationdata_updnewoptions"]');
-                        var apprad = '';
-                        radios.forEach(radio => {
-                            if (radio.checked) {
-                                apprad = radio.value;
-                            }
-                        });
+                        let apprad = radioFill('applicationdata_updnewoptions')
                         submitbtnmerge(inv, corr, app, drw, appinfo, assign, updt, esign, apprad);
                     }
                 </script>
@@ -1801,13 +1804,7 @@
                 </div>
                 <script>
                     function pctcommresub(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names){
-                        const radios = document.querySelectorAll('input[name="PctCommReoptions"]');
-                        var comrad = '';
-                        radios.forEach(radio => {
-                            if (radio.checked) {
-                                comrad = radio.value;
-                            }
-                        });
+                        let apprad = radioFill('PctCommReoptions')
                         submitbtnmerge(comconfirm, efile, paperfile, datedep, numseq, cpy, fee, esign, names, comrad);
                     }
                 </script>
@@ -2371,6 +2368,16 @@
                     console.error('Error:', error);
                 }
             });
+        }
+        function radioFill(inputName){
+            const radios = document.querySelectorAll(`input[name="${inputName}"]`);
+            let selectedValue = '';
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    selectedValue = radio.value;
+                }
+            });
+            return selectedValue;
         }
 </script>
 </body>
