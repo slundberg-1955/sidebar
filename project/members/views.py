@@ -351,6 +351,13 @@ def mergeDoc(matter , mergeinfo):
     mergefninfo.pop(0)
     mergefninfo.pop(0)
     mergefninfo.pop(0)
+
+    contacts = mergeinfo_list[2]
+    if contacts == 'TRUE':
+        mergefninfo.pop(0)
+        mergefninfo.pop(0)
+        mergefninfo.pop(0)
+
     # without multiple docs
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
@@ -395,9 +402,6 @@ def mergeDoc(matter , mergeinfo):
         #doc.save("documents/multidocmerge/" + mergeinfo_list[1] + ".docx")
 
         # CHECKBOX
-
- 
-    contacts = mergeinfo_list[2]
 
     doccount = 0
     success = False

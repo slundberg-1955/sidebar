@@ -1042,17 +1042,33 @@ class PCTRptFileOfApp:
 
         recoffice = mergeinfo[0]
         searchingauth = mergeinfo[1]
-        exclusion = mergeinfo[2]
-        # selserial = mergeinfo[3]
-        # seldate = mergeinfo[4]
-        # selcountry = mergeinfo[5]
+        if mergeinfo[2] != '':
+            exclusion = 'The application designated all PCT contracting states except ' + mergeinfo[2] +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.<br>'
+        else:
+            exclusion = 'The application designated all PCT contracting states.<br>'
+
+        selserial = mergeinfo[3] + ',' + mergeinfo[4]
+        seldate = mergeinfo[5] + ', ' + mergeinfo[6]
+        selcountry = mergeinfo[7]
+
+        prapp = 'The PCT application claims priority to the following earlier-filed application(s):'
+
+        action = 'ACTION REQUIRED:'
+        action = action + ' None at this time.'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.parafill(keys, matter))
         replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-
+            'priorAppNo' : selserial,
+            'priorAppDate' : seldate,
+            'priorAppCntry' : selcountry,
+            'crcvOffice' : recoffice,
+            'cpatentOffice' : searchingauth,
+            'excluDesigPhs' : exclusion,
+            'actionText' : action,
+            'cpriorApps' : prapp
         })
         return replace
     

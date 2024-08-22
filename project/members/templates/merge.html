@@ -1533,7 +1533,8 @@
                     <input type="radio" id="PCTRptFileOfAppusr" name="officeoptions" value="US"> US
                     <input type="radio" id="PCTRptFileOfAppibr" name="officeoptions" value="IB"> IB
                     <input type="radio" id="PCTRptFileOfAppepr" name="officeoptions" value="EP"> EP
-                    <input type="radio" id="PCTRptFileOfAppotherr" name="officeoptions" value="US"> Other
+                    <input type="radio" id="PCTRptFileOfAppotherr" name="officeoptions" value="Other"> Other
+                    <input type="text" id="PCTRptFileOfAppotherrText" size="5px" style="display:none;">
                 </div>
                 <div>
                     <label for="PCTRptFileOfAppuss">&emsp;&emsp;Select the Searching Authority:</label>
@@ -1542,7 +1543,20 @@
                     <input type="radio" id="PCTRptFileOfAppkrs" name="searchoptions" value="KR"> KR
                     <input type="radio" id="PCTRptFileOfAppaus" name="searchoptions" value="AU"> AU
                     <input type="radio" id="PCTRptFileOfAppothers" name="searchoptions" value="Other"> Other
+                    <input type="text" id="PCTRptFileOfAppothersText" size="5px" style="display:none;">
                 </div>
+                <script>
+                    document.querySelectorAll('input[name="searchoptions"]').forEach((elem) => {
+                        elem.addEventListener("change", function() {
+                            document.getElementById('PCTRptFileOfAppothersText').style.display = this.value === 'Other' ? 'inline-block' : 'none';
+                        });
+                    });
+                    document.querySelectorAll('input[name="officeoptions"]').forEach((elem) => {
+                        elem.addEventListener("change", function() {
+                            document.getElementById('PCTRptFileOfAppotherrText').style.display = this.value === 'Other' ? 'inline-block' : 'none';
+                        });
+                    });
+                </script>
                 <div>
                     <br>&emsp;&emsp;Does Box V-I on the PCT Request Form indicate that any designations were excluded?
                 </div>
@@ -1552,15 +1566,6 @@
                     <input type="radio" id="PCTRptFileOfAppjp" name="excoptions" value="JP"> JP
                     <input type="radio" id="PCTRptFileOfAppkr" name="excoptions" value="KR"> KR
                 </div>
-                <script>
-                    function PCTRptFileOfAppsub(){
-                        let office = radioFill('officeoptions')
-                        let search = radioFill('searchoptions')
-                        let exc = radioFill('excoptions')
-
-                        submitbtnmerge(office, search, exc);
-                    }
-                </script>
                 <div>
                     <br>&emsp;&emsp;Select the Priority Applications from the PCT Request Form
                 </div>
@@ -1578,7 +1583,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="PCTRptFileOfAppsub()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="PCTRptFileOfAppsub">Continue</button>
             </div>
         </div>
     </div>
@@ -2362,6 +2367,53 @@
                         tableBody.appendChild(newRow);
                     }
                     $('#PCTRptFileOfApp').modal('show'); 
+                    let serialArray = [];
+                    let dateArray = [];
+                    let countryArray = [];
+
+                    const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="PAcheck"]`);
+                    checkboxes.forEach((checkbox, index) => {
+                        checkbox.addEventListener('change', () => {
+                            if (checkbox.checked) {
+                                serialArray.push(serialnoList[index]);
+                                dateArray.push(dateList[index]);
+                                countryArray.push(countryList[index]);
+                            }else {
+                                // Find the index of the element to remove
+                                const serialIndex = serialArray.indexOf(serialnoList[index]);
+                                const dateIndex = dateArray.indexOf(dateList[index]);
+                                const countryIndex = countryArray.indexOf(countryList[index]);
+
+                                // Remove the element if it exists in the array
+                                if (serialIndex > -1) {
+                                    serialArray.splice(serialIndex, 1);
+                                }
+                                if (dateIndex > -1) {
+                                    dateArray.splice(dateIndex, 1);
+                                }
+                                if (countryIndex > -1) {
+                                    countryArray.splice(countryIndex, 1);
+                                }
+                            }
+                        });
+                    });
+                    document.getElementById("PCTRptFileOfAppsub").onclick = function() {
+                        selserial = serialArray.join(';');
+                        seldate = dateArray.join(';');
+                        selcountry = countryArray.join(';');
+                        let office = radioFill('officeoptions')
+                        let search = radioFill('searchoptions')
+                        let exc = radioFill('excoptions')
+
+                        if(office == "Other"){
+                            office = document.getElementById("PCTRptFileOfAppothersText").value;
+                        }
+                        if(search == "Other"){
+                            search = document.getElementById("PCTRptFileOfAppotherrText").value;
+                        }
+
+                        submitbtnmerge(office, search, exc, selserial, seldate, selcountry);
+                    };
                 },
                 error: function(error) {
                     alert('no');
