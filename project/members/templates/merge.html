@@ -1566,6 +1566,12 @@
                     <input type="radio" id="PCTRptFileOfAppjp" name="excoptions" value="JP"> JP
                     <input type="radio" id="PCTRptFileOfAppkr" name="excoptions" value="KR"> KR
                 </div>
+<<<<<<< HEAD
+=======
+                <script>
+
+                </script>
+>>>>>>> 86beccbfc3b37e7a4e839d2eb62f200cd3ebf858
                 <div>
                     <br>&emsp;&emsp;Select the Priority Applications from the PCT Request Form
                 </div>
@@ -2397,14 +2403,23 @@
                             }
                         });
                     });
+<<<<<<< HEAD
                     document.getElementById("PCTRptFileOfAppsub").onclick = function() {
                         selserial = serialArray.join(';');
                         seldate = dateArray.join(';');
                         selcountry = countryArray.join(';');
+=======
+
+                    document.getElementById("PCTRptFileOfAppsub").onclick = function() {
+                        selserial = serialArray.join(';') + ',';
+                        seldate = dateArray.join(';') + ',';
+                        selcountry = countryArray.join(';') + ',';
+>>>>>>> 86beccbfc3b37e7a4e839d2eb62f200cd3ebf858
                         let office = radioFill('officeoptions')
                         let search = radioFill('searchoptions')
                         let exc = radioFill('excoptions')
 
+<<<<<<< HEAD
                         if(office == "Other"){
                             office = document.getElementById("PCTRptFileOfAppothersText").value;
                         }
@@ -2412,6 +2427,8 @@
                             search = document.getElementById("PCTRptFileOfAppotherrText").value;
                         }
 
+=======
+>>>>>>> 86beccbfc3b37e7a4e839d2eb62f200cd3ebf858
                         submitbtnmerge(office, search, exc, selserial, seldate, selcountry);
                     };
                 },
