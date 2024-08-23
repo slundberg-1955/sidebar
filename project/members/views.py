@@ -340,7 +340,7 @@ def combinedoc(path, method, mergeinfo, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
         inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
-        invCount = len(inventors)
+        invCount = len(inventors) + 1
 
         for i in range(1, invCount):
             replace = {}

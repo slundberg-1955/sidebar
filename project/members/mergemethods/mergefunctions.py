@@ -141,13 +141,9 @@ class mergefunctions:
         workcontact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
 
-        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
-        invCount = len(inventors)
-        inventor_data = merge_fn.inventorFill(matter_data)
-
         info = {
-            'inventorCnt' : invCount,
-            'inventor' : merge_fn.inventoretal(inventor_data.inventor),
+            'inventorCnt' : inv,
+            'inventor' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'invpre' : profile.salutation,
             'inventorFirstName' : profile.fname,
             'inventorMiddleInitial' : profile.mname,

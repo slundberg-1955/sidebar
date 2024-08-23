@@ -836,6 +836,8 @@ class applicationdata_new2:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.applicantfill(keys, matter))
         #replace.update(function_instance.inventorInfo(matter))
         replace.update({
 
