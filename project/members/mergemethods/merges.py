@@ -836,7 +836,7 @@ class applicationdata_new2:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.inventorInfo(keys, matter))
+        #replace.update(function_instance.inventorInfo(matter))
         replace.update({
 
         })
@@ -1045,11 +1045,14 @@ class PCTRptFileOfApp:
         if mergeinfo[2] != '':
             exclusion = 'The application designated all PCT contracting states except ' + mergeinfo[2] +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.<br>'
         else:
-            exclusion = 'The application designated all PCT contracting states.<br>'
+            exclusion = 'The application designated all PCT contracting states.\n'
 
-        selserial = mergeinfo[3] + ',' + mergeinfo[4]
-        seldate = mergeinfo[5] + ', ' + mergeinfo[6]
-        selcountry = mergeinfo[7]
+        selserial = mergeinfo[3].replace('*', ',').replace(';','\n')
+        seldate = mergeinfo[4].replace('*', ',').replace(';','\n')
+        selcountry = mergeinfo[5].replace('*', ',').replace(';','\n')
+
+        rows = zip(selserial.split('\n'), seldate.split('\n'), selcountry.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
 
         prapp = 'The PCT application claims priority to the following earlier-filed application(s):'
 
@@ -1061,9 +1064,9 @@ class PCTRptFileOfApp:
         replace.update(function_instance.parafill(keys, matter))
         replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-            'priorAppNo' : selserial,
-            'priorAppDate' : seldate,
-            'priorAppCntry' : selcountry,
+            'priorAppNo' : formatted_data,
+            'priorAppDate' : '',
+            'priorAppCntry' : '',
             'crcvOffice' : recoffice,
             'cpatentOffice' : searchingauth,
             'excluDesigPhs' : exclusion,
@@ -1079,7 +1082,7 @@ class applicationdata_updnew:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.inventorInfo(keys, matter))
+        #replace.update(function_instance.inventorInfo(matter))
         replace.update(function_instance.assigneefill(keys, matter))
         replace.update(function_instance.applicantfill(keys, matter))
         replace.update({

@@ -133,10 +133,10 @@ class mergefunctions:
         }
         return info
     
-    def inventorInfo(self, keys, matter):
+    def inventorInfo(self, matter, inv):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = inv)
         profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
         workcontact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)

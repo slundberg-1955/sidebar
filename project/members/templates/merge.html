@@ -2398,9 +2398,13 @@
                         });
                     });
                     document.getElementById("PCTRptFileOfAppsub").onclick = function() {
+
                         selserial = serialArray.join(';');
+                        selserial = selserial.replace(/,/g, '*');
                         seldate = dateArray.join(';');
+                        seldate = seldate.replace(/,/g, '*');
                         selcountry = countryArray.join(';');
+                        selcountry = selcountry.replace(/,/g, '*');
                         let office = radioFill('officeoptions')
                         let search = radioFill('searchoptions')
                         let exc = radioFill('excoptions')

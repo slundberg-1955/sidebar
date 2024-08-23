@@ -24,6 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from lxml import etree
+from .mergemethods.mergefunctions import mergefunctions
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -317,12 +318,12 @@ def find_checkbox_coordinates(element_coordinates):
             checkbox_coordinates[element_name] = (row, column)
     return checkbox_coordinates
 
-def combinedoc(path, method, mergeinfo):
+def combinedoc(path, method, mergeinfo, matter):
     doc1 = Document_compose(path)
     doc1.add_page_break()
-    composer = Composer(doc1)
 
     if method == 'issuefee':
+        composer = Composer(doc1)
         doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit3.docx")
         if mergeinfo[6] == 'true':
             doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit2.docx") 
@@ -330,8 +331,26 @@ def combinedoc(path, method, mergeinfo):
             composer.append(doc3)
             composer.append(doc2) 
         else:  
-            composer.append(doc2)  
+            composer.append(doc2)
 
+    if method == 'applicationdata_new2':
+        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventor.docx") 
+        composer = Composer(doc2)
+
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        invCount = len(inventors)
+
+        for i in range(1, invCount):
+            replace = {}
+            replace.update(merge_fn.inventorInfo(matter, i))
+            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventorMultiple.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx')
+            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx") 
+            composer.append(doc3)
+
+        composer.append(doc1)
+        
     composer.save("documents/multidocmerge/" + method +".docx")
 
 # New separate function for merging documents
@@ -347,12 +366,13 @@ def mergeDoc(matter , mergeinfo):
     output_path = 'C:/Users/jaburns/SideBar/project/documents/Merged/Document.docx'
 
     replace = {}
-    mergefninfo = mergeinfo.split(",") 
+    mergefninfo = mergeinfo.split(",")
     mergefninfo.pop(0)
     mergefninfo.pop(0)
     mergefninfo.pop(0)
 
     contacts = mergeinfo_list[2]
+    # Pop emails in merge data
     if contacts == 'TRUE':
         mergefninfo.pop(0)
         mergefninfo.pop(0)
@@ -370,9 +390,14 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
+    if mergeinfo_list[1] == 'applicationdata_new2':
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
+        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
+        doc = Document(input_path)
+
     # with multiple docs
     if mergeinfo_list[1] == 'issuefee':
-        combinedoc(input_path, mergeinfo_list[1], mergefninfo)
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
