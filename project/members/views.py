@@ -333,7 +333,7 @@ def combinedoc(path, method, mergeinfo, matter):
         else:  
             composer.append(doc2)
 
-    if method == 'applicationdata_new2':
+    if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
         doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventor.docx") 
         composer = Composer(doc2)
 
@@ -390,7 +390,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    if mergeinfo_list[1] == 'applicationdata_new2':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
@@ -412,21 +412,6 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
-
-    # need to fix
-    #if mergeinfo_list[1] == 'applicationdata_updnew':
-
-        # Get the first table
-        #first_table = doc.tables[0]
-
-        # Copy the first table and paste it directly below
-        #new_table = first_table._element
-        #doc2 = first_table._element.getparent().insert(first_table._element.getparent().index(first_table._element) + 1, new_table)
-
-        # Save the document with the copied table
-        #doc.save("documents/multidocmerge/" + mergeinfo_list[1] + ".docx")
-
-        # CHECKBOX
 
     doccount = 0
     success = False

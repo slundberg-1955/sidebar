@@ -68,13 +68,21 @@ class mergefunctions:
         return basicOut
 
     # assignee information fill    
-    def assigneefill(self, keys, matter):
+    def assigneefill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617')
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = count)
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+
+        assigne = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34617')
+        assigneelen = len(assigne)
+
+        if assigneelen == 1:
+            count = 'Assignee: '
+
         info = {
+            'assigneeCnt' : count,
             'assigneeName' : profile.orgname,
             'assigneeStreet' : contact.address1,
             'assigneeCity' : contact.city,
@@ -88,13 +96,21 @@ class mergefunctions:
         return info
     
     # applicant information fill. Update roleid  
-    def applicantfill(self, keys, matter):
+    def applicantfill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
         part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617')
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+
+        applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34617')
+        applicantlen = len(applicant)
+
+        if applicantlen == 1:
+            count = 'Applicant: '
+
         info = {
+            'applCnt' : count,
             'applicantCity' : contact.city,
             'applicantState' : contact.state,
             'applicantZip' : contact.zip,
@@ -141,9 +157,15 @@ class mergefunctions:
         workcontact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
 
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        invCount = len(inventors)
+
+        if invCount == 1:
+            inv = 'Inventor: '
+
         info = {
             'inventorCnt' : inv,
-            'inventor' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+            'inventor' : profile.fname + ' ' + profile.mname + '. ' + profile.lname,
             'invpre' : profile.salutation,
             'inventorFirstName' : profile.fname,
             'inventorMiddleInitial' : profile.mname,
@@ -158,6 +180,23 @@ class mergefunctions:
             'inventorMailingState' : workcontact.state,
             'inventorMailingZip' : workcontact.zip,
             'inventorMailingCountry' : workcontact.country,
+        }
+        return info
+    
+    def foreignfill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        patent_data = merge_fn.patentFill(matter_data)
+
+        if patent_data.prioritycountry != 'US':
+            foreignNo = patent_data.priorityappno
+            foreigncountry = patent_data.prioritycountry
+            foreigndate = patent_data.priorityappdate
+
+        info = {
+            'foreignNo' : foreignNo,
+            'foreignCntry' : foreigncountry,
+            'foreignFiledDate' : foreigndate,
         }
         return info
 

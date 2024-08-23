@@ -836,11 +836,10 @@ class applicationdata_new2:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(keys, matter))
-        replace.update(function_instance.applicantfill(keys, matter))
-        #replace.update(function_instance.inventorInfo(matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.applicantfill(matter, 1))
         replace.update({
-
+            
         })
         return replace
     
@@ -880,7 +879,7 @@ class pctextention:
             'properApplicant' : 'Applicant',
             'extensionLenText' : function_instance.number_to_words(int(mergeinfo[6])).lower(),
             'requestText' : 'requests',
-            'annexSelectText' : annexTxt
+            'annexSelectText' : annexTxt,
         })
         return replace
 
@@ -910,7 +909,7 @@ class PCTAsgnPOALetter:
 
         if mergeinfo[1] == 'true':
             sendingpoa = sendingpoa + "This Power of Attorney needs to be signed by an officer of the organization or a person empowered to sign on the organization's behalf."
-
+ 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.parafill(keys, matter))
@@ -1085,8 +1084,8 @@ class applicationdata_updnew:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         #replace.update(function_instance.inventorInfo(matter))
-        replace.update(function_instance.assigneefill(keys, matter))
-        replace.update(function_instance.applicantfill(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.applicantfill(matter, 1))
         replace.update({
             'pageDraw' : mergeinfo[3],
             # get update tag
