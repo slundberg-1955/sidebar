@@ -1092,3 +1092,38 @@ class applicationdata_updnew:
             '' : mergeinfo[6]
         })
         return replace
+
+class nopreport:
+    def nopreport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        patent = function_instance.patentFill(matter_data)
+        pubno = patent.pubno
+        pubdate = patent.pubdate
+
+        replace = {}
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update({
+            'pubNo' : pubno,
+            'pubDate' : pubdate,
+            'salutation' : '',
+             
+        })
+        return replace
+
+class foarreport:
+    def foarreport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        replace = {}
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update({
+
+        })
+        return replace
