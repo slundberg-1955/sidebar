@@ -1799,7 +1799,7 @@
             <div class="modal-body">
                   E-Filing:<input type="radio" id="generalxmitCFefile" name="fileoptions">
                 &ensp;Paper Filing:<input type="radio" id="generalxmitCFpaperfile" name="fileoptions">
-                  <input type="checkbox" id="PctCommRecpy"> Include Certificate of Mailing
+                  <input type="checkbox" id="generalxmitCFcertmail"> Include Certificate of Mailing
                   Deposit Account <input type="radio" id="generalxmitCFdepacc" name="depoptions">
                 &ensp;Check <input type="radio" id="generalxmitCFcheck" name="depoptions">
                 &ensp;Credit Card <input type="radio" id="generalxmitCFcredit" name="depoptions">
@@ -1819,7 +1819,63 @@
                   <option value="non">Response to Notice of Non-Compliance</option>
                   <option value="restreq">Response to Restriction Requirement</option>
                 </select>
-              </div>
+                 # of Pages <input type="text" id="generalxmitCFduedate" size="10" placeholder = "0">
+            </div>
+            <div>
+                  <input type="checkbox" id="generalxmitCFnotappeal"> Notice of Appeal and Appeal Brief fees paid prior to March 16, 2013
+            </div>
+            <div>
+                  <input type="checkbox" id="generalxmitCFrecalc"> Recalculate Necessary Fees
+                  Claims remaning after Amendment
+                  Highest number previously paid for
+            </div>
+            <div>
+                  Total Claims           <input type="text" id="generalxmitCFtotclaim" size="5" placeholder = "0">
+                           <input type="text" id="generalxmitCFtotclaim2" size="5" placeholder = "0">
+            </div>
+            <div>
+                  Independent Claims       &ensp;<input type="text" id="generalxmitCFinclaim" size="5" placeholder = "0">
+                           <input type="text" id="generalxmitCFinclaim2" size="5" placeholder = "0">
+            </div>
+            <div>
+                  <input type="checkbox" id="generalxmitCFmultidep"> Multiple dependent claims presented (and fee not paid previously)
+            </div>
+            <div>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  IDS/SIDS Pages</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFidssid" size="5"></td>
+                        <td align="right"style="border: none;">1449 Pages</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF1449" size="5"></td>
+                        <td align="left"style="border: none;"><input type="checkbox" id="generalxmitCFsupids"> Supplemental IDS</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Fee (if necessary)</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFfeeif" size="5"></td>
+                        <td align="right"style="border: none;"># Documents</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFdocnum" size="5"></td>
+                        <td align="left"style="border: none;"><input type="checkbox" id="generalxmitCFdocnot"> Documents Not Enclosed</td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Communication Concerning Prior and Copending Application Pages</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFcomm" size="5"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Formal Drawings (# of Sheets)</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFfdraw" size="5"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Terminal Disclaimer # of pages</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFtermdisc" size="5"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="generalxmitCF373chk">3.73 Statement and copy of Assignment (# of pages)</td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF373chk" size="5"></td>
+                    </tr>
+                </table>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Continue</button>
