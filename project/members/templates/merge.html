@@ -939,16 +939,16 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <textarea rows="4" cols="60" id = "filerectreportNw2err">We have noted that the ##Insert Incorrect Information Here## is incorrect, and will file the necessary papers to correct this error in due course. </textarea>
+                    <textarea rows="4" cols="60" id = "filerectreportNw2err">We have noted that the "Insert Incorrect Information Here" is incorrect, and will file the necessary papers to correct this error in due course. </textarea>
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="options"> Official Filing Receipt (FRCT, FRCT-AE)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="filerectreportNw2options" value="Official Filing Receipt (FRCT, FRCT-AE)"> Official Filing Receipt (FRCT, FRCT-AE)
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2rep" name="options"> Replacement Filing Receipt (FRCT-4)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2rep" name="filerectreportNw2options" value="Replacement Filing Receipt (FRCT-4)"> Replacement Filing Receipt (FRCT-4)
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2upd" name="options"> Updated Filing Receipt (FRCT-3, UFRR)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2upd" name="filerectreportNw2options" value="Updated Filing Receipt (FRCT-3, UFRR)"> Updated Filing Receipt (FRCT-3, UFRR)
                 </div>
                 <div>
                     <br>&emsp;&emsp;<input type="checkbox" id="filerectreportNw2inf"> Information Notice Received
@@ -959,7 +959,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(filerectreportNw2err.value, radioFill('filerectreportNw2options'), filerectreportNw2inf.checked, filerectreportNw2not.checked)">Continue</button>
             </div>
         </div>
     </div>

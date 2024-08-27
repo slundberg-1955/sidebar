@@ -1127,3 +1127,51 @@ class foarreport:
 
         })
         return replace
+
+class generalxmitCF:
+    def generalxmitCF(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
+
+        mailstop = 'Mail Stop Amendment'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'mailStopText' : mailstop,
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+        })
+        return replace
+    
+class filerectreportNw2:
+    def filerectreportNw2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        addnotes = mergeinfo[0] + mergeinfo[1]
+        if mergeinfo[3] == 'true' and mergeinfo[4] == 'true':
+            addnotes += 'We have also received an Informational Notice to Applicant and a Notice of Acceptance. '
+        elif mergeinfo[3] == 'true':
+            addnotes += 'We have also received an Informational Notice to Applicant. '
+        elif mergeinfo[4] == 'true':
+            addnotes += 'We have also received a Notice of Acceptance. '
+
+        description = matter_data.mattertypedescription
+        if "PROV" in description:
+            # insert filedate
+            addnotes = addnotes + " This Provisional patent application will expire one year from the filing date.  If a regular (non-provisional) U.S. application is not filed by " + ", the ability to claim priority to the filing date of the provisional application will be lost."
+
+        receiptType = mergeinfo[2]
+        
+
+        replace = {}
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update({
+            'additionalNotes' : addnotes,
+
+        })
+        return replace
