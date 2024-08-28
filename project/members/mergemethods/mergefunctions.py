@@ -174,12 +174,12 @@ class mergefunctions:
             'inventorHomeCity' : contact.city,
             'inventorHomeState' : contact.state,
             'inventorHomeCountry' : contact.country,
-            'inventorMailingStreet1' : workcontact.address1,
-            'inventorMailingStreet2' : workcontact.address2,
-            'inventorMailingCity' : workcontact.city,
-            'inventorMailingState' : workcontact.state,
-            'inventorMailingZip' : workcontact.zip,
-            'inventorMailingCountry' : workcontact.country,
+            'inventorMailingStreet1' : contact.address1,
+            'inventorMailingStreet2' : contact.address2,
+            'inventorMailingCity' : contact.city,
+            'inventorMailingState' : contact.state,
+            'inventorMailingZip' : contact.zip,
+            'inventorMailingCountry' : contact.country,
         }
         return info
     

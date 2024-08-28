@@ -926,7 +926,7 @@ class RptInvtPayFees:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
-        tabledata = mergeinfo[5]
+        tabledata = mergeinfo[2]
 
         pairs = tabledata.split('^')
 
@@ -945,7 +945,7 @@ class RptInvtPayFees:
         claims = '\n                '.join(values)
 
         partial = ''
-        if mergeinfo[3] == 'true':
+        if mergeinfo[0] == 'true':
             partial = 'and a Communication Regarding the Results of the Partial International Search'
 
         replace = {}
@@ -953,7 +953,7 @@ class RptInvtPayFees:
         replace.update(function_instance.parafill(keys, matter))
         replace.update(function_instance.WAfill(keys, matter))
         replace.update({
-            'claimAmt' : mergeinfo[4],
+            'claimAmt' : mergeinfo[1],
             'partialSearch' : partial,
             'groupNbr' : '',
             'citedCopies' : '',
@@ -1150,13 +1150,26 @@ class filerectreportNw2:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
+        try:
+            activity = function_instance.getactivityid(matter_data, 'FECT')
+
+        except:
+            activity = ''
+
         addnotes = mergeinfo[0] + mergeinfo[1]
-        if mergeinfo[3] == 'true' and mergeinfo[4] == 'true':
-            addnotes += 'We have also received an Informational Notice to Applicant and a Notice of Acceptance. '
-        elif mergeinfo[3] == 'true':
-            addnotes += 'We have also received an Informational Notice to Applicant. '
-        elif mergeinfo[4] == 'true':
-            addnotes += 'We have also received a Notice of Acceptance. '
+        count = 0
+        if mergeinfo[3] == 'true' or mergeinfo[4] == 'true':
+            addnotes += 'We have also received'
+            if mergeinfo[3] == 'true':
+                addnotes += ' an Informational Notice to Applicant'
+                count = count + 1
+            if mergeinfo[4] == 'true':
+                if count > 0:
+                    addnotes += ' and a Notice of Acceptance'
+                else:
+                    addnotes += ' a Notice of Acceptance'
+        
+        addnotes += '. No action is required at this time; we will contact you if we require additional information.'
 
         description = matter_data.mattertypedescription
         if "PROV" in description:
@@ -1173,5 +1186,38 @@ class filerectreportNw2:
         replace.update({
             'additionalNotes' : addnotes,
 
+        })
+        return replace
+    
+class PatentCoopTreaty2:
+    def PatentCoopTreaty2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'requestFormSheets' : mergeinfo[5],
+            'descriptionSheets' : mergeinfo[6],
+            'claimSheets' : mergeinfo[7],
+            'abstractSheets' : mergeinfo[8],
+            'drawingSheets' : mergeinfo[9],
+            'seqListSheets' : mergeinfo[10],
+            'poapages' : mergeinfo[11] + ' ',
+        })
+        return replace
+    
+class PctSearchRep:
+    def PctSearchRep(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        # Need to fix doc
+        replace.update({
+            '19duedate' : mergeinfo[0],
+            '34duedate' : mergeinfo[1],
+            '30mduedate' : mergeinfo[3],
         })
         return replace
