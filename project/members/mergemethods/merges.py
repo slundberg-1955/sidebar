@@ -271,7 +271,6 @@ class LateSubmissionOfDec:
             'pgs' : pageDec,
             'subX' : '',
             'subText' : '',
-            'firmName' : '',
             'nickSA' : '',
             'nickU' : '',
             'latePaid': '',
@@ -491,30 +490,56 @@ class ownerchange:
 class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
+            matter_data = function_instance.matterFill(matter)
             esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[8])
             efiling = mergeinfo[0]
             paperfiling = mergeinfo[1]
             depacc = mergeinfo[2]
             extamt = mergeinfo[3]
-            subspec = mergeinfo[4]
-            abstract = mergeinfo[5]
-            seqlist = mergeinfo[6]
-            formaldraw = mergeinfo[7]
             wenclosures = mergeinfo[9]
+
+            SubX = ''
+            AbsX = ''
+            SeqX = ''
+            FrmlX = ''
+
+            SubPg = ''
+            AbsPg = ''
+            SeqPg = ''
+            FrmlPg = ''
+            if int(mergeinfo[4]) > 0:
+                SubX = 'X'
+                SubPg = 'Substitute Specification (' + mergeinfo[4] + ' pg.).'
+            if int(mergeinfo[5]) > 0:
+                AbsX = 'X'
+                AbsPg = 'Abstract (' + mergeinfo[5] + ' pg.).'
+            if int(mergeinfo[6]) > 0:
+                SeqX = 'X'
+                SeqPg = 'Sequence Listing (' + mergeinfo[6] + ' pg.).'
+            if int(mergeinfo[7]) > 0:
+                FrmlX = 'X'
+                FrmlPg = 'Formal Drawings (' + mergeinfo[7] + ' pg.).'
 
             # Set months 1-5 based on extamt
             #if extamt > 0:
-
 
             depnum = function_instance.depnumFill(matter_data)
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.firmfill())
             replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
-            'depAccount' : depnum,
-
+                'echoSignature' : esign_out,
+                'signatureDate' : esigndate_out,
+                'depAccount' : depnum,
+                'SubX' : SubX,
+                'AbsX' : AbsX,
+                'SeqX' : SeqX,
+                'FrmlX' : FrmlX,
+                'SubstitutePg' : SubPg,
+                'AbstractPg' : AbsPg,
+                'SeqPg' : SeqPg,
+                'FormalPg' : FrmlPg
             })
             return replace
     
@@ -700,7 +725,7 @@ class PCTRptOutMiscItmsRcvd:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
-
+            
         })
         return replace
 
@@ -1210,7 +1235,6 @@ class PatentCoopTreaty2:
 class PctSearchRep:
     def PctSearchRep(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1219,5 +1243,32 @@ class PctSearchRep:
             '19duedate' : mergeinfo[0],
             '34duedate' : mergeinfo[1],
             '30mduedate' : mergeinfo[3],
+        })
+        return replace
+    
+class PCTRptOutIpRp:
+    def PCTRptOutIpRp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        try:
+            activity = function_instance.getactivityid(matter_data, 'NPAD')
+            pcta = True
+        except:
+            pcta = False
+
+        if pcta:
+            if activity.smryonevalue:
+                npdueDate = activity.smryonevalue
+
+        # Need to add action notes and attorney info
+        action = 'ADDITIONAL NOTES:  Please contact if you would like to discuss this matter more fully, or if you need a cost estimate for filing in specific countries/regions.'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update({
+            'actionRequired' : action,
         })
         return replace

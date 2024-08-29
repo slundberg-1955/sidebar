@@ -586,7 +586,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(corrapplnefile.checked, corrapplnpaperfile.checked, corrapplndepacc.checked, corrapplnext.value, 
+                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -1184,7 +1185,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge( )">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PCTRptOutIpRpbox.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -2171,7 +2172,7 @@
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
                             fillActivities(mergemethod);
                         }
-                        else if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport' || mergemethod == 'nonfinalreportFp' || mergemethod == 'PCTAsgnPOALetter' || mergemethod == 'RptInvtPayFees'){
+                        else if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport' || mergemethod == 'nonfinalreportFp' || mergemethod == 'PCTAsgnPOALetter' || mergemethod == 'RptInvtPayFees' || mergemethod == 'PCTRptOutIpRp'){
                             $('#' + mergemethod).modal('show');
                         }
                         else if(mergemethod == 'PCTRptFileOfApp'){

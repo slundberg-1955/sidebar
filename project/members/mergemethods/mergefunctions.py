@@ -99,7 +99,7 @@ class mergefunctions:
     def applicantfill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617')
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 2)
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
@@ -207,7 +207,7 @@ class mergefunctions:
 
         return patent_data.entitystatus
     
-    def firmfill(self, keys, matter):
+    def firmfill(self):
         # Might need to pull from DB
         info = {
             'firmName' : 'Schwegman Lundberg & Woessner, P.A.',
