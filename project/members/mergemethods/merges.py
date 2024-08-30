@@ -146,15 +146,15 @@ class issuefee:
         
 
         esign_out, esigndate_out = function_instance.esigncheck(esign)
+        SAPhone = function_instance.phoneFill(matter_data)
         depnum = function_instance.depnumFill(matter_data)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'custNoCorresp' : '',
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'upperFirmName' : '',
-            'SAPhone' : '',
+            'SAPhone' : SAPhone,
             'nickSA' : '',
             'nickU' : '',
             'dateIssueFee': prevpaiddate,
@@ -172,8 +172,8 @@ class issuefee:
             'patentTermAdjFacts' : patadjfact,
             'feeTextX' : '',
             'FeeText' : '',
-            'pubFeeX' : '',
-            'pubFeeText' : '',
+            'pubFeeX' : 'X',
+            'pubFeeText' : '    Check in the amount of $210.00 to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).',
             'previousX' : '',
             'applyPreviousText' : '',
             'commentX' : '',
@@ -640,6 +640,7 @@ class adobesign:
             choice = 'Assignment and Declaration'
         if mergeinfo[4] =='true' or mergeinfo[5] =='true' or mergeinfo[6] =='true' or mergeinfo[7] =='true' or mergeinfo[8] =='true' or mergeinfo[9] =='true' or mergeinfo[10] =='true':
             choice = 'Assignment and POA'
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
