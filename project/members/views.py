@@ -289,7 +289,7 @@ def DocumentReader(docxpath):
     subject = ''
 
     body = doc.paragraphs[0].text.replace('- Direct Dial', '\n')
-    body = body + '\n'.join([p.text for p in doc.paragraphs[10:]])
+    body = body + '\n'.join([p.text for p in doc.paragraphs[2:]])
     return subject, body
 
 def Email(body, subject, recipients, cc, bcc, attachment): 

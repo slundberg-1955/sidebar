@@ -1,6 +1,6 @@
 from ..mergemethods import mergefunctions
 from ..models import Activity
-from datetime import date
+from datetime import date, datetime
 
 class appealfwd:
     def appealfwd(self, matter, mergeinfo, keys):
@@ -350,14 +350,45 @@ class olpemail:
         })
         return replace
     
-class capactions:
-    def capactions(self, matter, mergeinfo, keys):
+class mpcapactions:
+    def mpcapactions(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        radio = mergeinfo[0]
+        matter_data = function_instance.matterFill(matter)
+        action = int(mergeinfo[0])
+
+        if action in (1, 5):
+            code = 'MPTA'
+        if action in (2, 7):
+            code = 'CAPR-'
+        if action == 3:
+            code = 'SEQL-1'
+        if action == 4:
+            code = 'NOMR, MRTA'
+        if action == 6:
+            code = 'CAPR-NA'
+            nummonths = 'two'
+        if action == 8:
+            code = 'PCT/DO/EO/923'
+
+        try:
+            activity = function_instance.getactivityid(matter_data, code)
+            if action == 5:
+                actname = 'Missing Parts with Corrected Application Papers Received'
+            if action == 7:
+                actname = 'Corrected Application Papers with Sequence Listing Action Received'
+            else:
+                actname = activity.name
+        except:
+            actname = ''
+
         replace = {}
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
-                
+            'activityName' : actname,
+            'THIS.dueDate' : activity.smryonelabel,
         })
         return replace
 
@@ -1219,8 +1250,15 @@ class PatentCoopTreaty2:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
+        patent_data = function_instance.patentFill(matter_data)
+
+        dates = [patent_data.pctappno, patent_data.pctappdate, patent_data.pctpubno, patent_data.pctpubdate, patent_data.prioritydate]
+        valid_dates = [date for date in dates if date not in [None, '']]
+        priority = min(valid_dates)
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.applicantfill(matter, 1))
         replace.update({
             'requestFormSheets' : mergeinfo[5],
             'descriptionSheets' : mergeinfo[6],
@@ -1229,6 +1267,7 @@ class PatentCoopTreaty2:
             'drawingSheets' : mergeinfo[9],
             'seqListSheets' : mergeinfo[10],
             'poapages' : mergeinfo[11] + ' ',
+            'priorityDate' : priority
         })
         return replace
     

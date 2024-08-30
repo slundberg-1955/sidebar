@@ -99,7 +99,7 @@ class mergefunctions:
     def applicantfill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 2)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = count)
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
@@ -118,6 +118,7 @@ class mergefunctions:
             'applicantStreet1' : contact.address1,
             'applicantStreet2' : contact.address2,
             'applicant' : profile.orgname,
+            'applicantName' : profile.orgname,
         }
         return info
 

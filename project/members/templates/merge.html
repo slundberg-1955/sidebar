@@ -1011,12 +1011,10 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <label for="ownerchangeesign">&emsp;&emsp;</label>
-                    <input type="checkbox" id="ownerchangeesign"> E-Sign Enable
+                    &emsp;&emsp;<input type="checkbox" id="ownerchangeesign"> E-Sign Enable
                 </div>
                 <div>
-                    <label for="ownerchangeapp">&emsp;&emsp;</label>
-                    <input type="checkbox" id="ownerchangeapp"> Assignee needs to be added as an applicant
+                    &emsp;&emsp;<input type="checkbox" id="ownerchangeapp"> Assignee needs to be added as an applicant
                 </div>
                 <div>
                     <label for="ownerchangenames">&emsp;&emsp;</label>
@@ -1102,33 +1100,33 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="radio" id="mpcapactionsmp" name="options"> Missing Parts Action Received
+                      <input type="radio" id="mpcapactionsmp" name="mpcapactionsoptions" value="1"> Missing Parts Action Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionscorapp" name="options"> Corrected Application Papers Notice Received
+                      <input type="radio" id="mpcapactionscorapp" name="mpcapactionsoptions" value="2"> Corrected Application Papers Notice Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsseq" name="options"> Sequence Listing Action Received
+                      <input type="radio" id="mpcapactionsseq" name="mpcapactionsoptions" value="3"> Sequence Listing Action Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsnotmis" name="options"> Notice of Missing Requirement Received
+                      <input type="radio" id="mpcapactionsnotmis" name="mpcapactionsoptions" value="4"> Notice of Missing Requirement Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsmiscor" name="options"> Missing Parts with Corrected Application Papers Received
+                      <input type="radio" id="mpcapactionsmiscor" name="mpcapactionsoptions" value="5"> Missing Parts with Corrected Application Papers Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionscorseq" name="options"> Corrected Application Papers with Sequence Listing Received
+                      <input type="radio" id="mpcapactionscorseq" name="mpcapactionsoptions" value="6"> Corrected Application Papers with Sequence Listing Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsaft" name="options"> Corrected Application Papers Notice Recieved (AFTER ALLOWANCE)
+                      <input type="radio" id="mpcapactionsaft" name="mpcapactionsoptions" value="7"> Corrected Application Papers Notice Recieved (AFTER ALLOWANCE)
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsnotins" name="options"> Notification of Insufficiency Under 37 CFR 1.492 and/or 1.495
+                      <input type="radio" id="mpcapactionsnotins" name="mpcapactionsoptions" value="8"> Notification of Insufficiency Under 37 CFR 1.492 and/or 1.495
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(mpcapactionsmp.checked, mpcapactionscorapp.checked, mpcapactionsseq.checked, mpcapactionsnotmis.checked, mpcapactionsmiscor.checked, mpcapactionscorseq.checked, mpcapactionsaft.cheked, mpcapactionsnotins.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('mpcapactionsoptions'))">Continue</button>
             </div>
         </div>
     </div>
