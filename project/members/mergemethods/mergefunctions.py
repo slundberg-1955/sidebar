@@ -133,6 +133,9 @@ class mergefunctions:
             'paraName' : profile.fname + ' ' + profile.lname,
             'paraPhone' : contact.phone1,
             'paraEmail' : contact.email,
+            'This.paraName' : profile.fname + ' ' + profile.lname,
+            'This.paraPhone' : contact.phone1,
+            'This.paraEmail' : contact.email,
         }
         return info
     
@@ -147,6 +150,9 @@ class mergefunctions:
             'WAName' : profile.fname + ' ' + profile.lname,
             'WAPhone' : contact.phone1,
             'WAEmail' : contact.email,
+            'THIS.WAName' : profile.fname + ' ' + profile.lname,
+            'THIS.WAPhone' : contact.phone1,
+            'THIS.WAEmail' : contact.email,
         }
         return info
     

@@ -213,8 +213,6 @@ class recordation:
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
 
-
-
         replace = {}
         esign_out, esigndate_out = function_instance.esigncheck('true')
         replace.update(function_instance.mergebasic(keys, matter))
@@ -320,20 +318,13 @@ class olpemail:
         answer = mergeinfo[0]
         # Need to add use case for answer
 
-        
+        replace.update(function_instance.parafill(keys, matter))
+        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'This.orgName' : org_data.orgname,
             'This.clientRefNo' : '',
             'This.matterNo' : matter_data.hostmatterno,
             'activityname' : '',
-            'This.WAName' : '',
-            'This.WAPhone' : '',
-            'THIS.WAName' : '',
-            'THIS.WAPhone' : '',
-            'This.WAEmail' : '',
-            'This.paraName' : '',
-            'This.paraPhone' : '',
-            'This.paraEmail' : '',
             'This.serialNo' : function_instance.transform_serialnumber(matter_data.serialnumber),
             'This.filedDate' : matter_data.fileddate.strftime("%B %d, %Y"),
             'THIS.patNo' : patent_data.patentno,
