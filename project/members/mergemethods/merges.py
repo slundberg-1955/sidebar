@@ -318,8 +318,6 @@ class olpemail:
         answer = mergeinfo[0]
         # Need to add use case for answer
 
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'This.orgName' : org_data.orgname,
             'This.clientRefNo' : '',
@@ -373,8 +371,6 @@ class mpcapactions:
             actname = ''
 
         replace = {}
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
@@ -472,8 +468,6 @@ class appReportFp:
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
-            replace.update(function_instance.parafill(keys, matter))
-            replace.update(function_instance.WAfill(keys, matter))
             replace.update({
                 'smallEntity' : smallentitytext,
                 'actionText' : actionText,
@@ -702,8 +696,6 @@ class ptorecdReport:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
-        # replace.update(function_instance.parafill(keys, matter))
-        # replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'dateMailed' : actdate,
             'docReceived' : actname,
@@ -764,8 +756,6 @@ class recordedassnreport:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
 
         })
@@ -780,8 +770,6 @@ class reportprvassnnew:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'salutation' : 'Inventor(s)',
             'recipient' : '',
@@ -797,8 +785,6 @@ class abandonReport:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
 
         })
@@ -817,8 +803,6 @@ class issuereport:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.mergebasicEmail(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'salutation' : 'Inventor(s)'
         })
@@ -938,8 +922,6 @@ class nonfinalreportFp:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'cReqPriorExam' : 'We have requested Prioritized Examination in this matter. '
         })
@@ -960,8 +942,6 @@ class PCTAsgnPOALetter:
  
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'pctdueDate' : mergeinfo[0],
             'cSendingPOA' : sendingpoa,
@@ -998,8 +978,6 @@ class RptInvtPayFees:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'claimAmt' : mergeinfo[1],
             'partialSearch' : partial,
@@ -1110,8 +1088,6 @@ class PCTRptFileOfApp:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update({
             'priorAppNo' : formatted_data,
             'priorAppDate' : '',
@@ -1152,8 +1128,6 @@ class nopreport:
 
         replace = {}
         replace.update(function_instance.WAfill(keys, matter))
-        replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
         replace.update({
             'pubNo' : pubno,
             'pubDate' : pubdate,
@@ -1168,9 +1142,7 @@ class foarreport:
         matter_data = function_instance.matterFill(matter)
 
         replace = {}
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
         replace.update({
 
         })
@@ -1228,9 +1200,7 @@ class filerectreportNw2:
         
 
         replace = {}
-        replace.update(function_instance.WAfill(keys, matter))
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
         replace.update({
             'additionalNotes' : addnotes,
 
