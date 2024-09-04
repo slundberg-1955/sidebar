@@ -65,6 +65,20 @@ class mergefunctions:
                 if key in keys:
                     basicOut.update({key: value})
 
+        if 'para' in tables_list:
+            basic = {}
+            basic.update(merge_fn.parafill(keys, matter))
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+        
+        if 'WA' in tables_list:
+            basic = {}
+            basic.update(merge_fn.WAfill(keys, matter))
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+
         return basicOut
 
     # assignee information fill 34606   
@@ -267,6 +281,18 @@ class mergefunctions:
             'SARegNo' : 'rvwmatterpersonnel',
             'orgName' : 'rvwmatterpersonnel',
             'recipient' : 'rvwmatterinventors',
+            'WAName' : 'WA',
+            'WAPhone' : 'WA',
+            'WAEmail' : 'WA',
+            'THIS.WAName' : 'WA',
+            'THIS.WAPhone' : 'WA',
+            'THIS.WAEmail' : 'WA',
+            'paraName' : 'para',
+            'paraPhone' : 'para',
+            'paraEmail' : 'para',
+            'This.paraName' : 'para',
+            'This.paraPhone' : 'para',
+            'This.paraEmail' : 'para',
         }
         unique_values = set()
         # Iterate over the keys

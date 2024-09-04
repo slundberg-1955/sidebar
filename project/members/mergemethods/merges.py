@@ -1297,8 +1297,6 @@ class PCTRptOutIpRp:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.WAfill(keys, matter))
-        replace.update(function_instance.parafill(keys, matter))
         replace.update({
             'actionRequired' : action,
         })
