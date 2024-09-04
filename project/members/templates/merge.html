@@ -127,6 +127,9 @@
         #utilityapp .modal-dialog{
             max-width: 800px;
         }
+        #idsmemo .modal-dialog{
+            max-width: 800px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -1909,10 +1912,10 @@
                     <br>&emsp;&emsp;References:&emsp;&emsp;<input type="checkbox" id="idsCommCfNewfrstcite"> First cited in a search report in a foreign application less than 3 months ago
                 </div>
                 <div>
-                            &emsp;<input type="checkbox" id="idsCommCfNewrefcite"> References cited in U.S. parent    Parent Serial Number <input type="text" id="idsCommCfNewpatser" size="10">
+                            &emsp;<input type="checkbox" id="idsCommCfNewrefcite"> References cited in U.S. parent    Parent Serial Number <input type="text" id="idsCommCfNewpatser" size="10" placeholder="11/234,567">
                 </div>
                 <div>
-                                               &ensp;Parent Filing Date <input type="text" id="idsCommCfNewpatdate" size="10">
+                                               &ensp;Parent Filing Date <input type="text" id="idsCommCfNewpatdate" size="10" placeholder="11/11/1111">
                 </div>
                 <div>
                     <br>&emsp;&emsp;Miscellaneous:&ensp;<input type="checkbox" id="idsCommCfNewmnk"> List McKessons in the body of the IDS Communication
@@ -1970,6 +1973,39 @@
                 <div>
 
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- IDS - search report memo -->
+<div id="idsmemo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="idsmemoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">IDS Search Report Memo</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                      Action Received <select id="idsmemodrop">
+                        <option value="EP Search Report">EP Search Report</option>
+                        <option value="Office Action">Office Action</option>
+                        <option value="Office Action Response">Office Action Response</option>
+                        <option value="PCT Search Report">PCT Search Report</option>
+                        <option value="Select Signing Attorney">Select Signing Attorney</option>
+                    </select>
+            </div>
+            <div>
+                          &ensp;<input type="text" id="idsmemoblank" size="30">
+            </div>
+            <div>
+                  3-Month Due Date <input type="text" id="idsmemoblank" size="5"> (3 months from Mailing Date)
+            </div>
+            <div>
+                <br>                 <b>Realated Matters</b>             <input type="checkbox" id="idsmemosel"> Select All
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -2045,7 +2081,7 @@
             // Esign popUp
             if (esign == "TRUE") {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'idsmemo'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
