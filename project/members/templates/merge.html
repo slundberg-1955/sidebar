@@ -1846,7 +1846,7 @@
                         <td align="left"style="border: none;"><input type="text" id="generalxmitCFtermdisc" size="5"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  <input type="checkbox" id="generalxmitCF373chk">3.73 Statement and copy of Assignment (# of pages)</td>
+                        <td align="right"style="border: none;">  <input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</td>
                         <td align="left"style="border: none;"><input type="text" id="generalxmitCF373chk" size="5"></td>
                     </tr>
                 </table>
@@ -1941,7 +1941,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('filoptions'), radioFill('feeoptions'), radioFill('staoptions'), 
+                radioFill('offoptions'), radioFill('offoptions2'), idsCommCfNewfrstcite.checked, idsCommCfNewrefcite.checked, idsCommCfNewpatser.value, idsCommCfNewpatdate.value, 
+                idsCommCfNewmnk.checked, radioFill('sortoptions'), idsCommCfNewfrnmck.checked, idsCommCfNewmstop.value, idsCommCfNewcertm.checked, idsCommCfNewesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -1958,9 +1960,15 @@
                 <div class="filing">
                     &emsp;&emsp;<input type="radio" id="utilityappefile" name="filoptions"> E-Filing
                     &ensp;<input type="radio" id="utilityapppaperfile" name="filoptions"> Paper Filing
-                    &emsp;&emsp;  <input type="radio" id="utilityappdepacc" name="feeoptions"> Deposit Account
+                    &emsp;&emsp;      <input type="radio" id="utilityappdepacc" name="feeoptions"> Deposit Account
                     &ensp;<input type="radio" id="utilityappchk" name="feeoptions"> Check
                     &ensp;<input type="radio" id="utilityappcred" name="feeoptions"> Credit Card
+                </div>
+                <div>
+                          Application Type <input type="text" id="utilityapptype" size="10" value="Utility - ORG">
+                </div>
+                <div>
+
                 </div>
             </div>
             <div class="modal-footer">

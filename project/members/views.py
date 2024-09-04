@@ -338,12 +338,17 @@ def combinedoc(path, method, mergeinfo, matter):
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
         doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventor.docx") 
+        docend = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2end.docx") 
         composer = Composer(doc2)
 
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
         inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        applicants = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
+        assignees = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
         invCount = len(inventors) + 1
+        appCount = len(applicants) + 1
+        assignCount = len(assignees) + 1
 
         for i in range(1, invCount):
             replace = {}
@@ -351,8 +356,24 @@ def combinedoc(path, method, mergeinfo, matter):
             WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventorMultiple.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx')
             doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx") 
             composer.append(doc3)
-
+        
         composer.append(doc1)
+        
+        for i in range(1, appCount):
+            replace = {}
+            replace.update(merge_fn.applicantfill(matter, i))
+            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2applicantMulti.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx')
+            doc4 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx") 
+            composer.append(doc4)
+
+        for i in range(1, assignCount):
+            replace = {}
+            replace.update(merge_fn.inventorInfo(matter, i))
+            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2assigneeMulti.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx')
+            doc5 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx") 
+            composer.append(doc5)
+        
+        composer.append(docend)
         
     composer.save("documents/multidocmerge/" + method +".docx")
 

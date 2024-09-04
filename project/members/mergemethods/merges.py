@@ -1303,3 +1303,22 @@ class PCTRptOutIpRp:
             'actionRequired' : action,
         })
         return replace
+
+class idsCommCfNew:
+    def idsCommCfNew(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        filing = mergeinfo[0]
+        feemethod = mergeinfo[1]
+        filingstatus = mergeinfo[2]
+        offaction = mergeinfo[3]
+        offaction2 = mergeinfo[4]
+        
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace

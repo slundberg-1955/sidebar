@@ -67,15 +67,15 @@ class mergefunctions:
 
         return basicOut
 
-    # assignee information fill    
+    # assignee information fill 34606   
     def assigneefill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = count)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
-        assigne = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34617')
+        assigne = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
         assigneelen = len(assigne)
 
         if assigneelen == 1:
@@ -95,15 +95,15 @@ class mergefunctions:
         }
         return info
     
-    # applicant information fill. Update roleid  
+    # Applicant information fill. Update roleid  56691
     def applicantfill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = count)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56691', roleorderno = count)
         profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
-        applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34617')
+        applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
         applicantlen = len(applicant)
 
         if applicantlen == 1:
