@@ -201,6 +201,40 @@ def addPA(request):
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
+    
+def addRelatedMatter(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        matter = Matter.objects.using('FIP').get(hostmatterno = data)
+        relatedmatters = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid)
+        serialnos = transform_serialnumber(matter.serialnumber) + '*'
+        hostmatters = matter.hostmatterno
+        relationships = ''
+
+        for relatedmatter in relatedmatters:
+            relmatter = Matter.objects.using('FIP').get(matterid = relatedmatter.relatedmatterid)
+            hostmatters = relmatter.hostmatterno
+            try:
+                serialnos = serialnos + transform_serialnumber(relmatter.serialnumber) + '*'
+            except:
+                serialnos = serialnos + ' *'
+            relationships = relatedmatter.relationdesc
+
+        PAout = '' 
+        for hostmatter in hostmatters:
+            PAout = PAout + hostmatter
+        PAout = PAout + ';'
+        for serial in serialnos:
+            PAout = PAout + serial
+        PAout = PAout + ';'
+        for relationship in relationships:
+            PAout = PAout + relationship
+
+        return JsonResponse({'message': f'{PAout}'})
+    
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
 
 def addactivities(request):
     if request.method == 'POST':

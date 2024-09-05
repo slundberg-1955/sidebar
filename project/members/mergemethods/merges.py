@@ -1290,3 +1290,19 @@ class idsCommCfNew:
 
         })
         return replace
+
+class idsmemo:
+    def idsmemo(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        actionrec = mergeinfo[0]
+        blank = mergeinfo[1]
+        moduedate = mergeinfo[2]  
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
