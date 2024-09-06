@@ -1155,6 +1155,46 @@ class generalxmitCF:
         esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
 
         mailstop = 'Mail Stop Amendment'
+        aftFinal = ''
+        aftFinalX = ''
+        terminal = ''
+        terminalX = ''
+        formal = ''
+        formalX = ''
+        ids = ''
+        idsX = ''
+        mainX = ''
+        main = ''
+        comm = ''
+        commX = ''
+        if mergeinfo[8] != '' and int(mergeinfo[8]) > 0:
+            aftFinal = 'After Final Consideration Program Request (' + mergeinfo[8] + ' pg.)'
+            aftFinalX = 'X'
+        if mergeinfo[21] != '' and int(mergeinfo[21]) > 0:
+            terminal = 'Terminal Disclaimer (' + mergeinfo[21] + ' pgs.)'
+            terminalX = 'X'
+        if mergeinfo[20] != '' and int(mergeinfo[20]) > 0:
+            formal = 'Formal Drawings (' + mergeinfo[21] + ' pgs.)'
+            formalX = 'X'
+        if mergeinfo[13] != '' and mergeinfo[14] != '' and int(mergeinfo[13]) > 0 and int(mergeinfo[14]) > 0:
+            ids = 'Supplemental Information Disclosure Statement ('+ mergeinfo[13] +' pgs.), Form 1449 ('+ mergeinfo[14] +' pgs.)  Documents NOT enclosed, cited in parent application'
+            idsX = 'X'
+        if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
+            main = 'Amendment and Response under 37 C.F.R. § 1.111 (' + mergeinfo[5] + ' pgs.)'
+            mainX = 'X'
+        if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
+            comm = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[19] +' pgs.)'
+            commX = 'X'
+        #if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
+        #    extention = 'Petition for Extension of Time ('+ mergeinfo[19] +' pgs.)'
+        #    extX = 'X'
+
+        if mergeinfo[2] == '1':
+            dep = 'Authorization to charge Deposit Account <<depAccount>> in the amount of'
+        if mergeinfo[2] == '2':
+            dep = 'A check in the amount of'
+        if mergeinfo[2] == '3':
+            dep = 'Authorization to charge the credit card (details provided herewith) in the amount of'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1162,6 +1202,21 @@ class generalxmitCF:
             'mailStopText' : mailstop,
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
+            'afterFinalX' : aftFinalX,
+            'afterFinalText' : aftFinal,
+            'terminalX' : terminalX,
+            'terminalText' : terminal,
+            'idsX' : idsX,
+            'idsText' : ids,
+            'mainX' : mainX,
+            'mainDocText' : main,
+            'claimsAfter' : mergeinfo[8],
+            'indAfter' : mergeinfo[10],
+            'commText' : comm,
+            'commX' : commX,
+            'drawText' : formal,
+            'drawX' : formalX,
+
         })
         return replace
     
@@ -1282,12 +1337,21 @@ class idsCommCfNew:
         filingstatus = mergeinfo[2]
         offaction = mergeinfo[3]
         offaction2 = mergeinfo[4]
-        
+
+        sup = ''
+        if offaction2 == '1':
+            sup = 'UNDER 37 C.F.R §1.97(e)(1)'
+        if offaction2 == '2':
+            sup = 'UNDER 37 C.F.R §1.97(e)(2)'
+        if offaction2 == '3':
+            sup = 'UNDER 37 CFR 1.97(i)'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-
+            'mailStopText' : mergeinfo[12],
+            'supplText' : '',
+            'supplementalText' : '',
         })
         return replace
 

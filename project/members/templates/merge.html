@@ -1787,9 +1787,9 @@
                   E-Filing:<input type="radio" id="generalxmitCFefile" name="fileoptions">
                 &ensp;Paper Filing:<input type="radio" id="generalxmitCFpaperfile" name="fileoptions">
                   <input type="checkbox" id="generalxmitCFcertmail"> Include Certificate of Mailing
-                  Deposit Account <input type="radio" id="generalxmitCFdepacc" name="depoptions">
-                &ensp;Check <input type="radio" id="generalxmitCFcheck" name="depoptions">
-                &ensp;Credit Card <input type="radio" id="generalxmitCFcredit" name="depoptions">
+                  Deposit Account <input type="radio" id="generalxmitCFdepacc" name="depoptions" value="1">
+                &ensp;Check <input type="radio" id="generalxmitCFcheck" name="depoptions" value="2">
+                &ensp;Credit Card <input type="radio" id="generalxmitCFcredit" name="depoptions" value="3">
             </div>
             <div>
                     Due Date <input type="text" id="generalxmitCFduedate" size="10" placeholder = " /  / ">
@@ -1806,7 +1806,7 @@
                   <option value="non">Response to Notice of Non-Compliance</option>
                   <option value="restreq">Response to Restriction Requirement</option>
                 </select>
-                 # of Pages <input type="text" id="generalxmitCFduedate" size="10" placeholder = "0">
+                 # of Pages <input type="text" id="generalxmitCFnumpg" size="10" placeholder = "0">
             </div>
             <div>
                   <input type="checkbox" id="generalxmitCFnotappeal"> Notice of Appeal and Appeal Brief fees paid prior to March 16, 2013
@@ -1862,10 +1862,34 @@
                         <td align="left"style="border: none;"><input type="text" id="generalxmitCF373chk" size="5"></td>
                     </tr>
                 </table>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Mail Stop </td>
+                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFmam" name="mailstopoptions"> Mail Stop Amendment</td>
+                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFmaf" name="mailstopoptions"> Mail Stop AF</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;"></td>
+                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFapppat" name="mailstopoptions"> Mail Stop Appeal Brief - Patents</td>
+                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFotherrad" name="mailstopoptions"> Other</td>
+                    </tr>
+                </table>
+                <div>
+                      <input type="checkbox" id="generalxmitCFfincon"> After Final Consideration Program Request
+                </div>
+                <div>
+                      <button type="button" >Additional Documents</button>
+                      <select id="generalxmitCFselSA">
+                        <option value="select">Select Signing Attorney</option>
+                    </select>
+                      <input type="checkbox" id="generalxmitCFesign"> E-Signature Enable
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('fileoptions'), generalxmitCFcertmail.checked, radioFill('depoptions'), generalxmitCFduedate.value, generalxmitCFselect.value, generalxmitCFnumpg.value, generalxmitCFnotappeal.checked, generalxmitCFrecalc.checked, generalxmitCFtotclaim.value, generalxmitCFtotclaim2.value, generalxmitCFinclaim.value, 
+                generalxmitCFinclaim2.value, generalxmitCFmultidep.checked, generalxmitCFidssid.value, generalxmitCF1449.value, generalxmitCFsupids.checked, generalxmitCFfeeif.value, generalxmitCFdocnum.value, generalxmitCFdocnot.checked, generalxmitCFcomm.value, generalxmitCFfdraw.value, 
+                generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373chk.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFselSA.value, generalxmitCFesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -1890,22 +1914,22 @@
                     &ensp;<input type="radio" id="idsCommCfNewsids" name="staoptions"> SIDS
                 </div>
                 <div>
-                    <br>&emsp;&emsp;Office Action:&ensp;&ensp;<input type="radio" id="idsCommCfNewboa" name="offoptions"> Before First OA
+                    <br>&emsp;&emsp;Office Action:&ensp;&ensp;<input type="radio" id="idsCommCfNewboa" name="offoptions" value="BOA"> Before First OA
                 </div>
                 <div>
-                            &emsp;<input type="radio" id="idsCommCfNewaoa" name="offoptions"> After OA but before Final or NOAR
+                            &emsp;<input type="radio" id="idsCommCfNewaoa" name="offoptions" value="AOA"> After OA but before Final or NOAR
                 </div>
                 <div>
                             &emsp;<input type="radio" id="idsCommCfNewafnl" name="offoptions" value="FNI"> After Final, NOAR or Issue
                 </div>
                 <div id="1971" style="display:none;">
-                             &emsp;<input type="radio" id="idsCommCfNew1971" name="offoptions2"> 1.97(e)(1) - Foreign Art (3 mo)
+                             &emsp;<input type="radio" id="idsCommCfNew1971" name="offoptions2" value="1"> 1.97(e)(1) - Foreign Art (3 mo)
                 </div>
                 <div id="1972" style="display:none;">
-                             &emsp;<input type="radio" id="idsCommCfNew1972" name="offoptions2"> 1.97(e)(2) - Non-Foreign Art (3 mo)
+                             &emsp;<input type="radio" id="idsCommCfNew1972" name="offoptions2" value="2"> 1.97(e)(2) - Non-Foreign Art (3 mo)
                 </div>
                 <div id="197i" style="display:none;">
-                             &emsp;<input type="radio" id="idsCommCfNew197i" name="offoptions2"> 1.97(i) - Placed in File
+                             &emsp;<input type="radio" id="idsCommCfNew197i" name="offoptions2" value="3"> 1.97(i) - Placed in File
                 </div>
                 <script>
 
@@ -2175,7 +2199,38 @@
                      Email: <input type="text" id="mrgfforderemail" size="30">
                 </div>
                 <div>
-                    
+                      Confirm Filing Deadline (MM/DD/YYYY) <input type="text" id="mrgfforderdead" size="10" placeholder=" /  / ">
+                </div>
+                <div>
+                      Enter 'Month' Deadline # (ex: 31): <input type="text" id="mrgfforderdeadmo" size="10">
+                </div>
+                <div>
+                    <br> Application Type: &ensp;<input type="radio" id="mrgffordernat" name="apptypeoptions"> National Phase Patent Application
+                </div>
+                <div>
+                              <input type="radio" id="mrgfforderpat" name="apptypeoptions"> Patent
+                </div>
+                <div>
+                              <input type="radio" id="mrgfforderprovpat" name="apptypeoptions"> Provisional Patent Application
+                </div>
+                <div>
+                              <input type="radio" id="mrgfforderforfil" name="apptypeoptions"> Foreign Filing License
+                </div>
+                <div>
+                              <input type="radio" id="mrgfforderoth" name="apptypeoptions" value="OTH"> Other
+                </div>
+                <div style="display:none;" id="othfill">
+                              <input type="text" id="mrgfforderothenter" size="30">
+                </div>
+                <script>
+                    document.querySelectorAll('input[name="apptypeoptions"]').forEach((elem) => {
+                        elem.addEventListener("change", function() {
+                            document.getElementById('othfill').style.display = this.value === 'OTH' ? 'block' : 'none';
+                        });
+                    });
+                </script>
+                <div>
+                    <br> Enclosures:
                 </div>
             </div>
             <div class="modal-footer">
