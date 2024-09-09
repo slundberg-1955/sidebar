@@ -33,6 +33,7 @@ class mergefunctions:
                 'confirmNo' : confirm,
                 'examinerName' : merge_fn.examinerFill(matter_data)
             }
+            basic.update(merge_fn.mergebasicEmail(keys, matter))
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -293,6 +294,11 @@ class mergefunctions:
             'This.paraName' : 'para',
             'This.paraPhone' : 'para',
             'This.paraEmail' : 'para',
+            'This.serialNo' : 'matter',
+            'This.filedDate' : 'matter',
+            'This.title' : 'matter',
+            'This.matterNo' : 'matter',
+            'recipient' : 'matter'
         }
         unique_values = set()
         # Iterate over the keys

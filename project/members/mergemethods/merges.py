@@ -372,7 +372,6 @@ class mpcapactions:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
             'activityName' : actname,
             'THIS.dueDate' : activity.smryonelabel,
@@ -628,7 +627,6 @@ class adobesign:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
             'userChoice' : choice,
         })
@@ -695,7 +693,6 @@ class ptorecdReport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
             'dateMailed' : actdate,
             'docReceived' : actname,
@@ -721,7 +718,6 @@ class RepNoticeofAllow:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
             'noar2Mo' : '',
             'noarLink' : 'http://ca.slwip.com/slwdocs/noticeofallowance.doc',
@@ -738,7 +734,7 @@ class PCTRptOutMiscItmsRcvd:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
+
         replace.update({
             
         })
@@ -754,7 +750,6 @@ class recordedassnreport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
         replace.update({
 
@@ -768,7 +763,6 @@ class reportprvassnnew:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
         replace.update({
             'salutation' : 'Inventor(s)',
@@ -783,7 +777,6 @@ class abandonReport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update(function_instance.assigneefill(keys, matter))
         replace.update({
 
@@ -802,7 +795,6 @@ class issuereport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.mergebasicEmail(keys, matter))
         replace.update({
             'salutation' : 'Inventor(s)'
         })
@@ -1188,7 +1180,6 @@ class generalxmitCF:
         #if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
         #    extention = 'Petition for Extension of Time ('+ mergeinfo[19] +' pgs.)'
         #    extX = 'X'
-
         if mergeinfo[2] == '1':
             dep = 'Authorization to charge Deposit Account <<depAccount>> in the amount of'
         if mergeinfo[2] == '2':
@@ -1363,6 +1354,30 @@ class idsmemo:
         actionrec = mergeinfo[0]
         blank = mergeinfo[1]
         moduedate = mergeinfo[2]  
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+
+class utilityapp:
+    def utilityapp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+
+class assignment2016:
+    def assignment2016(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))

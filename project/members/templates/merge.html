@@ -125,7 +125,7 @@
             max-width: 800px;
         }
         #utilityapp .modal-dialog{
-            max-width: 800px;
+            max-width: 1000px;
         }
         #idsmemo .modal-dialog{
             max-width: 800px;
@@ -1984,7 +1984,7 @@
         </div>
     </div>
 </div>
-<!-- Transmittal - Patent Application (Utility) -->
+<!-- Transmittal - Patent Application (Utility) FINISH -->
 <div id="utilityapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="utilityappModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -2001,11 +2001,58 @@
                     &ensp;<input type="radio" id="utilityappcred" name="feeoptions"> Credit Card
                 </div>
                 <div>
-                          Application Type <input type="text" id="utilityapptype" size="10" value="Utility - ORG">
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Application Type</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityapptype" size="10">  <input type="checkbox" id="utilityappfilfee"> Filing Fee Enclosed</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Specification # of Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappspcpg" size="10">  <input type="checkbox" id="utilityappfilfee"> Declaration Late Filing Fee Enclosed</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Claims numbered 1 - </td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappclm1" size="10">  <input type="checkbox" id="utilityappnondcx"> Non-DOCX Filing Fee Enclosed</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Drawing Sheet(s)</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappdrwsh" size="10">  <input type="checkbox" id="utilityappcertreq"> Certification and Request for Prioritized Examination</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;"> <input type="radio" id="utilityappfrmldrw" name="drawoptions"> Formal Drawings <input type="radio" id="utilityappinfrmldrw" name="drawoptions"> Informal Drawings</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;">         <input type="checkbox" id="utilityappnotchg"> Notification of Change of Correspondence Address</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  IDS # of Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappids" size="10">  <input type="checkbox" id="utilityapprefnot"> References NOT enclosed, cited in prior application</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  1449 # of Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityapp1449" size="10">  <input type="checkbox" id="utilityapp3.7"> 3.73 Statement and copy of assignment</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Signed Delcaration # of Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappsigndec" size="10">  <input type="checkbox" id="utilityappmultidep"> Multiple depended claims presented</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Number of Foreign Patents/NPL Documents</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappnumfor" size="10">  <input type="checkbox" id="utilityappmergeapp"> Merge Application Data Sheet</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Preliminaary Amendment Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappprel" size="10">  <input type="checkbox" id="utilityappmergeapp"> Total Claims   <input type="text" id="utilityapptotc" size="10"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;">  Communication Concerning Prior and</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="utilityappprio" size="10">  <input type="checkbox" id="utilityappind"> Independent Claims   <input type="text" id="utilityapptoti" size="10"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 0px; margin: 0;">  Copening Applications # of Pages</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;">         <input type="checkbox" id="utilityappesign"> E-Signature Enable</td>
+                        </tr>
+                    </table>                   
                 </div>
-                <div>
-                    
-                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
