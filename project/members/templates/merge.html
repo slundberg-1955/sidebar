@@ -641,7 +641,7 @@
                       <input type="checkbox" id="applicationdata_new2claimed"> Small entity status claimed
                 </div>
                 <div>
-                      <input type="radio" id="applicationdata_new2incapp" name="options"> Include Applicant(Assignment Executed)
+                   <br>   <input type="radio" id="applicationdata_new2incapp" name="options"> Include Applicant(Assignment Executed)
                 </div>
                 <div>
                       <input type="radio" id="applicationdata_new2incnon" name="options">Include Non-Applicant Assignee
@@ -2071,12 +2071,20 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('filoptions'), radioFill('feeoptions'), utilityapptype.value, 
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnUtilityApp(radioFill('filoptions'), radioFill('feeoptions'), utilityapptype.value, 
                 utilityappfilfee.checked, utilityappspcpg.value, utilityappfilfee.checked, utilityappclm1.value, utilityappnondcx.checked, utilityappdrwsh.value, utilityappcertreq.checked, radioFill('drawoptions'), 
                 utilityappnotchg.checked, utilityapprefnot.checked, utilityappids.value, utilityapp373.checked, 
                 utilityapp1449.value, utilityappmultidep.checked, utilityappsigndec.value, utilityappmergeapp.checked, utilityapptotc.value, 
                 utilityappnumfor.value, utilityapptoti.value, utilityappprel.value, utilityappcpysc.value, utilityappprio.value, utilityappcpysd.value, utilityappdeli.value, utilityapppoa.value)">Continue</button>
             </div>
+            <script>
+                function submitbtnUtilityApp(...args){
+                    const merged_data = args.join(',');
+                    alert(merged_data);
+                    document.getElementById('mergedata').value += merged_data;
+                    $('#applicationdata_new2').modal('show');
+                }
+            </script>
         </div>
     </div>
 </div>
@@ -2241,7 +2249,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffOfficeActRcvdtype.value, ffOfficeActRcvddeadline.value, ffOfficeActRcvdresp.value, ffOfficeActRcvdcit.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -2301,7 +2309,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('transmittaloptions'), mrgfforderfaxno.value, mrgfforderemail.value,
+                 mrgfforderdead.value, mrgfforderdeadmo.value, radioFill('apptypeoptions'), mrgfforderothenter.value)">Continue</button>
             </div>
         </div>
     </div>

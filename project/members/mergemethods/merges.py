@@ -1367,10 +1367,43 @@ class utilityapp:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
 
+        drawx = ''
+        drawtxt = ''
+        signx = ''
+        signtxt = ''
+        priorsignx = ''
+        priorsigntxt = ''
+        invx = ''
+        invtxt = ''
+        if mergeinfo[8] != '' and int(mergeinfo[8]) > 0:
+            drawx = 'X'
+            drawtxt = 'Formal Drawing(s) ('+ mergeinfo[8] +' sheets).'
+        if mergeinfo[17] != '' and int(mergeinfo[17]) > 0:
+            signx = 'X'
+            signtxt = 'Copy of Signed Declaration ('+ mergeinfo[17] +' pgs).'
+        if mergeinfo[25] != '' and int(mergeinfo[25]) > 0:
+            priorsignx = 'X'
+            priorsigntxt = 'Copy of Signed Declaration ('+ mergeinfo[25] +' pgs) from prior application.'
+        if mergeinfo[26] != '' and int(mergeinfo[26]) > 0:
+            invx = 'X'
+            invtxt = 'Deletion of Inventors:  Signed statement deleting inventor(s) named in the prior application ('+ mergeinfo[26] +' pgs).'
+        
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-
+            'appTypeText' : 'Utility Patent Application under 37 CFR 1.53(b) comprising:',
+            'docx' : 'DOCX',
+            'specPages' : mergeinfo[4],
+            'claimTotal' : mergeinfo[6],
+            'drawX' : drawx,
+            'drawText' : drawtxt,
+            'signDecX' : signx,
+            'signDecPagesText' : signtxt,
+            'decX' : priorsignx,
+            'decText' : priorsigntxt,
+            'inventX' : invx,
+            'inventText' : invtxt,
         })
         return replace
 
@@ -1385,3 +1418,40 @@ class assignment2016:
 
         })
         return replace
+    
+class ffOfficeActRcvd:
+    def ffOfficeActRcvd(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+
+        typeaction = mergeinfo[0]
+        deadline = mergeinfo[1]
+        reqresp = mergeinfo[2]
+        citedref = mergeinfo[3]
+        if citedref == 'true' and typeaction != '':
+            cite = ' and cited references '
+        if citedref == 'true' and typeaction == '':
+            cite = ' cited references '
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'cdueDate' : deadline,
+            'crespDate' : reqresp,
+            'actionType' : typeaction,
+            'citedRef' : cite,
+        })
+        return replace
+
+class mrgfforder:
+    def mrgfforder(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+    
