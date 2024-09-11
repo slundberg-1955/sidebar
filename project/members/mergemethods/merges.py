@@ -1366,6 +1366,9 @@ class utilityapp:
     def utilityapp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[28]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+        entitystatus = function_instance.entityfill(matter)
 
         drawx = ''
         drawtxt = ''
@@ -1375,6 +1378,10 @@ class utilityapp:
         priorsigntxt = ''
         invx = ''
         invtxt = ''
+        poax = ''
+        poatxt = ''
+        smallx = ''
+        smalltxt = ''
         if mergeinfo[8] != '' and int(mergeinfo[8]) > 0:
             drawx = 'X'
             drawtxt = 'Formal Drawing(s) ('+ mergeinfo[8] +' sheets).'
@@ -1387,11 +1394,32 @@ class utilityapp:
         if mergeinfo[26] != '' and int(mergeinfo[26]) > 0:
             invx = 'X'
             invtxt = 'Deletion of Inventors:  Signed statement deleting inventor(s) named in the prior application ('+ mergeinfo[26] +' pgs).'
+        if mergeinfo[27] != '' and int(mergeinfo[27]) > 0:
+            poax = 'X'
+            poatxt = 'Power of Attorney  ('+ mergeinfo[27] +' pgs).'  
+        if mergeinfo[20] != '' and int(mergeinfo[20]) > 0:
+            prelimx = 'X'
+            prelimtxt = 'Preliminary Amendment ('+ mergeinfo[20] +' pgs).'  
+        if mergeinfo[22] != '' and int(mergeinfo[22]) > 0:
+            compriorx = 'X'
+            compriortxt = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[22] +' pgs).' 
+        if mergeinfo[22] != '' and int(mergeinfo[22]) > 0:
+            compriorx = 'X'
+            compriortxt = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[22] +' pgs).' 
+        if mergeinfo[13] != '' and int(mergeinfo[13]) > 0 and  mergeinfo[15] != '' and int(mergeinfo[15]) > 0:
+            idsx = 'X'
+            idstxt = 'Information Disclosure Statement ('+ mergeinfo[13] +' pgs), Form 1449 ('+ mergeinfo[15] +' pgs), and copies of cited references (7).' 
+        
+        if entitystatus == 1:
+            smallx = 'X'
+            smalltxt = 'Applicant claims small entity status under 37 CFR 1.27.'
         
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
             'appTypeText' : 'Utility Patent Application under 37 CFR 1.53(b) comprising:',
             'docx' : 'DOCX',
             'specPages' : mergeinfo[4],
@@ -1404,6 +1432,14 @@ class utilityapp:
             'decText' : priorsigntxt,
             'inventX' : invx,
             'inventText' : invtxt,
+            'poaX' : poax,
+            'poaText' : poatxt,
+            'smallentityX' : smallx,
+            'smallentityText' : smalltxt,
+            'preliminaryX' : prelimx,
+            'preliminaryText' : prelimtxt,
+            'relatedX' : compriorx,
+            'relatedText' : compriortxt,
         })
         return replace
 
@@ -1455,3 +1491,18 @@ class mrgfforder:
         })
         return replace
     
+class DraftOAInstruct:
+    def DraftOAInstruct(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'corrDate' : mergeinfo[0],
+            'cdueDate' : mergeinfo[1],
+            # Need to edit country
+            'countryType' : 'American',
+            'matterCountryName' : 'United States of America'
+        })
+        return replace

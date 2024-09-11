@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..models import Matter
 from ..models import Rvwmatterinventors
 from ..models import Rvwmatterpersonnel
@@ -79,6 +80,30 @@ class mergefunctions:
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
+
+        if 'fa' in tables_list:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56690', roleorderno = 1)
+            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+            if 'GB' in contact.country:
+                country = 'United Kingdom'
+            if contact.country == 'US':
+                country = 'United States'
+
+            addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
+            basic = {
+                'faOrgName' : profile.orgname,
+                'faWorkAddr' : addr,
+                'faCSZ' : '',
+                'faAssignee' : '',
+                'recipientEmail' : contact.email
+            }
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+
+        if 'current' in tables_list:
+            basicOut.update({'currentDate': datetime.now().strftime("%B %d, %Y")})
 
         return basicOut
 
@@ -298,7 +323,13 @@ class mergefunctions:
             'This.filedDate' : 'matter',
             'This.title' : 'matter',
             'This.matterNo' : 'matter',
-            'recipient' : 'matter'
+            'recipient' : 'matter',
+            'faOrgName' : 'fa',
+            'faWorkAddr' : 'fa',
+            'faCSZ' : 'fa',
+            'faAssignee' : 'fa',
+            'ffparaEmail' : '',
+            'currentDate' :'current'
         }
         unique_values = set()
         # Iterate over the keys
