@@ -105,6 +105,15 @@ class mergefunctions:
         if 'current' in tables_list:
             basicOut.update({'currentDate': datetime.now().strftime("%B %d, %Y")})
 
+        if 'matterparticipant' in tables_list:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+            basic = {
+                'clientRefNo' : 'Ref. No. ' + part.matterno
+            }
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+
         return basicOut
 
     # assignee information fill 34606   
@@ -329,7 +338,8 @@ class mergefunctions:
             'faCSZ' : 'fa',
             'faAssignee' : 'fa',
             'ffparaEmail' : '',
-            'currentDate' :'current'
+            'currentDate' :'current',
+            'clientRefNo' : 'matterparticipant'
         }
         unique_values = set()
         # Iterate over the keys
