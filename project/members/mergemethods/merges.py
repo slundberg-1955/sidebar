@@ -537,16 +537,16 @@ class corrappln:
             AbsPg = ''
             SeqPg = ''
             FrmlPg = ''
-            if int(mergeinfo[4]) > 0:
+            if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
                 SubX = 'X'
                 SubPg = 'Substitute Specification (' + mergeinfo[4] + ' pg.).'
-            if int(mergeinfo[5]) > 0:
+            if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
                 AbsX = 'X'
                 AbsPg = 'Abstract (' + mergeinfo[5] + ' pg.).'
-            if int(mergeinfo[6]) > 0:
+            if mergeinfo[6] != '' and int(mergeinfo[6]) > 0:
                 SeqX = 'X'
                 SeqPg = 'Sequence Listing (' + mergeinfo[6] + ' pg.).'
-            if int(mergeinfo[7]) > 0:
+            if mergeinfo[7] != '' and int(mergeinfo[7]) > 0:
                 FrmlX = 'X'
                 FrmlPg = 'Formal Drawings (' + mergeinfo[7] + ' pg.).'
 

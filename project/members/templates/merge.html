@@ -142,6 +142,9 @@
         #LateSubmissionOfDec .modal-dialog{
             max-width: 600px;
         }
+        #extTime .modal-dialog{
+            max-width: 800px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -604,9 +607,22 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(corrapplnefile.checked, corrapplnpaperfile.checked, corrapplndepacc.checked, corrapplnext.value, 
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplnefile.checked, corrapplnpaperfile.checked, corrapplndepacc.checked, corrapplnext.value, 
                 corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
             </div>
+            <script>
+                function submitbtncorrappln(...args){
+                    const merged_data = args.join(',');
+                    alert(merged_data);
+                    document.getElementById('mergedata').value += merged_data;
+                    if(document.getElementById('corrapplnext').value){
+                        $('#extTime').modal('show');
+                    }
+                    else{
+                        submitbtnmerge();
+                    }
+                }
+            </script>
         </div>
     </div>
 </div>
@@ -2333,31 +2349,51 @@
                 <div>
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
-                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Mail Stop (if applicable): </td>
-                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimemstop" size="5"></td>
+                            <td align="left" style="border: none;">  Mail Stop (if applicable): </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimemstop" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Action being Extended: </td>
-                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimeactext" size="5"></td>
+                            <td align="left" style="border: none;">  Action being Extended: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeactext" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="left" style="border: none; padding: 2px; margin: 0;"> USPTO Mailing Date: </td>
-                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimeuspto" size="5"> (mm/dd/yyyy)</td>
+                            <td align="left" style="border: none;">  USPTO Mailing Date: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeuspto" size="5"> (mm/dd/yyyy)</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Response Due Date: </td>
-                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimerespdue" size="5"> (mm/dd/yyyy)</td>
+                            <td align="left" style="border: none;">  Response Due Date: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimerespdue" size="5"> (mm/dd/yyyy)</td>
                         </tr>
                     </table>  
                 </div>
                 <div>
-                     # of Months being Extended:  <select id="extTimedrop">
+                    <br>  # of Months being Extended:  <select id="extTimedrop">
                         <option>One-Month</option>
                         <option>Two-Month</option>
                         <option>Three-Month</option>
                         <option>Four-Month</option>
                         <option>Five-Month</option>
                     </select>
+                </div>
+                <div>
+                    <br><table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;"></td>
+                            <td align="right" style="border: none;"><input type="checkbox" id="extTimepetext"> A Petition for Extention of Time was previously requested in this matter.</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Date of the Last Request: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeactext" size="5" placeholder=" /  / "> (mm/dd/yyyy)</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Fee Paid in Last Request: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeuspto" size="5" placeholder="0.00"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Remaining Fee Due: </td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimerespdue" size="5" placeholder="0.00"></td>
+                        </tr>
+                    </table>  
                 </div>
             </div>
             <div class="modal-footer">
