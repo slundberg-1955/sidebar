@@ -139,6 +139,9 @@
         #mrgfforder .modal-dialog{
             max-width: 700px;
         }
+        #LateSubmissionOfDec .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -389,15 +392,18 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    &emsp;&emsp;Late Submission of Declaration Surcharge Paid:<input type="checkbox" id="LateSubmissionOfDecbox">
-                    &emsp;&emsp;Pages in Declaration:<input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'>
-                    &emsp;&emsp;Pages in Substitute Statement:<input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'>
-                    &emsp;&emsp;Esign Enable:<input type="checkbox" id="LateSubmissionOfDecesign" name="esign">
+                    &emsp;&emsp;Late Submission of Declaration Surcharge Paid: <input type="checkbox" id="LateSubmissionOfDecbox">
+                    <br>&emsp;&emsp;Pages in Declaration: <input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'>
+                    <br>&emsp;&emsp;Pages in Substitute Statement: <input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'>
+                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="LateSubmissionOfDecesign" name="esign">
                 </div>
+                <script>
+
+                </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LateSubmissionOfDecbox.value, LateSubmissionOfDecpagedec.value, LateSubmissionOfDecpagesub.value, LateSubmissionOfDecesign.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LateSubmissionOfDecbox.checked, LateSubmissionOfDecpagedec.value, LateSubmissionOfDecpagesub.value, LateSubmissionOfDecesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -2311,6 +2317,52 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('transmittaloptions'), mrgfforderfaxno.value, mrgfforderemail.value,
                  mrgfforderdead.value, mrgfforderdeadmo.value, radioFill('apptypeoptions'), mrgfforderothenter.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Extention of time UI -->
+<div id="extTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="extTimeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Extension of Time</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Mail Stop (if applicable): </td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimemstop" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Action being Extended: </td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimeactext" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;"> USPTO Mailing Date: </td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimeuspto" size="5"> (mm/dd/yyyy)</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 2px; margin: 0;"> Response Due Date: </td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;"><input type="text" id="extTimerespdue" size="5"> (mm/dd/yyyy)</td>
+                        </tr>
+                    </table>  
+                </div>
+                <div>
+                     # of Months being Extended:  <select id="extTimedrop">
+                        <option>One-Month</option>
+                        <option>Two-Month</option>
+                        <option>Three-Month</option>
+                        <option>Four-Month</option>
+                        <option>Five-Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
             </div>
         </div>
     </div>

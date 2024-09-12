@@ -230,12 +230,10 @@ class recordation:
             'checkX' : '',
         })
         return replace
-
+ 
+# Only need duedate and nickU
 class LateSubmissionOfDec:
     def LateSubmissionOfDec(self, matter, mergeinfo, keys):
-        paid = mergeinfo[0]
-        pageDec = mergeinfo[1]
-        pageSub = mergeinfo[2] 
         esign = mergeinfo[3]
         
         function_instance = mergefunctions.mergefunctions()
@@ -244,34 +242,51 @@ class LateSubmissionOfDec:
 
         # Fill Data
         matter_data = function_instance.matterFill(matter)
-        inventor_data = function_instance.inventorFill(matter_data)
-        patent_data = function_instance.patentFill(matter_data)
-
         SAPhone = function_instance.phoneFill(matter_data)
-
         depnum = function_instance.depnumFill(matter_data)
-        artunitno = patent_data.artunitno
-        custcor = function_instance.corrcustnumFill(matter_data)
-        confirm = matter_data.confirmationno
+        entitystatus = function_instance.entityfill(matter)
 
-        if(custcor == ''):
-            custcor = 'Unknown'
-        if(artunitno == '' or artunitno == 'None'):
-            artunitno = 'Unknown'
-        if(confirm == ''):
-            confirm = 'Unknown'
+        if(entitystatus == 0):
+            feeamt = '64.00'
+        if(entitystatus == 2):
+            feeamt = '160.00'
+        if(entitystatus == 1):
+            feeamt = '32.00'
+
+        decsubx = ''
+        decsubtxt = ''
+        depx = ''
+        deptxt = ''
+        feeamt = ''
+        latepaid = ''
+        if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
+            decsubx = 'X'
+            decsubtxt = 'Signed Declaration ('+ mergeinfo[1] +' '+ function_instance.pgCount(int(mergeinfo[1])) +'.).'
+            latepaid = 'Declaration. '
+        if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
+            decsubx = 'X'
+            decsubtxt = 'Signed Substitute Statement ('+ mergeinfo[2] +' '+ function_instance.pgCount(int(mergeinfo[2])) +'.).'
+            latepaid = 'Substitute Statement in lieu of a Declaration. '
+        if mergeinfo[0] == 'true':
+            latepaid = latepaid + 'Corresponding fees with regard to the late submission were paid previously, therefore applicants believe no additional fees are due at this time.'
+        else:
+            depx = 'X'
+            deptxt = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ feeamt +' to cover the Late Submission Surcharge. '
+
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'SAPhone' : SAPhone,
             'depAccount' : depnum,
-            'pgs' : pageDec,
-            'subX' : '',
-            'subText' : '',
-            'nickSA' : '',
+            'decsubX' : decsubx,
+            'decsubText' : decsubtxt,
+            'depX' : depx,
+            'depText' : deptxt,
             'nickU' : '',
-            'latePaid': '',
+            'latePaid': latepaid,
+            'firmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'dueDate' : '',
         })
         return replace     
 

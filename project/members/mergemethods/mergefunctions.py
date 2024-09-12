@@ -62,6 +62,7 @@ class mergefunctions:
                 'SAName' : SA_data.personname,
                 'SARegNo' : SA_data.registrationno,
                 'orgName' : SA_data.orgname,
+                'nickSA' : SA_data.nickname,
             }
             for key, value in basic.items():
                 if key in keys:
@@ -314,6 +315,7 @@ class mergefunctions:
             'confirmNo' : 'matter',
             'SAName' : 'rvwmatterpersonnel',
             'SARegNo' : 'rvwmatterpersonnel',
+            'nickSA' : 'rvwmatterpersonnel',
             'orgName' : 'rvwmatterpersonnel',
             'recipient' : 'rvwmatterinventors',
             'WAName' : 'WA',
@@ -489,3 +491,9 @@ class mergefunctions:
                 return tens[n // 10]
             else:
                 return tens[n // 10] + "-" + units[n % 10]
+            
+    def pgCount(self, n):
+        if n == 1:
+            return 'pg'
+        else:
+            return 'pgs'
