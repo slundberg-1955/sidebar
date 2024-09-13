@@ -446,6 +446,12 @@ def mergeDoc(matter , mergeinfo):
             pctext = pctext.replace('pctcorrect', 'pctextention')
             mergeDoc(matter, pctext)
 
+    if mergeinfo_list[1] == 'corrappln':
+        if int(mergefninfo[1]) > 0:
+            extime = mergeinfo.replace('corrappln', 'exttimeCF')
+            extime = extime.replace('communications', 'transmittal')
+            mergeDoc(matter, extime)
+
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew':
@@ -470,7 +476,7 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
-
+            
     doccount = 0
     success = False
 

@@ -537,18 +537,18 @@ class corrappln:
             AbsPg = ''
             SeqPg = ''
             FrmlPg = ''
-            if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
+            if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
                 SubX = 'X'
-                SubPg = 'Substitute Specification (' + mergeinfo[4] + ' pg.).'
-            if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
+                SubPg = 'Substitute Specification (' + mergeinfo[2] + ' pg.).'
+            if mergeinfo[3] != '' and int(mergeinfo[3]) > 0:
                 AbsX = 'X'
-                AbsPg = 'Abstract (' + mergeinfo[5] + ' pg.).'
-            if mergeinfo[6] != '' and int(mergeinfo[6]) > 0:
+                AbsPg = 'Abstract (' + mergeinfo[3] + ' pg.).'
+            if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
                 SeqX = 'X'
-                SeqPg = 'Sequence Listing (' + mergeinfo[6] + ' pg.).'
-            if mergeinfo[7] != '' and int(mergeinfo[7]) > 0:
+                SeqPg = 'Sequence Listing (' + mergeinfo[4] + ' pg.).'
+            if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
                 FrmlX = 'X'
-                FrmlPg = 'Formal Drawings (' + mergeinfo[7] + ' pg.).'
+                FrmlPg = 'Formal Drawings (' + mergeinfo[5] + ' pg.).'
 
             # Set months 1-5 based on extamt
             #if extamt > 0:
@@ -1519,5 +1519,58 @@ class DraftOAInstruct:
             # Need to edit country
             'countryType' : 'American',
             'matterCountryName' : 'United States of America'
+        })
+        return replace
+
+class exttimeCF:
+    def exttimeCF(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        depnum = function_instance.depnumFill(matter_data)
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'extLength' : mergeinfo[12].upper(),
+            'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
+            'feeAmount' : mergeinfo[1],
+            'enclosed' : '',
+            'depAccount' : depnum,
+            'extLengthL' : mergeinfo[12].lower(),
+            'mailstopText' : mergeinfo[8],
+            'extResponse' : mergeinfo[9],
+            'dateMailed' : mergeinfo[10],
+            'dueDate' : mergeinfo[11],
+            'newDate' : function_instance.newDate(mergeinfo[12], mergeinfo[11]),
+            'petitionText' : '',
+
+        })
+        return replace
+
+# Only need dueDate
+class incorrectfilerect:
+    def incorrectfilerect(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+        depnum = function_instance.depnumFill(matter_data)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'depAccount' : depnum,
+            'firmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'nickU' : '',
+            'postcardX' :'',
+            'postcardText' : '',
+            'dueDate' : '',
+            'SAPhone' : function_instance.phoneFill(matter_data),
         })
         return replace

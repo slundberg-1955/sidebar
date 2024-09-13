@@ -6,6 +6,9 @@ from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo
 from ..models import Patent, Customernumbers, CustomerNos, Activity
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+
 import re
 
 class mergefunctions:
@@ -497,3 +500,21 @@ class mergefunctions:
             return 'pg'
         else:
             return 'pgs'
+
+    def newDate(self, n, date):
+        date_obj = datetime.strptime(date, '%m/%d/%Y')
+        
+        if n == 'One-Month':
+            new_date = date_obj + relativedelta(months=1)
+        elif n == 'Two-Month':
+            new_date = date_obj + relativedelta(months=2)
+        elif n == 'Three-Month':
+            new_date = date_obj + relativedelta(months=3)
+        elif n == 'Four-Month':
+            new_date = date_obj + relativedelta(months=4)
+        elif n == 'Five-Month':
+            new_date = date_obj + relativedelta(months=5)
+        else:
+            return "Invalid input"
+        
+        return new_date.strftime('%B %d, %Y')
