@@ -1619,3 +1619,54 @@ class pctdeclaration2:
             'clientRefText' : '',
         })
         return replace
+
+class rcexmit3:
+    def rcexmit3(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[2]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        aarfx = ''
+        aarftxt = ''
+        abrfx = ''
+        abrftxt = ''
+        amendx = ''
+        amendtxt = ''
+        idsx = ''
+        idstxt = ''
+        ccpx = ''
+        ccptxt = ''
+        if mergeinfo[5] != '':
+            aarfx = 'X'
+            aarftxt = 'Consider the amendment(s)/reply under 37 C.F.R. § 1.116 previously filed on ' + mergeinfo[5]
+        if mergeinfo[6] != '':
+            abrfx = 'X'
+            abrftxt = 'Consider the arguments in the Appeal Brief or Reply Brief previously filed on ' + mergeinfo[6]
+        if mergeinfo[7] != '' and int(mergeinfo[7]) > 0:
+            amendx = 'X'
+            amendtxt = 'Amendment and Response Under 37 C.F.R § 1.116 ('+ mergeinfo[7] +' pages) is enclosed.'
+        if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
+            ccpx = 'X'
+            ccptxt = 'Communication Concerning Prior or Copending Applications ('+ mergeinfo[19] +' pgs).'
+
+        fee = ''
+        if mergeinfo[1] == '1':
+            deptxt = 'Subject to the conditions of the QPIDS Pilot Program as stated above: Authorization to charge deposit account 19-0743 in the amount of '+ fee +' to pay the RCE filing fee required under 37 CFR § 1.17(e)(2).'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'aarfX' : aarfx,
+            'aarfText' : aarftxt,
+            'abrfX' : abrfx,
+            'abrfText' : abrftxt,
+            'amendX' : amendx,
+            'amendText' : amendtxt,
+            'ccpX' : ccpx,
+            'ccpText' : ccptxt,
+            'depCheckText' : deptxt
+        })
+        return replace

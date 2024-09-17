@@ -145,6 +145,9 @@
         #extTime .modal-dialog{
             max-width: 800px;
         }
+        #rcexmit3 .modal-dialog{
+            max-width: 800px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -2411,16 +2414,111 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="rcexmit3certmail"> Include Certificate of Mailing
-                    &emsp;&emsp;      <input type="radio" id="rcexmit3depacc" name="feeoptions"> Deposit Account
-                    &ensp;<input type="radio" id="rcexmit3chk" name="feeoptions"> Check
-                    &ensp;<input type="radio" id="rcexmit3cred" name="feeoptions"> Credit Card
+                     <input type="checkbox" id="rcexmit3certmail"> Include Certificate of Mailing
+                          <input type="radio" id="rcexmit3depacc" name="rcexmit3feeoptions" value="1"> Deposit Account
+                    &ensp;<input type="radio" id="rcexmit3chk" name="rcexmit3feeoptions" value="2"> Check
+                    &ensp;<input type="radio" id="rcexmit3cred" name="rcexmit3feeoptions" value="3"> Credit Card
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;" > <input type="checkbox" id="rcexmit3esign"> E-Signature      Due Date (if applicable) </td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3duedte" size="10" placeholder="  /  /  "></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> <input type="checkbox" id="rcexmit3rceprev"> An RCE has been previously filed in this application</td>
+                            <td align="right" style="border: none; padding: 4px;"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Amendments(s)/Reply under 37 CFR sec 1.116 previously filed on:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit337prevdte" size="10" placeholder="  /  /  "></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Appeal Brief or Reply Brief previously filed on:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3appprev" size="10" placeholder="  /  /  "></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Amendment under 37 CFR 1.116 enclosed - # of pages:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit337encl" size="10" placeholder="0"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> <input type="checkbox" id="rcexmit3recalc"> Recalculate Necessary Fees</td>
+                            <td align="center" style="border: none; padding: 4px;">Claims remaining after amendment:</td>
+                            <td align="right" style="border: none; padding: 4px;">Highest number previously paid for:</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Total Claims</td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="text" id="rcexmit3totrem" size="10" placeholder="0"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3totprev" size="10" placeholder="0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Independent Claims</td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="text" id="rcexmit3indrem" size="10" placeholder="0"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3indprev" size="10" placeholder="0"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                     <input type="checkbox" id="rcexmit3muldep"> Multiple dependent claims presented (and fee not paid previously)
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> IDS # of pages:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3idspg" size="10" placeholder="0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> QPIDS # of pages:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3qpidspg" size="10" placeholder="0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Form 1449 # of pages:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit31449pg" size="10" placeholder="0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"> Number of Cited Documents:</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3numdoc" size="10" placeholder="0"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                     <input type="checkbox" id="rcexmit3comconpri"> A Communication Concerning Prior or Copending Applications is enclosed <input type="text" id="rcexmit3comconpg" size="10" placeholder="0"> Page(s)
+                </div>
+                <div>
+                     <input type="checkbox" id="rcexmit3petext"> A Petition for Extension of Time in the prior application is enclosed
+                </div>
+                <div>
+                     <input type="checkbox" id="rcexmit3termdis"> Terminal Disclaimer
+                                     <select id="rcexmit3SAdrop">
+                        <option value="selSA">Select Signing Attorney</option>
+                    </select>
+                </div>
+                <div>
+                     <button type="button">Additional Documents</button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnrcexmit3(rcexmit3certmail.checked, radioFill('rcexmit3feeoptions'), rcexmit3esign.checked, rcexmit3duedte.value, 
+                rcexmit3rceprev.checked, rcexmit337prevdte.value, rcexmit3appprev.value, rcexmit337encl.value, rcexmit3recalc.checked, rcexmit3totrem.value, rcexmit3totprev.value, rcexmit3indrem.value, rcexmit3indprev.value, 
+                rcexmit3muldep.checked, rcexmit3idspg.value, rcexmit3qpidspg.value, rcexmit31449pg.value, rcexmit3numdoc.value, rcexmit3comconpri.checked, rcexmit3comconpg.value, rcexmit3petext.checked, 
+                rcexmit3termdis.checked, rcexmit3SAdrop.value)">Continue</button>
             </div>
+            <script>
+                function submitbtnrcexmit3(...args){
+                    const merged_data = args.join(',');
+                    alert(merged_data);
+                    document.getElementById('mergedata').value += merged_data;
+                    if(document.getElementById('rcexmit3petext').checked){
+                        $('#extTime').modal('show');
+                    }
+                    else{
+                        submitbtnmerge();
+                    }
+                }
+            </script>
         </div>
     </div>
 </div>
@@ -2490,7 +2588,7 @@
             // Esign popUp
             if (esign == "TRUE" || mergemethod == 'incorrectfilerect' || mergemethod == 'corrinventorship' || mergemethod == 'corrapplicant') {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'assignment2016' || mergemethod == 'DraftOAInstruct' || mergemethod == 'mrgfforder'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'assignment2016' || mergemethod == 'DraftOAInstruct' || mergemethod == 'mrgfforder' || mergemethod == 'rcexmit3'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();

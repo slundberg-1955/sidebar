@@ -50,15 +50,18 @@ class mergefunctions:
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
+                    
         if 'inventor' in tables_list:
             inventor_data = merge_fn.inventorFill(matter_data)
             inventoretal = merge_fn.inventoretal(inventor_data.inventor)
             basic = {
-                'inventorEtal' : inventoretal
+                'inventorEtal' : inventoretal,
+                'firstInventor' : inventor_data.inventor
             }
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
+
         if 'rvwmatterpersonnel' in tables_list:
             SA_data = merge_fn.rvwmatterpersonnelFill(matter_data)
             basic = {
@@ -301,7 +304,6 @@ class mergefunctions:
                 confirm = 'Unknown'
             if(custcor == ''):
                 custcor = 'Unknown'
-
             basic = {
                 'This.serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
                 'This.filedDate' : matter_data.fileddate.strftime("%B %d, %Y"),
@@ -309,7 +311,6 @@ class mergefunctions:
                 'This.matterNo' : matter_data.hostmatterno,
                 'recipient' : Rvwmatterinventors.objects.using('FIP').get(matterid = matter_data.matterid).inventor
             }
-            
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -358,7 +359,8 @@ class mergefunctions:
             'faAssignee' : 'fa',
             'ffparaEmail' : '',
             'currentDate' :'current',
-            'clientRefNo' : 'matterparticipant'
+            'clientRefNo' : 'matterparticipant',
+            'firstInventor' : 'inventor'
         }
         unique_values = set()
         # Iterate over the keys
