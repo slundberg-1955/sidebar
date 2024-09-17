@@ -332,21 +332,17 @@ class olpemail:
         
         answer = mergeinfo[0]
         # Need to add use case for answer
-
+        replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'This.orgName' : org_data.orgname,
             'This.clientRefNo' : '',
-            'This.matterNo' : matter_data.hostmatterno,
             'activityname' : '',
-            'This.serialNo' : function_instance.transform_serialnumber(matter_data.serialnumber),
-            'This.filedDate' : matter_data.fileddate.strftime("%B %d, %Y"),
             'THIS.patNo' : patent_data.patentno,
             'THIS.issueDate' : patent_data.issuedate,
             'THIS.title'  : matter_data.title,
-            'This.title'  : matter_data.title,
             'designText' : '',
             'utilityText1' : utilityText1,
-            'cutilityText2' : '',
+            'cutilityText2' : 'Prior instructions have been received acknowledging SLW responsibility for payment of the maintenance fees through our preferred 3rd party provider, Black Hills AI (www.blackhills.ai).  If for any reason this process is no longer valid, please reach out to us expeditiously to confirm new instructions.',
             'utilityFee1' : utilityFee1,
             'utilityFee2' : utilityFee2,
             'utilityFee3' : utilityFee3,
@@ -478,8 +474,6 @@ class appReportFp:
             if "DIV" in description:
                 applicationType = "Utility Divisional Patent"
 
-            # Need to add ereport
-
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update({
@@ -510,10 +504,10 @@ class ownerchange:
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
-            'applicantName' : mergeinfo[2]
-            
+                'echoSignature' : esign_out,
+                'signatureDate' : esigndate_out,
+                'applicantName' : mergeinfo[2]
+
             })
             return replace
     
@@ -603,7 +597,7 @@ class missingpartsNw:
                 
 
             replace = {}
-            replace.update(function_instance.assigneefill(keys, matter))
+            # replace.update(function_instance.assigneefill(keys, matter))
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update({
 
@@ -1572,5 +1566,56 @@ class incorrectfilerect:
             'postcardText' : '',
             'dueDate' : '',
             'SAPhone' : function_instance.phoneFill(matter_data),
+        })
+        return replace
+    
+# Need to fix SARegNo - will not fill with mergebasic
+class corrinventorship:
+    def corrinventorship(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'depAccount' : function_instance.depnumFill(matter_data),
+        })
+        return replace
+
+# e-signature and SA data not filling correctly.
+class corrapplicant:
+    def corrapplicant(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+        })
+        return replace
+
+# Need small changes. clientreftxt and inventor info
+class pctdeclaration2:
+    def pctdeclaration2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'clientRefText' : '',
         })
         return replace

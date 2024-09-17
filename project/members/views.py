@@ -319,10 +319,10 @@ def WordMerger(docxpath, replace, output_path):
 # May have to edit for each merge
 def DocumentReader(docxpath):
     doc = Document(docxpath)
-    #subject = doc.paragraphs[0]
-    subject = ''
+    subject = doc.paragraphs[0].text.replace('Subject line:', '')
 
-    body = doc.paragraphs[0].text.replace('- Direct Dial', '\n')
+    body = doc.paragraphs[1].text.replace('- Direct Dial', '\n')
+    body = body.replace('Body of email:', '')
     body = body + '\n'.join([p.text for p in doc.paragraphs[2:]])
     return subject, body
 

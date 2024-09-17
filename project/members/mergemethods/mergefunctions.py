@@ -206,6 +206,9 @@ class mergefunctions:
             'THIS.WAName' : profile.fname + ' ' + profile.lname,
             'THIS.WAPhone' : contact.phone1,
             'THIS.WAEmail' : contact.email,
+            'This.WAName' : profile.fname + ' ' + profile.lname,
+            'This.WAPhone' : contact.phone1,
+            'This.WAEmail' : contact.email,
         }
         return info
     
@@ -240,6 +243,14 @@ class mergefunctions:
             'inventorMailingState' : contact.state,
             'inventorMailingZip' : contact.zip,
             'inventorMailingCountry' : contact.country,
+
+            'inventorName' : profile.fname + ' ' + profile.mname + '. ' + profile.lname,
+            'inventorCityState' : contact.city + ' ' + contact.state,
+            'inventorCountry' : contact.country,
+            'inventorAddress1' : contact.address1,
+            'inventorAddress2' : contact.address2,
+            'inventorCSZ' : '',
+            'Inventor2PCTdeclaration' : '',
         }
         return info
     
@@ -327,6 +338,9 @@ class mergefunctions:
             'THIS.WAName' : 'WA',
             'THIS.WAPhone' : 'WA',
             'THIS.WAEmail' : 'WA',
+            'This.WAName' : 'WA',
+            'This.WAPhone' : 'WA',
+            'This.WAEmail' : 'WA',
             'paraName' : 'para',
             'paraPhone' : 'para',
             'paraEmail' : 'para',
