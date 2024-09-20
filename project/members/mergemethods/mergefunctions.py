@@ -179,6 +179,24 @@ class mergefunctions:
         }
         return info
 
+    def recordationRoleFill(self, matter, role):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = role, roleorderno = 1)
+        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+
+        info = {
+            'assigneeCity' : contact.city,
+            'assigneeState' : contact.state,
+            'assigneeZip' : contact.zip,
+            'assigneeCountry' : contact.country,
+            'assigneeStreet' : contact.address1,
+            'assigneeName' : profile.orgname,
+        }
+        return info
+
     # Para fill
     def parafill(self, keys, matter):
         merge_fn = mergefunctions()

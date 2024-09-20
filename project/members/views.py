@@ -97,10 +97,55 @@ def addcorp(request):
         data = data.replace('"', "")
 
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34617')
-        org = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        orgname = org.orgname
-        orgout = 'Applicant: ' + orgname + ';Assignee: ' + orgname + ';Client: ' + orgname
+        orgout = ''
+        try:
+            apppart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '56691')
+            apporg = Orgprofile.objects.using('FIP').get(opid = apppart.contactid)
+            apporgname = apporg.orgname
+            orgout = orgout + 'Applicant: ' + apporgname + ';'
+        except:
+            orgout = ''
+
+        try:
+            assigneepart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34606')
+            assigneeorg = Orgprofile.objects.using('FIP').get(opid = assigneepart.contactid)
+            assigneeorgname = assigneeorg.orgname
+            orgout = orgout + 'Assignee: ' + assigneeorgname + ';'
+        except:
+            orgout = orgout + ''
+
+        try:
+            clpart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34617')
+            clorg = Orgprofile.objects.using('FIP').get(opid = clpart.contactid)
+            clorgname = clorg.orgname
+            orgout = orgout + 'Client: ' + clorgname + ';'
+        except:
+            orgout = orgout + ''
+
+        try:
+            prepart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '93476')
+            preorg = Orgprofile.objects.using('FIP').get(opid = prepart.contactid)
+            preorgname = preorg.orgname
+            orgout = orgout + 'Previous Client/Matter Number: ' + preorgname + ';'
+        except:
+            orgout = orgout + ''
+
+        """         
+        try:
+            fopart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '125766')
+            foorg = Orgprofile.objects.using('FIP').get(opid = fopart.contactid)
+            foorgname = foorg.orgname
+            orgout = orgout + 'Foreign Associate: ' + foorgname + ';'
+        except:
+            orgout = orgout + 'fail;' """
+
+        try:
+            lpart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34607')
+            lorg = Orgprofile.objects.using('FIP').get(opid = lpart.contactid)
+            lorgname = lorg.orgname
+            orgout = orgout + 'Licensee: ' + lorgname
+        except:
+            orgout = orgout + ''
 
         return JsonResponse({'message': f'{orgout}'})
     

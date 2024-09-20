@@ -202,19 +202,29 @@ class recordation:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
-
         replace = {}
-        esign_out, esigndate_out = function_instance.esigncheck('true')
+        if mergeinfo[0] == '1':
+            replace.update(function_instance.assigneefill(matter, 1))
+            selinv = mergeinfo[4]
+
+        if mergeinfo[0] == '2':
+            selinv = mergeinfo[4]
+            name = mergeinfo[7].split(": ", 1)[0]
+            if name == 'Assignee':
+                roleid = '34606'
+            if roleid:
+                replace.update(function_instance.recordationRoleFill(matter, roleid))
+
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[3])
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'depAccount' : depnum,
             'dateExecutionText' : '',
-            'selectedInventorList' : mergeinfo[0],
+            'selectedInventorList' : selinv,
             'totalFee' : '',
-            'numPages' : mergeinfo[1],
+            'numPages' : mergeinfo[2],
             'depAcctX' : '',
             'checkX' : '',
         })

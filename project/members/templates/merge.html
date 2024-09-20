@@ -330,11 +330,11 @@
             </div>
             <div class="modal-body">
                 <button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
-                &emsp;&emsp;Esign Enable:<input type="checkbox" id="recordationesign" name="esign">
-                &ensp;&emsp;Number of Pages:<input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
+                &emsp;&emsp;Esign Enable: <input type="checkbox" id="recordationesign" name="esign">
+                &ensp;&emsp;Number of Pages: <input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
                 <div class="pagecount">
-                    &emsp;&emsp;Deposit Account:<input type="radio" id="recordationdepacc" name="options" value="depacc">
-                    &ensp;Check:<input type="radio" id="recordationcheck" name="options" value="check">
+                    &emsp;&emsp;Deposit Account: <input type="radio" id="recordationdepacc" name="recordationoptions" value="depacc">
+                    &ensp;Check: <input type="radio" id="recordationcheck" name="recordationoptions" value="check">
                 </div>
                 <table class="table">
                     <thead>
@@ -354,7 +354,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button id = "recordationsub" type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(recordationesign.checked, recordationpagenum.value, recordationdepacc.checked, recordationcheck.checked)">Continue</button>
+                <button id = "recordationsub" type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
             </div>
         </div>
     </div>
@@ -2634,8 +2634,8 @@
         // New shared submit button
         function submitbtnmerge(...args){
             const merged_data = args.join(',');
-            alert(merged_data);
             document.getElementById('mergedata').value += merged_data;
+            alert(document.getElementById('mergedata').value);
             document.getElementById('mergeform').submit();
         }
 
@@ -2730,11 +2730,20 @@
                 });
 
                     document.getElementById("recordationsub").onclick = function() {
-                            document.getElementById("mergedata").value += inventorselname.join(';')  + ',';
-                            document.getElementById("mergedata").value += inventorselassign.join(';')  + ',';
-                            document.getElementById("mergedata").value += inventorseldec.join(';')  + ',';
-                            submitbtnmerge();
+                        const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
+                        const selectedData = [];
+                        checkboxesinv.forEach((checkbox, index) => {
+                            if (checkbox.checked) {
+                                const row = checkbox.closest('tr');
+                                const column1Value = row.children[1].innerText;
+                                const contentEditableFields = row.querySelectorAll('[contenteditable]');
+                                const rowData = [column1Value, ...Array.from(contentEditableFields).map(field => field.innerText)];
+                                selectedData.push(rowData);
+                            }
+                        });
+                        submitbtnmerge('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                     };
+                    
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -2797,37 +2806,20 @@
                         }
                         button.textContent = "Inventor(s) to Assignee";
                         $('#recordation').modal('show');
-                        const corpselname = [];
-                        const corpselassign = [];
-                        const corpseldec = [];
-                        const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"]');
-                        checkboxesinv.forEach((checkbox, index) => {
-                            checkbox.addEventListener('change', () => {
+                        
+                        document.getElementById("recordationsub").onclick = function() {
+                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"], input[type="checkbox"][name="corpchk2"]');
+                            const selectedData = [];
+                            checkboxesinv.forEach((checkbox, index) => {
                                 if (checkbox.checked) {
-                                    corpselname.push(corpList[index]);
-
-                                    const parentRow = checkbox.closest('tr');
-                                    const editableFields = parentRow.querySelectorAll('td[contenteditable]');
-                                    editableFields.forEach((field, fieldIndex) => {
-                                    field.addEventListener('input', () => {
-                                        if (fieldIndex === 0) {
-                                            corpselassign[index] = field.innerText;
-                                        } else if (fieldIndex === 1) {
-                                            corpseldec[index] = field.innerText;
-                                        }
-                                    });
-                                });
-                                    corpselassign.push(editableFields[0].innerText);
-                                    corpseldec.push(editableFields[1].innerText);
+                                    const row = checkbox.closest('tr');
+                                    const column1Value = row.children[1].innerText;
+                                    const contentEditableFields = row.querySelectorAll('[contenteditable]');
+                                    const rowData = [column1Value, ...Array.from(contentEditableFields).map(field => field.innerText)];
+                                    selectedData.push(rowData);
                                 }
                             });
-                        });
-
-                        document.getElementById("recordationsub").onclick = function() {
-                                document.getElementById("mergedata").value += corpselname.join(';')  + ',';
-                                document.getElementById("mergedata").value += corpselassign.join(';')  + ',';
-                                document.getElementById("mergedata").value += corpseldec.join(';')  + ',';
-                                submitbtnmerge();
+                            submitbtnmerge('2', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                         };
                         },
                     error: function(error) {
