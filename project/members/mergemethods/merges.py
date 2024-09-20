@@ -16,8 +16,6 @@ class appealfwd:
         matter_data = function_instance.matterFill(matter)
         patent_data = function_instance.patentFill(matter_data)
 
-        SAPhone = function_instance.phoneFill(matter_data)
-
         depnum = function_instance.depnumFill(matter_data)
         artunitno = patent_data.artunitno
         custcor = function_instance.corrcustnumFill(matter_data)
@@ -37,7 +35,6 @@ class appealfwd:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'SAPhone' : SAPhone,
             'feeAmount' : billamt,
             'depAccount' : depnum,
         })
@@ -46,15 +43,12 @@ class appealfwd:
 class pclaims:
     def pclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-
         matter_data = function_instance.matterFill(matter)
-        inventor_data = function_instance.inventorFill(matter_data)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-            'clientRefNo' : '',
-            'assignee' : '',
             'claimsDate' : mergeinfo[0],
             'dateDescription' : mergeinfo[1],
         })
@@ -64,17 +58,10 @@ class issuefee:
     def issuefee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        dep = mergeinfo[0]
-        check = mergeinfo[1]
         reqpat = mergeinfo[2]
         numfact = mergeinfo[3]
         drawnum = mergeinfo[4]
-        prevpaid = mergeinfo[6]
         prevpaiddate = mergeinfo[7]
-        withfiled = mergeinfo[8]
-        withmailed = mergeinfo[9]
-        amtinc = mergeinfo[10]
-        amtfrstpay = mergeinfo[11]
         esign = mergeinfo[12]
 
         dateIssueFee = ''
@@ -143,23 +130,26 @@ class issuefee:
                     designfee = 210
                 else:# ( - firstfeeamount)
                     designfee = 420
+
+        wdrwtxt = ''
+        if mergeinfo[8] == 'true' and mergeinfo[9] != '':
+            wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on .  Applicant received a decision, dated '+ mergeinfo[9] +', granting the petition to withdraw.'
         
+        if mergeinfo[11] == 'true':
+            increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of  to cover the issue fee increase.'
 
         esign_out, esigndate_out = function_instance.esigncheck(esign)
-        SAPhone = function_instance.phoneFill(matter_data)
         depnum = function_instance.depnumFill(matter_data)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'upperFirmName' : '',
-            'SAPhone' : SAPhone,
-            'nickSA' : '',
-            'nickU' : '',
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            #'nickU' : '',
             'dateIssueFee': prevpaiddate,
-            'withDrawText' : '',
-            'increaseText' : '',
+            'withDrawText' : wdrwtxt,
+            #'increaseText' : '',
             'dateNOAR' : noarDate,
             'depAccount' : depnum,
             'drawingX' : drawingX,
@@ -170,14 +160,14 @@ class issuefee:
             'patentTermAdjText' : patadjtxt,
             'patentTermAdjFee' : patadjfee,
             'patentTermAdjFacts' : patadjfact,
-            'feeTextX' : '',
-            'FeeText' : '',
+            #'feeTextX' : '',
+            #'FeeText' : '',
             'pubFeeX' : 'X',
             'pubFeeText' : '    Check in the amount of $210.00 to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).',
-            'previousX' : '',
-            'applyPreviousText' : '',
-            'commentX' : '',
-            'commentText' : '',
+            #'previousX' : '',
+            #'applyPreviousText' : '',
+            #'commentX' : '',
+            #'commentText' : '',
             'dueDate' : dateIssueFee,
         })
         return replace
@@ -216,9 +206,8 @@ class recordation:
         replace = {}
         esign_out, esigndate_out = function_instance.esigncheck('true')
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-            'SAName' : '',
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'depAccount' : depnum,
@@ -242,7 +231,6 @@ class LateSubmissionOfDec:
 
         # Fill Data
         matter_data = function_instance.matterFill(matter)
-        SAPhone = function_instance.phoneFill(matter_data)
         depnum = function_instance.depnumFill(matter_data)
         entitystatus = function_instance.entityfill(matter)
 
@@ -277,7 +265,6 @@ class LateSubmissionOfDec:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'SAPhone' : SAPhone,
             'depAccount' : depnum,
             'decsubX' : decsubx,
             'decsubText' : decsubtxt,
@@ -421,11 +408,17 @@ class stateofallow:
     def stateofallow(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
+            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[12])
+
             replace = {}
             depnum = function_instance.depnumFill(matter_data)
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update({
                 'depAccount' : depnum,
+                'signatureDate' : esigndate_out,
+                'echoSignature' : esign_out,
+                'allowType' : 'Notice of Allowability',
+                'dateNALL' : date.today().strftime("%B %d, %Y"),
             })
             return replace
     
@@ -515,12 +508,11 @@ class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[8])
+            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[6])
             efiling = mergeinfo[0]
-            paperfiling = mergeinfo[1]
-            depacc = mergeinfo[2]
-            extamt = mergeinfo[3]
-            wenclosures = mergeinfo[9]
+            depacc = mergeinfo[1]
+            extamt = mergeinfo[2]
+            wenclosures = mergeinfo[7]
 
             SubX = ''
             AbsX = ''
@@ -563,7 +555,10 @@ class corrappln:
                 'SubstitutePg' : SubPg,
                 'AbstractPg' : AbsPg,
                 'SeqPg' : SeqPg,
-                'FormalPg' : FrmlPg
+                'FormalPg' : FrmlPg,
+                'docList' : '',
+                'nickU' : '',
+                'dueDate' : '',
             })
             return replace
     
@@ -759,7 +754,7 @@ class recordedassnreport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
 
         })
@@ -772,7 +767,7 @@ class reportprvassnnew:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
             'salutation' : 'Inventor(s)',
             'recipient' : '',
@@ -786,7 +781,7 @@ class abandonReport:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
 
         })
@@ -813,7 +808,6 @@ class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        SAPhone = function_instance.phoneFill(matter_data)
         depacc = mergeinfo[0]
         check = mergeinfo[1]
         esign = mergeinfo[2]
@@ -858,7 +852,6 @@ class pctcorrect:
             'properApplicant' : 'Applicant',
             'encloseText' : 'enclose',
             'depAccount' : function_instance.depnumFill(matter_data),
-            'SAPhone' : SAPhone,
         })
         return replace
 
@@ -1391,6 +1384,10 @@ class utilityapp:
         poatxt = ''
         smallx = ''
         smalltxt = ''
+        prelimx = ''
+        prelimtxt = '' 
+        compriorx = ''
+        compriortxt = '' 
         if mergeinfo[8] != '' and int(mergeinfo[8]) > 0:
             drawx = 'X'
             drawtxt = 'Formal Drawing(s) ('+ mergeinfo[8] +' sheets).'
@@ -1409,9 +1406,6 @@ class utilityapp:
         if mergeinfo[20] != '' and int(mergeinfo[20]) > 0:
             prelimx = 'X'
             prelimtxt = 'Preliminary Amendment ('+ mergeinfo[20] +' pgs).'  
-        if mergeinfo[22] != '' and int(mergeinfo[22]) > 0:
-            compriorx = 'X'
-            compriortxt = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[22] +' pgs).' 
         if mergeinfo[22] != '' and int(mergeinfo[22]) > 0:
             compriorx = 'X'
             compriortxt = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[22] +' pgs).' 
@@ -1529,19 +1523,18 @@ class exttimeCF:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'extLength' : mergeinfo[12].upper(),
+            'extLength' : mergeinfo[11].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
             'feeAmount' : mergeinfo[1],
             'enclosed' : '',
             'depAccount' : depnum,
-            'extLengthL' : mergeinfo[12].lower(),
-            'mailstopText' : mergeinfo[8],
-            'extResponse' : mergeinfo[9],
-            'dateMailed' : mergeinfo[10],
-            'dueDate' : mergeinfo[11],
-            'newDate' : function_instance.newDate(mergeinfo[12], mergeinfo[11]),
+            'extLengthL' : mergeinfo[11].lower(),
+            'mailstopText' : mergeinfo[7],
+            'extResponse' : mergeinfo[8],
+            'dateMailed' : datetime.strptime(mergeinfo[9], '%m/%d/%Y').strftime('%B %d, %Y'),
+            'dueDate' : datetime.strptime(mergeinfo[10], '%m/%d/%Y').strftime('%B %d, %Y'),
+            'newDate' : function_instance.newDate(mergeinfo[11], mergeinfo[10]),
             'petitionText' : '',
-
         })
         return replace
 
@@ -1565,7 +1558,6 @@ class incorrectfilerect:
             'postcardX' :'',
             'postcardText' : '',
             'dueDate' : '',
-            'SAPhone' : function_instance.phoneFill(matter_data),
         })
         return replace
     

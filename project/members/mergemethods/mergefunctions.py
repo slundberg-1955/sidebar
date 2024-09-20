@@ -50,7 +50,7 @@ class mergefunctions:
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
-                    
+
         if 'inventor' in tables_list:
             inventor_data = merge_fn.inventorFill(matter_data)
             inventoretal = merge_fn.inventoretal(inventor_data.inventor)
@@ -69,6 +69,7 @@ class mergefunctions:
                 'SARegNo' : SA_data.registrationno,
                 'orgName' : SA_data.orgname,
                 'nickSA' : SA_data.nickname,
+                'SAPhone' : merge_fn.phoneFill(matter_data),
             }
             for key, value in basic.items():
                 if key in keys:
@@ -322,7 +323,7 @@ class mergefunctions:
             'serialNo' : 'matter',
             'inventorEtal' : 'inventor',
             'filedDate' : 'matter',
-            'custNoCorresp' : 'patent',
+            'custNoCorresp' : 'matter',
             'title' : 'matter',
             'examinerName' : 'personnel',
             'artUnit' : 'patent',
@@ -330,6 +331,7 @@ class mergefunctions:
             'confirmNo' : 'matter',
             'SAName' : 'rvwmatterpersonnel',
             'SARegNo' : 'rvwmatterpersonnel',
+            'SAPhone' : 'rvwmatterpersonnel',
             'nickSA' : 'rvwmatterpersonnel',
             'orgName' : 'rvwmatterpersonnel',
             'recipient' : 'rvwmatterinventors',

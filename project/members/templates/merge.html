@@ -148,6 +148,9 @@
         #rcexmit3 .modal-dialog{
             max-width: 800px;
         }
+        #issuefee .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -424,41 +427,107 @@
             </div>
             <div class="modal-body">
                 <div class="account">
-                    &emsp;&emsp;Deposit Account:<input type="radio" id="issuefeedepacc" name="account" checked="checked">
-                    &ensp;Check:<input type="radio" id="issuefeecheck" name="account">
+                    &emsp;&emsp;Deposit Account: <input type="radio" id="issuefeedepacc" name="account" checked="checked">
+                    &ensp;Check: <input type="radio" id="issuefeecheck" name="account">
                 </div>
                 <div class="form-group">
-                    <label for="issuefeerequestpat"><br>&emsp;&emsp;Request for Patent Term Adjustment:</label>
-                    <input type="checkbox" id="issuefeerequestpat">
+                    <br>&emsp;&emsp;Request for Patent Term Adjustment: <input type="checkbox" id="issuefeerequestpat">
                 </div>
                 <div style="display:none;" id="issuefeefact">
-                    &emsp;&emsp;Number of Pages in the Statement of Facts:<input type="text" id="issuefeepagefacts" size="10" placeholder = '0' value = 0 >   
+                    &emsp;&emsp;Number of Pages in the Statement of Facts: <input type="text" id="issuefeepagefacts" size="10" placeholder = '0' value = 0 >   
                 </div>   
                 <div>
-                    &emsp;&emsp;Number of Pages of Formal Drawings:&emsp;<input type="text" id="issuefeepagedraw" size="10" placeholder = '0' value = 0>
-                    <br>&emsp;&emsp;Merge "Response to Examiner's Reasons for Allowance"?<input type="checkbox" id="issuefeemrgexam">
-                    &emsp;&emsp;Issue Fee Previously Paid<input type="checkbox" id="issuefeeisspaid">
-                    <input type="text" id="issuefeeisspaidhide" size="10" placeholder = '  /  /  ' style="display:none; margin-left: 19.5em;"> 
+                    &emsp;&emsp;Number of Pages of Formal Drawings:&emsp;&emsp;&ensp;<input type="text" id="issuefeepagedraw" size="10" placeholder = '0' value = 0>
+                    <br>&emsp;&emsp;Merge "Response to Examiner's Reasons for Allowance"? <input type="checkbox" id="issuefeemrgexam">
+                    <br>&emsp;&emsp;Issue Fee Previously Paid <input type="checkbox" id="issuefeeisspaid">
+                    <br><input type="text" id="issuefeeisspaidhide" size="10" placeholder = '  /  /  ' style="display:none; margin-left: 19.5em;"> 
                 </div>
                 <div id="issuefeepagewithhide" style="display:none;">
-                    &emsp;&emsp;Petition To Withdraw Filed<input type="checkbox" id="issuefeewithfil"> 
+                    &emsp;&emsp;Petition To Withdraw Filed <input type="checkbox" id="issuefeewithfil">
+                </div> 
+                <div id="issuefeepagewithhidedate" style="display:none;">
                     &emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;<input type="text" id="issuefeemail" size="10" placeholder = '  /  /  '>
-                </div>   
-                
+                </div> 
+                <div id="issuefeedtepetgra" style="display:none;">
+                    &emsp;&emsp;&emsp;&emsp;Date of Petition to Withdraw: &emsp;&emsp;&ensp;<input type="text" id="issuefeepetw" size="10" placeholder = '  /  /  '>
+                    <br>&emsp;&emsp;&emsp;&emsp;Date Withdraw Granted:&emsp;&emsp;&emsp;&emsp;&emsp;<input type="text" id="issuefeewithgr" size="10" placeholder = '  /  /  '>
+                </div>  
                 <div style="display:none;" id="issuefeeamountinc">
-                    &emsp;&emsp;Issue Fee Amount Increased<input type="checkbox" id="issuefeeamtinc"> 
+                    &emsp;&emsp;Issue Fee Amount Increased <input type="checkbox" id="issuefeeamtinc"> 
                 </div>
                 <div style="display:none;" id="issuefeeamtisspay">
 
-                    &emsp;&emsp;&emsp;&emsp;Amount of First Issue Fee Payment:<input type="text" id="issuefeeamtfrst" size="10" placeholder = '0.00'>
+                    &emsp;&emsp;&emsp;&emsp;Amount of First Issue Fee Payment: <input type="text" id="issuefeeamtfrst" size="10" placeholder = '0.00'>
                 </div>
                 <div>
-                    <br>&emsp;&emsp;Esign Enable:<input type="checkbox" id="issuefeeesign">
+                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="issuefeeesign">
                 </div>
             </div>
+            <script>
+                if(document.getElementById('issuefeerequestpat')){
+                    const isspetcheckbox = document.getElementById('issuefeewithfil');
+                    const issdate1 = document.getElementById('issuefeedtepetgra');
+                    const issdate2 = document.getElementById('issuefeepagewithhidedate');
+
+                    isspetcheckbox.addEventListener('change', function() {
+                        if (isspetcheckbox.checked) {
+                            issdate1.style.display = 'block';
+                            issdate2.style.display = 'none';
+                        } else {
+                            issdate1.style.display = 'none';
+                            issdate2.style.display = 'block';
+                        }
+                    });
+                }
+                if(document.getElementById('issuefeerequestpat')){
+                    const isscheckbox = document.getElementById('issuefeerequestpat');
+                    const isspagect = document.getElementById('issuefeefact');
+
+                    isscheckbox.addEventListener('change', function() {
+                        if (isscheckbox.checked) {
+                            isspagect.style.display = 'block';
+                        } else {
+                            isspagect.style.display = 'none';
+                        }
+                    });
+                }
+                if(document.getElementById('issuefeeisspaid')){
+                    const isscheckbox2 = document.getElementById('issuefeeisspaid');
+                    const isspagect2 = document.getElementById('issuefeeisspaidhide');
+                    const isspagect3 = document.getElementById('issuefeepagewithhide');
+                    const isspagect5 = document.getElementById('issuefeepagewithhidedate');
+                    const isspagect4 = document.getElementById('issuefeeamountinc');
+
+                    isscheckbox2.addEventListener('change', function() {
+                        if (isscheckbox2.checked) {
+                            isspagect2.style.display = 'block';
+                            isspagect3.style.display = 'block';
+                            isspagect4.style.display = 'block';
+                            isspagect5.style.display = 'block';
+                        } else {
+                            isspagect2.style.display = 'none';
+                            isspagect3.style.display = 'none';
+                            isspagect4.style.display = 'none';
+                            isspagect5.style.display = 'none';
+                        }
+                    });
+                }
+                if(document.getElementById('issuefeeamtinc')){
+                    const isscheckbox3 = document.getElementById('issuefeeamtinc');
+                    const isspagect1 = document.getElementById('issuefeeamtisspay');
+
+                    isscheckbox3.addEventListener('change', function() {
+                        if (isscheckbox3.checked) {
+                            isspagect1.style.display = 'block';
+                        } else {
+                            isspagect1.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeepetw.value, issuefeewithgr.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -612,7 +681,7 @@
             <script>
                 function submitbtncorrappln(...args){
                     const merged_data = args.join(',');
-                    alert(merged_data);
+                    //alert(merged_data);
                     document.getElementById('mergedata').value += merged_data;
                     if(document.getElementById('corrapplnext').value){
                         $('#extTime').modal('show');
@@ -1395,12 +1464,9 @@
             </div>
             <div class="modal-body">
                 <div class="account">
-                    <label for="pctcorrectdepacc">&emsp;&emsp;Deposit Account:</label>
-                    <input type="radio" id="pctcorrectdepacc" name="account" checked="checked">
-                    <label for="pctcorrectcheck">&ensp;Check:</label>
-                    <input type="radio" id="pctcorrectcheck" name="account">
-                    <label for="pctcorrectesign">&emsp;&emsp;</label>
-                    <input type="checkbox" id="pctcorrectesign"> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
+                    &emsp;&emsp;Deposit Account:<input type="radio" id="pctcorrectdepacc" name="account" checked="checked">
+                    &ensp;Check:<input type="radio" id="pctcorrectcheck" name="account">
+                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign"> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
                 </div>  
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
@@ -2380,15 +2446,15 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Date of the Last Request: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimeactext" size="5" placeholder=" /  / "> (mm/dd/yyyy)</td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimereqdte" size="5" placeholder=" /  / "> (mm/dd/yyyy)</td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Fee Paid in Last Request: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimeuspto" size="5" placeholder="0.00"></td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimereqfee" size="5" placeholder="0.00"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Remaining Fee Due: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimerespdue" size="5" placeholder="0.00"></td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeremdue" size="5" placeholder="0.00"></td>
                         </tr>
                     </table>  
                 </div>
@@ -2399,7 +2465,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(extTimemstop.value, extTimeactext.value, 
-                extTimeuspto.value, extTimerespdue.value, extTimedrop.value, extTimepetext.checked, extTimeactext.value, extTimeuspto.value, extTimerespdue.value, extTimeesign.checked)">Continue</button>
+                extTimeuspto.value, extTimerespdue.value, extTimedrop.value, extTimepetext.checked, extTimereqdte.value, extTimereqfee.value, extTimeremdue.value, extTimeesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -2955,48 +3021,6 @@
 
             updatecheckbox.addEventListener('change', function() {
                 updatepagect.disabled = !updatecheckbox.checked;
-            });
-        }
-        if(document.getElementById('issuefeerequestpat')){
-            const isscheckbox = document.getElementById('issuefeerequestpat');
-            const isspagect = document.getElementById('issuefeefact');
-
-            isscheckbox.addEventListener('change', function() {
-                if (isscheckbox.checked) {
-                    isspagect.style.display = 'block';
-                } else {
-                    isspagect.style.display = 'none';
-                }
-            });
-        }
-        if(document.getElementById('issuefeeisspaid')){
-            const isscheckbox2 = document.getElementById('issuefeeisspaid');
-            const isspagect2 = document.getElementById('issuefeeisspaidhide');
-            const isspagect3 = document.getElementById('issuefeepagewithhide');
-            const isspagect4 = document.getElementById('issuefeeamountinc');
-
-            isscheckbox2.addEventListener('change', function() {
-                if (isscheckbox2.checked) {
-                    isspagect2.style.display = 'block';
-                    isspagect3.style.display = 'block';
-                    isspagect4.style.display = 'block';
-                } else {
-                    isspagect2.style.display = 'none';
-                    isspagect3.style.display = 'none';
-                    isspagect4.style.display = 'none';
-                }
-            });
-        }
-        if(document.getElementById('issuefeeamtinc')){
-            const isscheckbox3 = document.getElementById('issuefeeamtinc');
-            const isspagect1 = document.getElementById('issuefeeamtisspay');
-
-            isscheckbox3.addEventListener('change', function() {
-                if (isscheckbox3.checked) {
-                    isspagect1.style.display = 'block';
-                } else {
-                    isspagect1.style.display = 'none';
-                }
             });
         }
 

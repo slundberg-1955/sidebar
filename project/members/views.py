@@ -447,7 +447,7 @@ def mergeDoc(matter , mergeinfo):
             mergeDoc(matter, pctext)
 
     if mergeinfo_list[1] == 'corrappln':
-        if int(mergefninfo[1]) > 0:
+        if mergefninfo[1] != '' and int(mergefninfo[1]) > 0:
             extime = mergeinfo.replace('corrappln', 'exttimeCF')
             extime = extime.replace('communications', 'transmittal')
             mergeDoc(matter, extime)
