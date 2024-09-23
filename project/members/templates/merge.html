@@ -151,6 +151,9 @@
         #issuefee .modal-dialog{
             max-width: 600px;
         }
+        #pctgeneric .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -883,6 +886,17 @@
                 <div class="form-group">
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
+                            <td align="right" style="border: none;">  PCT Signing Attorney:</td>
+                            <td align="left"style="border: none;"><select id="PatentCoopTreaty2names">
+                                <option value="Bradley Scheer">Bradley Scheer</option>
+                                <option value="David Black">David Black</option>
+                                <option value="Marvin Beekman">Marvin Beekman</option>
+                                <option value="Monique Perdok">Monique Perdok</option>
+                                <option value="Suneel Arora">Suneel Arora</option>
+                                <option value="Timothy Bianchi">Timothy Bianchi</option>
+                              </select></td>
+                        </tr>
+                        <tr style="border: none;">
                             <td align="right" style="border: none;">  Sheets of PCT Safe Request Form:</td>
                             <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2pctpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
@@ -931,7 +945,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PatentCoopTreaty2mail.checked, PatentCoopTreaty2deliver.checked, PatentCoopTreaty2fax.checked, PatentCoopTreaty2hand.checked, PatentCoopTreaty2online.checked, 
-                PatentCoopTreaty2pctpg.value, PatentCoopTreaty2descpg.value, PatentCoopTreaty2claimpg.value, PatentCoopTreaty2abspg.value, PatentCoopTreaty2drwpg.value, PatentCoopTreaty2seqpg.value, PatentCoopTreaty2poapg.value, PatentCoopTreaty2fee.checked, 
+                PatentCoopTreaty2names.value, PatentCoopTreaty2pctpg.value, PatentCoopTreaty2descpg.value, PatentCoopTreaty2claimpg.value, PatentCoopTreaty2abspg.value, PatentCoopTreaty2drwpg.value, PatentCoopTreaty2seqpg.value, PatentCoopTreaty2poapg.value, PatentCoopTreaty2fee.checked, 
                 PatentCoopTreaty2spoa.checked, PatentCoopTreaty2gpoa.checked, PatentCoopTreaty2pdoc.checked, PatentCoopTreaty2accl.checked)">Continue</button>
             </div>
         </div>
@@ -2588,6 +2602,34 @@
         </div>
     </div>
 </div>
+<!-- pct - generic header pctgeneric-->
+<div id="pctgeneric" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctgenericModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PCT Generic Header</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="ger"> European Patent Office<br>  Erhardtstrasse 27<br>  D-80298 Munich<br>  GERMANY</td>
+                            <td align="right" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="ger"> The International Bureau of WIPO<br>  34, Chemin des Colombettes<br>  1211 Geneva 20<br>  SWITZERLAND</td>
+                        </tr>
+                    </table>  
+                </div>
+                <div>
+                    <br>  <input type="checkbox" id="pctgenericesign"> E-Signature
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -2654,7 +2696,7 @@
             // Esign popUp
             if (esign == "TRUE" || mergemethod == 'incorrectfilerect' || mergemethod == 'corrinventorship' || mergemethod == 'corrapplicant') {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'assignment2016' || mergemethod == 'DraftOAInstruct' || mergemethod == 'mrgfforder' || mergemethod == 'rcexmit3'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'assignment2016' || mergemethod == 'DraftOAInstruct' || mergemethod == 'mrgfforder' || mergemethod == 'rcexmit3' || mergemethod == 'pctgeneric'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();

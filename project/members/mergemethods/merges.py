@@ -1294,18 +1294,32 @@ class PatentCoopTreaty2:
         valid_dates = [date for date in dates if date not in [None, '']]
         priority = min(valid_dates)
 
+        poatype = ''
+        if mergeinfo[15] == 'true':
+            poatype = 'General POA'
+
+        if mergeinfo[14] == 'true':
+            poatype = 'Separate POA'
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.applicantfill(matter, 1))
+        try:
+            replace.update(function_instance.applicantfill(matter, 1))
+        except:
+            applicantName = ''
         replace.update({
-            'requestFormSheets' : mergeinfo[5],
-            'descriptionSheets' : mergeinfo[6],
-            'claimSheets' : mergeinfo[7],
-            'abstractSheets' : mergeinfo[8],
-            'drawingSheets' : mergeinfo[9],
-            'seqListSheets' : mergeinfo[10],
-            'poapages' : mergeinfo[11] + ' ',
-            'priorityDate' : priority
+            'requestFormSheets' : mergeinfo[6],
+            'descriptionSheets' : mergeinfo[7],
+            'claimSheets' : mergeinfo[8],
+            'abstractSheets' : mergeinfo[9],
+            'drawingSheets' : mergeinfo[10],
+            'seqListSheets' : mergeinfo[11],
+            'poapages' : mergeinfo[12] + ' ',
+            'priorityDate' : priority,
+            'selSAName' : mergeinfo[5],
+            'applicantName' : applicantName,
+            'addlDocs' : '',
+            'poatype' : poatype
         })
         return replace
     
@@ -1581,7 +1595,6 @@ class incorrectfilerect:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'depAccount' : depnum,
-            'firmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'nickU' : '',
             'postcardX' :'',
             'postcardText' : '',
