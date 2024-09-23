@@ -122,6 +122,13 @@ class mergefunctions:
                 if key in keys:
                     basicOut.update({key: value})
 
+        if 'firm' in tables_list:
+            basic = {}
+            basic.update(merge_fn.firmfill(matter))
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+
         return basicOut
 
     # assignee information fill 34606   
@@ -300,10 +307,11 @@ class mergefunctions:
 
         return patent_data.entitystatus
     
-    def firmfill(self):
+    def firmfill(self, data):
         # Might need to pull from DB
+        firm = Rvwmatterpersonnel.objects.using('FIP').filter(orgid = 4)
         info = {
-            'firmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'firmName' : firm[0].orgname,
             'firmPoBox' : 'P.O. Box 2938',
             'firmCityStZip' : 'Minneapolis, Minnesota  55402',
         }
@@ -380,7 +388,10 @@ class mergefunctions:
             'ffparaEmail' : '',
             'currentDate' :'current',
             'clientRefNo' : 'matterparticipant',
-            'firstInventor' : 'inventor'
+            'firstInventor' : 'inventor',
+            'firmName' : 'firm',
+            'firmPoBox' : 'firm',
+            'firmCityStZip' : 'firm',
         }
         unique_values = set()
         # Iterate over the keys

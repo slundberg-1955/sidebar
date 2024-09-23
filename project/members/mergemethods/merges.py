@@ -196,7 +196,7 @@ class Statement373c:
         })
         return replace
     
-# update  
+# may need to add other organization types. May need totalfee
 class recordation:
     def recordation(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -210,10 +210,28 @@ class recordation:
         if mergeinfo[0] == '2':
             selinv = mergeinfo[4]
             name = mergeinfo[7].split(": ", 1)[0]
+            if name == 'Applicant':
+                roleid = '56691'
             if name == 'Assignee':
                 roleid = '34606'
-            if roleid:
+            if name == 'Client':
+                roleid = '34617'
+            if name == 'Previous Client/Matter Number':
+                roleid = '93476'
+            if name == 'Licensee':
+                roleid = '34607'
+            try:
                 replace.update(function_instance.recordationRoleFill(matter, roleid))
+            except:
+                pass
+
+        totfee = 0
+        depX = ''
+        chkX = ''
+        if mergeinfo[3] == 'depacc':
+            depX = 'X'
+        if mergeinfo[3] == 'check':
+            chkX = 'X'            
 
         esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[3])
         replace.update(function_instance.mergebasic(keys, matter))
@@ -221,12 +239,12 @@ class recordation:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'depAccount' : depnum,
-            'dateExecutionText' : '',
+            'dateExecutionText' : datetime.strptime(mergeinfo[5], "%m/%d/%Y").strftime("%B %d, %Y"),
             'selectedInventorList' : selinv,
-            'totalFee' : '',
+            'totalFee' : totfee,
             'numPages' : mergeinfo[2],
-            'depAcctX' : '',
-            'checkX' : '',
+            'depAcctX' : depX,
+            'checkX' : chkX,
         })
         return replace
  
