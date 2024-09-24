@@ -152,6 +152,9 @@
             max-width: 600px;
         }
         #pctgeneric .modal-dialog{
+            max-width: 700px;
+        }
+        #UpdateAppDataSheet .modal-dialog{
             max-width: 600px;
         }
     </style>
@@ -618,13 +621,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <br>&emsp;&emsp;Marked Up Application Data Sheet<input type="checkbox" id="updateappdatamarked">
+                    <br>&emsp;&emsp;Marked Up Application Data Sheet <input type="checkbox" id="updateappdatamarked">
+                    &emsp;&emsp;Number of Pages <input type="text" id="updateappdatapagect" name="updatepagect" placeholder = '0' size = "3">
                 </div>
                 <div>
-                    &emsp;&emsp;Number of Pages<input type="text" id="updateappdatapagect" name="updatepagect" placeholder = '0' size = "5" value = "0">
-                </div>
-                <div>
-                    <br>&emsp;&emsp;Esign Enable:<input type="checkbox" id="updateappdataesign">
+                    <br>&emsp;Esign Enable <input type="checkbox" id="updateappdataesign">
                 </div>
             </div>
             <div class="modal-footer">
@@ -2615,17 +2616,34 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="ger"> European Patent Office<br>  Erhardtstrasse 27<br>  D-80298 Munich<br>  GERMANY</td>
-                            <td align="right" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="ger"> The International Bureau of WIPO<br>  34, Chemin des Colombettes<br>  1211 Geneva 20<br>  SWITZERLAND</td>
+                            <td align="right" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="sw"> The International Bureau of WIPO<br>  34, Chemin des Colombettes<br>  1211 Geneva 20<br>  SWITZERLAND</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  <input type="radio" id="pctgenericva" name="pctgenericoptions" value="va"> Mail Stop PCT<br>  Commissioner of Patents<br>  P.O. Box 1450<br>  Alexandria, VA 22313-1450</td>
+                            <td align="right" style="border: none;">  <input type="radio" id="pctgenerickor" name="pctgenericoptions" value="kor"> PCT Part, International Application Team<br>  Korean Intellectual Property Office<br>  Government Complex-Daejeon<br>  189 Cheongsa-ro<br>  Seo-gu<br>  Daejeon 302-701<br>  Republic of Korea</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  <input type="radio" id="pctgenericnet" name="pctgenericoptions" value="net"> European Patent Office<br>  P.B. 5818 Patentlaan 2<br>  NL-2280 HV Rijswijk<br>  NETHERLANDS</td>
                         </tr>
                     </table>  
                 </div>
                 <div>
-                    <br>  <input type="checkbox" id="pctgenericesign"> E-Signature
+                    <br>  Title of Communication <input type="text" id="pctgenerictitle" size="30">
+                </div>
+                <div>
+                    <br>  Select Signing Attorney: <select id="pctgenericsa">
+                        <option value="Bradley Scheer">Bradley Scheer</option>
+                        <option value="David Black">David Black</option>
+                        <option value="Marvin Beekman">Marvin Beekman</option>
+                        <option value="Monique Perdok">Monique Perdok</option>
+                        <option value="Suneel Arora">Suneel Arora</option>
+                        <option value="Timothy Bianchi">Timothy Bianchi</option>
+                      </select>    <input type="checkbox" id="pctgenericesign"> E-Signature
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('pctgenericoptions'), pctgenerictitle.value, pctgenericsa.value, pctgenericesign.checked)">Continue</button>
             </div>
         </div>
     </div>

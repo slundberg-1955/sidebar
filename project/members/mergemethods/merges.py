@@ -1703,3 +1703,42 @@ class rcexmit3:
             'depCheckText' : deptxt
         })
         return replace
+    
+class pctgeneric:
+    def pctgeneric(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[3]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        deptxt = ''
+        pctaddr = ''
+        if mergeinfo[0] == 'ger':
+            pctaddr = 'European Patent Office\nErhardtstrasse 27\nD-80298 Munich\nGERMANY'
+            deptxt = 'Please charge any deficiency in fees or credit overpayment to Deposit Account 2830 0215.'
+        if mergeinfo[0] == 'sw':
+            pctaddr = 'The International Bureau of WIPO\n34, Chemin des Colombettes\n1211 Geneva 20\nSWITZERLAND'
+        if mergeinfo[0] == 'va':
+            pctaddr = 'Mail Stop PCT\nCommissioner of Patents\nP.O. Box 1450\nAlexandria, VA 22313-1450'
+        if mergeinfo[0] == 'kor':
+            pctaddr = 'PCT Part, International Application Team\nKorean Intellectual Property Office\nGovernment Complex-Daejeon\n189 Cheongsa-ro\nSeo-gu\nDaejeon 302-701\nRepublic of Korea'
+        if mergeinfo[0] == 'net':
+            pctaddr = 'European Patent Office\nP.B. 5818 Patentlaan 2\nNL-2280 HV Rijswijk\nNETHERLANDS'
+            deptxt = 'Please charge any deficiency in fees or credit overpayment to Deposit Account 2830 0215.'
+
+        replace = {}
+        try:
+            replace.update(function_instance.assigneefill(matter, 1))
+        except:
+            pass
+
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'headerText' : mergeinfo[1],
+            'pctAddress' : pctaddr,
+            'depositText' : deptxt,
+            'SAName' : mergeinfo[2],
+        })
+        return replace
