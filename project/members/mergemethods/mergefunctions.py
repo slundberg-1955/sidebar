@@ -65,7 +65,7 @@ class mergefunctions:
         if 'rvwmatterpersonnel' in tables_list:
             SA_data = merge_fn.rvwmatterpersonnelFill(matter_data)
             basic = {
-                'SAName' : SA_data.personname,
+                'SAName' : SA_data.fname + ' ' + SA_data.mname + '. ' + SA_data.lname,
                 'SARegNo' : SA_data.registrationno,
                 'orgName' : SA_data.orgname,
                 'nickSA' : SA_data.nickname,

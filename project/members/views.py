@@ -378,8 +378,8 @@ def Email(body, subject, recipients, cc, bcc, attachment):
     mail.Subject = subject
     mail.Body = body
     mail.To = recipients
-    if(attachment != ''):
-        mail.Attachments.Add(attachment)
+    #if(attachment != ''):
+    #    mail.Attachments.Add(attachment)
 
     # mail.Attachments.Add(attachment)
 

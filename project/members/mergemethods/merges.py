@@ -43,7 +43,6 @@ class appealfwd:
 class pclaims:
     def pclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -311,7 +310,7 @@ class UpdateAppDataSheet:
         if(mergeinfo[0] == 'true'):
             muX = 'X'
             muText = 'Marked Up Application Data Sheet (' + mergeinfo[1] + ' Pg.).'
-            if int(mergeinfo[1]) > 1:
+            if mergeinfo[1] != '' and int(mergeinfo[1]) > 1:
                 muText = 'Marked Up Application Data Sheet (' + mergeinfo[1] + ' Pgs.).'
         
         dsX = 'X'
@@ -327,6 +326,9 @@ class UpdateAppDataSheet:
             'dsText'  : dsText,
             'muX' : muX,
             'muText' : muText,
+            'dueDate' : '',
+            'currentMo' : datetime.now().strftime("%B"),
+            'currentYr' : datetime.now().year,
         })
         return replace
     
@@ -650,11 +652,11 @@ class adobesign:
     def adobesign(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         choice = 'Declaration'
-        if mergeinfo[1] == 'true' or mergeinfo[3] =='true':
+        if mergeinfo[0] == '1' or mergeinfo[0] =='3':
             choice = 'Assignment'
-        if mergeinfo[2] == 'true':
+        if mergeinfo[0] == '2':
             choice = 'Assignment and Declaration'
-        if mergeinfo[4] =='true' or mergeinfo[5] =='true' or mergeinfo[6] =='true' or mergeinfo[7] =='true' or mergeinfo[8] =='true' or mergeinfo[9] =='true' or mergeinfo[10] =='true':
+        if mergeinfo[0] == '4' or mergeinfo[0] == '5' or mergeinfo[0] == '6' or mergeinfo[0] == '7' or mergeinfo[0] == '8' or mergeinfo[0] == '9' or mergeinfo[0] == '10':
             choice = 'Assignment and POA'
 
         replace = {}
@@ -832,6 +834,7 @@ class issuereport:
         })
         return replace
 
+# check/dep
 class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -839,9 +842,10 @@ class pctcorrect:
         depacc = mergeinfo[0]
         check = mergeinfo[1]
         esign = mergeinfo[2]
-        maildate = mergeinfo[3]
-        SignAtt = mergeinfo[4]
-        exttime = mergeinfo[5]
+        try:
+            maildate = datetime.strptime(mergeinfo[3], '%m/%d/%Y').strftime('%B %d, %Y')
+        except:
+            maildate = mergeinfo[3]
         annexA = mergeinfo[7]
         annexAtxt = mergeinfo[8]
         annexB = mergeinfo[9]
@@ -866,6 +870,8 @@ class pctcorrect:
         else:
             Ctxt = ''
 
+        label = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: MS PCT, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of '+ str(datetime.now().strftime("%B")) +', '+ str(datetime.now().year) +'.'
+
         esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -880,6 +886,10 @@ class pctcorrect:
             'properApplicant' : 'Applicant',
             'encloseText' : 'enclose',
             'depAccount' : function_instance.depnumFill(matter_data),
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'userName' : '',
+            'certificateForPaperFilingExpressMail' : '',
+            'certificateForEmailPaperFilingStandard' : label,
         })
         return replace
 
@@ -923,6 +933,8 @@ class pctextention:
         else:
             annexTxt = ''.join(annexes)
 
+        label = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: MS PCT, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of '+ str(datetime.now().strftime("%B")) +', '+ str(datetime.now().year) +'.'
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
@@ -934,6 +946,11 @@ class pctextention:
             'extensionLenText' : function_instance.number_to_words(int(mergeinfo[6])).lower(),
             'requestText' : 'requests',
             'annexSelectText' : annexTxt,
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'requestDueDate' : '',
+            'SAName' : mergeinfo[4],
+            'certificateForPaperFilingExpressMail' : '',
+            'certificateForEmailPaperFilingStandard' : label,
         })
         return replace
 

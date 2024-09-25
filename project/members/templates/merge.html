@@ -621,13 +621,29 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <br>&emsp;&emsp;Marked Up Application Data Sheet <input type="checkbox" id="updateappdatamarked">
+                    &emsp;&emsp;Marked Up Application Data Sheet <input type="checkbox" id="updateappdatamarked">
+                </div>
+                <div style="display:none;" id="updateappdatapagectdiv">
                     &emsp;&emsp;Number of Pages <input type="text" id="updateappdatapagect" name="updatepagect" placeholder = '0' size = "3">
                 </div>
                 <div>
-                    <br>&emsp;Esign Enable <input type="checkbox" id="updateappdataesign">
+                    <br>&emsp;&emsp;Esign Enable <input type="checkbox" id="updateappdataesign">
                 </div>
             </div>
+            <script>
+                if(document.getElementById('updateappdatamarked')){
+                    const updcheckbox = document.getElementById('updateappdatamarked');
+                    const updpagect = document.getElementById('updateappdatapagectdiv');
+
+                    updcheckbox.addEventListener('change', function() {
+                        if (updcheckbox.checked) {
+                            updpagect.style.display = 'block';
+                        } else {
+                            updpagect.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(updateappdatamarked.checked, updateappdatapagect.value, updateappdataesign.checked)">Continue</button>
@@ -1004,42 +1020,42 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="radio" id="adobesigndec" name="options">Declaration
+                      <input type="radio" id="adobesigndec" name="adobesignoptions" value="1"> Declaration
                 </div>
                 <div>
-                      <input type="radio" id="adobesignassign" name="options">Assignment
+                      <input type="radio" id="adobesignassign" name="adobesignoptions" value="2"> Assignment
                 </div>
                 <div>
-                      <input type="radio" id="adobesigndecassign" name="options">Declaration and Assignment
+                      <input type="radio" id="adobesigndecassign" name="adobesignoptions" value="3"> Declaration and Assignment
                 </div>
                 <div>
-                      <input type="radio" id="adobesignprv" name="options">PRV Assignment
+                      <input type="radio" id="adobesignprv" name="adobesignoptions" value="4"> PRV Assignment
                 </div>
                 <div>
-                      <input type="radio" id="adobesignpct" name="options">PCT Assignment
+                      <input type="radio" id="adobesignpct" name="adobesignoptions" value="5"> PCT Assignment
                 </div>
                 <div>
-                      <input type="radio" id="adobesignpoa" name="options">Power of Attorney
+                      <input type="radio" id="adobesignpoa" name="adobesignoptions" value="6"> Power of Attorney
                 </div>
                 <div>
-                      <input type="radio" id="adobesigndecpoa" name="options">Declaration and Power of Attorney
+                      <input type="radio" id="adobesigndecpoa" name="adobesignoptions" value="7"> Declaration and Power of Attorney
                 </div>
                 <div>
-                      <input type="radio" id="adobesignassignpoa" name="options">Assignment and Power of Attorney
+                      <input type="radio" id="adobesignassignpoa" name="adobesignoptions" value="8"> Assignment and Power of Attorney
                 </div>
                 <div>
-                      <input type="radio" id="adobesigndecassignpoa" name="options">Declaration, Assignment and Power of Attorney
+                      <input type="radio" id="adobesigndecassignpoa" name="adobesignoptions" value="9"> Declaration, Assignment and Power of Attorney
                 </div>
                 <div>
-                      <input type="radio" id="adobesignprvpoa" name="options">PRV Assignment and Power of Attorney
+                      <input type="radio" id="adobesignprvpoa" name="adobesignoptions" value="10"> PRV Assignment and Power of Attorney
                 </div>
                 <div>
-                      <input type="radio" id="adobesignpctpoa" name="options">PCT Assignment and Power of Attorney
+                      <input type="radio" id="adobesignpctpoa" name="adobesignoptions" value="11"> PCT Assignment and Power of Attorney
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(adobesigndec.checked, adobesignassign.checked, adobesigndecassign.checked, adobesignprv.checked, adobesignpct.checked, adobesignpoa.checked, adobesigndecpoa.checked, adobesignassignpoa.checked, adobesigndecassignpoa.checked, adobesignprvpoa.checked, adobesignpctpoa.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('adobesignoptions'))">Continue</button>
             </div>
         </div>
     </div>
@@ -1961,7 +1977,7 @@
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  <input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF373chk" size="5"></td>
+                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF373txt" size="5"></td>
                     </tr>
                 </table>
                 <table style="border-collapse: collapse; border: none;">
@@ -1991,7 +2007,7 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('fileoptions'), generalxmitCFcertmail.checked, radioFill('depoptions'), generalxmitCFduedate.value, generalxmitCFselect.value, generalxmitCFnumpg.value, generalxmitCFnotappeal.checked, generalxmitCFrecalc.checked, generalxmitCFtotclaim.value, generalxmitCFtotclaim2.value, generalxmitCFinclaim.value, 
                 generalxmitCFinclaim2.value, generalxmitCFmultidep.checked, generalxmitCFidssid.value, generalxmitCF1449.value, generalxmitCFsupids.checked, generalxmitCFfeeif.value, generalxmitCFdocnum.value, generalxmitCFdocnot.checked, generalxmitCFcomm.value, generalxmitCFfdraw.value, 
-                generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373chk.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFselSA.value, generalxmitCFesign.checked)">Continue</button>
+                generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373txt.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFselSA.value, generalxmitCFesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -2069,7 +2085,7 @@
                 </div>
                 <div>
                             &emsp;<input type="checkbox" id="idsCommCfNewcertm"> Include Certificate of Mailing
-                            <select id="pctcorrectSAdrop">
+                            <select id="idsCommCfNewSAdrop">
                         <option value="selSA">Select Signing Attorney</option>
                     </select>
                 </div>
@@ -2616,7 +2632,7 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="ger"> European Patent Office<br>  Erhardtstrasse 27<br>  D-80298 Munich<br>  GERMANY</td>
-                            <td align="right" style="border: none;">  <input type="radio" id="pctgenericger" name="pctgenericoptions" value="sw"> The International Bureau of WIPO<br>  34, Chemin des Colombettes<br>  1211 Geneva 20<br>  SWITZERLAND</td>
+                            <td align="right" style="border: none;">  <input type="radio" id="pctgenericsw" name="pctgenericoptions" value="sw"> The International Bureau of WIPO<br>  34, Chemin des Colombettes<br>  1211 Geneva 20<br>  SWITZERLAND</td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  <input type="radio" id="pctgenericva" name="pctgenericoptions" value="va"> Mail Stop PCT<br>  Commissioner of Patents<br>  P.O. Box 1450<br>  Alexandria, VA 22313-1450</td>
