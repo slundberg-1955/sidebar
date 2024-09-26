@@ -703,7 +703,9 @@
                     const merged_data = args.join(',');
                     //alert(merged_data);
                     document.getElementById('mergedata').value += merged_data;
-                    if(document.getElementById('corrapplnext').value){
+                    let value = document.getElementById('corrapplnext').value;
+                    if(value && Number(value) > 0){
+                        document.getElementById('mergedata').value += ','
                         $('#extTime').modal('show');
                     }
                     else{
@@ -2473,22 +2475,43 @@
                     <br><table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none;"></td>
-                            <td align="right" style="border: none;"><input type="checkbox" id="extTimepetext"> A Petition for Extention of Time was previously requested in this matter.</td>
+                            <td align="right" style="border: none;"><input type="checkbox" id="extTimepetext"> A Petition for Extension of Time was previously requested in this matter.</td>
                         </tr>
-                        <tr style="border: none;">
+                        <tr style="border: none; display: none;" id="extTime1">
                             <td align="left" style="border: none;">  Date of the Last Request: </td>
                             <td align="right" style="border: none;"><input type="text" id="extTimereqdte" size="5" placeholder=" /  / "> (mm/dd/yyyy)</td>
                         </tr>
-                        <tr style="border: none;">
+                        <tr style="border: none; display: none;" id="extTime2">
                             <td align="left" style="border: none;">  Fee Paid in Last Request: </td>
                             <td align="right" style="border: none;"><input type="text" id="extTimereqfee" size="5" placeholder="0.00"></td>
                         </tr>
-                        <tr style="border: none;">
+                        <tr style="border: none; display: none;" id="extTime3">
                             <td align="left" style="border: none;">  Remaining Fee Due: </td>
                             <td align="right" style="border: none;"><input type="text" id="extTimeremdue" size="5" placeholder="0.00"></td>
                         </tr>
                     </table>  
                 </div>
+                <script>
+                    if(document.getElementById('extTimepetext')){
+                        const extTimecheckbox = document.getElementById('extTimepetext');
+                        const extTimetxt1 = document.getElementById('extTime1');
+                        const extTimetxt2 = document.getElementById('extTime2');
+                        const extTimetxt3 = document.getElementById('extTime3');
+                
+                        extTimecheckbox.addEventListener('change', function() {
+                            if (extTimecheckbox.checked) {
+                                extTimetxt1.style.display = 'table-row';
+                                extTimetxt2.style.display = 'table-row';
+                                extTimetxt3.style.display = 'table-row';
+                            } else {
+                                extTimetxt1.style.display = 'none';
+                                extTimetxt2.style.display = 'none';
+                                extTimetxt3.style.display = 'none';
+                            }
+                        });
+                    }
+                </script>
+                
                 <div>
                     <br>    <input type="checkbox" id="extTimeesign"> E-Signature
                 </div>

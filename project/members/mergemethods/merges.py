@@ -526,6 +526,7 @@ class ownerchange:
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.applicantfill(matter, 1))
             replace.update({
                 'echoSignature' : esign_out,
                 'signatureDate' : esigndate_out,
@@ -534,15 +535,13 @@ class ownerchange:
             })
             return replace
     
+# Need due date and fee
 class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
             esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[6])
-            efiling = mergeinfo[0]
-            depacc = mergeinfo[1]
-            extamt = mergeinfo[2]
-            wenclosures = mergeinfo[7]
+            depnum = function_instance.depnumFill(matter_data)
 
             SubX = ''
             AbsX = ''
@@ -553,27 +552,56 @@ class corrappln:
             AbsPg = ''
             SeqPg = ''
             FrmlPg = ''
+            depx = ''
+            deppg = ''
+            extx = ''
+            extpg = ''
+            doclist = ''
+            docs = []
+
             if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
                 SubX = 'X'
                 SubPg = 'Substitute Specification (' + mergeinfo[2] + ' pg.).'
+                docs.append('a Substitute Specification')
+
             if mergeinfo[3] != '' and int(mergeinfo[3]) > 0:
                 AbsX = 'X'
                 AbsPg = 'Abstract (' + mergeinfo[3] + ' pg.).'
+                docs.append('a Substitute Abstract')
+
             if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
                 SeqX = 'X'
                 SeqPg = 'Sequence Listing (' + mergeinfo[4] + ' pg.).'
+                docs.append('a Sequence Listing')
+
             if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
                 FrmlX = 'X'
                 FrmlPg = 'Formal Drawings (' + mergeinfo[5] + ' pg.).'
+                docs.append('Formal Drawings')
 
-            # Set months 1-5 based on extamt
-            #if extamt > 0:
+            if len(docs) == 4:
+                doclist = 'A Substitute Specification, a Substitute Abstract, a Sequence Listing, and Formal Drawings are attached.'
+            elif len(docs) == 2:
+                doclist = ' and '.join(docs)
+                doclist += ' are attached.'
+            elif len(docs) == 1:
+                doclist = docs[0]
+                doclist += ' is attached.'
+            else:
+                doclist = ', '.join(docs[:-1])
+                if len(docs) > 1:
+                    doclist += ', and ' + docs[-1]
+                    doclist += ' are attached.'
 
-            depnum = function_instance.depnumFill(matter_data)
+            if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
+                extx = 'X'
+                extpg = 'Petition for Extension of Time (1 pg.).'
+                if mergeinfo[0] == 'true':
+                    depx = 'X'
+                    deppg = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ '' +' to cover the Extension of Time Fee.'
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
-            replace.update(function_instance.firmfill())
             replace.update({
                 'echoSignature' : esign_out,
                 'signatureDate' : esigndate_out,
@@ -586,9 +614,14 @@ class corrappln:
                 'AbstractPg' : AbsPg,
                 'SeqPg' : SeqPg,
                 'FormalPg' : FrmlPg,
-                'docList' : '',
+                'docList' : doclist[0].upper() + doclist[1:],
                 'nickU' : '',
                 'dueDate' : '',
+
+                'extX' : extx,
+                'extPg' : extpg,
+                'depX' : depx,
+                'depPg' : deppg,
             })
             return replace
     
@@ -1574,26 +1607,42 @@ class exttimeCF:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
         depnum = function_instance.depnumFill(matter_data)
-        esign = mergeinfo[0]
+        esign = mergeinfo[17]
         esign_out, esigndate_out = function_instance.esigncheck(esign)
+
+        try:
+            datemail = datetime.strptime(mergeinfo[9], '%m/%d/%Y').strftime('%B %d, %Y')
+        except:
+            datemail = ''
+        try:
+            duedate = datetime.strptime(mergeinfo[10], '%m/%d/%Y').strftime('%B %d, %Y')
+        except:
+            duedate = ''
+        try:
+            newdate = function_instance.newDate(mergeinfo[11], mergeinfo[10])
+        except:
+            newdate = ''
+            
+        cert = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is being filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: test, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on {{Dte_es_:signer2:date}}.'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'extLength' : mergeinfo[11].upper(),
+            'extLength' : mergeinfo[12].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
             'feeAmount' : mergeinfo[1],
             'enclosed' : '',
             'depAccount' : depnum,
-            'extLengthL' : mergeinfo[11].lower(),
-            'mailstopText' : mergeinfo[7],
-            'extResponse' : mergeinfo[8],
-            'dateMailed' : datetime.strptime(mergeinfo[9], '%m/%d/%Y').strftime('%B %d, %Y'),
-            'dueDate' : datetime.strptime(mergeinfo[10], '%m/%d/%Y').strftime('%B %d, %Y'),
-            'newDate' : function_instance.newDate(mergeinfo[11], mergeinfo[10]),
+            'extLengthL' : mergeinfo[12].lower(),
+            'mailstopText' : mergeinfo[8],
+            'extResponse' : mergeinfo[9],
+            'dateMailed' : datemail,
+            'dueDate' : duedate,
+            'newDate' : newdate,
             'petitionText' : '',
+            'certificateCF' : cert
         })
         return replace
 

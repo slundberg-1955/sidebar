@@ -124,7 +124,7 @@ class mergefunctions:
 
         if 'firm' in tables_list:
             basic = {}
-            basic.update(merge_fn.firmfill(matter))
+            basic.update(merge_fn.firmfill())
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -307,7 +307,7 @@ class mergefunctions:
 
         return patent_data.entitystatus
     
-    def firmfill(self, data):
+    def firmfill(self):
         # Might need to pull from DB
         firm = Rvwmatterpersonnel.objects.using('FIP').filter(orgid = 4)
         info = {
