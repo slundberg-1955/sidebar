@@ -453,6 +453,10 @@ def combinedoc(path, method, mergeinfo, matter):
             composer.append(doc5)
         
         composer.append(docend)
+    
+    # WORK ON NEXT
+    if method == 'invchange':
+        replace = {}
         
     composer.save("documents/multidocmerge/" + method +".docx")
 
@@ -500,6 +504,11 @@ def mergeDoc(matter , mergeinfo):
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew':
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
+        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
+        doc = Document(input_path)
+        
+    if mergeinfo_list[1] == 'invchange':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)

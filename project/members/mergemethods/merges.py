@@ -1808,3 +1808,38 @@ class pctgeneric:
             'SAName' : mergeinfo[2],
         })
         return replace
+
+class invchange:
+    def invchange(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter) 
+        esign = mergeinfo[0]
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+        
+        inventlist = mergeinfo[2:]
+        inventlist = inventlist[:-1]
+        
+        invtxt = ''
+        hastxt = 'has'
+        if len(inventlist) == 2:
+            invtxt = inventlist[0] + ' and ' + inventlist[1]
+        elif len(inventlist) > 2:
+            invtxt = ', '.join(inventlist[:-1]) + ', and ' + inventlist[-1]
+        elif len(inventlist) == 1:
+            invtxt = inventlist[0]
+            
+        if len(inventlist) > 1:
+            hastxt = 'have'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfoName(matter , mergeinfo[2]))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'SAName' : mergeinfo[1],
+            'invList' : invtxt,
+            'hasText' : hastxt
+        })
+        return replace        

@@ -241,6 +241,37 @@ class mergefunctions:
         }
         return info
     
+    def split_name(self, full_name):
+        parts = full_name.split(' ')
+        
+        first_name = parts[0]
+        last_name = parts[-1]
+        middle_name = ""
+
+        if len(parts) > 2:
+            middle_name = " ".join(parts[1:-1])
+        
+        return first_name, middle_name, last_name
+    
+    def inventorInfoName(self, matter, name):
+        merge_fn = mergefunctions()
+        first, middle, last = merge_fn.split_name(name)
+        matter_data = merge_fn.matterFill(matter)
+        parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        for part in parts:
+            try:
+                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid, fname = first, lname = last)
+            except:
+                pass
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
+
+        info = {
+            'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
+            'inventorHomeAddress' : contact.state,
+            'inventorHomeCountry' : contact.country,
+        }
+        return info
+    
     def inventorInfo(self, matter, inv):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)

@@ -1282,18 +1282,78 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-                <!-- Your modal body content here -->
+                <div>
+                      <input type="checkbox" id="invchangeselall"> Select All        <input type="checkbox" id="invchangeesign"> E-Signature Enable
+                </div>
                 <table class="table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Name(s)</th>
                         </tr>
                     </thead>
+                    <tbody id="invchange-list"></tbody>
                 </table>
+                <script>
+                    function fillInventorChange() {
+                        const inputData = document.getElementById("matterInput").value;
+                        $.ajax({
+                            type: 'POST',
+                            url: 'merge_inventors/',
+                            data: {matterno: JSON.stringify(inputData)},
+                            headers: {
+                                'X-CSRFTOKEN': csrftoken,
+                            },
+                            success: function(response) {
+                                const inventorList = response.message.split(',');
+                                const tableBody = document.getElementById('invchange-list');
+                                tableBody.innerHTML = '';
+                                for(var i = 0; i < inventorList.length; i++){
+                                    const newRow = document.createElement('tr');
+                                    newRow.innerHTML = `
+                                        <td><input type="checkbox" name = "invchangechk"></td>
+                                        <td>${inventorList[i]}</td>
+                                    `;
+                                    tableBody.appendChild(newRow);
+                                }
+                                $('#invchange').modal('show');
+                                document.getElementById('invchangeselall').addEventListener('change', function() {
+                                    const checkboxes = document.querySelectorAll('input[name="invchangechk"]');
+                                    checkboxes.forEach(checkbox => {
+                                        checkbox.checked = this.checked;
+                                    });
+                                });
+                                document.getElementById("invchangesub").onclick = function() {
+                                    const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchangechk"]');
+                                    let invsel = '';
+                                    checkboxesinv.forEach((checkbox, index) => {
+                                        if (checkbox.checked) {
+                                            invsel += String(inventorList[index]) + ',';
+                                        }
+                                    });
+                                    submitbtnmerge(document.getElementById('invchangeesign').checked, document.getElementById('invchangeSAdrop').value ,invsel);
+                                };
+                            },
+                            error: function(error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    }
+                </script>
+                <div>
+                      <select id="invchangeSAdrop">
+                        <option value="Bradley Scheer">Bradley Scheer</option>
+                        <option value="David Black">David Black</option>
+                        <option value="Marvin Beekman">Marvin Beekman</option>
+                        <option value="Monique Perdok">Monique Perdok</option>
+                        <option value="Suneel Arora">Suneel Arora</option>
+                        <option value="Timothy Bianchi">Timothy Bianchi</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="invchangesub">Continue</button>
             </div>
         </div>
     </div>
@@ -2753,7 +2813,7 @@
             // Esign popUp
             if (esign == "TRUE" || mergemethod == 'incorrectfilerect' || mergemethod == 'corrinventorship' || mergemethod == 'corrapplicant') {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw' || mergemethod == 'PatentCoopTreaty2' || mergemethod == 'ownerchange' || mergemethod == 'pctcorrect' || mergemethod == 'PctCommRe' || mergemethod == 'Statement373c' || mergemethod == 'applicationdata_updnew' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'utilityapp' || mergemethod == 'assignment2016' || mergemethod == 'DraftOAInstruct' || mergemethod == 'mrgfforder' || mergemethod == 'rcexmit3' || mergemethod == 'pctgeneric'){ 
+            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw'){ 
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
@@ -2765,13 +2825,14 @@
                 $('#UpdateAppDataSheet').modal('show');
             //}else if (mergemethod == 'incorrectfilerect'){
             //    $('#filingEsign').modal('show');
+            }else if (mergemethod == 'invchange'){
+                fillInventorChange();
             }else {
                 document.getElementById("mergeform").submit();
             }
         }
         function fillInventor() {
             const inputData = document.getElementById("matterInput").value;
-
             $.ajax({
                 type: 'POST',
                 url: 'merge_inventors/',
