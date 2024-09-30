@@ -241,7 +241,12 @@ class mergefunctions:
         }
         return info
     
+    def fullCountry(self, country):
+        if 'US' in country:
+            return 'United States of America'
+    
     def split_name(self, full_name):
+        full_name = full_name.strip()
         parts = full_name.split(' ')
         
         first_name = parts[0]
@@ -264,11 +269,17 @@ class mergefunctions:
             except:
                 pass
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
+        if contact.address1 != '':
+            homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
+        elif contact.city != '':
+            homeaddr = contact.city + ', ' + contact.state + ' ' + contact.zip
+        else:
+            homeaddr = contact.state + ' ' + contact.zip
 
         info = {
             'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
-            'inventorHomeAddress' : contact.state,
-            'inventorHomeCountry' : contact.country,
+            'inventorHomeAddress' : homeaddr,
+            'inventorHomeCountry' : merge_fn.fullCountry(contact.country),
         }
         return info
     
@@ -544,7 +555,6 @@ class mergefunctions:
     
     def getactivityid(self, matter, type):
         activity = Activity.objects.using('FIP').get(matterid = matter.matterid, code = type)
-
         return activity
     
     def extract_date(self, text):

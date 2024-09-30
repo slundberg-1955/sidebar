@@ -378,10 +378,8 @@ def Email(body, subject, recipients, cc, bcc, attachment):
     mail.Subject = subject
     mail.Body = body
     mail.To = recipients
-    #if(attachment != ''):
-    #    mail.Attachments.Add(attachment)
-
-    # mail.Attachments.Add(attachment)
+    if(attachment != ''):
+        mail.Attachments.Add(attachment)
 
     if cc:
         mail.CC = cc
@@ -447,16 +445,28 @@ def combinedoc(path, method, mergeinfo, matter):
 
         for i in range(1, assignCount):
             replace = {}
-            replace.update(merge_fn.inventorInfo(matter, i))
+            replace.update(merge_fn.assigneefill(matter, i))
             WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2assigneeMulti.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx')
             doc5 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx") 
             composer.append(doc5)
         
         composer.append(docend)
     
-    # WORK ON NEXT
     if method == 'invchange':
-        replace = {}
+        merge_fn = mergefunctions()
+        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/inventorchange.docx") 
+        docend = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/inventorchange_end.docx") 
+        composer = Composer(doc2)
+        invlist = mergeinfo[2:]
+        invlist = invlist[:-1]
+        for inv in invlist:
+            replace = {}
+            replace.update(merge_fn.inventorInfoName(matter, inv))
+            WordMerger('C:/Users/jaburns/SideBar/project/documents/communications/inventorchange_multi.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/inventorchangeMultipleout.docx')
+            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/inventorchangeMultipleout.docx") 
+            composer.append(doc3)
+        
+        composer.append(docend)
         
     composer.save("documents/multidocmerge/" + method +".docx")
 

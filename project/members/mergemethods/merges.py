@@ -1833,7 +1833,6 @@ class invchange:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.inventorInfoName(matter , mergeinfo[2]))
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
             'echoSignature' : esign_out,
