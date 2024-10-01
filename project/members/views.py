@@ -468,6 +468,16 @@ def combinedoc(path, method, mergeinfo, matter):
         
         composer.append(docend)
         
+    if method == 'olpemail':
+        merge_fn = mergefunctions()
+        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx") 
+        composer = Composer(doc2)
+        replace = {}
+        replace.update(merge_fn.cmgfill(matter))
+        WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/olpemailout.docx')
+        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/olpemailout.docx") 
+        composer.append(doc3)
+        
     composer.save("documents/multidocmerge/" + method +".docx")
 
 # New separate function for merging documents
@@ -513,14 +523,12 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew':
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail']
+
+    # combine doc
+    if mergeinfo_list[1] in merge_strings:
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
-        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
-        doc = Document(input_path)
-        
-    if mergeinfo_list[1] == 'invchange':
-        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
-        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
+        input_path = f"C:/Users/jaburns/SideBar/project/documents/multidocmerge/{mergeinfo_list[1]}.docx"
         doc = Document(input_path)
 
     # with multiple docs

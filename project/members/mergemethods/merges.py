@@ -347,23 +347,37 @@ class olpemail:
         utilityFee2 = "7-1/2 years from the issue date"
         utilityFee3 = "11-1/2 years from the issue date"
         
-        answer = mergeinfo[0]
+        try:
+            actname = function_instance.getactivityid(matter_data, 'OLPR').name
+        except:
+            actname = ''
+        try:    
+            if matter_data.fileddate and matter_data.fileddate > datetime(2015, 5, 13):
+                designtxt = 'The term of a design patent extends up to a maximum of 15 years from the date of issue.", "The term of a design patent extends up to a maximum of 14 years from the date of issue.'
+            else:
+                designtxt = ''
+        except:
+            designtxt = ''
+            
+        cultxt = ''
+        if mergeinfo[0] == 'true':
+            cultxt = ''
+            
         # Need to add use case for answer
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'This.orgName' : org_data.orgname,
-            'This.clientRefNo' : '',
-            'activityname' : '',
+            'activityname' : actname,
             'THIS.patNo' : patent_data.patentno,
             'THIS.issueDate' : patent_data.issuedate,
             'THIS.title'  : matter_data.title,
-            'designText' : '',
+            'designText' : designtxt,
             'utilityText1' : utilityText1,
             'cutilityText2' : 'Prior instructions have been received acknowledging SLW responsibility for payment of the maintenance fees through our preferred 3rd party provider, Black Hills AI (www.blackhills.ai).  If for any reason this process is no longer valid, please reach out to us expeditiously to confirm new instructions.',
             'utilityFee1' : utilityFee1,
             'utilityFee2' : utilityFee2,
             'utilityFee3' : utilityFee3,
-            'cutilityText2' : '',
+            'cutilityText2' : cultxt,
         })
         return replace
     

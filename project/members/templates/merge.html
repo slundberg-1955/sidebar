@@ -2811,9 +2811,13 @@
             // contacts = 'TRUE';
 
             // Esign popUp
-            if (esign == "TRUE" || mergemethod == 'incorrectfilerect' || mergemethod == 'corrinventorship' || mergemethod == 'corrapplicant') {
+            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw"];
+
+            // Check conditions
+            if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
                 $('#esign').modal('show');
-            }else if (mergemethod == 'pclaims' || mergemethod == 'LateSubmissionOfDec' || mergemethod == 'issuefee' || mergemethod == 'corrappln' || mergemethod == 'applicationdata_new2' || mergemethod == 'missingpartsNw'){ 
+            } else if (otherMethods.includes(mergemethod)) {
                 $('#' + mergemethod).modal('show');
             }else if (mergemethod == 'recordation'){ 
                 fillInventor();
@@ -3043,10 +3047,16 @@
                         document.getElementById("mergedata").value += selectedEmails.to.join(';') + ',';
                         document.getElementById("mergedata").value += selectedEmails.cc.join(';') + ',';
                         document.getElementById("mergedata").value += selectedEmails.bcc.join(';') + ',';
+                        const mergeMethods = [
+                            'abandonReport', 'reportprvassnnew', 'recordedassnreport', 'rptissuefee', 'mpcapactions', 
+                            'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
+                            'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
+                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd'
+                        ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
                             fillActivities(mergemethod);
                         }
-                        else if(mergemethod == 'abandonReport' || mergemethod == 'reportprvassnnew' || mergemethod == 'recordedassnreport' || mergemethod == 'rptissuefee' || mergemethod == 'mpcapactions' || mergemethod == 'advisoryreport' || mergemethod == 'PctSearchRep' || mergemethod == 'LtrSendFmlDocNew' || mergemethod == 'filerectreportNw2' || mergemethod == 'adobesign' || mergemethod == 'olpemail' || mergemethod == 'appReportFp' || mergemethod == 'RepNoticeofAllow' || mergemethod == 'issuereport' || mergemethod == 'nonfinalreportFp' || mergemethod == 'PCTAsgnPOALetter' || mergemethod == 'RptInvtPayFees' || mergemethod == 'PCTRptOutIpRp' || mergemethod == 'ffOfficeActRcvd'){
+                        else if (mergeMethods.includes(mergemethod)) {
                             $('#' + mergemethod).modal('show');
                         }
                         else if(mergemethod == 'PCTRptFileOfApp'){

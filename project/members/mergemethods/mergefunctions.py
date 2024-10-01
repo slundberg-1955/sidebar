@@ -65,7 +65,7 @@ class mergefunctions:
         if 'rvwmatterpersonnel' in tables_list:
             SA_data = merge_fn.rvwmatterpersonnelFill(matter_data)
             basic = {
-                'SAName' : SA_data.fname + ' ' + SA_data.mname + '. ' + SA_data.lname,
+                'SAName' : SA_data.fname + ' ' + SA_data.mname + ' ' + SA_data.lname,
                 'SARegNo' : SA_data.registrationno,
                 'orgName' : SA_data.orgname,
                 'nickSA' : SA_data.nickname,
@@ -116,7 +116,8 @@ class mergefunctions:
         if 'matterparticipant' in tables_list:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
             basic = {
-                'clientRefNo' : 'Ref. No. ' + part.matterno
+                'clientRefNo' : 'Ref. No. ' + part.matterno,
+                'This.clientRefNo' : 'Ref. No. ' + part.matterno,
             }
             for key, value in basic.items():
                 if key in keys:
@@ -430,6 +431,7 @@ class mergefunctions:
             'ffparaEmail' : '',
             'currentDate' :'current',
             'clientRefNo' : 'matterparticipant',
+            'This.clientRefNo' : 'matterparticipant',
             'firstInventor' : 'inventor',
             'firmName' : 'firm',
             'firmPoBox' : 'firm',
@@ -606,3 +608,13 @@ class mergefunctions:
             return "Invalid input"
         
         return new_date.strftime('%B %d, %Y')
+    
+    def cmgfill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34614', roleorderno = 1)
+        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+        info = {
+            'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+        }
+        return info
