@@ -1436,8 +1436,9 @@
             </div>
             <div class="modal-body">
                 <div>  Restriction Requirement:</div>
-                <div>
+                <div >
                       <input type="radio" id="repnoticeofallowyes" name="options"> Yes
+                      <input type="text" id="repnoticeofallowclm" size="20" style="display:none;">
                 </div>
                 <div>
                       <input type="radio" id="repnoticeofallowno" name="options"> No
@@ -1445,6 +1446,14 @@
                 <div>
                       <input type="radio" id="repnoticeofallowrej" name="options"> Claims Rejoined
                 </div>
+                <script>
+                    if (document.getElementById('repnoticeofallowyes').checked){
+                        document.getElementById('repnoticeofallowclm').style.display = 'block';
+                    }
+                    else{
+                        document.getElementById('repnoticeofallowclm').style.display = 'none';
+                    }
+                </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

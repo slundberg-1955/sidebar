@@ -1351,7 +1351,10 @@ class filerectreportNw2:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'additionalNotes' : addnotes,
-
+            'salutation' : '',
+            'actionRep' : '',
+            'actionReq' : '',
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
         })
         return replace
     
