@@ -360,8 +360,10 @@ class olpemail:
             designtxt = ''
             
         cultxt = ''
-        if mergeinfo[0] == 'true':
-            cultxt = ''
+        if mergeinfo[0] == 'TRUE':
+            cultxt = 'Prior instructions have been received acknowledging SLW responsibility for payment of the maintenance fees through our preferred 3rd party provider, Black Hills AI (www.blackhills.ai).  If for any reason this process is no longer valid, please reach out to us expeditiously to confirm new instructions.'
+        else:
+            cultxt = 'Maintenance fees may be submitted by any recognized party, including a patentee or third party. Generally we refer clients to Black Hills AI (www.blackhills.ai) for maintenance payment services. However, this is in no way an endorsement of their services and you may choose to pay the maintenance fees directly or may have another third party administer payment. Therefore, if you haven\'t already done so, please provide instructions regarding who will be handling your maintenance fee payments.'
             
         # Need to add use case for answer
         replace.update(function_instance.mergebasic(keys, matter))
@@ -373,7 +375,6 @@ class olpemail:
             'THIS.title'  : matter_data.title,
             'designText' : designtxt,
             'utilityText1' : utilityText1,
-            'cutilityText2' : 'Prior instructions have been received acknowledging SLW responsibility for payment of the maintenance fees through our preferred 3rd party provider, Black Hills AI (www.blackhills.ai).  If for any reason this process is no longer valid, please reach out to us expeditiously to confirm new instructions.',
             'utilityFee1' : utilityFee1,
             'utilityFee2' : utilityFee2,
             'utilityFee3' : utilityFee3,
@@ -679,6 +680,13 @@ class missingpartsNw:
 class rptissuefee:
     def rptissuefee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            activity = function_instance.getactivityid(matter_data, 'IFEE')
+        except:
+            activity = ''
+        
         if mergeinfo[0] == 'FALSE':
             instructData = ''
             instDue = ''
@@ -690,7 +698,8 @@ class rptissuefee:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'dateFiled' : ''
         })
         return replace
 

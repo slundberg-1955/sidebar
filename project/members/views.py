@@ -360,15 +360,19 @@ def WordMerger(docxpath, replace, output_path):
     doc = Document(docxpath)
     docx_replace2(doc, **replace)
     doc.save(output_path)
-
-# May have to edit for each merge
-def DocumentReader(docxpath):
+    
+# Fix orgId
+def DocumentReader(docxpath, mergemethod):
     doc = Document(docxpath)
-    subject = doc.paragraphs[0].text.replace('Subject line:', '')
-
-    body = doc.paragraphs[1].text.replace('- Direct Dial', '\n')
-    body = body.replace('Body of email:', '')
-    body = body + '\n'.join([p.text for p in doc.paragraphs[2:]])
+    if mergemethod == 'olpemail':
+        subject = doc.paragraphs[0].text.replace('Subject line:', '')
+        body = doc.paragraphs[1].text.replace('- Direct Dial', '\n')
+        body = body.replace('Body of email:', '')
+        body = body + '\n'.join([p.text for p in doc.paragraphs[2:]])
+        
+    if mergemethod == 'rptissuefee':
+        subject = doc.paragraphs[0].text.replace('Subject line:', '')
+        body = '\n'.join([p.text for p in doc.paragraphs[5:]])
     return subject, body
 
 def Email(body, subject, recipients, cc, bcc, attachment): 
@@ -468,14 +472,17 @@ def combinedoc(path, method, mergeinfo, matter):
         
         composer.append(docend)
         
-    if method == 'olpemail':
+    if method == 'olpemail' or method == 'rptissuefee':
         merge_fn = mergefunctions()
-        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx") 
+        if method == 'olpemail':
+            doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx") 
+        if method == 'rptissuefee':
+            doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/IssueFee.docx") 
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
-        WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/olpemailout.docx')
-        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/olpemailout.docx") 
+        WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
+        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx") 
         composer.append(doc3)
         
     composer.save("documents/multidocmerge/" + method +".docx")
@@ -523,7 +530,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:
@@ -582,7 +589,7 @@ def mergeDoc(matter , mergeinfo):
         else:
             BCC = ' '
 
-        subject, body = DocumentReader(output_path)
+        subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
         Email(body, subject, TO, CC, BCC, '')
 

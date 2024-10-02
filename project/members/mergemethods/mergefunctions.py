@@ -68,6 +68,7 @@ class mergefunctions:
                 'SAName' : SA_data.fname + ' ' + SA_data.mname + ' ' + SA_data.lname,
                 'SARegNo' : SA_data.registrationno,
                 'orgName' : SA_data.orgname,
+                'This.orgName' : SA_data.orgname,
                 'nickSA' : SA_data.nickname,
                 'SAPhone' : merge_fn.phoneFill(matter_data),
             }
@@ -233,9 +234,6 @@ class mergefunctions:
             'WAName' : profile.fname + ' ' + profile.lname,
             'WAPhone' : contact.phone1,
             'WAEmail' : contact.email,
-            'THIS.WAName' : profile.fname + ' ' + profile.lname,
-            'THIS.WAPhone' : contact.phone1,
-            'THIS.WAEmail' : contact.email,
             'This.WAName' : profile.fname + ' ' + profile.lname,
             'This.WAPhone' : contact.phone1,
             'This.WAEmail' : contact.email,
@@ -355,6 +353,7 @@ class mergefunctions:
         firm = Rvwmatterpersonnel.objects.using('FIP').filter(orgid = 4)
         info = {
             'firmName' : firm[0].orgname,
+            'This.upperFirmName' : firm[0].orgname,
             'firmPoBox' : 'P.O. Box 2938',
             'firmCityStZip' : 'Minneapolis, Minnesota  55402',
         }
@@ -402,14 +401,12 @@ class mergefunctions:
             'SARegNo' : 'rvwmatterpersonnel',
             'SAPhone' : 'rvwmatterpersonnel',
             'nickSA' : 'rvwmatterpersonnel',
-            'orgName' : 'rvwmatterpersonnel',
+            'orgName' : 'org',
+            'This.orgName' : 'org',
             'recipient' : 'rvwmatterinventors',
             'WAName' : 'WA',
             'WAPhone' : 'WA',
             'WAEmail' : 'WA',
-            'THIS.WAName' : 'WA',
-            'THIS.WAPhone' : 'WA',
-            'THIS.WAEmail' : 'WA',
             'This.WAName' : 'WA',
             'This.WAPhone' : 'WA',
             'This.WAEmail' : 'WA',
