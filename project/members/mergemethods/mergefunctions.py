@@ -67,10 +67,19 @@ class mergefunctions:
             basic = {
                 'SAName' : SA_data.fname + ' ' + SA_data.mname + ' ' + SA_data.lname,
                 'SARegNo' : SA_data.registrationno,
-                'orgName' : SA_data.orgname,
-                'This.orgName' : SA_data.orgname,
                 'nickSA' : SA_data.nickname,
                 'SAPhone' : merge_fn.phoneFill(matter_data),
+            }
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+                    
+        if 'org' in tables_list:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            basic = {
+                'orgName' : profile.orgname,
+                'This.orgName' : profile.orgname,
             }
             for key, value in basic.items():
                 if key in keys:

@@ -1,5 +1,5 @@
 from ..mergemethods import mergefunctions
-from ..models import Activity
+from ..models import Activity, Task
 from datetime import date, datetime
 
 class appealfwd:
@@ -681,25 +681,24 @@ class rptissuefee:
     def rptissuefee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        try:
+            compdate = Task.objects.using('FIP').get(matterid = matter_data.matterid, code = 'IFEE-D').completiondate
+        except:
+            compdate = 'No Issue Pay Date Found'
         
+        # ?
         try:
             activity = function_instance.getactivityid(matter_data, 'IFEE')
         except:
             activity = ''
         
-        if mergeinfo[0] == 'FALSE':
-            instructData = ''
-            instDue = ''
-            dateFiled = ''
-        else: 
-            dateFiled = 'No Issue Pay Date Found'
-            instDue = 'No Issue Py Date Found'
+        #if mergeinfo[0] == 'FALSE':
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'dateFiled' : ''
+            'dateFiled' : compdate
         })
         return replace
 
@@ -1862,6 +1861,8 @@ class invchange:
             'signatureDate' : esigndate_out,
             'SAName' : mergeinfo[1],
             'invList' : invtxt,
-            'hasText' : hastxt
+            'hasText' : hastxt,
+            'SAPhone' : '',
+            'SARegNo' : '',
         })
         return replace        

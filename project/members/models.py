@@ -406,3 +406,43 @@ class Relatedmatter(models.Model):
     class Meta:
         managed = False
         db_table = 'relatedmatter'
+        
+class Task(models.Model):
+    taskid = models.IntegerField(db_column='taskId')  # Field name made lowercase.
+    activityid = models.IntegerField(db_column='activityId', blank=True, null=True)  # Field name made lowercase.
+    name = models.CharField(max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    notes = models.TextField(db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    type = models.CharField(max_length=4, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    templateid = models.IntegerField(db_column='templateId', blank=True, null=True)  # Field name made lowercase.
+    isprototype = models.BooleanField(db_column='isPrototype')  # Field name made lowercase.
+    duedate = models.DateTimeField(db_column='dueDate', blank=True, null=True)  # Field name made lowercase.
+    completiondate = models.DateTimeField(db_column='completionDate', blank=True, null=True)  # Field name made lowercase.
+    basedatevalue = models.DateTimeField(db_column='baseDateValue', blank=True, null=True)  # Field name made lowercase.
+    matterid = models.IntegerField(db_column='matterId', blank=True, null=True)  # Field name made lowercase.
+    activityname = models.CharField(db_column='activityName', max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    createdfromtemplateid = models.IntegerField(db_column='createdFromTemplateId', blank=True, null=True)  # Field name made lowercase.
+    immutable = models.BooleanField()
+    privname = models.CharField(db_column='privName', max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    completiondatename = models.CharField(db_column='completionDateName', max_length=32, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    nextdatename = models.CharField(db_column='nextDateName', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    nextdateval = models.DateTimeField(db_column='nextDateVal', blank=True, null=True)  # Field name made lowercase.
+    basedateattr = models.CharField(db_column='baseDateAttr', max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    completiondesc = models.TextField(db_column='completionDesc', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    ptrrefersto = models.CharField(db_column='ptrRefersTo', max_length=32, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    isactbound = models.BooleanField(db_column='isActBound')  # Field name made lowercase.
+    code = models.CharField(max_length=16, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    verificationdate = models.DateTimeField(db_column='verificationDate', blank=True, null=True)  # Field name made lowercase.
+    verificationdesc = models.CharField(db_column='verificationDesc', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    abandoneddate = models.DateTimeField(db_column='abandonedDate', blank=True, null=True)  # Field name made lowercase.
+    abandoneddesc = models.CharField(db_column='abandonedDesc', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    subtype = models.IntegerField(db_column='subType')  # Field name made lowercase.
+    additionaldata = models.TextField(db_column='additionalData', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    usedefaultassignments = models.BooleanField(db_column='useDefaultAssignments')  # Field name made lowercase.
+    usedefaultemailreminders = models.BooleanField(db_column='useDefaultEmailReminders')  # Field name made lowercase.
+    oldtemplateptr = models.IntegerField(db_column='oldTemplatePtr', blank=True, null=True)  # Field name made lowercase.
+    recurrencecount = models.IntegerField(db_column='recurrenceCount', blank=True, null=True)  # Field name made lowercase.
+    skipupgradereason = models.CharField(db_column='skipUpgradeReason', max_length=256, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Task'
