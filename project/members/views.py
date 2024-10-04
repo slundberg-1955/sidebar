@@ -370,7 +370,7 @@ def DocumentReader(docxpath, mergemethod):
         body = body.replace('Body of email:', '')
         body = body + '\n'.join([p.text for p in doc.paragraphs[2:]])
         
-    if mergemethod == 'rptissuefee' or mergemethod == 'filerectreportNw2':
+    else:
         subject = doc.paragraphs[0].text.replace('Subject line:', '')
         body = '\n'.join([p.text for p in doc.paragraphs[5:]])
         
@@ -473,19 +473,22 @@ def combinedoc(path, method, mergeinfo, matter):
         
         composer.append(docend)
         
-    if method == 'olpemail' or method == 'rptissuefee' or method == 'filerectreportNw2':
+    method_paths = {
+        'olpemail': "C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx",
+        'rptissuefee': "C:/Users/jaburns/SideBar/project/documents/reportletters/IssueFee.docx",
+        'filerectreportNw2': "C:/Users/jaburns/SideBar/project/documents/reportletters/filingreceipt.docx",
+        'PCTRptFileOfApp': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTRptApplicationFiled.docx",
+        'basicreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/basicreportout.docx"
+    }
+
+    if method in method_paths:
         merge_fn = mergefunctions()
-        if method == 'olpemail':
-            doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx") 
-        if method == 'rptissuefee':
-            doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/IssueFee.docx") 
-        if method == 'filerectreportNw2':
-            doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/filingreceipt.docx") 
+        doc2 = Document_compose(method_paths[method])
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
         WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
-        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx") 
+        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx")
         composer.append(doc3)
         
     composer.save("documents/multidocmerge/" + method +".docx")
@@ -533,7 +536,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

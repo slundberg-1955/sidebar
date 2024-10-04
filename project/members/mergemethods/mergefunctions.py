@@ -252,6 +252,12 @@ class mergefunctions:
     def fullCountry(self, country):
         if 'US' in country:
             return 'United States of America'
+        if 'JP' in country:
+            return 'Japan'
+        if 'DE' in country:
+            return 'Germany'
+        else:
+            return country
     
     def split_name(self, full_name):
         full_name = full_name.strip()
@@ -265,6 +271,16 @@ class mergefunctions:
             middle_name = " ".join(parts[1:-1])
         
         return first_name, middle_name, last_name
+    
+    def extract_date(text):
+        date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
+
+        match = re.search(date_pattern, text)
+        
+        if match:
+            return match.group()
+        else:
+            return None
     
     def inventorInfoName(self, matter, name):
         merge_fn = mergefunctions()
@@ -392,7 +408,7 @@ class mergefunctions:
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
-
+                    
         return basicOut
 
     def findTables(self, keys):

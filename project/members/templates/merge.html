@@ -1446,14 +1446,7 @@
                 <div>
                       <input type="radio" id="repnoticeofallowrej" name="options"> Claims Rejoined
                 </div>
-                <script>
-                    if (document.getElementById('repnoticeofallowyes').checked){
-                        document.getElementById('repnoticeofallowclm').style.display = 'block';
-                    }
-                    else{
-                        document.getElementById('repnoticeofallowclm').style.display = 'none';
-                    }
-                </script>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -1676,7 +1669,7 @@
                     <br>&emsp;&emsp;Does Box V-I on the PCT Request Form indicate that any designations were excluded?
                 </div>
                 <div>
-                    &emsp;&emsp;&emsp;&emsp;If there are, pleace select exclusion:<input type="radio" id="PCTRptFileOfAppde" name="excoptions" value="DE"> DE
+                    &emsp;&emsp;&emsp;&emsp;If there are, pleace select exclusion: <input type="radio" id="PCTRptFileOfAppde" name="excoptions" value="DE"> DE
                     <input type="radio" id="PCTRptFileOfAppjp" name="excoptions" value="JP"> JP
                     <input type="radio" id="PCTRptFileOfAppkr" name="excoptions" value="KR"> KR
                 </div>
@@ -3062,7 +3055,7 @@
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -3118,34 +3111,22 @@
                     }
                     $('#activities').modal('show'); 
 
-                    const selectedNames = [' '];
-                    const selectedComments = [' '];
-                    const selectedStatus = [' '];
-                    const selectedDate1 = [' '];
-                    const selectedDate2 = [' '];
-
-                    // Attach event listener to checkboxes
-                    const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
-                    checkboxesAct.forEach((checkbox, index) => {
-                        checkbox.addEventListener('change', () => {
-                            if (checkbox.checked) {
-                                selectedNames.push(nameList[index]);
-                                selectedComments.push(commentsList[index]);
-                                selectedStatus.push(statusList[index]);
-                                selectedDate1.push(date1List[index]);
-                                selectedDate2.push(date2List[index]);
-                            
-                            }
-                        });
-                    });
-                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport' || mergemethod == 'PCTRptOutMiscItmsRcvd'){
+                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr'){
                         document.getElementById("activitiesnext").onclick = function() {
-                            document.getElementById("mergedata").value += selectedNames.join(';')  + ',';
-                            document.getElementById("mergedata").value += selectedComments.join(';')  + ',';
-                            document.getElementById("mergedata").value += selectedStatus.join(';')  + ',';
-                            document.getElementById("mergedata").value += selectedDate1.join(';')  + ',';
-                            document.getElementById("mergedata").value += selectedDate2.join(';')  + ',';
-                            submitbtnmerge();
+                            let namesel = [];
+                            let date1sel = [];
+                            const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
+                            checkboxesAct.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    namesel.push(nameList[index]);
+                                    //document.getElementById("mergedata").value += commentsList[index] + ',';
+                                    //document.getElementById("mergedata").value += statusList[index] + ',';
+                                    date1sel.push(date1List[index]);
+                                    //document.getElementById("mergedata").value += date2List[index] + ',';
+                                    
+                                }
+                            });
+                            submitbtnmerge(date1sel.join(';'), namesel.join(';'));
                         };
                     }
                 },

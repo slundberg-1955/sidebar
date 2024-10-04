@@ -761,13 +761,26 @@ class basicreport:
     def basicreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            actdate = function_instance.extract_date(date)
+            date_object = datetime.strptime(actdate, "%m/%d/%Y")
+            finaldates += date_object.strftime("%B %d, %Y") + '\n'
 
-        actname = mergeinfo[0]
-        actdate = mergeinfo[3]
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
+            'salutation' : '',
+            'activityname' : mergeinfo[0],
+            'dateFiled' : formatted_data,
+            'docFiled' : '',
             
         })
         return replace
@@ -1159,18 +1172,21 @@ class PctCommRe:
 class PCTRptFileOfApp:
     def PCTRptFileOfApp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         recoffice = mergeinfo[0]
         searchingauth = mergeinfo[1]
         if mergeinfo[2] != '':
-            exclusion = 'The application designated all PCT contracting states except ' + mergeinfo[2] +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.<br>'
+            exclusion = 'The application designated all PCT contracting states except ' + mergeinfo[2] +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.'
         else:
             exclusion = 'The application designated all PCT contracting states.\n'
 
         selserial = mergeinfo[3].replace('*', ',').replace(';','\n')
         seldate = mergeinfo[4].replace('*', ',').replace(';','\n')
         selcountry = mergeinfo[5].replace('*', ',').replace(';','\n')
+
+        # Convert selcountry using fullCountry method
+        selcountry_list = [function_instance.fullCountry(str(country)) for country in selcountry.split('\n')]
+        selcountry = "\n".join(selcountry_list)
 
         rows = zip(selserial.split('\n'), seldate.split('\n'), selcountry.split('\n'))
         formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
@@ -1184,13 +1200,15 @@ class PCTRptFileOfApp:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'priorAppNo' : formatted_data,
+            # no longer needed
             'priorAppDate' : '',
             'priorAppCntry' : '',
             'crcvOffice' : recoffice,
             'cpatentOffice' : searchingauth,
             'excluDesigPhs' : exclusion,
             'actionText' : action,
-            'cpriorApps' : prapp
+            'cpriorApps' : prapp,
+            'salutation' : '',
         })
         return replace
     
