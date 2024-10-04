@@ -446,3 +446,24 @@ class Task(models.Model):
     class Meta:
         managed = False
         db_table = 'Task'
+        
+class Attributeval(models.Model):
+    attrdefid = models.IntegerField(db_column='attrDefId')  # Field name made lowercase.
+    attributableobjtypeid = models.IntegerField(db_column='attributableObjTypeId')  # Field name made lowercase.
+    objid = models.IntegerField(db_column='objId')  # Field name made lowercase.
+    val = models.CharField(max_length=256, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    params = models.CharField(max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    ispublic = models.BooleanField(db_column='isPublic')  # Field name made lowercase.
+    label = models.CharField(max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    attrorder = models.IntegerField(db_column='attrOrder', blank=True, null=True)  # Field name made lowercase.
+    index = models.IntegerField()
+    immutable = models.BooleanField()
+    readonly = models.BooleanField(db_column='readOnly')  # Field name made lowercase.
+    privlabel = models.CharField(db_column='privLabel', max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    displayflags = models.IntegerField(db_column='displayFlags')  # Field name made lowercase.
+    orgid = models.IntegerField(db_column='orgId')  # Field name made lowercase.
+    isrequired = models.BooleanField(db_column='isRequired')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'AttributeVal'

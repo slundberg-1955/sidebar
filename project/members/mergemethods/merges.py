@@ -1,6 +1,7 @@
 from ..mergemethods import mergefunctions
 from ..models import Activity, Task
 from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
 
 class appealfwd:
     def appealfwd(self, matter, mergeinfo, keys):
@@ -514,6 +515,7 @@ class appReportFp:
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.cmgfill(matter))
             replace.update({
                 'smallEntity' : smallentitytext,
                 'actionText' : actionText,
@@ -526,7 +528,6 @@ class appReportFp:
                 'recipient' : '',
                 'CSZ' : '',
                 'workAddr' : '',
-                'cmgName' : '',
                 'ccTag' : '',
                 'ccName' : '',
                 'enclosures' : '',
@@ -842,19 +843,30 @@ class PCTRptOutMiscItmsRcvd:
         })
         return replace
 
+# use activity and attributeval to get reel and frames
 class recordedassnreport:
     def recordedassnreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
         if mergeinfo[0]:
-            recorddesc = mergeinfo[0]
+            recorddesc = '\nCORRECTION CONFIRMED: ' + mergeinfo[0] +'\n'
+            actrep = 'Corrected Notice of Recordation of Assignment.  The'
+        else:
+            actrep = 'Recorded Assignment in the'
+            recorddesc = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-
+            'salutation'  : '',
+            'correctionText' : recorddesc,
+            'actText' : '',
+            'addText' : '',
+            'clientName' : '',
+            'actrepText' : actrep,
+            'activityname' : ''
         })
         return replace
 
@@ -866,9 +878,13 @@ class reportprvassnnew:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.cmgfill(matter))
         replace.update({
-            'salutation' : 'Inventor(s)',
+            'salutation' : '',
             'recipient' : '',
+            'haveInvSgn' : '',
+            'ascFax' : '',
+            'returnDate' : '',
         })
         return replace
 
@@ -1886,4 +1902,27 @@ class invchange:
             'SAPhone' : '',
             'SARegNo' : '',
         })
-        return replace        
+        return replace       
+    
+class prvAppReport:
+    def prvAppReport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        # , name__contains = 'Deadline'
+        try:
+            deadline = Task.objects.using('FIP').get(matterid = matter_data.matterid, code = 'FFIL-D').nextdateval
+        except:
+            deadline = (matter_data.fileddate + relativedelta(months=12)).strftime('%B %d, %Y')
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'activityname' : '',
+            'instDate' : (matter_data.fileddate + relativedelta(months=9, days=15)).strftime('%B %d, %Y'),
+            'usDeadline' : deadline,
+            'patentLink': 'http://ca.slwip.com/slwdocs/applicationfiled.doc',   
+        })
+        return replace
+    

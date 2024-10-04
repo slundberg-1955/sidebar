@@ -478,7 +478,9 @@ def combinedoc(path, method, mergeinfo, matter):
         'rptissuefee': "C:/Users/jaburns/SideBar/project/documents/reportletters/IssueFee.docx",
         'filerectreportNw2': "C:/Users/jaburns/SideBar/project/documents/reportletters/filingreceipt.docx",
         'PCTRptFileOfApp': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTRptApplicationFiled.docx",
-        'basicreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/basicreportout.docx"
+        'basicreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/basicreportout.docx",
+        'prvAppReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/prvappfiled_new.docx",
+        'recordedassnreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/recordedassignment.docx"
     }
 
     if method in method_paths:
@@ -536,7 +538,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

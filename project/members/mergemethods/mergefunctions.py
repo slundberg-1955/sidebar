@@ -636,7 +636,9 @@ class mergefunctions:
         matter_data = merge_fn.matterFill(matter)
         part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34614', roleorderno = 1)
         profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
         info = {
             'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+            'cmgEmail' : contact.email
         }
         return info
