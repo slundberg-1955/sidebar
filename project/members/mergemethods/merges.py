@@ -339,8 +339,6 @@ class olpemail:
         replace = {}
         # Fill Data
         matter_data = function_instance.matterFill(matter)
-        patent_data = function_instance.patentFill(matter_data)
-        org_data = function_instance.orginfoFill(matter_data)
 
         # May need editing
         utilityText1 = "The patent will remain in effect for a term of twenty years from the date of the earliest filing.  To maintain the patent for its entire term, maintenance fees must be paid when due.  The fees are due as follows:"
@@ -369,10 +367,7 @@ class olpemail:
         # Need to add use case for answer
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'This.orgName' : org_data.orgname,
             'activityname' : actname,
-            'THIS.patNo' : patent_data.patentno,
-            'THIS.issueDate' : patent_data.issuedate,
             'THIS.title'  : matter_data.title,
             'designText' : designtxt,
             'utilityText1' : utilityText1,
@@ -905,16 +900,23 @@ class issuereport:
     def issuereport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        try:
+            issdate = str((function_instance.patentFill(matter_data).issuedate).strftime('%B %d, %Y'))
+        except:
+            issdate = ''
 
-        #if mergeinfo[0] == 'TRUE':
-
-        #else:
-
+        if mergeinfo[0] == 'TRUE':
+            actreq = 'None at this time.  Instructions already received with regard to any continuing (divisional, continuation, continuation-in-part) application filing(s).'
+        else:
+            actreq = 'Please instruct us as to whether any continuing application filing is desired.  The last day for filing any continuing application is '+ issdate +'.  Absent your written instructions, we will not file any additional applications based on the above-identified application. '
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'salutation' : 'Inventor(s)'
+            'salutation' : '',
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'actreq' : actreq,
         })
         return replace
 
@@ -1042,11 +1044,21 @@ class nonfinalreportFp:
     def nonfinalreportFp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        if mergeinfo[0] == 'true':
+            reqtxt = 'We have requested Prioritized Examination in this matter. Participation in Prioritized Examination assumes compliance with United States Patent Office procedures as outlined at http://www.uspto.gov/aia_implementation/faq.jsp#heading-9.  Please be advised that any extension of time for response in this matter will automatically remove this application from the Prioritized Examination program.\n\n'
+        else:
+            reqtxt = 'We have requested Prioritized Examination in this matter. '
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'cReqPriorExam' : 'We have requested Prioritized Examination in this matter. '
+            'cReqPriorExam' : reqtxt,
+            'salutation' : '',
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'instDate' : '',
+            'oarnDate' : '',
+            'oarn3MoDate' : ''
         })
         return replace
 

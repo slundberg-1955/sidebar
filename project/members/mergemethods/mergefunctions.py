@@ -44,8 +44,14 @@ class mergefunctions:
 
         if 'patent' in tables_list:
             patent_data = merge_fn.patentFill(matter_data)
+            try:
+                issdate = (patent_data.issuedate).strftime('%B %d, %Y')
+            except:
+                issdate = ''
             basic = {
-                'artUnit' : patent_data.artunitno
+                'artUnit' : patent_data.artunitno,
+                'patNo' : patent_data.patentno,
+                'issueDate' : issdate,
             }
             for key, value in basic.items():
                 if key in keys:
@@ -420,6 +426,8 @@ class mergefunctions:
             'title' : 'matter',
             'examinerName' : 'personnel',
             'artUnit' : 'patent',
+            'patNo' : 'patent',
+            'issueDate' : 'patent',
             'matterNo' : 'matter',
             'confirmNo' : 'matter',
             'SAName' : 'rvwmatterpersonnel',
@@ -636,7 +644,7 @@ class mergefunctions:
         matter_data = merge_fn.matterFill(matter)
         part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34614', roleorderno = 1)
         profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
         info = {
             'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'cmgEmail' : contact.email
