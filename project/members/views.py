@@ -483,7 +483,9 @@ def combinedoc(path, method, mergeinfo, matter):
         'recordedassnreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/recordedassignment.docx",
         'issuereport': "C:/Users/jaburns/SideBar/project/documents/reportletters/issuenotify.docx",
         'nonfinalreportFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/NonFinalOaFp.docx",
-        'ptorecdReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/PTO_Received.docx"
+        'ptorecdReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/PTO_Received.docx",
+        'RepNoticeofAllow': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofallowanceUpdate.docx",
+        'adobesign': "C:/Users/jaburns/SideBar/project/documents/letters/AdobeSignEmail.docx"
     }
 
     if method in method_paths:
@@ -541,7 +543,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

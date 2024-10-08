@@ -818,9 +818,18 @@ class RepNoticeofAllow:
 
         entitystatus = function_instance.entityfill(matter)
 
-        activity = function_instance.getactivityid(matter_data, 'NOAR')
-        # noarDate = function_instance.extract_date(activity.smryonevalue)
+        try:
+            smryone = (function_instance.getactivityid(matter_data, 'NOAR').smryonevalue)
+            noardate = smryone.strftime('%B %d, %Y')
+            noar2date = (smryone + relativedelta(months=2)).strftime('%B %d, %Y')
+            noar3date = (smryone + relativedelta(months=3)).strftime('%B %d, %Y')
 
+        except:
+            noardate = '' 
+            noar2date = ''
+            noar3date = ''
+
+        # may need in ret language
         if(entitystatus == 0):
             billamt = '1,450.00'
         if(entitystatus == 2):
@@ -831,11 +840,13 @@ class RepNoticeofAllow:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'noar2Mo' : '',
+            'noar2Mo' : noar2date,
             'noarLink' : 'http://ca.slwip.com/slwdocs/noticeofallowance.doc',
-            'noar3Mo' : '',
-            'noarDate' : activity.smryonevalue.strftime("%B %d, %Y"),
+            'noar3Mo' : noar3date,
+            'noarDate' : noardate,
             'RETLANGUAGE' : '',
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'salutation' : '',
         })
         return replace
     

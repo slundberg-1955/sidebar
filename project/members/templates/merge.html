@@ -1427,7 +1427,7 @@
     </div>
 </div>
 <!--report out - notice of allowance-->
-<div id="repnoticeofallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="repnoticeofallowModalLabel" aria-hidden="true">
+<div id="RepNoticeofAllow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="repnoticeofallowModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1437,16 +1437,25 @@
             <div class="modal-body">
                 <div>  Restriction Requirement:</div>
                 <div >
-                      <input type="radio" id="repnoticeofallowyes" name="options"> Yes
-                      <input type="text" id="repnoticeofallowclm" size="20" style="display:none;">
+                      <input type="radio" id="repnoticeofallowyes" name="RepNoticeofAllowoptions" value="yes"> Yes
+                </div>
+                <div id="repnoticeofallowhide" style="display:none;">
+                        Claims: <input type="text" id="repnoticeofallowclm" size="25">
                 </div>
                 <div>
-                      <input type="radio" id="repnoticeofallowno" name="options"> No
+                      <input type="radio" id="repnoticeofallowno" name="RepNoticeofAllowoptions" value="no"> No
                 </div>
                 <div>
-                      <input type="radio" id="repnoticeofallowrej" name="options"> Claims Rejoined
+                      <input type="radio" id="repnoticeofallowrej" name="RepNoticeofAllowoptions" value="claim"> Claims Rejoined
                 </div>
+                <script>
 
+                    document.querySelectorAll('input[name="RepNoticeofAllowoptions"]').forEach((elem) => {
+                        elem.addEventListener("change", function() {
+                            document.getElementById('repnoticeofallowhide').style.display = this.value === 'yes' ? 'block' : 'none';
+                        });
+                    });
+                </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
