@@ -786,14 +786,28 @@ class ptorecdReport:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
-        actname = mergeinfo[0]
-        actdate = mergeinfo[3]
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND'
+
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t".join(row) for row in rows])
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'dateMailed' : actdate,
-            'docReceived' : actname,
+            'dateMailed' : formatted_data,
+            'docReceived' : '',
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'salutation' : ''
         })
         return replace
     
@@ -1049,6 +1063,18 @@ class nonfinalreportFp:
             reqtxt = 'We have requested Prioritized Examination in this matter. Participation in Prioritized Examination assumes compliance with United States Patent Office procedures as outlined at http://www.uspto.gov/aia_implementation/faq.jsp#heading-9.  Please be advised that any extension of time for response in this matter will automatically remove this application from the Prioritized Examination program.\n\n'
         else:
             reqtxt = 'We have requested Prioritized Examination in this matter. '
+        
+        try:
+            smryone = (function_instance.getactivityid(matter_data, 'OARN').smryonevalue)
+            oarndate = smryone.strftime('%B %d, %Y')
+            oarn3date = (smryone + relativedelta(months=3)).strftime('%B %d, %Y')
+            instdate = (smryone + relativedelta(months=2)).strftime('%B %d, %Y')
+
+        except:
+            oarndate = '' 
+            instdate = ''
+            oarn3date = ''
+
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1056,9 +1082,9 @@ class nonfinalreportFp:
             'cReqPriorExam' : reqtxt,
             'salutation' : '',
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'instDate' : '',
-            'oarnDate' : '',
-            'oarn3MoDate' : ''
+            'instDate' : instdate,
+            'oarnDate' : oarndate,
+            'oarn3MoDate' : oarn3date
         })
         return replace
 
