@@ -586,8 +586,8 @@ class mergefunctions:
         return profile
     
     def getactivityid(self, matter, type):
-        activity = Activity.objects.using('FIP').get(matterid = matter.matterid, code = type)
-        return activity
+        activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = type)
+        return activity[0]
     
     def extract_date(self, text):
         # Regular expression pattern to match dates in MM/DD/YYYY format

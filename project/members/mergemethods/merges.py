@@ -1,5 +1,5 @@
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task
+from ..models import Activity, Task, Rvwactivitydateattribute
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
@@ -475,7 +475,7 @@ class appReportFp:
 
             ReqPriorExam = "We have requested Prioritized Examination in this matter. Participation in Prioritized Examination assumes compliance with United States Patent Office procedures as outlined at http://www.uspto.gov/aia_implementation/faq.jsp#heading-9. "
                   
-            if entitysize == 1:
+            if entitysize == 1 or entitysize == 0:
                 smallentitytext = "This patent application was filed claiming Small Entity Status.  If at any time you believe Small Entity Status should no longer be claimed, please notify us."
             else:
                 smallentitytext = ''
@@ -491,8 +491,7 @@ class appReportFp:
                     actionText = actionText + 'in a separate communication to follow shortly.  '
     
             if exmreq == 'true':
-                if smallentitytext == '':
-                    ReqPriorExam = '  ' + ReqPriorExam
+                ReqPriorExam = '  ' + ReqPriorExam
             else:
                 ReqPriorExam = ''
 
@@ -516,17 +515,10 @@ class appReportFp:
                 'actionText' : actionText,
                 'applicationType' : applicationType,
                 'currentDate' : date.today(),
-                'corrContactTitle' : '',
                 'patentLink' : 'http://ca.slwip.com/slwdocs/applicationfiled.doc',
-                'cReqPriorExam' : '',
+                'cReqPriorExam' : ReqPriorExam,
                 'salutation' : '',
-                'recipient' : '',
-                'CSZ' : '',
-                'workAddr' : '',
-                'ccTag' : '',
-                'ccName' : '',
-                'enclosures' : '',
-                'clientRefNo' : '',
+                'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             })
             return replace
 
@@ -1974,4 +1966,67 @@ class prvAppReport:
             'patentLink': 'http://ca.slwip.com/slwdocs/applicationfiled.doc',   
         })
         return replace
+
+class advisoryreport:
+    def advisoryreport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        actcode = ['ADAF-N','ADAF', 'PTOL-304', 'PTOL-303']
+        iscode = False
+
+        for code in actcode:
+            try:
+                activity = function_instance.getactivityid(matter_data, code)
+                iscode = True
+                break
+            except:
+                continue
+        
+        if iscode:
+            try:
+                actdate = Rvwactivitydateattribute.objects.using('FIP').filter(
+                    activityid__icontains=activity.activityid,
+                    attrvallabel__icontains='Mailed'
+                ).exclude(
+                    attrvallabel__icontains='Final'
+                ).get()
+                adardate = actdate.dateval
+            except:
+               adardate = 'No Date Found' 
+        else:
+            adardate = 'No Date Found'
+        
+        try:
+            foaractivity = function_instance.getactivityid(matter_data, "FOAR")
+            foardate = foaractivity.smryonevalue.strftime('%B %d, %Y')
+        except:
+            foardate = ''
+            
+        try:
+            instdue = datetime.strptime(mergeinfo[0], '%m/%d/%Y').strftime('%B %d, %Y')
+        except:
+            instdue = 'Invalid Date'
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'adarDate' : adardate,
+            'foarDate' : foardate,
+            'instDue'  : instdue,
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+        })
+        return replace
     
+class cocReportEmail:
+    def cocReportEmail(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+ 
+        })
+        return replace

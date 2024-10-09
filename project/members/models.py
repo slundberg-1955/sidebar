@@ -467,3 +467,21 @@ class Attributeval(models.Model):
     class Meta:
         managed = False
         db_table = 'AttributeVal'
+        
+class Rvwactivitydateattribute(models.Model):
+    activityid = models.IntegerField(db_column='activityId')  # Field name made lowercase.
+    dateval = models.DateTimeField(db_column='dateVal', blank=True, null=True)  # Field name made lowercase.
+    ispublic = models.BooleanField(db_column='isPublic')  # Field name made lowercase.
+    attrvallabel = models.CharField(db_column='attrValLabel', max_length=64)  # Field name made lowercase.
+    attrorder = models.IntegerField(db_column='attrOrder', blank=True, null=True)  # Field name made lowercase.
+    orgid = models.IntegerField(db_column='orgId', blank=True, null=True)  # Field name made lowercase.
+    displayflags = models.IntegerField(db_column='displayFlags')  # Field name made lowercase.
+    summarydisplay = models.BooleanField(db_column='summaryDisplay', blank=True, null=True)  # Field name made lowercase.
+    readonly = models.BooleanField(db_column='readOnly')  # Field name made lowercase.
+    attrdefname = models.CharField(db_column='attrDefName', max_length=32)  # Field name made lowercase.
+    activityname = models.CharField(db_column='activityName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    matterid = models.IntegerField(db_column='matterId', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'rvwactivityDateAttribute'
