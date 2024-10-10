@@ -44,12 +44,17 @@ class appealfwd:
 class pclaims:
     def pclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        
+        try:
+            date = datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime("%B %d, %Y")
+        except:
+            date = mergeinfo[0]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-            'claimsDate' : mergeinfo[0],
+            'claimsDate' : date,
             'dateDescription' : mergeinfo[1],
         })
         return replace
@@ -741,7 +746,7 @@ class LtrSendFmlDocNew:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            
+            'fmlContent' : mergeinfo[5]
         })
         return replace
     
@@ -886,17 +891,32 @@ class reportprvassnnew:
     def reportprvassnnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        try:
+            rdate = datetime.strptime(mergeinfo[3], '%Y-%m-%d').strftime('%B %d, %Y')
+        except:
+            rdate = mergeinfo[3]
+
+        ddue = (matter_data.fileddate + relativedelta(years=1)).strftime('%B %d, %Y')
+        
+        nottxt = ''
+        if mergeinfo[4] == 'true':
+            nottxt = 'in the presence of a Notary Public '
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update(function_instance.cmgfill(matter))
         replace.update({
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'salutation' : '',
-            'recipient' : '',
-            'haveInvSgn' : '',
-            'ascFax' : '',
-            'returnDate' : '',
+            
+            'haveInvSgn' : 'have the inventor(s) ',
+            'ascFax' : '612-339-3061',
+            'returnDate' : rdate,
+            'notaryText' : nottxt,
+            'dueDate' : ddue,
+            'activityname' : 'Send Provisional Assignment'
         })
         return replace
 
@@ -1232,8 +1252,9 @@ class PCTRptFileOfApp:
 
         recoffice = mergeinfo[0]
         searchingauth = mergeinfo[1]
+            
         if mergeinfo[2] != '':
-            exclusion = 'The application designated all PCT contracting states except ' + mergeinfo[2] +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.'
+            exclusion = 'The application designated all PCT contracting states except ' + function_instance.fullCountry(mergeinfo[2]) +'. The exclusion of this designation prevents the priority application from becoming abandoned, in accordance with country law.'
         else:
             exclusion = 'The application designated all PCT contracting states.\n'
 
@@ -2004,7 +2025,7 @@ class advisoryreport:
             foardate = ''
             
         try:
-            instdue = datetime.strptime(mergeinfo[0], '%m/%d/%Y').strftime('%B %d, %Y')
+            instdue = datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y')
         except:
             instdue = 'Invalid Date'
         

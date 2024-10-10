@@ -488,7 +488,9 @@ def combinedoc(path, method, mergeinfo, matter):
         'adobesign': "C:/Users/jaburns/SideBar/project/documents/letters/AdobeSignEmail.docx",
         'appReportFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/appfiledFp.docx",
         'advisoryreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/advisoryaction.docx",
-        'cocReportEmail': "C:/Users/jaburns/SideBar/project/documents/reportletters/CocEmail.docx"
+        'cocReportEmail': "C:/Users/jaburns/SideBar/project/documents/reportletters/CocEmail.docx",
+        'reportprvassnnew': "C:/Users/jaburns/SideBar/project/documents/letters/ProvisionalAssignmentNoLabel.docx",
+        'LtrSendFmlDocNew': "C:/Users/jaburns/SideBar/project/documents/letters/LtrSendFmlDocNew.docx"
     }
 
     if method in method_paths:
@@ -523,7 +525,7 @@ def mergeDoc(matter , mergeinfo):
 
     contacts = mergeinfo_list[2]
     # Pop emails in merge data
-    if contacts == 'TRUE':
+    if contacts == 'TRUE' and mergeinfo_list[1] != 'reportprvassnnew':
         mergefninfo.pop(0)
         mergefninfo.pop(0)
         mergefninfo.pop(0)
@@ -546,7 +548,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

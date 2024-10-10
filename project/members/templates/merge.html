@@ -310,7 +310,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    Dates claims are current to:<input type="text" class="form-control" id="pclaimsdateInput" placeholder="MM/DD/YYYY" title="Date Claims Are Current To: ">
+                    Dates claims are current to: <input type="date" id="pclaimsdateInput">
                 </div>
                 <div class="form-group">
                     <label for="pclaimsdescriptionInput">Enter a description of the date,
@@ -446,17 +446,17 @@
                     &emsp;&emsp;Number of Pages of Formal Drawings:&emsp;&emsp;&ensp;<input type="text" id="issuefeepagedraw" size="10" placeholder = '0' value = 0>
                     <br>&emsp;&emsp;Merge "Response to Examiner's Reasons for Allowance"? <input type="checkbox" id="issuefeemrgexam">
                     <br>&emsp;&emsp;Issue Fee Previously Paid <input type="checkbox" id="issuefeeisspaid">
-                    <br><input type="text" id="issuefeeisspaidhide" size="10" placeholder = '  /  /  ' style="display:none; margin-left: 19.5em;"> 
+                    <br><input type="date" id="issuefeeisspaidhide" style="display:none; margin-left: 19.5em;"> 
                 </div>
                 <div id="issuefeepagewithhide" style="display:none;">
                     &emsp;&emsp;Petition To Withdraw Filed <input type="checkbox" id="issuefeewithfil">
                 </div> 
                 <div id="issuefeepagewithhidedate" style="display:none;">
-                    &emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;<input type="text" id="issuefeemail" size="10" placeholder = '  /  /  '>
+                    &emsp;&emsp;&emsp;&emsp;Date Notice of Withdraw Mailed:&emsp;<input type="date" id="issuefeemail">
                 </div> 
                 <div id="issuefeedtepetgra" style="display:none;">
-                    &emsp;&emsp;&emsp;&emsp;Date of Petition to Withdraw: &emsp;&emsp;&ensp;<input type="text" id="issuefeepetw" size="10" placeholder = '  /  /  '>
-                    <br>&emsp;&emsp;&emsp;&emsp;Date Withdraw Granted:&emsp;&emsp;&emsp;&emsp;&emsp;<input type="text" id="issuefeewithgr" size="10" placeholder = '  /  /  '>
+                    &emsp;&emsp;&emsp;&emsp;Date of Petition to Withdraw: &emsp;&emsp;&ensp;<input type="date" id="issuefeepetw">
+                    <br>&emsp;&emsp;&emsp;&emsp;Date Withdraw Granted:&emsp;&emsp;&emsp;&emsp;&emsp;<input type="date" id="issuefeewithgr">
                 </div>  
                 <div style="display:none;" id="issuefeeamountinc">
                     &emsp;&emsp;Issue Fee Amount Increased <input type="checkbox" id="issuefeeamtinc"> 
@@ -1122,16 +1122,16 @@
                     &emsp;&emsp;<input type="checkbox" id="LtrSendFmlDocNewallow"> This is in response to a notice of allowability
                 </div>
                 <div>
-                    &emsp;&emsp;&emsp;Notice of allowability response data <input type="text" id="LtrSendFmlDocNewnotall" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                    &emsp;&emsp;&emsp;Notice of allowability response data <input type="date" id="LtrSendFmlDocNewnotall">
                 </div>
                 <div>
                     <br>&emsp;&emsp;<input type="checkbox" id="LtrSendFmlDocNewmis"> This is in response to a missing part(s)
                 </div>
                 <div>
-                    &emsp;&emsp;Missing parts due date <input type="text" id="LtrSendFmlDocNewmissp" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                    &emsp;&emsp;Missing parts due date <input type="date" id="LtrSendFmlDocNewmissp">
                 </div>
                 <div>
-                    &emsp;&emsp;Document return date <input type="text" id="LtrSendFmlDocNewdoc" size="3" placeholder = ' /  / '> (mm/dd/yyyy)
+                    &emsp;&emsp;Document return date <input type="date" id="LtrSendFmlDocNewdoc">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1188,19 +1188,19 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="right" style="border: none;">  Instruction Due</td>
-                        <td align="left"style="border: none;"><input type="text" id="PctSearchRepinstr" size="10" placeholder = ' /  / '></td>
+                        <td align="left"style="border: none;"><input type="date" id="PctSearchRepinstr"></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  Article 19 Amendment Due</td>
-                        <td align="left"style="border: none;"><input type="text" id="PctSearchRep19" size="10" placeholder = ' /  / '></td>
+                        <td align="left"style="border: none;"><input type="date" id="PctSearchRep19"></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  Article 34 Amendment Due</td>
-                        <td align="left"style="border: none;"><input type="text" id="PctSearchRep34" size="10" placeholder = ' /  / '></td>
+                        <td align="left"style="border: none;"><input type="date" id="PctSearchRep34"></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  National Phase Deadline (30 Month) Due</td>
-                        <td align="left"style="border: none;"><input type="text" id="PctSearchRepnat" size="10" placeholder = ' /  / '></td>
+                        <td align="left"style="border: none;"><input type="date" id="PctSearchRepnat"></td>
                     </tr>
                 </table>
             </div>
@@ -1221,7 +1221,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="text" id="advisoryreportdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                    &emsp;&emsp;<input type="date" id="advisoryreportdate">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1507,10 +1507,10 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="text" id="reportprvassnnewdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                    &emsp;&emsp;Indicate Return Date <input type="date" id="reportprvassnnewdate">
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="reportprvassnnewbox">Assignment Includes Notary Block
+                    <br>&emsp;&emsp;<input type="checkbox" id="reportprvassnnewbox"> Assignment Includes Notary Block
                 </div>
             </div>
             <div class="modal-footer">

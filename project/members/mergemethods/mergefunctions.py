@@ -258,12 +258,27 @@ class mergefunctions:
     def fullCountry(self, country):
         if 'US' in country:
             return 'United States of America'
-        if 'JP' in country:
+        elif 'JP' in country:
             return 'Japan'
-        if 'DE' in country:
+        elif 'DE' in country:
             return 'Germany'
+        elif 'KR' in country:
+            return 'Korea'
         else:
             return country
+        
+    def patentCountry(self, country):
+        if 'EP' in country:
+            return 'European Patent Office'
+        elif 'US' in country:
+            return 'United States Patent Office'
+        elif 'KR' in country:
+            return 'Korean Patent Office'
+        elif 'AU' in country:
+            return 'Australian Patent Office'
+        else:
+            return country
+
     
     def split_name(self, full_name):
         full_name = full_name.strip()
