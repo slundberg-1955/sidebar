@@ -1533,7 +1533,7 @@
                     &emsp;&emsp;Received From: <input type="text" id="abandonReportrec" size="20">
                 </div>
                 <div>
-                    &emsp;&emsp;Date Received: <input type="text" id="abandonReportdate" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                    &emsp;&emsp;Date Received: <input type="date" id="abandonReportdate">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1574,7 +1574,7 @@
                 </div>  
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
-                    <input type="text" id="pctcorrectmail" size="10" placeholder=" /  / ">&emsp;
+                    <input type="date" id="pctcorrectmail">&emsp;
                     <select id="pctcorrectSAdrop">
                         <option value="Bradley Scheer">Bradley Scheer</option>
                         <option value="David Black">David Black</option>
@@ -1737,7 +1737,7 @@
                     <label for="PCTAsgnPOALettertxt">&emsp;&emsp;Date for returning executed documents (Typically 1-month from today):</label>
                 </div>
                 <div>
-                        <input type="text" id="PCTAsgnPOALettertxt" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                        <input type="date" id="PCTAsgnPOALettertxt">
                 </div>
                 <div>
                     <br><label for="PCTAsgnPOALetternot">&emsp;&emsp;</label>
@@ -1898,7 +1898,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                        Confirm the date of the Invitation to Furnish a Sequence Listing: <input type="text" id="PctCommReconfirm" size="10" placeholder = ' /   / '>
+                        Confirm the date of the Invitation to Furnish a Sequence Listing: <input type="date" id="PctCommReconfirm">
                 </div>
                 <div>
                         Select the PCTOffice for Response:
@@ -1929,11 +1929,11 @@
                     }
                 </script>
                 <div class="filing">
-                        E-Filing:<input type="radio" id="PctCommReefile" name="options">
-                    &ensp;Paper Filing:<input type="radio" id="PctCommRepaperfile" name="options">
+                        E-Filing: <input type="radio" id="PctCommReefile" name="options">
+                    &ensp;Paper Filing: <input type="radio" id="PctCommRepaperfile" name="options">
                 </div>
                 <div>
-                    <br>    Date of Deposit: <input type="text" id="PctCommRedatedep" size="10" placeholder = ' /   / '> (mm/dd/yyyy)
+                    <br>    Date of Deposit: <input type="date" id="PctCommRedatedep">
                 </div>
                 <div>
                         Number of pages(paper) in Sequence Listing: <input type="text" id="PctCommRenumseq" size="10" placeholder = "0" value = "0">
@@ -1983,7 +1983,7 @@
                 &ensp;Credit Card <input type="radio" id="generalxmitCFcredit" name="depoptions" value="3">
             </div>
             <div>
-                    Due Date <input type="text" id="generalxmitCFduedate" size="10" placeholder = " /  / ">
+                    Due Date <input type="date" id="generalxmitCFduedate">
             </div>
             <div>
                 <br>    <select id="generalxmitCFselect">
@@ -2139,7 +2139,7 @@
                             &emsp;<input type="checkbox" id="idsCommCfNewrefcite"> References cited in U.S. parent    Parent Serial Number <input type="text" id="idsCommCfNewpatser" size="10" placeholder="11/234,567">
                 </div>
                 <div>
-                                               &ensp;Parent Filing Date <input type="text" id="idsCommCfNewpatdate" size="10" placeholder="11/11/1111">
+                                               &ensp;Parent Filing Date <input type="date" id="idsCommCfNewpatdate">
                 </div>
                 <div>
                     <br>&emsp;&emsp;Miscellaneous:&ensp;<input type="checkbox" id="idsCommCfNewmnk"> List McKessons in the body of the IDS Communication
@@ -2299,7 +2299,7 @@
                               &ensp;<input type="text" id="idsmemoblank" size="30">
                 </div>
                 <div>
-                      3-Month Due Date <input type="text" id="idsmemo3mblank" size="5"> (3 months from Mailing Date)
+                      3-Month Due Date <input type="date" id="idsmemo3mblank"> (3 months from Mailing Date)
                 </div>
                 <div>
                     <br>                 <b>Related Matters</b>             <input type="checkbox" id="idsmemosel"> Select All
@@ -2366,12 +2366,16 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-                <div>
-                      Enter associate's correspondence date: <input type="text" id="DraftOAInstructcorr" size="5" placeholder=" /  / "> (mm/dd/yyyy)
-                </div>
-                <div>
-                      Enter response due date: <input type="text" id="DraftOAInstructres" size="5" placeholder=" /  / "> (mm/dd/yyyy)
-                </div>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter associate's correspondence date: </td>
+                        <td align="left"style="border: none;"><input type="date" id="DraftOAInstructcorr"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter response due date:</td>
+                        <td align="left"style="border: none;"><input type="date" id="DraftOAInstructres"></td>
+                    </tr>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -2426,14 +2430,18 @@
                 <div>
                          <textarea rows="3" cols="70" id = "ffOfficeActRcvdtype"></textarea>
                 </div>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter the deadline date for filing a response </td>
+                        <td align="left"style="border: none;"><input type="date" id="ffOfficeActRcvddeadline"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter the requested response date</td>
+                        <td align="left"style="border: none;"><input type="date" id="ffOfficeActRcvdresp"></td>
+                    </tr>
+                </table>
                 <div>
-                       Enter the deadline date for filing a response <input type="text" id="ffOfficeActRcvddeadline" size="5" placeholder=" /  / ">
-                </div>
-                <div>
-                       Enter the requested response date <input type="text" id="ffOfficeActRcvdresp" size="5" placeholder=" /  / ">
-                </div>
-                <div>
-                       <input type="checkbox" id="ffOfficeActRcvdcit"> Cited References are attached
+                    <br>   <input type="checkbox" id="ffOfficeActRcvdcit"> Cited References are attached
                 </div>
             </div>
             <div class="modal-footer">
@@ -2443,7 +2451,7 @@
         </div>
     </div>
 </div>
-<!-- Letter - FF order letter -->
+<!-- Letter - FF order letter NEED TO FINISH -->
 <div id="mrgfforder" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mrgfforderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -2462,7 +2470,7 @@
                      Email: <input type="text" id="mrgfforderemail" size="30">
                 </div>
                 <div>
-                      Confirm Filing Deadline (MM/DD/YYYY) <input type="text" id="mrgfforderdead" size="10" placeholder=" /  / ">
+                      Confirm Filing Deadline <input type="date" id="mrgfforderdead">
                 </div>
                 <div>
                       Enter 'Month' Deadline # (ex: 31): <input type="text" id="mrgfforderdeadmo" size="10">
@@ -2525,11 +2533,11 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  USPTO Mailing Date: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimeuspto" size="5"> (mm/dd/yyyy)</td>
+                            <td align="right" style="border: none;"><input type="date" id="extTimeuspto"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Response Due Date: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimerespdue" size="5"> (mm/dd/yyyy)</td>
+                            <td align="right" style="border: none;"><input type="date" id="extTimerespdue"></td>
                         </tr>
                     </table>  
                 </div>
@@ -2550,7 +2558,7 @@
                         </tr>
                         <tr style="border: none; display: none;" id="extTime1">
                             <td align="left" style="border: none;">  Date of the Last Request: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimereqdte" size="5" placeholder=" /  / "> (mm/dd/yyyy)</td>
+                            <td align="right" style="border: none;"><input type="date" id="extTimereqdte"></td>
                         </tr>
                         <tr style="border: none; display: none;" id="extTime2">
                             <td align="left" style="border: none;">  Fee Paid in Last Request: </td>
@@ -2614,7 +2622,7 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;" > <input type="checkbox" id="rcexmit3esign"> E-Signature      Due Date (if applicable) </td>
-                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3duedte" size="10" placeholder="  /  /  "></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="date" id="rcexmit3duedte"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"> <input type="checkbox" id="rcexmit3rceprev"> An RCE has been previously filed in this application</td>
@@ -2622,11 +2630,11 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"> Amendments(s)/Reply under 37 CFR sec 1.116 previously filed on:</td>
-                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit337prevdte" size="10" placeholder="  /  /  "></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="date" id="rcexmit337prevdte"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"> Appeal Brief or Reply Brief previously filed on:</td>
-                            <td align="right" style="border: none; padding: 4px;"><input type="text" id="rcexmit3appprev" size="10" placeholder="  /  /  "></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="date" id="rcexmit3appprev"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"> Amendment under 37 CFR 1.116 enclosed - # of pages:</td>
@@ -2823,7 +2831,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {

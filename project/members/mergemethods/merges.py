@@ -966,7 +966,7 @@ class pctcorrect:
         check = mergeinfo[1]
         esign = mergeinfo[2]
         try:
-            maildate = datetime.strptime(mergeinfo[3], '%m/%d/%Y').strftime('%B %d, %Y')
+            maildate = datetime.strptime(mergeinfo[3], '%Y-%m-%d').strftime('%B %d, %Y')
         except:
             maildate = mergeinfo[3]
         annexA = mergeinfo[7]
@@ -1115,7 +1115,6 @@ class nonfinalreportFp:
 class PCTAsgnPOALetter:
     def PCTAsgnPOALetter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         sendingpoa = ''
         if mergeinfo[2] == 'true':
@@ -1123,13 +1122,15 @@ class PCTAsgnPOALetter:
 
         if mergeinfo[1] == 'true':
             sendingpoa = sendingpoa + "This Power of Attorney needs to be signed by an officer of the organization or a person empowered to sign on the organization's behalf."
+            nottxt = 'Please have the inventors sign and date the Assignment document in the presence of a Notary Public. '
  
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'pctdueDate' : mergeinfo[0],
+            'pctdueDate' : datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y'),
             'cSendingPOA' : sendingpoa,
-            'Notary' : '',
+            'Notary' : nottxt,
+            'salutation' : '',
         })
         return replace
     
@@ -1231,7 +1232,7 @@ class PctCommRe:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'mailDate' : mergeinfo[3],
+            'mailDate' : datetime.strptime(mergeinfo[3], "%Y-%m-%d").strftime("%B %d, %Y"),
             'lpX' : lpX,
             'seqListingLine' : seqpaper,
             'rfX' : '',
@@ -1677,8 +1678,8 @@ class ffOfficeActRcvd:
         matter_data = function_instance.matterFill(matter) 
 
         typeaction = mergeinfo[0]
-        deadline = mergeinfo[1]
-        reqresp = mergeinfo[2]
+        deadline = datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime('%B %d, %Y')
+        reqresp = datetime.strptime(mergeinfo[2], "%Y-%m-%d").strftime('%B %d, %Y')
         citedref = mergeinfo[3]
         if citedref == 'true' and typeaction != '':
             cite = ' and cited references '
@@ -1715,8 +1716,8 @@ class DraftOAInstruct:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'corrDate' : mergeinfo[0],
-            'cdueDate' : mergeinfo[1],
+            'corrDate' : datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y'),
+            'cdueDate' : datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime('%B %d, %Y'),
             # Need to edit country
             'countryType' : 'American',
             'matterCountryName' : 'United States of America'
@@ -1732,11 +1733,11 @@ class exttimeCF:
         esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         try:
-            datemail = datetime.strptime(mergeinfo[9], '%m/%d/%Y').strftime('%B %d, %Y')
+            datemail = datetime.strptime(mergeinfo[9], "%Y-%m-%d").strftime('%B %d, %Y')
         except:
             datemail = ''
         try:
-            duedate = datetime.strptime(mergeinfo[10], '%m/%d/%Y').strftime('%B %d, %Y')
+            duedate = datetime.strptime(mergeinfo[10], "%Y-%m-%d").strftime('%B %d, %Y')
         except:
             duedate = ''
         try:
@@ -1859,10 +1860,10 @@ class rcexmit3:
         ccptxt = ''
         if mergeinfo[5] != '':
             aarfx = 'X'
-            aarftxt = 'Consider the amendment(s)/reply under 37 C.F.R. § 1.116 previously filed on ' + mergeinfo[5]
+            aarftxt = 'Consider the amendment(s)/reply under 37 C.F.R. § 1.116 previously filed on ' + datetime.strptime(mergeinfo[5], "%Y-%m-%d").strftime("%B %d, %Y")
         if mergeinfo[6] != '':
             abrfx = 'X'
-            abrftxt = 'Consider the arguments in the Appeal Brief or Reply Brief previously filed on ' + mergeinfo[6]
+            abrftxt = 'Consider the arguments in the Appeal Brief or Reply Brief previously filed on ' + datetime.strptime(mergeinfo[6], "%Y-%m-%d").strftime("%B %d, %Y")
         if mergeinfo[7] != '' and int(mergeinfo[7]) > 0:
             amendx = 'X'
             amendtxt = 'Amendment and Response Under 37 C.F.R § 1.116 ('+ mergeinfo[7] +' pages) is enclosed.'
@@ -2049,5 +2050,30 @@ class cocReportEmail:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
  
+        })
+        return replace
+
+class correctdefects:
+    def correctdefects(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            mailsmryone = function_instance.getactivityid(matter_data, 'PCT/RO/106').smryonevalue
+            invdate = mailsmryone
+            inv1mo = (mailsmryone + relativedelta(months=1)).strftime('%B %d, %Y')
+            inv2mo = (mailsmryone + relativedelta(months=2)).strftime('%B %d, %Y')
+            
+        except:
+            invdate = ''
+            inv1mo = ''
+            inv2mo = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'inviteDate' : invdate,
+            'invite1Mo' : inv1mo,
+            'invite2Mo' : inv2mo
         })
         return replace
