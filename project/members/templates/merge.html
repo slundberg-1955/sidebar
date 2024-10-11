@@ -3044,25 +3044,23 @@
                         tableBody.appendChild(newRow);
                     }
                     $('#contacts').modal('show'); 
-
-                    const selectedEmails = {
+                    
+                    document.getElementById("contactsnext").onclick = function() {
+                        const selectedEmails = {
                         to: [],
                         cc: [],
                         bcc: []
-                    };
+                        };
 
-                    ['to', 'cc', 'bcc'].forEach(type => {
-                        const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${type}"]`);
-                        checkboxes.forEach((checkbox, index) => {
-                            checkbox.addEventListener('change', () => {
+                        ['to', 'cc', 'bcc'].forEach(type => {
+                            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${type}"]`);
+                            checkboxes.forEach((checkbox, index) => {
                                 if (checkbox.checked) {
                                     selectedEmails[type].push(emailList[index]);
                                 }
                             });
                         });
-                    });
-                    
-                    document.getElementById("contactsnext").onclick = function() {
+                        
                         document.getElementById("mergedata").value += selectedEmails.to.join(';') + ',';
                         document.getElementById("mergedata").value += selectedEmails.cc.join(';') + ',';
                         document.getElementById("mergedata").value += selectedEmails.bcc.join(';') + ',';

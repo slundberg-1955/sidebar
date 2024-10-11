@@ -1531,6 +1531,7 @@ class PCTRptOutIpRp:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'actionRequired' : action,
+            'salutation' : '',
         })
         return replace
 

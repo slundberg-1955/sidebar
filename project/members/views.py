@@ -31,6 +31,11 @@ from python_docx_replace.paragraph import Paragraph
 def members(request):
     if request.method == 'POST':
         matter = request.POST['matterInput']
+        
+        # MUST REMOVE
+        if matter == '':
+            matter = '1.003us1'
+            
         mergeinfo = request.POST['merge_info']
 
         mergeDoc(matter, mergeinfo)
@@ -156,6 +161,10 @@ def addrecipients(request):
     if request.method == 'POST':
         data = request.POST.get('matterno')
         data = data.replace('"', "")
+        
+        # MUST REMOVE
+        if data == '':
+            data = '1.003us1'
 
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
         parts = Matterparticipant.objects.using('FIP').filter(matterid = matter.matterid)
@@ -492,7 +501,8 @@ def combinedoc(path, method, mergeinfo, matter):
         'reportprvassnnew': "C:/Users/jaburns/SideBar/project/documents/letters/ProvisionalAssignmentNoLabel.docx",
         'LtrSendFmlDocNew': "C:/Users/jaburns/SideBar/project/documents/letters/LtrSendFmlDocNew.docx",
         'PCTAsgnPOALetter': "C:/Users/jaburns/SideBar/project/documents/letters/PCTAsgnPOALetter.docx",
-        'correctdefects': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTcorrectDefects.docx"
+        'correctdefects': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTcorrectDefects.docx",
+        'PCTRptOutIpRp': "C:/Users/jaburns/SideBar/project/documents/letters/PctReportOutIpRp.docx"
     }
 
     if method in method_paths:
@@ -550,7 +560,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:
@@ -594,20 +604,32 @@ def mergeDoc(matter , mergeinfo):
 
     # outlook merges
     if contacts == "TRUE":
-        if check_email(mergeinfo_list[3]):
-            TO = mergeinfo_list[3]
-        else:
-            TO = ' '
-
-        if check_email(mergeinfo_list[4]):
-            CC = mergeinfo_list[4]
-        else:
-            CC = ' '
-
-        if check_email(mergeinfo_list[5]):
-            BCC = mergeinfo_list[5]
-        else:
-            BCC = ' '
+        tolist = mergeinfo_list[3].split(';')
+        cclist = mergeinfo_list[4].split(';')
+        bcclist = mergeinfo_list[5].split(';')
+        TO = ''
+        CC = ''
+        BCC = ''
+        for to in tolist:
+            if check_email(to):
+                if TO != '':
+                    TO += ' ;' + to
+                else:
+                    TO = to
+                    
+        for cc in cclist:
+            if check_email(cc):
+                if CC != '':
+                    CC += '; ' + cc
+                else:
+                    CC = cc
+                    
+        for bcc in bcclist:
+            if check_email(bcc):
+                if BCC != '':
+                    BCC += '; ' + bcc
+                else:
+                    BCC = bcc
 
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
