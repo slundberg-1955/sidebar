@@ -1523,9 +1523,13 @@ class PCTRptOutIpRp:
         if pcta:
             if activity.smryonevalue:
                 npdueDate = activity.smryonevalue
-
-        # Need to add action notes and attorney info
-        action = 'ADDITIONAL NOTES:  Please contact if you would like to discuss this matter more fully, or if you need a cost estimate for filing in specific countries/regions.'
+        
+        if mergeinfo[0] == 'false':
+            action = '\nACTION REQUIRED:  Since the PCT application is complete, no action is needed at this time.\n'
+        else:
+            action = ''
+            action += ''
+            action += '\n\nADDITIONAL NOTES:  Please contact if you would like to discuss this matter more fully, or if you need a cost estimate for filing in specific countries/regions.'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2076,5 +2080,34 @@ class correctdefects:
             'inviteDate' : invdate,
             'invite1Mo' : inv1mo,
             'invite2Mo' : inv2mo
+        })
+        return replace
+
+class pv2appReport:
+    def pv2appReport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        
+        if 'PRV' in matter:
+            matter_data = function_instance.matterFill(matter)
+            deadlinedte = (matter_data.fileddate + relativedelta(months=12)).strftime('%B %d, %Y')
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'patentLink' : 'http://ca.slwip.com/slwdocs/applicationfiled.doc',
+            'deadlineDate' : deadlinedte,
+        })
+        return replace
+    
+class PCTRptPubApp:
+    def PCTRptPubApp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
         })
         return replace

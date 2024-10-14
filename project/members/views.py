@@ -25,6 +25,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from lxml import etree
 from .mergemethods.mergefunctions import mergefunctions
+from io import BytesIO
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -502,7 +503,8 @@ def combinedoc(path, method, mergeinfo, matter):
         'LtrSendFmlDocNew': "C:/Users/jaburns/SideBar/project/documents/letters/LtrSendFmlDocNew.docx",
         'PCTAsgnPOALetter': "C:/Users/jaburns/SideBar/project/documents/letters/PCTAsgnPOALetter.docx",
         'correctdefects': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTcorrectDefects.docx",
-        'PCTRptOutIpRp': "C:/Users/jaburns/SideBar/project/documents/letters/PctReportOutIpRp.docx"
+        'PCTRptOutIpRp': "C:/Users/jaburns/SideBar/project/documents/letters/PctReportOutIpRp.docx",
+        'pv2appReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/Prv2AppFiled.docx"
     }
 
     if method in method_paths:
@@ -560,7 +562,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp', 'pv2appReport']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:
@@ -589,17 +591,16 @@ def mergeDoc(matter , mergeinfo):
     doccount = 0
     success = False
 
-    while not success:
-        try:
-            WordMerger(input_path, replace, output_path)
-            success = True
-        except:
-            doccount += 1
-            output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
-            continue
-
     # doc merges
     if contacts == "FALSE":
+        while not success:
+            try:
+                WordMerger(input_path, replace, output_path)
+                success = True
+            except:
+                doccount += 1
+                output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
+                continue
         os.startfile(output_path)
 
     # outlook merges
@@ -630,7 +631,7 @@ def mergeDoc(matter , mergeinfo):
                     BCC += '; ' + bcc
                 else:
                     BCC = bcc
-
+        WordMerger(input_path, replace, output_path)
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
         Email(body, subject, TO, CC, BCC, '')
