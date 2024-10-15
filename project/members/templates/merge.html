@@ -1075,13 +1075,13 @@
                     <textarea rows="4" cols="60" id = "filerectreportNw2err">We have noted that the "Insert Incorrect Information Here" is incorrect, and will file the necessary papers to correct this error in due course. </textarea>
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="filerectreportNw2options" value="Official Filing Receipt (FRCT, FRCT-AE)"> Official Filing Receipt (FRCT, FRCT-AE)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="filerectreportNw2options" value="1"> Official Filing Receipt (FRCT, FRCT-AE)
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2rep" name="filerectreportNw2options" value="Replacement Filing Receipt (FRCT-4)"> Replacement Filing Receipt (FRCT-4)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2rep" name="filerectreportNw2options" value="2"> Replacement Filing Receipt (FRCT-4)
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2upd" name="filerectreportNw2options" value="Updated Filing Receipt (FRCT-3, UFRR)"> Updated Filing Receipt (FRCT-3, UFRR)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2upd" name="filerectreportNw2options" value="3"> Updated Filing Receipt (FRCT-3, UFRR)
                 </div>
                 <div>
                     <br>&emsp;&emsp;<input type="checkbox" id="filerectreportNw2inf"> Information Notice Received
@@ -2815,7 +2815,17 @@
             document.getElementById('mergedata').value += merged_data;
             alert(document.getElementById('mergedata').value);
             document.getElementById('mergeform').submit();
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log("Merge complete");
+                    resolve();
+                }, 2000); // Simulate a 2-second operation
+            });
         }
+
+        myFunction().then(() => {
+            window.location.reload();
+        });
 
         function fillmerge(mergeid, mergepath, mergemethod, esign, contacts){
             const Input = document.createElement('input');
@@ -2830,7 +2840,7 @@
             // contacts = 'TRUE';
 
             // Esign popUp
-            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant"];
+            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
             const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3"];
 
             // Check conditions

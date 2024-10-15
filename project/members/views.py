@@ -295,6 +295,8 @@ def addactivities(request):
     if request.method == 'POST':
         data = request.POST.get('matterno')
         data = data.replace('"', "")
+        if data == '':
+            data = '1.003us1'
 
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
         
@@ -590,17 +592,17 @@ def mergeDoc(matter , mergeinfo):
             
     doccount = 0
     success = False
+    while not success:
+        try:
+            WordMerger(input_path, replace, output_path)
+            success = True
+        except:
+            doccount += 1
+            output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
+            continue
 
     # doc merges
     if contacts == "FALSE":
-        while not success:
-            try:
-                WordMerger(input_path, replace, output_path)
-                success = True
-            except:
-                doccount += 1
-                output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
-                continue
         os.startfile(output_path)
 
     # outlook merges
@@ -631,7 +633,6 @@ def mergeDoc(matter , mergeinfo):
                     BCC += '; ' + bcc
                 else:
                     BCC = bcc
-        WordMerger(input_path, replace, output_path)
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
         Email(body, subject, TO, CC, BCC, '')

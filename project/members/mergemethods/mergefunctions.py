@@ -48,8 +48,12 @@ class mergefunctions:
                 issdate = (patent_data.issuedate).strftime('%B %d, %Y')
             except:
                 issdate = ''
+            if patent_data.artunitno != '':
+                artunit = patent_data.artunitno
+            else:
+                artunit = 'Unknown'
             basic = {
-                'artUnit' : patent_data.artunitno,
+                'artUnit' : artunit,
                 'patNo' : patent_data.patentno,
                 'issueDate' : issdate,
             }
@@ -360,9 +364,9 @@ class mergefunctions:
             'inventorMailingZip' : contact.zip,
             'inventorMailingCountry' : contact.country,
 
-            'inventorName' : profile.fname + ' ' + profile.mname + '. ' + profile.lname,
+            'inventorName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'inventorCityState' : contact.city + ' ' + contact.state,
-            'inventorCountry' : contact.country,
+            'inventorCountry' : merge_fn.fullCountry(contact.country),
             'inventorAddress1' : contact.address1,
             'inventorAddress2' : contact.address2,
             'inventorCSZ' : '',

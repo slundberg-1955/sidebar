@@ -2,6 +2,7 @@ from ..mergemethods import mergefunctions
 from ..models import Activity, Task, Rvwactivitydateattribute
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+from django.db.models import Q
 
 class appealfwd:
     def appealfwd(self, matter, mergeinfo, keys):
@@ -679,20 +680,18 @@ class rptissuefee:
         except:
             compdate = 'No Issue Pay Date Found'
         
-        # ?
-        try:
-            activity = function_instance.getactivityid(matter_data, 'IFEE')
-        except:
-            activity = ''
-        
-        #if mergeinfo[0] == 'FALSE':
-
+        if mergeinfo[0] == 'FALSE':
+            acttxt = '\nACTION NEEDED: Please instruct us as to whether any continuing application filing is desired.\n'
+        else:
+            acttxt = ''
+            
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'dateFiled' : compdate
-        })
+            'dateFiled' : compdate,
+            'ActionTxt' : acttxt
+        }) 
         return replace
 
 # Not running
@@ -1415,12 +1414,6 @@ class filerectreportNw2:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
-        try:
-            activity = function_instance.getactivityid(matter_data, 'FECT')
-
-        except:
-            activity = ''
-
         addnotes = mergeinfo[0] + mergeinfo[1]
         count = 0
         if mergeinfo[3] == 'true' or mergeinfo[4] == 'true':
@@ -1439,10 +1432,19 @@ class filerectreportNw2:
         description = matter_data.mattertypedescription
         if "PROV" in description:
             # insert filedate
-            addnotes = addnotes + " This Provisional patent application will expire one year from the filing date.  If a regular (non-provisional) U.S. application is not filed by " + ", the ability to claim priority to the filing date of the provisional application will be lost."
+            addnotes = addnotes + " This Provisional patent application will expire one year from the filing date.  If a regular (non-provisional) U.S. application is not filed by " + matter_data.fileddate + ", the ability to claim priority to the filing date of the provisional application will be lost."
 
-        receiptType = mergeinfo[2]
-        
+        # Cant find where rectype is used
+        activity = ''
+        if mergeinfo[2] == '1':
+            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-AE') | Q(code='FRCT'), matterid = matter.matterid)
+            rectype = 'an Official Filing Receipt'
+        if mergeinfo[2] == '2':
+            activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = 'FRCT-4')
+            rectype = 'a Replacement Filing Receipt'
+        if mergeinfo[2] == '3':
+            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-3') | Q(code='UFRR'), matterid = matter.matterid)
+            rectype = 'an Updated Filing Receipt'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1450,7 +1452,7 @@ class filerectreportNw2:
             'additionalNotes' : addnotes,
             'salutation' : '',
             'actionRep' : '',
-            'actionReq' : '',
+            'actionReq' : 'None at this time.',
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
         })
         return replace
@@ -1816,7 +1818,6 @@ class corrinventorship:
 class corrapplicant:
     def corrapplicant(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter) 
         esign = mergeinfo[0]
         esign_out, esigndate_out = function_instance.esigncheck(esign)
 
@@ -2109,5 +2110,19 @@ class PCTRptPubApp:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'salutation' : '',
+        })
+        return replace
+    
+class pctdeclaration2:
+    def pctdeclaration2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
         })
         return replace
