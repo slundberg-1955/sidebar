@@ -2126,3 +2126,81 @@ class pctdeclaration2:
             'signatureDate' : esigndate_out,
         })
         return replace
+
+class rerrReport:
+    def rerrReport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        act = False
+        for code in ['RERR', 'RERR-PE']:
+            try:
+                activity = function_instance.getactivityid(matter_data, code)
+                if activity:
+                    act = True
+            except:
+                continue
+        
+        if act == True:
+            rerrdte = activity.smryonevalue
+            instdte = (rerrdte + relativedelta(months=1)).strftime('%B %d, %Y')
+            rerr2mo = (rerrdte + relativedelta(months=2)).strftime('%B %d, %Y')
+        else:
+            rerrdte = ''
+            instdte = ''
+            rerr2mo = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'rerrDate' : rerrdte,
+            'instDate' : instdte,
+            'rerr1Mo' : rerr2mo,
+            'salutation' : '',
+        })
+        return replace
+    
+class maintfee:
+    def maintfee(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            activity = function_instance.getactivityid(matter_data, 'MAINR')
+            maildte = activity.smryonevalue.strftime('%B %d, %Y')
+        except:
+            maildte = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'dateMailed' : maildte,
+            'activityname' : 'Maintenance Fee'
+        })
+        return replace
+
+class msemails:
+    def msemails(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'Item being reported' : mergeinfo[1]
+        })
+        return replace
+    
+class FFRptOutBasic:
+    def FFRptOutBasic(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        docs = mergeinfo[1].replace(';', '\n')
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'documentName' : docs
+        })
+        return replace

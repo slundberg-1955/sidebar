@@ -138,6 +138,8 @@ class mergefunctions:
             basic = {
                 'clientRefNo' : 'Ref. No. ' + part.matterno,
                 'This.clientRefNo' : 'Ref. No. ' + part.matterno,
+                'clientRefText' : 'Client Ref. No. ' + part.matterno,
+                'RefNo' : part.matterno
             }
             for key, value in basic.items():
                 if key in keys:
@@ -480,7 +482,9 @@ class mergefunctions:
             'ffparaEmail' : '',
             'currentDate' :'current',
             'clientRefNo' : 'matterparticipant',
+            'clientRefText' : 'matterparticipant',
             'This.clientRefNo' : 'matterparticipant',
+            'RefNo' : 'matterparticipant',
             'firstInventor' : 'inventor',
             'firmName' : 'firm',
             'firmPoBox' : 'firm',

@@ -2821,11 +2821,10 @@
                     resolve();
                 }, 2000); // Simulate a 2-second operation
             });
+            submitbtnmerge().then(() => {
+                window.location.reload();
+            });
         }
-
-        myFunction().then(() => {
-            window.location.reload();
-        });
 
         function fillmerge(mergeid, mergepath, mergemethod, esign, contacts){
             const Input = document.createElement('input');
@@ -3080,7 +3079,7 @@
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -3136,24 +3135,22 @@
                     }
                     $('#activities').modal('show'); 
 
-                    if(mergemethod == 'basicreport' || mergemethod == 'ptorecdReport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr'){
-                        document.getElementById("activitiesnext").onclick = function() {
-                            let namesel = [];
-                            let date1sel = [];
-                            const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
-                            checkboxesAct.forEach((checkbox, index) => {
-                                if (checkbox.checked) {
-                                    namesel.push(nameList[index]);
-                                    //document.getElementById("mergedata").value += commentsList[index] + ',';
-                                    //document.getElementById("mergedata").value += statusList[index] + ',';
-                                    date1sel.push(date1List[index]);
-                                    //document.getElementById("mergedata").value += date2List[index] + ',';
-                                    
-                                }
-                            });
-                            submitbtnmerge(date1sel.join(';'), namesel.join(';'));
-                        };
-                    }
+                    document.getElementById("activitiesnext").onclick = function() {
+                        let namesel = [];
+                        let date1sel = [];
+                        const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
+                        checkboxesAct.forEach((checkbox, index) => {
+                            if (checkbox.checked) {
+                                namesel.push(nameList[index]);
+                                //document.getElementById("mergedata").value += commentsList[index] + ',';
+                                //document.getElementById("mergedata").value += statusList[index] + ',';
+                                date1sel.push(date1List[index]);
+                                //document.getElementById("mergedata").value += date2List[index] + ',';     
+                            }
+                        });
+                        submitbtnmerge(date1sel.join(';'), namesel.join(';'));
+                    };
+                    
                 },
                 error: function(error) {
                     console.error('Error:', error);

@@ -506,7 +506,11 @@ def combinedoc(path, method, mergeinfo, matter):
         'PCTAsgnPOALetter': "C:/Users/jaburns/SideBar/project/documents/letters/PCTAsgnPOALetter.docx",
         'correctdefects': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTcorrectDefects.docx",
         'PCTRptOutIpRp': "C:/Users/jaburns/SideBar/project/documents/letters/PctReportOutIpRp.docx",
-        'pv2appReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/Prv2AppFiled.docx"
+        'pv2appReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/Prv2AppFiled.docx",
+        'rerrReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/restrictionreq.docx",
+        'maintfee' : "C:/Users/jaburns/SideBar/project/documents/reportletters/MaintenanceFee.docx",
+        'msemails': "C:/Users/jaburns/SideBar/project/documents/reportletters/MSGeneralEmail.docx",
+        'FFRptOutBasic': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFRptOutBasic.docx"
     }
 
     if method in method_paths:
@@ -515,8 +519,11 @@ def combinedoc(path, method, mergeinfo, matter):
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
-        WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
-        doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx")
+        if method == 'msemails' or method == 'FFRptOutBasic':
+            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/signoff2.docx")
+        else:
+            WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
+            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx")
         composer.append(doc3)
         
     composer.save("documents/multidocmerge/" + method +".docx")
@@ -564,7 +571,7 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp', 'pv2appReport']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:
