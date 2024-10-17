@@ -157,6 +157,12 @@
         #UpdateAppDataSheet .modal-dialog{
             max-width: 600px;
         }
+        #honureportyes .modal-dialog{
+            max-width: 600px;
+        }
+        #provisionalapp .modal-dialog{
+            max-width: 700px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -320,7 +326,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pclaimsdateInput.value, pclaimsdescriptionInput.value)">Continue</button>
             </div>
         </div>
@@ -359,7 +365,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button id = "recordationsub" type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
             </div>
         </div>
@@ -391,7 +397,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id = "contactsnext" >Continue</button>
             </div>
         </div>
@@ -417,7 +423,7 @@
                 </script>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LateSubmissionOfDecbox.checked, LateSubmissionOfDecpagedec.value, LateSubmissionOfDecpagesub.value, LateSubmissionOfDecesign.checked)">Continue</button>
             </div>
         </div>
@@ -532,7 +538,7 @@
                 }
             </script>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnmerge(issuefeedepacc.checked,issuefeecheck.checked,issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeepetw.value, issuefeewithgr.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
             </div>
         </div>
@@ -605,7 +611,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="statement373csub(statement373clistoth.value, statement373crecordchk.checked, statement373cesign.checked)">Continue</button>
             </div>
         </div>
@@ -645,7 +651,7 @@
                 }
             </script>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(updateappdatamarked.checked, updateappdatapagect.value, updateappdataesign.checked)">Continue</button>
             </div>
         </div>
@@ -694,7 +700,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplndepacc.checked, corrapplnext.value, 
                 corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
             </div>
@@ -769,7 +775,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(applicationdata_new2entries.value, applicationdata_new2draw.value, applicationdata_new2earlypub.checked, 
                 applicationdata_new2notpub.checked, applicationdata_new2client.checked, applicationdata_new2app.checked, applicationdata_new2claimed.checked, applicationdata_new2incapp.checked, applicationdata_new2incnon.checked, 
                 applicationdata_new2noapp.checked, applicationdata_new2both.checked, applicationdata_new2esign.checked)">Continue</button>
@@ -856,7 +862,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(misingpartsNwefile.checked, misingpartsNwpaperfile.checked, misingpartsNwdepacc.checked, misingpartsNwcheck.checked, missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, misingpartsNwesign.value)">Continue</button>
             </div>
         </div>
@@ -880,7 +886,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
             </div>
         </div>
@@ -962,7 +968,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PatentCoopTreaty2mail.checked, PatentCoopTreaty2deliver.checked, PatentCoopTreaty2fax.checked, PatentCoopTreaty2hand.checked, PatentCoopTreaty2online.checked, 
                 PatentCoopTreaty2names.value, PatentCoopTreaty2pctpg.value, PatentCoopTreaty2descpg.value, PatentCoopTreaty2claimpg.value, PatentCoopTreaty2abspg.value, PatentCoopTreaty2drwpg.value, PatentCoopTreaty2seqpg.value, PatentCoopTreaty2poapg.value, PatentCoopTreaty2fee.checked, 
                 PatentCoopTreaty2spoa.checked, PatentCoopTreaty2gpoa.checked, PatentCoopTreaty2pdoc.checked, PatentCoopTreaty2accl.checked)">Continue</button>
@@ -990,7 +996,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(reportfiledapp.checked, reportfiledefile.checked, reportfiledexm.checked)">Continue</button>
             </div>
         </div>
@@ -1056,7 +1062,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('adobesignoptions'))">Continue</button>
             </div>
         </div>
@@ -1091,7 +1097,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(filerectreportNw2err.value, radioFill('filerectreportNw2options'), filerectreportNw2inf.checked, filerectreportNw2not.checked)">Continue</button>
             </div>
         </div>
@@ -1135,7 +1141,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(LtrSendFmlDocNewdec.checked, LtrSendFmlDocNewassign.checked, LtrSendFmlDocNewnot.checked, LtrSendFmlDocNewsmall.checked, LtrSendFmlDocNewallow.checked, LtrSendFmlDocNewnotall.value, LtrSendFmlDocNewmis.checked, LtrSendFmlDocNewmissp.value, LtrSendFmlDocNewdoc.value)">Continue</button>
             </div>
         </div>
@@ -1170,7 +1176,7 @@
                   </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ownerchangeesign.checked, ownerchangeapp.checked, ownerchangenames.value)">Continue</button>
             </div>
         </div>
@@ -1205,7 +1211,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PctSearchRepinstr.value, PctSearchRep19.value, PctSearchRep34.value, PctSearchRepnat.value)">Continue</button>
             </div>
         </div>
@@ -1225,7 +1231,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(advisoryreportdate.value)">Continue</button>
             </div>
         </div>
@@ -1266,7 +1272,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('mpcapactionsoptions'))">Continue</button>
             </div>
         </div>
@@ -1352,7 +1358,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="invchangesub">Continue</button>
             </div>
         </div>
@@ -1372,7 +1378,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PCTRptOutIpRpbox.checked)">Continue</button>
             </div>
         </div>
@@ -1420,7 +1426,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id = "activitiesnext" >Continue</button>
             </div>
         </div>
@@ -1458,7 +1464,7 @@
                 </script>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(repnoticeofallowyes.checked, repnoticeofallowno.checked, repnoticeofallowrej.checked)">Continue</button>
             </div>
         </div>
@@ -1491,7 +1497,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(recordedassnreportdesc.value)">Continue</button>
             </div>
         </div>
@@ -1514,7 +1520,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(reportprvassnnewdate.value, reportprvassnnewbox.checked)">Continue</button>
             </div>
         </div>
@@ -1537,7 +1543,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(abandonReportrec.value, abandonReportdate.checked)">Continue</button>
             </div>
         </div>
@@ -1627,7 +1633,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectdepacc.checked, pctcorrectcheck.checked, pctcorrectesign.checked, 
                 pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, pctcorrectmonthext.value, 
                 pctcorrectannexa.checked, pctcorrecttxtarea.value, pctcorrectannexb.checked, 
@@ -1698,7 +1704,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="PCTRptFileOfAppsub">Continue</button>
             </div>
         </div>
@@ -1718,7 +1724,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(nonfinalreportFp.checked)">Continue</button>
             </div>
         </div>
@@ -1749,7 +1755,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PCTAsgnPOALettertxt.value, PCTAsgnPOALetternot.checked, PCTAsgnPOALetterpoa.checked)">Continue</button>
             </div>
         </div>
@@ -1801,7 +1807,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="applicationdata_updnewsub(applicationdata_updnewinv.checked, applicationdata_updnewcorr.checked, applicationdata_updnewapp.checked, applicationdata_updnewdrw.value, applicationdata_updnewappinfo.checked, applicationdata_updnewassign.checked, applicationdata_updnewupdt.value, applicationdata_updnewesign.checked)">Continue</button>
             </div>
         </div>
@@ -1882,7 +1888,7 @@
             </script>
             <div>    Enter the Fee per Additional Invention (in US dollars) <input type="text" id="RptInvtPayFeesadd" size="10" placeholder = '0.00'></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" onclick="getRptInvtPayFeesData(RptInvtPayFeespartial.checked, RptInvtPayFeesadd.value)" data-dismiss="modal">Continue</button>
             </div>
         </div>
@@ -1960,7 +1966,7 @@
                   </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="pctcommresub(PctCommReconfirm.value, PctCommReefile.checked, PctCommRepaperfile.checked, PctCommRedatedep.value, PctCommRenumseq.value, PctCommRecpy.checked, PctCommRefee.value, PctCommReesign.checked, PctCommRenames.value)">Continue</button>
             </div>
         </div>
@@ -2077,7 +2083,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('fileoptions'), generalxmitCFcertmail.checked, radioFill('depoptions'), generalxmitCFduedate.value, generalxmitCFselect.value, generalxmitCFnumpg.value, generalxmitCFnotappeal.checked, generalxmitCFrecalc.checked, generalxmitCFtotclaim.value, generalxmitCFtotclaim2.value, generalxmitCFinclaim.value, 
                 generalxmitCFinclaim2.value, generalxmitCFmultidep.checked, generalxmitCFidssid.value, generalxmitCF1449.value, generalxmitCFsupids.checked, generalxmitCFfeeif.value, generalxmitCFdocnum.value, generalxmitCFdocnot.checked, generalxmitCFcomm.value, generalxmitCFfdraw.value, 
                 generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373txt.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFselSA.value, generalxmitCFesign.checked)">Continue</button>
@@ -2167,7 +2173,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('filoptions'), radioFill('feeoptions'), radioFill('staoptions'), 
                 radioFill('offoptions'), radioFill('offoptions2'), idsCommCfNewfrstcite.checked, idsCommCfNewrefcite.checked, idsCommCfNewpatser.value, idsCommCfNewpatdate.value, 
                 idsCommCfNewmnk.checked, radioFill('sortoptions'), idsCommCfNewfrnmck.checked, idsCommCfNewmstop.value, idsCommCfNewcertm.checked, idsCommCfNewesign.checked)">Continue</button>
@@ -2259,7 +2265,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnUtilityApp(radioFill('filoptions'), radioFill('feeoptions'), utilityapptype.value, 
                 utilityappfilfee.checked, utilityappspcpg.value, utilityappfilfee.checked, utilityappclm1.value, utilityappnondcx.checked, utilityappdrwsh.value, utilityappcertreq.checked, radioFill('drawoptions'), 
                 utilityappnotchg.checked, utilityapprefnot.checked, utilityappids.value, utilityapp373.checked, 
@@ -2319,7 +2325,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="idsmemocontinue">Continue</button>
             </div>
         </div>
@@ -2351,7 +2357,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('assignment2016options'), assignment2016use.checked, assignment2016esign.checked)">Continue</button>
             </div>
         </div>
@@ -2378,7 +2384,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(DraftOAInstructcorr.value, DraftOAInstructres.value)">Continue</button>
             </div>
         </div>
@@ -2409,7 +2415,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
             </div>
         </div>
@@ -2445,7 +2451,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffOfficeActRcvdtype.value, ffOfficeActRcvddeadline.value, ffOfficeActRcvdresp.value, ffOfficeActRcvdcit.checked)">Continue</button>
             </div>
         </div>
@@ -2505,7 +2511,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('transmittaloptions'), mrgfforderfaxno.value, mrgfforderemail.value,
                  mrgfforderdead.value, mrgfforderdeadmo.value, radioFill('apptypeoptions'), mrgfforderothenter.value)">Continue</button>
             </div>
@@ -2596,7 +2602,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(extTimemstop.value, extTimeactext.value, 
                 extTimeuspto.value, extTimerespdue.value, extTimedrop.value, extTimepetext.checked, extTimereqdte.value, extTimereqfee.value, extTimeremdue.value, extTimeesign.checked)">Continue</button>
             </div>
@@ -2699,7 +2705,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnrcexmit3(rcexmit3certmail.checked, radioFill('rcexmit3feeoptions'), rcexmit3esign.checked, rcexmit3duedte.value, 
                 rcexmit3rceprev.checked, rcexmit337prevdte.value, rcexmit3appprev.value, rcexmit337encl.value, rcexmit3recalc.checked, rcexmit3totrem.value, rcexmit3totprev.value, rcexmit3indrem.value, rcexmit3indprev.value, 
                 rcexmit3muldep.checked, rcexmit3idspg.value, rcexmit3qpidspg.value, rcexmit31449pg.value, rcexmit3numdoc.value, rcexmit3comconpri.checked, rcexmit3comconpg.value, rcexmit3petext.checked, 
@@ -2760,8 +2766,132 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('pctgenericoptions'), pctgenerictitle.value, pctgenericsa.value, pctgenericesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF report out - associate confirms filing/filing receipt -->
+<div id="FFFilingReceipt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFFilingReceiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Filing Receipt Received</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      <input type="checkbox" id="FFFilingReceiptexaminfo"> Exam information is needed
+                </div>
+                <div>
+                        <input type="radio" id="FFFilingReceiptexmreq" name="FFFilingReceiptoptions" value="req"> Exam Requested
+                    <br>    <input type="radio" id="FFFilingReceiptexmnot" name="FFFilingReceiptoptions" value="not"> Exam NOT Requested
+                </div>
+                <div id="FFFilingReceiptdue" style="display:none;">
+                      Examindation Due Date <input type="date" id="FFFilingReceiptdate">
+                </div>
+                <div>
+                    <br>  <input type="checkbox" id="FFFilingReceiptacon"> Associate Confirms Filing
+                    <br>  <input type="checkbox" id="FFFilingReceiptfilrec"> Filing Receipt
+                    <br>  <input type="checkbox" id="FFFilingReceiptslwres"> SLW is responsible for annuity payment
+                </div>
+            </div>
+            <script>
+                document.querySelectorAll('input[name="FFFilingReceiptoptions"]').forEach((elem) => {
+                    elem.addEventListener("change", function() {
+                        document.getElementById('FFFilingReceiptdue').style.display = this.value === 'not' ? 'block' : 'none';
+                    });
+                });
+            </script>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(FFFilingReceiptexaminfo.checked, radioFill('FFFilingReceiptoptions'), FFFilingReceiptdate.value, FFFilingReceiptacon.checked, FFFilingReceiptfilrec.checked, FFFilingReceiptslwres.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ff report out - slw report / honu -->
+<div id="honureport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Does this item have a due date?</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('NO')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="honureportnext()">Yes</button>
+            </div>
+            <script>
+                function honureportnext(){
+                    $('#honureportyes').modal('show');
+                }
+            </script>
+        </div>
+    </div>
+</div>
+<!-- ff report out - slw report / honu YES -->
+<div id="honureportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Does this item have a due date?</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Enter the deadline for filing a response </td>
+                            <td align="right" style="border: none;">  <input type="date" id="honureportdeaddate"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Enter the requested response date </td>
+                            <td align="right" style="border: none;">  <input type="date" id="honureportreqdate"></td>
+                        </tr>
+                    </table> 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(honureportdeaddate.value, honureportreqdate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Transmittal - Patent Application (Provisional)  -->
+<div id="provisionalapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="provisionalappModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Provisional Application Merge Interview Screen</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Express Mail # <input type="text" id="provisionalappexmail" size="15">
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Specification # of Pages </td>
+                            <td align="right" style="border: none;"> <input type="text" id="provisionalappspecpg"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Drawing Sheet(s) </td>
+                            <td align="right" style="border: none;"> <input type="text" id="provisionalappdrw"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  CD(s), Number of CDs: </td>
+                            <td align="right" style="border: none;"> <input type="text" id="provisionalappcds"></td>
+                        </tr>
+                    </table> 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
             </div>
         </div>
     </div>
@@ -2771,6 +2901,9 @@
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 </script>
     <script>
+        function refreshmerge(){
+            window.location.reload();
+        }
         function searchMerges(){
             var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("mergeSearchInput");
@@ -2840,7 +2973,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -3077,9 +3210,9 @@
                             'abandonReport', 'reportprvassnnew', 'recordedassnreport', 'rptissuefee', 'mpcapactions', 
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
-                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd'
+                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -3134,7 +3267,7 @@
                         tableBody.appendChild(newRow);
                     }
                     $('#activities').modal('show'); 
-
+                    
                     document.getElementById("activitiesnext").onclick = function() {
                         let namesel = [];
                         let date1sel = [];
@@ -3142,13 +3275,23 @@
                         checkboxesAct.forEach((checkbox, index) => {
                             if (checkbox.checked) {
                                 namesel.push(nameList[index]);
+                                //document.getElementById("mergedata").value += nameList[index] + ';'
                                 //document.getElementById("mergedata").value += commentsList[index] + ',';
                                 //document.getElementById("mergedata").value += statusList[index] + ',';
                                 date1sel.push(date1List[index]);
+                                //document.getElementById("mergedata").value += date1List[index] + ';'
                                 //document.getElementById("mergedata").value += date2List[index] + ',';     
                             }
                         });
-                        submitbtnmerge(date1sel.join(';'), namesel.join(';'));
+                        if (mergemethod == 'honureport'){
+                            document.getElementById("mergedata").value += date1sel.join(';') + ','
+                            document.getElementById("mergedata").value += namesel.join(';') + ','
+                            $('#honureport').modal('show');
+                        }
+                        else{
+                            submitbtnmerge(date1sel.join(';'), namesel.join(';'));
+                            submitbtnmerge();
+                        }
                     };
                     
                 },

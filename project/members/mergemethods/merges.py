@@ -2201,6 +2201,46 @@ class FFRptOutBasic:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'documentName' : docs
+            'documentName' : docs,
+            'salutation' : '',
+            'activityname' : (mergeinfo[1].split(';'))[0],
+            'matterCountryName' : function_instance.fullCountry(matter_data.country)
+        })
+        return replace
+
+class FFFilingReceipt:
+    def FFFilingReceipt(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+
+class honureport:
+    def honureport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        if mergeinfo[2] == 'NO':
+            cortxt = '.'
+            actreq = ''
+        else:
+            cortxt = 'together with the correspondence from the associate.'
+            actreq = '\nACTION REQUIRED:\nThe deadline for responding to the communication is:  '+ datetime.strptime(mergeinfo[2], "%Y-%m-%d").strftime("%B %d, %Y") +'\nWe would welcome your instructions no later than:  '+ datetime.strptime(mergeinfo[3], "%Y-%m-%d").strftime("%B %d, %Y") + '\n'
+                    
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.ffcmgFill(matter))
+        replace.update({
+            'activityname' : (mergeinfo[1].split(';'))[0],
+            'corrtxt' : cortxt,
+            'actionReq' : actreq,
+            'matterCountryName' : function_instance.fullCountry(matter_data.country)
         })
         return replace

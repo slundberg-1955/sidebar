@@ -208,6 +208,22 @@ class mergefunctions:
             'applicantName' : profile.orgname,
         }
         return info
+    
+    def ffcmgFill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '79091', roleorderno = 1)
+            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            fcmg = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+        except:
+            fcmg = 'NO FF CMG PERSONNEL'
+
+        info = {
+            'fcmgName' : fcmg
+        }
+        return info   
 
     def recordationRoleFill(self, matter, role):
         merge_fn = mergefunctions()
