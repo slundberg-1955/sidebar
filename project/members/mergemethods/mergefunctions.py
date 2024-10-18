@@ -64,9 +64,16 @@ class mergefunctions:
         if 'inventor' in tables_list:
             inventor_data = merge_fn.inventorFill(matter_data)
             inventoretal = merge_fn.inventoretal(inventor_data.inventor)
+            
+            invs = Rvwmatterinventors.objects.using('FIP').filter(matterid = matter_data.matterid)
+            invlist = ''
+            for inv in invs:
+                invlist += inv.inventor
+            
             basic = {
                 'inventorEtal' : inventoretal,
-                'firstInventor' : inventor_data.inventor
+                'firstInventor' : inventor_data.inventor,
+                'inventorList': invlist                                                            
             }
             for key, value in basic.items():
                 if key in keys:
@@ -458,6 +465,7 @@ class mergefunctions:
         table = {
             'serialNo' : 'matter',
             'inventorEtal' : 'inventor',
+            'inventorList': 'inventor',
             'filedDate' : 'matter',
             'custNoCorresp' : 'matter',
             'title' : 'matter',
@@ -552,7 +560,7 @@ class mergefunctions:
         return Matter.objects.using('FIP').get(hostmatterno = matter)
     
     def inventorFill(self, data):
-        return Rvwmatterinventors.objects.using('FIP').get(matterid = data.matterid)
+        return Rvwmatterinventors.objects.using('FIP').filter(matterid = data.matterid)[0]
 
     def patentFill(self, data):
         return Patent.objects.using('FIP').get(matterid = data.matterid)

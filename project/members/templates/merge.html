@@ -834,7 +834,7 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwmail" name="updatepagect" placeholder=" /  / " size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="date" id="missingpartsNwmail" name="updatepagect"></td>
                         </tr>
                     </table>
                     <h6 class="modal-title">Corrected Application Papers</h6>
@@ -1535,16 +1535,20 @@
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-                <div>
-                    &emsp;&emsp;Received From: <input type="text" id="abandonReportrec" size="20">
-                </div>
-                <div>
-                    &emsp;&emsp;Date Received: <input type="date" id="abandonReportdate">
-                </div>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  Received From: </td>
+                        <td align="left"style="border: none;"><input type="text" id="abandonReportrec" size="20"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Date Received: </td>
+                        <td align="left"style="border: none;"><input type="date" id="abandonReportdate"></td>
+                    </tr>
+                </table><br>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(abandonReportrec.value, abandonReportdate.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(abandonReportrec.value, abandonReportdate.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -2860,7 +2864,7 @@
         </div>
     </div>
 </div>
-<!-- Transmittal - Patent Application (Provisional)  -->
+<!-- Transmittal - Patent Application (Provisional) Not done  -->
 <div id="provisionalapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="provisionalappModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -2892,6 +2896,38 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Request for instructions (ff/conversion) -->
+<div id="ffinstructions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffinstructionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm Dates</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Foreign Filing Due Date </td>
+                            <td align="right" style="border: none;"> <input type="date" id="ffinstructionsforfil"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Instructions Due </td>
+                            <td align="right" style="border: none;"> <input type="date" id="ffinstructionsinst"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                    <br>    <input type="checkbox" id="ffinstructionsus"> U.S. (Non-Provisional) has been filed
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffinstructionsforfil.value, ffinstructionsinst.value, ffinstructionsus.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -3210,7 +3246,8 @@
                             'abandonReport', 'reportprvassnnew', 'recordedassnreport', 'rptissuefee', 'mpcapactions', 
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
-                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt'
+                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
+                            'ffinstructions'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport'){
                             fillActivities(mergemethod);

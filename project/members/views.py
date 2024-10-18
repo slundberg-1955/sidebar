@@ -511,7 +511,10 @@ def combinedoc(path, method, mergeinfo, matter):
         'maintfee' : "C:/Users/jaburns/SideBar/project/documents/reportletters/MaintenanceFee.docx",
         'msemails': "C:/Users/jaburns/SideBar/project/documents/reportletters/MSGeneralEmail.docx",
         'FFRptOutBasic': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFRptOutBasic.docx",
-        'honureport': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/HonuReportOut.docx"
+        'honureport': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/HonuReportOut.docx",
+        'ffinstructions': "C:/Users/jaburns/SideBar/project/documents/letters/ffinstructions.docx",
+        'abandonReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofaban.docx",
+        'nopreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofpub.docx"
     }
 
     if method in method_paths:
@@ -572,7 +575,12 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic', 'honureport']
+    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 
+                     'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 
+                     'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 
+                     'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 
+                     'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic', 
+                     'honureport', 'ffinstructions', 'abandonReport', 'nopreport']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

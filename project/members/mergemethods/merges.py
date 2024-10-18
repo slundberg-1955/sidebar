@@ -1,5 +1,5 @@
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task, Rvwactivitydateattribute
+from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
@@ -922,13 +922,13 @@ class reportprvassnnew:
 class abandonReport:
     def abandonReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-
+            'instFrom' : mergeinfo[0],
+            'instDate' : datetime.strptime(mergeinfo[1], '%Y-%m-%d').strftime('%B %d, %Y'),
+            'salutation' : ''
         })
         return replace
     
@@ -1317,12 +1317,11 @@ class nopreport:
         pubdate = patent.pubdate
 
         replace = {}
-        replace.update(function_instance.WAfill(keys, matter))
+        replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'pubNo' : pubno,
             'pubDate' : pubdate,
             'salutation' : '',
-             
         })
         return replace
 
@@ -2242,5 +2241,41 @@ class honureport:
             'corrtxt' : cortxt,
             'actionReq' : actreq,
             'matterCountryName' : function_instance.fullCountry(matter_data.country)
+        })
+        return replace
+
+class ffinstructions:
+    def ffinstructions(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        if mergeinfo[2] == 'true':
+            ffnonprov = ''
+            contype = 'INTERNATIONAL FILING'
+            actname = 'Foreign Filing Instructions Needed'
+        else:
+            ffnonprov = 'This is also the deadline to convert the above-referenced provisional application into a regular non-provisional U.S. application. '
+            contype = 'INTERNATIONAL FILING AND NON-PROVISIONAL CONVERSION'
+            actname = 'Instructions Needed - U.S. Non-Provisional/Foreign Filing'
+        try:
+            relatedmatter = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid, relationdesc__icontains = 'Priority')[0]
+            primatter = function_instance.matterFill(relatedmatter.relatedmatterid)
+            pridate = primatter.fileddate.strftime("%B %d, %Y")
+            priser = primatter.serialnumber
+        except:
+            pridate = ''
+            priser = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'instDate' : datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime("%B %d, %Y"),
+            'ffDueDate' : (datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime("%B %d, %Y")).capitalize(),
+            'conversionType' : contype,
+            'cFFNonProvText1' : ffnonprov,
+            'earlyPrioSerialNo' : priser,
+            'earlyPriorFilingDate' : pridate,
+            'cFFNonProvText2Header' : '',
+            'cFFNonProvText2' : '',
+            'activityName' : actname
         })
         return replace
