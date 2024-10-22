@@ -35,7 +35,8 @@ class mergefunctions:
                 'custNoCorresp' : custcor,
                 'custNoMFee' : custcor,
                 'confirmNo' : confirm,
-                'examinerName' : merge_fn.examinerFill(matter_data)
+                'examinerName' : merge_fn.examinerFill(matter_data),
+                'matterCountryName' : merge_fn.fullCountry(matter_data.country)
             }
             basic.update(merge_fn.mergebasicEmail(keys, matter))
             for key, value in basic.items():
@@ -130,8 +131,9 @@ class mergefunctions:
                 'faOrgName' : profile.orgname,
                 'faWorkAddr' : addr,
                 'faCSZ' : '',
-                'faAssignee' : '',
-                'recipientEmail' : contact.email
+                'faAssignee' : profile.orgname,
+                'recipientEmail' : contact.email,
+                'faclientRefNo' : part.matterno
             }
             for key, value in basic.items():
                 if key in keys:
@@ -464,6 +466,7 @@ class mergefunctions:
     def findTables(self, keys):
         table = {
             'serialNo' : 'matter',
+            'matterCountryName' : 'matter',
             'inventorEtal' : 'inventor',
             'inventorList': 'inventor',
             'filedDate' : 'matter',

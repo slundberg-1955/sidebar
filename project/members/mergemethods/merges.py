@@ -1726,7 +1726,6 @@ class DraftOAInstruct:
             'cdueDate' : datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime('%B %d, %Y'),
             # Need to edit country
             'countryType' : 'American',
-            'matterCountryName' : 'United States of America'
         })
         return replace
 
@@ -2203,7 +2202,6 @@ class FFRptOutBasic:
             'documentName' : docs,
             'salutation' : '',
             'activityname' : (mergeinfo[1].split(';'))[0],
-            'matterCountryName' : function_instance.fullCountry(matter_data.country)
         })
         return replace
 
@@ -2239,8 +2237,7 @@ class honureport:
         replace.update({
             'activityname' : (mergeinfo[1].split(';'))[0],
             'corrtxt' : cortxt,
-            'actionReq' : actreq,
-            'matterCountryName' : function_instance.fullCountry(matter_data.country)
+            'actionReq' : actreq
         })
         return replace
 
@@ -2277,5 +2274,33 @@ class ffinstructions:
             'cFFNonProvText2Header' : '',
             'cFFNonProvText2' : '',
             'activityName' : actname
+        })
+        return replace
+    
+class ffMiscItemsRcvd:
+    def ffMiscItemsRcvd(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        docs = mergeinfo[1].replace(';', '\n')
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'documentName' : docs,
+            'activityname' : mergeinfo[1].split(';')[0]
+        })
+        return replace
+
+class CommunicationLetter:
+    def CommunicationLetter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'assocLttrDate' : datetime.strptime(mergeinfo[0], '%Y-%m-%d').strftime('%B %d, %Y'),
+            'feeType' : mergeinfo[2],
+            'feeDue' : datetime.strptime(mergeinfo[1], '%Y-%m-%d').strftime('%B %d, %Y'),
         })
         return replace

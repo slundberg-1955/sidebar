@@ -514,7 +514,9 @@ def combinedoc(path, method, mergeinfo, matter):
         'honureport': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/HonuReportOut.docx",
         'ffinstructions': "C:/Users/jaburns/SideBar/project/documents/letters/ffinstructions.docx",
         'abandonReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofaban.docx",
-        'nopreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofpub.docx"
+        'nopreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofpub.docx",
+        'ffMiscItemsRcvd': "C:/Users/jaburns/SideBar/project/documents/reportletters/ffMiscItemsRcvd.docx",
+        'CommunicationLetter': "C:/Users/jaburns/SideBar/project/documents/letters/FFPayFees.docx"
     }
 
     if method in method_paths:
@@ -523,7 +525,7 @@ def combinedoc(path, method, mergeinfo, matter):
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
-        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport':
+        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter':
             doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/signoff2.docx")
         else:
             WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
@@ -580,7 +582,7 @@ def mergeDoc(matter , mergeinfo):
                      'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 
                      'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 
                      'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic', 
-                     'honureport', 'ffinstructions', 'abandonReport', 'nopreport']
+                     'honureport', 'ffinstructions', 'abandonReport', 'nopreport', 'ffMiscItemsRcvd', 'CommunicationLetter']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

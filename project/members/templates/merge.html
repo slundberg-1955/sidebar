@@ -163,6 +163,12 @@
         #provisionalapp .modal-dialog{
             max-width: 700px;
         }
+        #poa82combined .modal-dialog{
+            max-width: 700px;
+        }
+        #CommunicationLetter .modal-dialog{
+            max-width: 700px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -2932,6 +2938,110 @@
         </div>
     </div>
 </div>
+<!-- POA - Combined Transmittal and PTO/AIA/82A -->
+<div id="poa82combined" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poa82combinedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">POA - Combined Transmittal and PTO/AIA/82A</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      <input type="checkbox" id="poa82combinedesign"> E-Signature Enable
+                                <input type="radio" name="poa82combinedaccoptions"> Deposit Account
+                     <input type="radio" name="poa82combinedaccoptions"> Check
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Transmittal for Power of Attorney (PTO/AIA/82) </td>
+                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedtpoa" size="10" placeholder="0"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none;">  Power of Attorney (PTO/AIA/82B) </td>
+                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedpoa" size="10" placeholder="0"></td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Mail Stop:</td>
+                            <td align="center" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions"> Mail Stop Amendment</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions"> Mail Stop AF</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="radio" id="poa82combinedmailab" name="poa82combinedoptions"> Mail Stop Appeal Brief - Patents</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="radio" id="poa82combinedoth" name="poa82combinedoptions"> Other</td>
+                        </tr>
+                    </table> 
+                </div>
+                <div>
+                    <br>  <button type="button" class="btn btn-primary">Additional Documents</button>
+                                <select id="pctgenericsa">
+                        <option>Select Signing Attorney</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - FF Instructions to Pay Grant Fees -->
+<div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Instructions to Pay Grant Fees</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Associate Communication Date Regarding Fee Payment: </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="CommunicationLettercomdte"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Fee Payment Deadline: </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="CommunicationLetterfeedead"></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table>
+                        <tr>
+                            <td align="left" style="border: none; padding: 4px;">    Select Fee Type: </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="radio" name="CommunicationLetterrad" value="Grant Fee"> Grant Fee</td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="radio" name="CommunicationLetterrad" value="Issue Fee"> Issue Fee</td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="radio" name="CommunicationLetterrad" value="Registration Fee"> Registration Fee</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(CommunicationLettercomdte.value, CommunicationLetterfeedead.value, radioFill('CommunicationLetterrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Decision to Grant -->
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -3009,7 +3119,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -3247,9 +3357,9 @@
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
-                            'ffinstructions'
+                            'ffinstructions', 'CommunicationLetter'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
