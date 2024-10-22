@@ -169,6 +169,12 @@
         #CommunicationLetter .modal-dialog{
             max-width: 700px;
         }
+        #FFDecisiontoGrant_NEW .modal-dialog{
+            max-width: 550px;
+        }
+        #FFNoticePubRcvd .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3042,6 +3048,138 @@
     </div>
 </div>
 <!-- FF Report Out - Decision to Grant -->
+<div id="FFDecisiontoGrant_NEW" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFDecisiontoGrant_NEWModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Decision to Grant</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      <input type="checkbox" id="FFDecisiontoGrant_NEWfee"> Fees are required
+                      <input type="checkbox" id="FFDecisiontoGrant_NEWdiv"> Include Divisional Language
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr id="FFDecisiontoGrant_NEWdate1" style="display:none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the deadline for paying the fees </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFDecisiontoGrant_NEWdline"></td>
+                        </tr>
+                        <tr id="FFDecisiontoGrant_NEWdate2" style="display:none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the requested response date </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFDecisiontoGrant_NEWreqresp"></td>
+                        </tr>
+                    </table>
+                </div>
+                <script>
+                    if(document.getElementById('FFDecisiontoGrant_NEWfee')){
+                        const isscheckbox1 = document.getElementById('FFDecisiontoGrant_NEWfee');
+                        const isscheckbox2 = document.getElementById('FFDecisiontoGrant_NEWdiv');
+                        const issdate1 = document.getElementById('FFDecisiontoGrant_NEWdate1');
+                        const issdate2 = document.getElementById('FFDecisiontoGrant_NEWdate2');
+
+                        isscheckbox1.addEventListener('change', function() {
+                            if (isscheckbox1.checked) {
+                                issdate1.style.display = 'block';
+                                issdate2.style.display = 'block';
+                            } else {
+                                issdate1.style.display = 'none';
+                                issdate2.style.display = 'none';
+                            }
+                        });
+                        
+                        isscheckbox2.addEventListener('change', function() {
+                            if (!isscheckbox1.checked){
+                                if (isscheckbox2.checked) {
+                                    issdate2.style.display = 'block';
+                                } else {
+                                    issdate2.style.display = 'none';
+                                }
+                            }
+                        });
+                        
+                    }
+                </script>
+                <div>
+                    <br>  <input type="checkbox" id="FFDecisiontoGrant_NEWpen"> Related matters currently pending in other jurisdictions
+                    <br>  <input type="checkbox" id="FFDecisiontoGrant_NEWann"> SLW is responsible for annuity payment
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(FFDecisiontoGrant_NEWfee.checked, FFDecisiontoGrant_NEWdiv.checked, FFDecisiontoGrant_NEWdline.value, FFDecisiontoGrant_NEWreqresp.value, FFDecisiontoGrant_NEWpen.checked, FFDecisiontoGrant_NEWann.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - Request for Instructions (PCT National Stage) -->
+<div id="natlphase" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="natlphaseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm Dates</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  30 Month National Phase Deadline</td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="natlphase30"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Priority Date</td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="natlphasepri"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Instructions Due</td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="natlphaseinst"></td>
+                        </tr>
+                    </table>
+                    <div>
+                        <br>     <input type="checkbox" id="natlphaseus"> U.S. (Non-Provisional) has been filed
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(natlphase30.value, natlphasepri.value, natlphaseinst.value, natlphaseus.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Notice of Publication Received FFNoticePubRcvd -->
+<div id="FFNoticePubRcvd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFNoticePubRcvdModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirm Dates</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  There is a voluntary amendment due date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="FFNoticePubRcvdvol"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the deadline for voluntary amendment </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFNoticePubRcvddead"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the requested response date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFNoticePubRcvdreqresp"></td>
+                    </tr>
+                </table><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(FFNoticePubRcvdvol.checked, FFNoticePubRcvddead.value, FFNoticePubRcvdreqresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -3357,7 +3495,7 @@
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
-                            'ffinstructions', 'CommunicationLetter'
+                            'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
                             fillActivities(mergemethod);

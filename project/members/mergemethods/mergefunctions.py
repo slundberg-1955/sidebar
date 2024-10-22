@@ -700,3 +700,9 @@ class mergefunctions:
             'cmgEmail' : contact.email
         }
         return info
+    
+    def formatDate(self, date):
+        try:
+            return datetime.strptime(date, '%Y-%m-%d').strftime('%B %d, %Y')
+        except:
+            return date

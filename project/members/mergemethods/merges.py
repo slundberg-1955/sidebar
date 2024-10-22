@@ -45,17 +45,12 @@ class appealfwd:
 class pclaims:
     def pclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        
-        try:
-            date = datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime("%B %d, %Y")
-        except:
-            date = mergeinfo[0]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-            'claimsDate' : date,
+            'claimsDate' : function_instance.formatDate(mergeinfo[0]),
             'dateDescription' : mergeinfo[1],
         })
         return replace
@@ -245,7 +240,7 @@ class recordation:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'depAccount' : depnum,
-            'dateExecutionText' : datetime.strptime(mergeinfo[5], "%m/%d/%Y").strftime("%B %d, %Y"),
+            'dateExecutionText' : function_instance.formatDate(mergeinfo[5]),
             'selectedInventorList' : selinv,
             'totalFee' : totfee,
             'numPages' : mergeinfo[2],
@@ -892,7 +887,7 @@ class reportprvassnnew:
         matter_data = function_instance.matterFill(matter)
         
         try:
-            rdate = datetime.strptime(mergeinfo[3], '%Y-%m-%d').strftime('%B %d, %Y')
+            rdate = function_instance.formatDate(mergeinfo[3])
         except:
             rdate = mergeinfo[3]
 
@@ -927,7 +922,7 @@ class abandonReport:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'instFrom' : mergeinfo[0],
-            'instDate' : datetime.strptime(mergeinfo[1], '%Y-%m-%d').strftime('%B %d, %Y'),
+            'instDate' : function_instance.formatDate(mergeinfo[1]),
             'salutation' : ''
         })
         return replace
@@ -964,10 +959,6 @@ class pctcorrect:
         depacc = mergeinfo[0]
         check = mergeinfo[1]
         esign = mergeinfo[2]
-        try:
-            maildate = datetime.strptime(mergeinfo[3], '%Y-%m-%d').strftime('%B %d, %Y')
-        except:
-            maildate = mergeinfo[3]
         annexA = mergeinfo[7]
         annexAtxt = mergeinfo[8]
         annexB = mergeinfo[9]
@@ -1000,7 +991,7 @@ class pctcorrect:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'mailDate' : maildate,
+            'mailDate' : function_instance.formatDate(mergeinfo[3]),
             # add phone number at end
             'cAnnexAText' : Atxt,
             'cAnnexBText' : Btxt,
@@ -1126,7 +1117,7 @@ class PCTAsgnPOALetter:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'pctdueDate' : datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y'),
+            'pctdueDate' : function_instance.formatDate(mergeinfo[0]),
             'cSendingPOA' : sendingpoa,
             'Notary' : nottxt,
             'salutation' : '',
@@ -1231,7 +1222,7 @@ class PctCommRe:
         replace.update({
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'mailDate' : datetime.strptime(mergeinfo[3], "%Y-%m-%d").strftime("%B %d, %Y"),
+            'mailDate' : function_instance.formatDate(mergeinfo[3]),
             'lpX' : lpX,
             'seqListingLine' : seqpaper,
             'rfX' : '',
@@ -1684,8 +1675,8 @@ class ffOfficeActRcvd:
         matter_data = function_instance.matterFill(matter) 
 
         typeaction = mergeinfo[0]
-        deadline = datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime('%B %d, %Y')
-        reqresp = datetime.strptime(mergeinfo[2], "%Y-%m-%d").strftime('%B %d, %Y')
+        deadline = function_instance.formatDate(mergeinfo[1])
+        reqresp = function_instance.formatDate(mergeinfo[2])
         citedref = mergeinfo[3]
         if citedref == 'true' and typeaction != '':
             cite = ' and cited references '
@@ -1722,8 +1713,8 @@ class DraftOAInstruct:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'corrDate' : datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y'),
-            'cdueDate' : datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime('%B %d, %Y'),
+            'corrDate' : function_instance.formatDate(mergeinfo[0]),
+            'cdueDate' : function_instance.formatDate(mergeinfo[1]),
             # Need to edit country
             'countryType' : 'American',
         })
@@ -1738,11 +1729,11 @@ class exttimeCF:
         esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         try:
-            datemail = datetime.strptime(mergeinfo[9], "%Y-%m-%d").strftime('%B %d, %Y')
+            datemail = function_instance.formatDate(mergeinfo[9])
         except:
             datemail = ''
         try:
-            duedate = datetime.strptime(mergeinfo[10], "%Y-%m-%d").strftime('%B %d, %Y')
+            duedate = function_instance.formatDate(mergeinfo[10])
         except:
             duedate = ''
         try:
@@ -1864,10 +1855,10 @@ class rcexmit3:
         ccptxt = ''
         if mergeinfo[5] != '':
             aarfx = 'X'
-            aarftxt = 'Consider the amendment(s)/reply under 37 C.F.R. § 1.116 previously filed on ' + datetime.strptime(mergeinfo[5], "%Y-%m-%d").strftime("%B %d, %Y")
+            aarftxt = 'Consider the amendment(s)/reply under 37 C.F.R. § 1.116 previously filed on ' + function_instance.formatDate(mergeinfo[5])
         if mergeinfo[6] != '':
             abrfx = 'X'
-            abrftxt = 'Consider the arguments in the Appeal Brief or Reply Brief previously filed on ' + datetime.strptime(mergeinfo[6], "%Y-%m-%d").strftime("%B %d, %Y")
+            abrftxt = 'Consider the arguments in the Appeal Brief or Reply Brief previously filed on ' + function_instance.formatDate(mergeinfo[6])
         if mergeinfo[7] != '' and int(mergeinfo[7]) > 0:
             amendx = 'X'
             amendtxt = 'Amendment and Response Under 37 C.F.R § 1.116 ('+ mergeinfo[7] +' pages) is enclosed.'
@@ -2030,7 +2021,7 @@ class advisoryreport:
             foardate = ''
             
         try:
-            instdue = datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime('%B %d, %Y')
+            instdue = function_instance.formatDate(mergeinfo[0])
         except:
             instdue = 'Invalid Date'
         
@@ -2229,7 +2220,7 @@ class honureport:
             actreq = ''
         else:
             cortxt = 'together with the correspondence from the associate.'
-            actreq = '\nACTION REQUIRED:\nThe deadline for responding to the communication is:  '+ datetime.strptime(mergeinfo[2], "%Y-%m-%d").strftime("%B %d, %Y") +'\nWe would welcome your instructions no later than:  '+ datetime.strptime(mergeinfo[3], "%Y-%m-%d").strftime("%B %d, %Y") + '\n'
+            actreq = '\nACTION REQUIRED:\nThe deadline for responding to the communication is:  '+ function_instance.formatDate(mergeinfo[2]) +'\nWe would welcome your instructions no later than:  '+ function_instance.formatDate(mergeinfo[3]) + '\n'
                     
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2265,8 +2256,8 @@ class ffinstructions:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'instDate' : datetime.strptime(mergeinfo[1], "%Y-%m-%d").strftime("%B %d, %Y"),
-            'ffDueDate' : (datetime.strptime(mergeinfo[0], "%Y-%m-%d").strftime("%B %d, %Y")).capitalize(),
+            'instDate' : function_instance.formatDate(mergeinfo[1]),
+            'ffDueDate' : (function_instance.formatDate(mergeinfo[0])).capitalize(),
             'conversionType' : contype,
             'cFFNonProvText1' : ffnonprov,
             'earlyPrioSerialNo' : priser,
@@ -2299,8 +2290,75 @@ class CommunicationLetter:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'salutation' : '',
-            'assocLttrDate' : datetime.strptime(mergeinfo[0], '%Y-%m-%d').strftime('%B %d, %Y'),
+            'assocLttrDate' : function_instance.formatDate(mergeinfo[0]),
             'feeType' : mergeinfo[2],
-            'feeDue' : datetime.strptime(mergeinfo[1], '%Y-%m-%d').strftime('%B %d, %Y'),
+            'feeDue' : function_instance.formatDate(mergeinfo[1]),
+        })
+        return replace
+    
+class FFDecisiontoGrant_NEW:
+    def FFDecisiontoGrant_NEW(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        currtxt = ''
+        acttxt = 'None at this time.'
+        feetxt = ''
+        
+        if mergeinfo[0] == 'true':
+            acttxt = 'Provide authorization to submit the fees'
+            if mergeinfo[1] == 'true':
+                acttxt += '; and\nProvide instructions as to submitting a divisional application'
+                
+            acttxt += '\nDeadline Date: ' + function_instance.formatDate(mergeinfo[2]) + '\nRequested Response Date:  ' + function_instance.formatDate(mergeinfo[3])
+            feetxt = '\nThe Patent Office has set a deadline of '+ function_instance.formatDate(mergeinfo[2]) +' to pay the required fees. Please provide us with your instructions regarding this by '+ function_instance.formatDate(mergeinfo[3]) +'. Unless we receive your instructions to the contrary by this date, we will authorize our associate to pay the fees by the deadline date.\n'
+        elif mergeinfo[1] == 'true':
+            acttxt = 'Provide instructions as to submitting a divisional application\nRequested Response date: ' + function_instance.formatDate(mergeinfo[3])
+            feetxt = '\nIf you are interested in filing a divisional application, please provide your instructions by '+ function_instance.formatDate(mergeinfo[3]) +'. In the absence of your instructions, we will not file a divisional application.\n'
+            
+        if mergeinfo[4] == 'true':
+            currtxt = 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.'
+            
+        currtxt += '\n\nIt is our understanding that you will be responsible for any annuity/maintenance fee payments.  If our understanding is incorrect, please advise us.\n\n'
+            
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'actionText' : acttxt,
+            'feesduePara' : feetxt,
+            'currFutPend' : currtxt,
+            'salutation' : ''
+        })
+        return replace
+
+# WORK ON
+class natlphase:
+    def natlphase(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'instDate' : function_instance.formatDate(mergeinfo[2]),
+            'priorityDate' : function_instance.formatDate(mergeinfo[1]),
+            'npdueDate' : function_instance.formatDate(mergeinfo[0]),
+            'nonProvText1' : '',
+            'nonProvText2' : '',
+            'dueDate1mo' : '',
+        })
+        return replace
+    
+class FFNoticePubRcvd:
+    def FFNoticePubRcvd(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            
         })
         return replace
