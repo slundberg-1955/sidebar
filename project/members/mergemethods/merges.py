@@ -2350,11 +2350,58 @@ class natlphase:
         })
         return replace
     
+# not done
 class FFNoticePubRcvd:
     def FFNoticePubRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
+        if mergeinfo[0] == 'true':
+            voltxt = '\nPlease note that the deadline to file a voluntary amendment is '+ function_instance.formatDate(mergeinfo[1]) +'.  Please let us have your instructions before '+ function_instance.formatDate(mergeinfo[2]) +' if an amendment should be filed.'
         
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'volAmend' : voltxt,
+            'cnMatter' : '',
+            'salutation' : '',
+            'hkactionReq' : '',
+            'actionReq' : '',
+            'cpubDate' : '',
+            'cpubNo' : ''
+        })
+        return replace
+    
+class ffNoticeOfAllancRcvdFp:
+    def ffNoticeOfAllancRcvdFp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        currtxt = ''
+        if mergeinfo[5] == 'true':
+            currtxt += 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.'
+
+        if mergeinfo[4] == 'true':
+            currtxt += '\n\nWe will pay any annuity or maintenances fees on your behalf unless instructed to the contrary. \n\n'
+        else:
+            currtxt += '\n\nIt is our understanding that you will be responsible for any annuity/maintenance fee payments.  If our understanding is incorrect, please advise us.\n\n'
+            
+        divtxt = ''
+        if mergeinfo[0] == 'true':
+            divtxt = 'If you are interested in filing a divisional application, please provide your instructions by . In the absence of your instructions, we will not file a divisional application.'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'cdueDate' : function_instance.formatDate(mergeinfo[1]),
+            'crespDate' : function_instance.formatDate(mergeinfo[2]),
+            'currFutPend' : currtxt,
+            'divTxt' : divtxt
+        }) 
+        return replace
+
+class anncomm:
+    def anncomm(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))

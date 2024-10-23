@@ -518,7 +518,10 @@ def combinedoc(path, method, mergeinfo, matter):
         'ffMiscItemsRcvd': "C:/Users/jaburns/SideBar/project/documents/reportletters/ffMiscItemsRcvd.docx",
         'CommunicationLetter': "C:/Users/jaburns/SideBar/project/documents/letters/FFPayFees.docx",
         'FFDecisiontoGrant_NEW': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFDecisiontoGrantFp.docx",
-        'natlphase': "C:/Users/jaburns/SideBar/project/documents/letters/NatlPhase.docx"
+        'natlphase': "C:/Users/jaburns/SideBar/project/documents/letters/NatlPhase.docx",
+        'FFNoticePubRcvd': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFNoticePubRcvd.docx",
+        'ffNoticeOfAllancRcvdFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/ffNoticeOfAllancRcvdFp.docx",
+        'anncomm': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/AnnCommunication.docx"
     }
 
     if method in method_paths:
@@ -585,7 +588,7 @@ def mergeDoc(matter , mergeinfo):
                      'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 
                      'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic', 
                      'honureport', 'ffinstructions', 'abandonReport', 'nopreport', 'ffMiscItemsRcvd', 'CommunicationLetter',
-                     'FFDecisiontoGrant_NEW', 'natlphase']
+                     'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd', 'ffNoticeOfAllancRcvdFp', 'anncomm']
 
     # combine doc
     if mergeinfo_list[1] in merge_strings:

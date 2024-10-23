@@ -175,6 +175,9 @@
         #FFNoticePubRcvd .modal-dialog{
             max-width: 600px;
         }
+        #ffNoticeOfAllancRcvdFp .modal-dialog{
+            max-width: 850px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3160,22 +3163,82 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left" style="border: none; padding: 4px;">  There is a voluntary amendment due date </td>
-                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="FFNoticePubRcvdvol"></td>
+                        <td align="left" style="border: none; padding: 4px;">  There is a voluntary amendment due date <input type="checkbox" id="FFNoticePubRcvdvol"></td>
+                        <td align="right" style="border: none; padding: 4px;"></td>
                     </tr>
-                    <tr style="border: none;">
+                    <tr style="display:none;" id="FFNotdate1">
                         <td align="left" style="border: none; padding: 4px;">  Enter the deadline for voluntary amendment </td>
                         <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFNoticePubRcvddead"></td>
                     </tr>
-                    <tr style="border: none;">
+                    <tr style="display:none;" id="FFNotdate2">
                         <td align="left" style="border: none; padding: 4px;">  Enter the requested response date </td>
                         <td align="right" style="border: none; padding: 4px;"> <input type="date" id="FFNoticePubRcvdreqresp"></td>
                     </tr>
                 </table><br>
+                <script>
+                        const FFcheckbox1 = document.getElementById('FFNoticePubRcvdvol');
+                        const FFdate1 = document.getElementById('FFNotdate1');
+                        const FFdate2 = document.getElementById('FFNotdate2');
+
+                        FFcheckbox1.addEventListener('change', function() {
+                            if (FFcheckbox1.checked) {
+                                FFdate1.style.display = 'block';
+                                FFdate2.style.display = 'block';
+                            } else {
+                                FFdate1.style.display = 'none';
+                                FFdate2.style.display = 'none';
+                            }
+                        });
+                </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(FFNoticePubRcvdvol.checked, FFNoticePubRcvddead.value, FFNoticePubRcvdreqresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Notice of Allowance Received ffNoticeOfAllancRcvdFp -->
+<div id="ffNoticeOfAllancRcvdFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAllancRcvdFpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Notice of Allowance Received</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="checkbox" id="ffNoticeOfAllancRcvdFpdivl"> Include Divisional Language</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the Due Date </td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffNoticeOfAllancRcvdFpdue"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the Requested Response Date </td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffNoticeOfAllancRcvdFpreqresp"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="checkbox" id="ffNoticeOfAllancRcvdFpsea"> A response to the search report and written opinion is mandatory</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="checkbox" id="ffNoticeOfAllancRcvdFpann"> SLW is responsible for annuity payment</td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;"></td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="checkbox" id="ffNoticeOfAllancRcvdFppen"> Related matters currently pending in other jurisdictions</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffNoticeOfAllancRcvdFpdivl.checked, ffNoticeOfAllancRcvdFpdue.value, ffNoticeOfAllancRcvdFpreqresp.value, ffNoticeOfAllancRcvdFpsea.checked, ffNoticeOfAllancRcvdFpann.checked, ffNoticeOfAllancRcvdFppen.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -3495,7 +3558,8 @@
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
-                            'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd'
+                            'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
+                            'ffNoticeOfAllancRcvdFp'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
                             fillActivities(mergemethod);
