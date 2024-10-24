@@ -1901,7 +1901,7 @@
                         tableData = tableData.slice(0, -1);
                     }
 
-                    alert(tableData);
+                    //alert(tableData);
                     submitbtnmerge(partial, add, tableData);
                 }
             </script>
@@ -2294,7 +2294,7 @@
             <script>
                 function submitbtnUtilityApp(...args){
                     const merged_data = args.join(',');
-                    alert(merged_data);
+                    //alert(merged_data);
                     document.getElementById('mergedata').value += merged_data;
                     $('#applicationdata_new2').modal('show');
                 }
@@ -2733,7 +2733,7 @@
             <script>
                 function submitbtnrcexmit3(...args){
                     const merged_data = args.join(',');
-                    alert(merged_data);
+                    //alert(merged_data);
                     document.getElementById('mergedata').value += merged_data;
                     if(document.getElementById('rcexmit3petext').checked){
                         $('#extTime').modal('show');
@@ -3293,7 +3293,7 @@
         function submitbtnmerge(...args){
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
-            alert(document.getElementById('mergedata').value);
+            //alert(document.getElementById('mergedata').value);
             document.getElementById('mergeform').submit();
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -3801,7 +3801,7 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    alert('yes');
+                    //alert('yes');
                     const RMlist = response.message.split(';');
                     const matterList = RMlist[0].split('*');
                     const serialnoList = RMlist[1].split('*');
