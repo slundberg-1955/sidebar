@@ -415,7 +415,7 @@ def find_checkbox_coordinates(element_coordinates):
             checkbox_coordinates[element_name] = (row, column)
     return checkbox_coordinates
 
-def combinedoc(path, method, mergeinfo, matter):
+def combinedoc(path, method, mergeinfo, matter, email):
     doc1 = Document_compose(path)
     doc1.add_page_break()
 
@@ -484,49 +484,10 @@ def combinedoc(path, method, mergeinfo, matter):
             composer.append(doc3)
         
         composer.append(docend)
-        
-    method_paths = {
-        'olpemail': "C:/Users/jaburns/SideBar/project/documents/reportletters/OLPemail.docx",
-        'rptissuefee': "C:/Users/jaburns/SideBar/project/documents/reportletters/IssueFee.docx",
-        'filerectreportNw2': "C:/Users/jaburns/SideBar/project/documents/reportletters/filingreceipt.docx",
-        'PCTRptFileOfApp': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTRptApplicationFiled.docx",
-        'basicreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/basicreportout.docx",
-        'prvAppReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/prvappfiled_new.docx",
-        'recordedassnreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/recordedassignment.docx",
-        'issuereport': "C:/Users/jaburns/SideBar/project/documents/reportletters/issuenotify.docx",
-        'nonfinalreportFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/NonFinalOaFp.docx",
-        'ptorecdReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/PTO_Received.docx",
-        'RepNoticeofAllow': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofallowanceUpdate.docx",
-        'adobesign': "C:/Users/jaburns/SideBar/project/documents/letters/AdobeSignEmail.docx",
-        'appReportFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/appfiledFp.docx",
-        'advisoryreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/advisoryaction.docx",
-        'cocReportEmail': "C:/Users/jaburns/SideBar/project/documents/reportletters/CocEmail.docx",
-        'reportprvassnnew': "C:/Users/jaburns/SideBar/project/documents/letters/ProvisionalAssignmentNoLabel.docx",
-        'LtrSendFmlDocNew': "C:/Users/jaburns/SideBar/project/documents/letters/LtrSendFmlDocNew.docx",
-        'PCTAsgnPOALetter': "C:/Users/jaburns/SideBar/project/documents/letters/PCTAsgnPOALetter.docx",
-        'correctdefects': "C:/Users/jaburns/SideBar/project/documents/reportletters/PCTcorrectDefects.docx",
-        'PCTRptOutIpRp': "C:/Users/jaburns/SideBar/project/documents/letters/PctReportOutIpRp.docx",
-        'pv2appReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/Prv2AppFiled.docx",
-        'rerrReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/restrictionreq.docx",
-        'maintfee' : "C:/Users/jaburns/SideBar/project/documents/reportletters/MaintenanceFee.docx",
-        'msemails': "C:/Users/jaburns/SideBar/project/documents/reportletters/MSGeneralEmail.docx",
-        'FFRptOutBasic': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFRptOutBasic.docx",
-        'honureport': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/HonuReportOut.docx",
-        'ffinstructions': "C:/Users/jaburns/SideBar/project/documents/letters/ffinstructions.docx",
-        'abandonReport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofaban.docx",
-        'nopreport': "C:/Users/jaburns/SideBar/project/documents/reportletters/noticeofpub.docx",
-        'ffMiscItemsRcvd': "C:/Users/jaburns/SideBar/project/documents/reportletters/ffMiscItemsRcvd.docx",
-        'CommunicationLetter': "C:/Users/jaburns/SideBar/project/documents/letters/FFPayFees.docx",
-        'FFDecisiontoGrant_NEW': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFDecisiontoGrantFp.docx",
-        'natlphase': "C:/Users/jaburns/SideBar/project/documents/letters/NatlPhase.docx",
-        'FFNoticePubRcvd': "C:/Users/jaburns/SideBar/project/documents/reportletters/FFNoticePubRcvd.docx",
-        'ffNoticeOfAllancRcvdFp': "C:/Users/jaburns/SideBar/project/documents/reportletters/ffNoticeOfAllancRcvdFp.docx",
-        'anncomm': "C:/Users/jaburns/SideBar/project/documents/miscellaneous/AnnCommunication.docx"
-    }
 
-    if method in method_paths:
+    if email == 'TRUE':
         merge_fn = mergefunctions()
-        doc2 = Document_compose(method_paths[method])
+        doc2 = Document_compose(path)
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
@@ -582,23 +543,15 @@ def mergeDoc(matter , mergeinfo):
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
-    merge_strings = ['applicationdata_new2', 'applicationdata_updnew', 'invchange', 'olpemail', 'rptissuefee', 
-                     'filerectreportNw2', 'PCTRptFileOfApp', 'basicreport', 'prvAppReport', 'recordedassnreport', 
-                     'issuereport', 'nonfinalreportFp', 'ptorecdReport', 'RepNoticeofAllow', 'adobesign', 'appReportFp', 
-                     'advisoryreport', 'cocReportEmail', 'reportprvassnnew', 'LtrSendFmlDocNew', 'PCTAsgnPOALetter', 
-                     'correctdefects', 'PCTRptOutIpRp', 'pv2appReport', 'rerrReport', 'maintfee', 'msemails', 'FFRptOutBasic', 
-                     'honureport', 'ffinstructions', 'abandonReport', 'nopreport', 'ffMiscItemsRcvd', 'CommunicationLetter',
-                     'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd', 'ffNoticeOfAllancRcvdFp', 'anncomm']
-
     # combine doc
-    if mergeinfo_list[1] in merge_strings:
-        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
+    if contacts == 'TRUE':
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = f"C:/Users/jaburns/SideBar/project/documents/multidocmerge/{mergeinfo_list[1]}.docx"
         doc = Document(input_path)
 
     # with multiple docs
     if mergeinfo_list[1] == 'issuefee':
-        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter)
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'

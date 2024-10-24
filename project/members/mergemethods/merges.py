@@ -699,7 +699,7 @@ class adobesign:
         if mergeinfo[0] == '2':
             choice = 'Assignment and Declaration'
         if mergeinfo[0] == '4' or mergeinfo[0] == '5' or mergeinfo[0] == '6' or mergeinfo[0] == '7' or mergeinfo[0] == '8' or mergeinfo[0] == '9' or mergeinfo[0] == '10':
-            choice = 'Assignment and POA'
+            choice = 'Assignment and POA',
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
