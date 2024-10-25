@@ -178,6 +178,9 @@
         #ffNoticeOfAllancRcvdFp .modal-dialog{
             max-width: 850px;
         }
+        #Statement373c .modal-dialog{
+            max-width: 700px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -593,41 +596,29 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;Corporation:<input type="radio" id="statement373ccorprad" name="statement373crad" value="Corporation">
-                    &ensp;Partnership:<input type="radio" id="statement373cpartnerrad" name="statement373crad" value="Partnership">
+                    &emsp;&emsp;Corporation: <input type="radio" id="statement373ccorprad" name="statement373crad" value="Corporation">
+                    &ensp;Partnership: <input type="radio" id="statement373cpartnerrad" name="statement373crad" value="Partnership">
                 </div>
                 <div>
-                    &emsp;&emsp;University:<input type="radio" id="statement373cunirad" name="statement373crad" value="University">
-                    &ensp;Government Agency:<input type="radio" id="statement373cgovrad" name="statement373crad" value="Government Agency">
-                    &ensp;Other:<input type="radio" id="statement373cothrad" name="statement373crad" value="oth">
-                    &emsp;&emsp;List Other:<input type="text" id="statement373clistoth" size="15">
+                    &emsp;&emsp;University: <input type="radio" id="statement373cunirad" name="statement373crad" value="University">
+                    &ensp;Government Agency: <input type="radio" id="statement373cgovrad" name="statement373crad" value="Government Agency">
+                    &ensp;Other: <input type="radio" id="statement373cothrad" name="statement373crad" value="oth">
+                    &emsp;&emsp;List Other: <input type="text" id="statement373clistoth" size="15">
                 </div>
-                <script>
-                    function statement373csub(listoth, recordchk, esign){
-                        const radios = document.querySelectorAll('input[name="statement373crad"]');
-                        var staterad = '';
-                        radios.forEach(radio => {
-                            if (radio.checked) {
-                                staterad = radio.value;
-                            }
-                        });
-                        submitbtnmerge(recordchk, esign, staterad, listoth);
-                    }
-                </script>
                 <div class="form-group">
-                    <br>&emsp;&emsp;Signing Attorney:<select id="statement373cSAdrop"></select>
+                    <br>&emsp;&emsp;Signing Attorney: <select id="statement373cSAdrop"></select>
                 </div>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="statement373crecordchk"> There is a recordation occuring concurrently with this filing, or a recordation already occured
                 </div>
                 <div>
-                    <br><label for="statement373cesign">&emsp;&emsp;E-Signature Enable</label>
+                    <br><label for="statement373cesign">&emsp;&emsp;E-Signature Enable </label>
                     <input type="checkbox" id="statement373cesign">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="statement373csub(statement373clistoth.value, statement373crecordchk.checked, statement373cesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(statement373crecordchk.checked, statement373cesign.checked, radioFill('statement373crad'), statement373clistoth.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -3243,6 +3234,43 @@
         </div>
     </div>
 </div>
+<!-- PTO Form - Statement Under 3.73(b) StatementUnder373b -->
+<div id="StatementUnder373b" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="StatementUnder373bModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Statement Under 3.73(b)</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div>
+                        &emsp;&emsp;Corporation: <input type="radio" id="StatementUnder373bcorprad" name="StatementUnder373brad" value="Corporation">
+                        &ensp;Partnership: <input type="radio" id="StatementUnder373bpartnerrad" name="StatementUnder373brad" value="Partnership">
+                    </div>
+                    <div>
+                        &emsp;&emsp;University: <input type="radio" id="StatementUnder373bunirad" name="StatementUnder373brad" value="University">
+                        &ensp;Government Agency: <input type="radio" id="StatementUnder373bgovrad" name="StatementUnder373brad" value="Government Agency">
+                    </div>
+                    <div>
+                        &emsp;&emsp;Other: <input type="radio" id="StatementUnder373bothrad" name="StatementUnder373brad" value="oth">
+                        &ensp;List Other: <input type="text" id="StatementUnder373blistoth" size="15">
+                    </div>
+                    <div class="form-group">
+                        <br>&emsp;&emsp;Signing Attorney: <select id="StatementUnder373bSAdrop"></select>
+                    </div>
+                    <div>
+                        <br><label for="StatementUnder373besign">&emsp;&emsp;E-Signature Enable </label>
+                        <input type="checkbox" id="StatementUnder373besign">
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('StatementUnder373brad'), StatementUnder373bSAdrop.value, StatementUnder373besign, StatementUnder373blistoth.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -3320,7 +3348,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {

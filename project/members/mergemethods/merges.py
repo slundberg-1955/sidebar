@@ -193,7 +193,6 @@ class Statement373c:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'orgType' : org,
-            
         })
         return replace
     
@@ -2407,5 +2406,29 @@ class anncomm:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             
+        })
+        return replace
+    
+class StatementUnder373b:
+    def StatementUnder373b(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        esign = mergeinfo[2]
+
+        if mergeinfo[0] == 'oth':
+            org = mergeinfo[3]
+        else:
+            if mergeinfo[0]:
+                org = mergeinfo[0]
+                
+        esign_out, esigndate_out = function_instance.esigncheck(esign)
+        
+        replace = {}
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'orgType' : org,
         })
         return replace

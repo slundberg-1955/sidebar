@@ -96,7 +96,13 @@ DATABASES = {
         'USER': 'SLWKUSER',
         'PASSWORD': 'slwkuser',
         'HOST': 'SLWFILEDB.SLWIP.COM',
-        'OPTIONS': {'driver': "ODBC Driver 17 for SQL Server", 
+        #'NAME': os.environ.get('DBNAME'),
+        #'HOST': os.environ.get('DBHOST'),
+        #'USER': os.environ.get('DBUSER'),
+        #'PASSWORD': os.environ.get('DBPASS'),
+        'OPTIONS': {
+            #'sslmode': 'require',
+            'driver': 'ODBC Driver 17 for SQL Server',
         },
     } ,
     'SideBar': {

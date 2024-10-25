@@ -26,6 +26,7 @@ from docx.oxml.ns import qn
 from lxml import etree
 from .mergemethods.mergefunctions import mergefunctions
 from io import BytesIO
+import tempfile
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -373,6 +374,12 @@ def WordMerger(docxpath, replace, output_path):
     docx_replace2(doc, **replace)
     doc.save(output_path)
     
+    #   NO SAVE WORD DOC
+    #doc_io = BytesIO()
+    #doc.save(doc_io)
+    #doc_io.seek(0)
+    #return doc_io
+    
 # Fix orgId
 def DocumentReader(docxpath, mergemethod):
     doc = Document(docxpath)
@@ -580,7 +587,18 @@ def mergeDoc(matter , mergeinfo):
 
     # doc merges
     if contacts == "FALSE":
+        WordMerger(input_path, replace, output_path)
         os.startfile(output_path)
+        
+        #   NO SAVE WORD DOCS
+        #doc_io = WordMerger(input_path, replace, output_path)
+        #with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp_file:
+            #tmp_file.write(doc_io.read())
+            #tmp_file_path = tmp_file.name
+        
+        #os.startfile(tmp_file_path)
+        #tmp_file.close()
+        #os.unlink(tmp_file.name)
 
     # outlook merges
     if contacts == "TRUE":
