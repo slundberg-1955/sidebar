@@ -2403,6 +2403,7 @@ class anncomm:
         function_instance = mergefunctions.mergefunctions()
         
         replace = {}
+        replace.update(function_instance.cmgfill(matter))
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             
@@ -2430,5 +2431,16 @@ class StatementUnder373b:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'orgType' : org,
+        })
+        return replace
+    
+class DecisionAppeal:
+    def DecisionAppeal(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            
         })
         return replace

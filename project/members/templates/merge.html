@@ -181,6 +181,9 @@
         #Statement373c .modal-dialog{
             max-width: 700px;
         }
+        #PTOAIA82 .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3271,6 +3274,56 @@
         </div>
     </div>
 </div>
+</div>
+<!-- PTO Form - POA (PTO/AIA/82) - App. filed  on/or after Sept 16, 2012 PTOAIA82 -->
+<div id="PTOAIA82" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PTOAIA82ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PTO Form - POA (PTO/AIA/82)</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                   <h5>       Applicant Signing Power of Attorney</h5>
+                </div>
+                <div>
+                                  <input type="checkbox" id="PTOAIA82genpoa"> General POA
+                </div>
+                <div>
+                      <input type="radio" id="PTOAIA82inv" name="PTOAIA82rad" value="1"> Inventor(s)
+                    <br>  <input type="radio" id="PTOAIA82leg" name="PTOAIA82rad" value="2"> Legal Represenative
+                    <br>  <input type="radio" id="PTOAIA82assign" name="PTOAIA82rad" value="3"> Assignee or Person to Whom the Inventor is Under Obligation to Assign
+                    <br>  <input type="radio" id="PTOAIA82prop" name="PTOAIA82rad" value="4"> Person Who Otherwise Shows Sufficient Proprietary Interest
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('StatementUnder373brad'), StatementUnder373bSAdrop.value, StatementUnder373besign, StatementUnder373blistoth.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Report Out - Decision on Appeal DecisionAppeal -->
+<div id="DecisionAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="DecisionAppealModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Decision on Appeal</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                     Was the Decision Affirmed?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -3348,7 +3401,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -3587,7 +3640,7 @@
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
-                            'ffNoticeOfAllancRcvdFp'
+                            'ffNoticeOfAllancRcvdFp', 'DecisionAppeal'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
                             fillActivities(mergemethod);

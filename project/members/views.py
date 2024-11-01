@@ -20,13 +20,13 @@ import win32com.client as win32
 from datetime import datetime
 import os
 import pythoncom
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from lxml import etree
 from .mergemethods.mergefunctions import mergefunctions
 from io import BytesIO
 import tempfile
+from django.conf import settings
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -428,9 +428,9 @@ def combinedoc(path, method, mergeinfo, matter, email):
 
     if method == 'issuefee':
         composer = Composer(doc1)
-        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit3.docx")
+        doc2 = Document_compose("SideBar/project/documents/communications/issuefeexmit3.docx")
         if mergeinfo[6] == 'true':
-            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/issuefeexmit2.docx") 
+            doc3 = Document_compose("SideBar/project/documents/communications/issuefeexmit2.docx") 
             doc3.add_page_break()
             composer.append(doc3)
             composer.append(doc2) 
@@ -438,8 +438,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc2)
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
-        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventor.docx") 
-        docend = Document_compose("C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2end.docx") 
+        doc2 = Document_compose("SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventor.docx") 
+        docend = Document_compose("SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2end.docx") 
         composer = Composer(doc2)
 
         merge_fn = mergefunctions()
@@ -454,8 +454,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
         for i in range(1, invCount):
             replace = {}
             replace.update(merge_fn.inventorInfo(matter, i))
-            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventorMultiple.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx')
-            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx") 
+            WordMerger('SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2inventorMultiple.docx', replace, 'SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx')
+            doc3 = Document_compose("SideBar/project/documents/temp/ApplicationDataSheet_NEW2inventorMultipleout.docx") 
             composer.append(doc3)
         
         composer.append(doc1)
@@ -463,31 +463,31 @@ def combinedoc(path, method, mergeinfo, matter, email):
         for i in range(1, appCount):
             replace = {}
             replace.update(merge_fn.applicantfill(matter, i))
-            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2applicantMulti.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx')
-            doc4 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx") 
+            WordMerger('SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2applicantMulti.docx', replace, 'SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx')
+            doc4 = Document_compose("SideBar/project/documents/temp/ApplicationDataSheet_NEW2applicantMultipleout.docx") 
             composer.append(doc4)
 
         for i in range(1, assignCount):
             replace = {}
             replace.update(merge_fn.assigneefill(matter, i))
-            WordMerger('C:/Users/jaburns/SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2assigneeMulti.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx')
-            doc5 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx") 
+            WordMerger('SideBar/project/documents/formaldocuments/ApplicationDataSheet_NEW2assigneeMulti.docx', replace, 'SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx')
+            doc5 = Document_compose("SideBar/project/documents/temp/ApplicationDataSheet_NEW2assigneeMultipleout.docx") 
             composer.append(doc5)
         
         composer.append(docend)
     
     if method == 'invchange':
         merge_fn = mergefunctions()
-        doc2 = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/inventorchange.docx") 
-        docend = Document_compose("C:/Users/jaburns/SideBar/project/documents/communications/inventorchange_end.docx") 
+        doc2 = Document_compose("SideBar/project/documents/communications/inventorchange.docx") 
+        docend = Document_compose("SideBar/project/documents/communications/inventorchange_end.docx") 
         composer = Composer(doc2)
         invlist = mergeinfo[2:]
         invlist = invlist[:-1]
         for inv in invlist:
             replace = {}
             replace.update(merge_fn.inventorInfoName(matter, inv))
-            WordMerger('C:/Users/jaburns/SideBar/project/documents/communications/inventorchange_multi.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/inventorchangeMultipleout.docx')
-            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/inventorchangeMultipleout.docx") 
+            WordMerger('SideBar/project/documents/communications/inventorchange_multi.docx', replace, 'SideBar/project/documents/temp/inventorchangeMultipleout.docx')
+            doc3 = Document_compose("SideBar/project/documents/temp/inventorchangeMultipleout.docx") 
             composer.append(doc3)
         
         composer.append(docend)
@@ -499,10 +499,10 @@ def combinedoc(path, method, mergeinfo, matter, email):
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
         if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter':
-            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/reportletters/signoff2.docx")
+            doc3 = Document_compose("SideBar/project/documents/reportletters/signoff2.docx")
         else:
-            WordMerger('C:/Users/jaburns/SideBar/project/documents/reportletters/signoff.docx', replace, 'C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx')
-            doc3 = Document_compose("C:/Users/jaburns/SideBar/project/documents/temp/emailout.docx")
+            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'reportletters', 'signoff.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
+            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
         composer.append(doc3)
         
     composer.save("documents/multidocmerge/" + method +".docx")
@@ -516,8 +516,11 @@ def mergeDoc(matter , mergeinfo):
     curMerge = getattr(module, class_name)
     merge_instance = curMerge()
 
-    input_path = "C:/Users/jaburns/SideBar/project/documents/" + mergeinfo_list[0]
-    output_path = 'C:/Users/jaburns/SideBar/project/documents/Merged/Document.docx'
+    docpath = mergeinfo_list[0].split('/')
+    input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    output_path = os.path.join(settings.BASE_DIR, 'documents', 'Merged', 'Document.docx')
+    #input_path = "SideBar/project/documents/" + mergeinfo_list[0]
+    #output_path = 'SideBar/project/documents/Merged/Document.docx'
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -553,20 +556,20 @@ def mergeDoc(matter , mergeinfo):
     # combine doc
     if contacts == 'TRUE':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
-        input_path = f"C:/Users/jaburns/SideBar/project/documents/multidocmerge/{mergeinfo_list[1]}.docx"
+        input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
 
     # with multiple docs
     if mergeinfo_list[1] == 'issuefee':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
-        input_path = "C:/Users/jaburns/SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
+        input_path = "SideBar/project/documents/multidocmerge/" + mergeinfo_list[1] + ".docx"
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
         issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: " + replace.get('dueDate') + "\n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
         issTO = ''
         issCC = ''
         issBCC = ''
-        attachment = 'C:/Users/jaburns/SideBar/project/documents/attachments/Notice of Allowance Review and Response.pdf'
+        attachment = 'SideBar/project/documents/attachments/Notice of Allowance Review and Response.pdf'
         Email(issbody, isssubject, issTO, issCC, issBCC , attachment)
 
         if mergefninfo[5] == 'true':

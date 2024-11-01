@@ -10,35 +10,33 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-#import os
+import os
 from pathlib import Path
-
-#from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-#load_dotenv(BASE_DIR / '.env')
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ukaam=kjp((te10znbi1tb-#cuhb(0nb+9u6$js8qa4b#-nh^g'
+# --------------- AZURE ---------------
 #SECRET_KEY = os.getenv('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 #DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
-
-ALLOWED_HOSTS = ['*']
 #ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 #CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
-
 #SECURE_SSL_REDIRECT = \
 #    os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
 #if SECURE_SSL_REDIRECT:
 #    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SESSION_COOKIE_SECURE = True
+
+
+# --------------- LOCAL ---------------
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-ukaam=kjp((te10znbi1tb-#cuhb(0nb+9u6$js8qa4b#-nh^g'
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -63,6 +61,29 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+        "OPTIONS": {
+          
+        },
+    },
+}
+
+# ----- Azure Storage settings -----
+#DEFAULT_FILE_STORAGE = 'core.azure_storage.AzureMediaStorage'
+#STATICFILES_STORAGE = 'core.azure_storage.AzureStaticStorage'
+
+#AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+#AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+#AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+#STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+#MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+#MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 ROOT_URLCONF = 'project.urls'
 
@@ -92,10 +113,12 @@ DATABASES = {
     'default': {},
     'FIP': {
         'ENGINE': 'mssql',
+        # --- Local ---
         'NAME': 'FIP_SLWK',
         'USER': 'SLWKUSER',
         'PASSWORD': 'slwkuser',
         'HOST': 'SLWFILEDB.SLWIP.COM',
+        # --- Azure ---
         #'NAME': os.environ.get('DBNAME'),
         #'HOST': os.environ.get('DBHOST'),
         #'USER': os.environ.get('DBUSER'),
