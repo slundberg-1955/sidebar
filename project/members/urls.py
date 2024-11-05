@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import addinventors, addcorp, addrecipients,  addactivities, addPA, members, matters, fip_reports, merges, toolbox, addRelatedMatter
+#from django.contrib import admin
 # from .views import mergeEmailButton
 from .views import testview
 
@@ -19,4 +20,6 @@ urlpatterns = [
     path('fip-reports/', fip_reports, name='fip_reports'),
     path('merges/', merges, name='merges'),
     path('toolbox/', toolbox, name='toolbox'),
+    
+    #path('admin/', admin.site.urls),
 ]

@@ -3318,8 +3318,34 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('FALSE')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PCT - Request for Change in Agent pctchgagent -->
+<div id="pctchgagent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctchgagentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select "Change" Type</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      <input type="radio" id="pctchgagentag" name="pctchgagentrad" value="1"> Change of Agent
+                </div>
+                <div>
+                      <input type="radio" id="pctchgagentaddap" name="pctchgagentrad" value="2"> Add Applicant, Change Inventor Designation and Change Agent
+                </div>
+                <div>
+                      <input type="radio" id="pctchgagentchag" name="pctchgagentrad" value="3"> Change Applicant and Change Agent
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('FALSE')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
             </div>
         </div>
     </div>

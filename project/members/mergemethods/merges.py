@@ -2437,10 +2437,43 @@ class StatementUnder373b:
 class DecisionAppeal:
     def DecisionAppeal(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            activity = function_instance.getactivityid(matter_data, 'APDR')
+            smryone = activity.smryonevalue
+            instdue = (smryone + relativedelta(months=1)).strftime('%B %d, %Y')
+            doadate = smryone.strftime('%B %d, %Y')
+            rrrrdate = (smryone + relativedelta(months=2)).strftime('%B %d, %Y')
+            
+        except:
+            instdue = 'No date found'
+            doadate = 'No date found'
+            rrrrdate = 'No date found'
+        
+        if mergeinfo[0] == 'TRUE':
+            acttxt = 'Please provide authorization and instructions by '+ instdue +' for filing a response to the Decision on Appeal.  The final due date for response is '+ rrrrdate +'. This date is NOT extendable. Failure to respond will result in abandonment of the application.'
+            addtxt1 = 'When you have reviewed these materials, please call '
+            addtxt2 = ' to discuss the appropriate response.'
+            optiontxt = '\nOPTIONS FOR RESPONSE: Appeal the Decision to the Court of Appeals for the Federal Circuit; Request a Rehearing; Reopen prosecution by filing a Request for Continued Examination; Allow the application to go abandoned.\n'
+            dectxt = 'Affirmed'
+            
+        else:
+            acttxt = 'None at this time'
+            addtxt1 = 'If you have any questions or comments, please contact '
+            addtxt2 = '.'
+            optiontxt = ''
+            dectxt = 'Reversed'
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            
+            'salutation' : '',
+            'doaDate' : doadate,
+            'actTxt' : acttxt,
+            'addtxt1' : addtxt1,
+            'addtxt2' : addtxt2,
+            'optionsTxt' : optiontxt,
+            'decTxt' : dectxt
         })
         return replace
