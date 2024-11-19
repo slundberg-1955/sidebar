@@ -698,13 +698,14 @@ class adobesign:
         if mergeinfo[0] == '2':
             choice = 'Assignment and Declaration'
         if mergeinfo[0] == '4' or mergeinfo[0] == '5' or mergeinfo[0] == '6' or mergeinfo[0] == '7' or mergeinfo[0] == '8' or mergeinfo[0] == '9' or mergeinfo[0] == '10':
-            choice = 'Assignment and POA',
+            choice = 'Assignment and POA'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'userChoice' : choice,
         })
+        return replace
 
 class LtrSendFmlDocNew:
     def LtrSendFmlDocNew(self, matter, mergeinfo, keys):
@@ -1100,12 +1101,12 @@ class nonfinalreportFp:
         })
         return replace
 
-# mergeinfo data not transfering correctly
 class PCTAsgnPOALetter:
     def PCTAsgnPOALetter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
 
         sendingpoa = ''
+        nottxt = ''
         if mergeinfo[2] == 'true':
             sendingpoa = 'We have also enclosed a Power of Attorney document for the assignee.'
 
@@ -1304,7 +1305,7 @@ class nopreport:
 
         patent = function_instance.patentFill(matter_data)
         pubno = patent.pubno
-        pubdate = patent.pubdate
+        pubdate = (patent.pubdate).strftime('%B %d, %Y')
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2038,7 +2039,6 @@ class advisoryreport:
 class cocReportEmail:
     def cocReportEmail(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2475,5 +2475,86 @@ class DecisionAppeal:
             'addtxt2' : addtxt2,
             'optionsTxt' : optiontxt,
             'decTxt' : dectxt
+        })
+        return replace
+    
+class ffLtrSndFormalDocs:
+    def ffLtrSndFormalDocs(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        if mergeinfo[0] != '':
+            duedateln = 'The deadline to file the Power of Attorney is ' + function_instance.formatDate(mergeinfo[0])
+            duedate = '\nDeadline Date: ' + function_instance.formatDate(mergeinfo[0])
+        else:
+            duedateln = ''
+            duedate = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'cdueDate' : duedate,
+            'crespDate' : function_instance.formatDate(mergeinfo[1]),
+            'cdueDateLn' : duedateln,
+            'salutation' : ''
+        })
+        return replace
+
+class clientagree_sp:
+    def clientagree_sp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'signatureDate' : esigndate_out,
+            'clientSignature' : esign_out
+        })
+        return replace
+
+class genericheader:
+    def genericheader(self,matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'signatureDate' : esigndate_out,
+            'echoSignature' : esign_out,
+            'headerText' : mergeinfo[1],
+            'mailStopText' : mergeinfo[2],
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'properApplicant' : 'Applicant',
+            'submitText' : 'submits',
+            'properPossessiveApplicant' : 'Applicant\'s'
+        })
+        return replace
+    
+class allowedclaims:
+     def allowedclaims(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+    
+class ffepApprovalofTxt:
+    def ffepApprovalofTxt(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'cdueDate' : function_instance.formatDate(mergeinfo[0]),
+            'crespDate' : function_instance.formatDate(mergeinfo[1])
         })
         return replace

@@ -184,6 +184,12 @@
         #PTOAIA82 .modal-dialog{
             max-width: 600px;
         }
+        #genericheader .modal-dialog{
+            max-width: 400px;
+        }
+        #ffepApprovalofTxt .modal-dialog{
+            max-width: 650px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3344,8 +3350,150 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('FALSE')">No</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Letter to Send Formal Documents ffLtrSndFormalDocs -->
+<div id="ffLtrSndFormalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffLtrSndFormalDocsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Letter to Send Formal Documents</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  If applicable, please enter due date </td>
+                        <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffLtrSndFormalDocsapp"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Requested response date </td>
+                        <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffLtrSndFormalDocsreqresp"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffLtrSndFormalDocsapp.value, ffLtrSndFormalDocsreqresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Header - Generic Header genericheader -->
+<div id="genericheader" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="genericheaderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Generic Header</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                  <input type="checkbox" id="genericheaderesign"> E-Signature Enable
+                <br>  Document Name: 
+                <br>  <input type="text" id="genericheaderdocname" size="35">
+                <br><br>  Mail Stop: <input type="text" id="genericheadermail" size="25">
+            </div>
+            <div>
+                      <select id="genericheadersa">
+                    <option>Select Signing Attorney</option>
+                </select>
+            </div><br>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(genericheaderesign.checked, genericheaderdocname.value, genericheadermail.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+<div id="ffepApprovalofTxt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffepApprovalofTxtModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EP Approval of Text</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Confirm the deadline </td>
+                        <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffepApprovalofTxtdead"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Requested response date (2 months prior to deadline) </td>
+                        <td align="right" style="border: none; padding: 4px;"><input type="date" id="ffepApprovalofTxtreqres"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffepApprovalofTxtdead.value, ffepApprovalofTxtreqres.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - Final Application to Inventors w/ formals -->
+<div id="FnlAppInvWfmls" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FnlAppInvWfmlsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EP Approval of Text</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  <input type="checkbox" id="FnlAppInvWfmlsdec"> </td>
+                        <td align="right" style="border: none; padding: 4px;"> Is the Declaration a Combined DPOA?</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  <input type="checkbox" id="FnlAppInvWfmlsenc"></td>
+                        <td align="right" style="border: none; padding: 4px;"> Assignment Enclosed?</td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none; display: none;" id="FnlAppInvWfmlshide">
+                    <tr style="border: none;" >
+                        <td align="left" style="border: none; padding: 4px;">    <input type="checkbox" id="FnlAppInvWfmlsnot"></td>
+                        <td align="right" style="border: none; padding: 4px;"> Is a notary required?</td>
+                    </tr>
+                </table>
+                <script>
+                    const FnlAppbox1 = document.getElementById('FnlAppInvWfmlsenc');
+                    const FnlAppbox2 = document.getElementById('FnlAppInvWfmlshide');
+
+                    FnlAppbox1.addEventListener('change', function() {
+                        if (FnlAppbox1.checked) {
+                            FnlAppbox2.style.display = 'block';
+                        } else {
+                            FnlAppbox2.style.display = 'none';
+                        }
+                    });
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  -->
+<div id="downloadlink" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadlinkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Download Merged Word Document</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -3426,8 +3574,8 @@
             // contacts = 'TRUE';
 
             // Esign popUp
-            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82"];
+            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -3666,7 +3814,7 @@
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
-                            'ffNoticeOfAllancRcvdFp', 'DecisionAppeal'
+                            'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
                             fillActivities(mergemethod);

@@ -20,23 +20,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # --------------- AZURE ---------------
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
-SECURE_SSL_REDIRECT = \
-    os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
-if SECURE_SSL_REDIRECT:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
+#SECRET_KEY = os.getenv('SECRET_KEY')
+#DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+#CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
+#SECURE_SSL_REDIRECT = \
+#    os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
+#if SECURE_SSL_REDIRECT:
+#    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SESSION_COOKIE_SECURE = True
 
 
 # --------------- LOCAL ---------------
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = ''
+SECRET_KEY = 'django-insecure-ukaam=kjp((te10znbi1tb-#cuhb(0nb+9u6$js8qa4b#-nh^g'
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-#ALLOWED_HOSTS = ['*']
+DEBUG = True
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -61,28 +61,27 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.azure_storage.AzureStorage",
-        "OPTIONS": {
-          
-        },
-    },
-}
+#STORAGES = {
+#    "default": {
+#        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+#        "OPTIONS": {
+#        },
+#    },
+#}
 
 # ----- Azure Storage settings -----
-DEFAULT_FILE_STORAGE = 'core.azure_storage.AzureMediaStorage'
-STATICFILES_STORAGE = 'core.azure_storage.AzureStaticStorage'
+#DEFAULT_FILE_STORAGE = 'core.azure_storage.AzureMediaStorage'
+#STATICFILES_STORAGE = 'core.azure_storage.AzureStaticStorage'
 
-AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
-AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
-AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+#AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+#AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+#AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 
-STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+#STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
+#STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
-MEDIA_ROOT = BASE_DIR / 'mediafiles'
+#MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+#MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 ROOT_URLCONF = 'project.urls'
 
@@ -112,20 +111,17 @@ DATABASES = {
     'default': {},
     'FIP': {
         'ENGINE': 'mssql',
-        # --- Local ---
-        #'NAME': '',
-        #'USER': '',
-        #'PASSWORD': '',
-        #'HOST': '',
-        
-        # --- Azure ---
-        'NAME': os.environ.get('DBNAME'),
-        'HOST': os.environ.get('DBHOST'),
-        'USER': os.environ.get('DBUSER'),
-        'PASSWORD': os.environ.get('DBPASS'),
+        #'NAME': os.environ.get('DBNAME'),
+        #'HOST': os.environ.get('DBHOST'),
+        #'USER': os.environ.get('DBUSER'),
+        #'PASSWORD': os.environ.get('DBPASS'),
+        'NAME': 'FIP_SLWK',
+        'HOST': 'SLWFILEDB.SLWIP.COM',
+        'USER': 'SLWKUSER',
+        'PASSWORD': 'slwkuser',
         'OPTIONS': {
-            'sslmode': 'require',
             'driver': 'ODBC Driver 17 for SQL Server',
+            #"extra_params": 'Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;',
         },
     } ,
     'SideBar': {
@@ -133,9 +129,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'USER': '',
         'PASSWORD': '',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
     },
 }
 

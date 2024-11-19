@@ -146,6 +146,7 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
             basic = {
                 'clientRefNo' : 'Ref. No. ' + part.matterno,
+                'clientNo' : part.matterno,
                 'This.clientRefNo' : 'Ref. No. ' + part.matterno,
                 'clientRefText' : 'Client Ref. No. ' + part.matterno,
                 'RefNo' : part.matterno
@@ -509,6 +510,7 @@ class mergefunctions:
             'ffparaEmail' : '',
             'currentDate' :'current',
             'clientRefNo' : 'matterparticipant',
+            'clientNo' : 'matterparticipant',
             'clientRefText' : 'matterparticipant',
             'This.clientRefNo' : 'matterparticipant',
             'RefNo' : 'matterparticipant',

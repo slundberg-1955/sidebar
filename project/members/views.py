@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.template import loader
-import ast
+#from django.template import loader
 import importlib
 from docxcompose.composer import Composer
 from docx import Document as Document_compose
@@ -16,17 +15,15 @@ from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactin
 from docx import Document
 from typing import Any, List
 import re
-import win32com.client as win32
 from datetime import datetime
 import os
-import pythoncom
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from lxml import etree
 from .mergemethods.mergefunctions import mergefunctions
-from io import BytesIO
-import tempfile
 from django.conf import settings
+
+import urllib.parse
+import webbrowser
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -396,21 +393,36 @@ def DocumentReader(docxpath, mergemethod):
     return subject, body
 
 def Email(body, subject, recipients, cc, bcc, attachment): 
-    pythoncom.CoInitialize()  
-    outlook = win32.Dispatch('outlook.application')
-    mail = outlook.CreateItem(0)
-    mail.Subject = subject
-    mail.Body = body
-    mail.To = recipients
-    if(attachment != ''):
-        mail.Attachments.Add(attachment)
+    # ------ OLD EMAIL ------
+    #pythoncom.CoInitialize()  
+    #outlook = win32.Dispatch('outlook.application')
+    #mail = outlook.CreateItem(0)
+    #mail.Subject = subject
+    #mail.Body = body
+    #mail.To = recipients
+    #if(attachment != ''):
+    #    mail.Attachments.Add(attachment)
 
+    #if cc:
+    #    mail.CC = cc
+    #if bcc:
+    #    mail.BCC = bcc
+
+    #mail.Display(True)
+    
+    # ------ NEW EMAIL ------
+
+    link = create_mailto_link(subject, body, recipients, cc, bcc)
+
+    webbrowser.open(link)
+    
+def create_mailto_link(subject, body, to, cc=None, bcc=None):
+    mailto_link = f"mailto:{to}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body)}"
     if cc:
-        mail.CC = cc
+        mailto_link += f"&cc={urllib.parse.quote(cc)}"
     if bcc:
-        mail.BCC = bcc
-
-    mail.Display(True)
+        mailto_link += f"&bcc={urllib.parse.quote(bcc)}"
+    return mailto_link
 
 def testview(request):
     return render(request, 'dbtest.html')
@@ -591,17 +603,12 @@ def mergeDoc(matter , mergeinfo):
     # doc merges
     if contacts == "FALSE":
         WordMerger(input_path, replace, output_path)
+        
+        # ----- Local -----
         os.startfile(output_path)
         
-        #   NO SAVE WORD DOCS
-        #doc_io = WordMerger(input_path, replace, output_path)
-        #with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as tmp_file:
-            #tmp_file.write(doc_io.read())
-            #tmp_file_path = tmp_file.name
+        # ----- Download Link -----
         
-        #os.startfile(tmp_file_path)
-        #tmp_file.close()
-        #os.unlink(tmp_file.name)
 
     # outlook merges
     if contacts == "TRUE":
