@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from django.http import JsonResponse
-#from django.template import loader
 import importlib
 from docxcompose.composer import Composer
 from docx import Document as Document_compose
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.shortcuts import redirect
 
 from .models import Matter
 from .models import Rvwmatterinventors
@@ -17,8 +18,6 @@ from typing import Any, List
 import re
 from datetime import datetime
 import os
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
 from .mergemethods.mergefunctions import mergefunctions
 from django.conf import settings
 
@@ -27,6 +26,7 @@ import webbrowser
 
 from python_docx_replace.paragraph import Paragraph
 
+# Fills merges home screen
 def members(request):
     if request.method == 'POST':
         matter = request.POST['matterInput']
@@ -45,6 +45,7 @@ def members(request):
 
     return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
 
+# Other pages
 def matters(request):
     return render(request, 'matters.html')
 
@@ -56,14 +57,6 @@ def merges(request):
 
 def toolbox(request):
     return render(request, 'toolbox.html')
-
-def transform_serialnumber(s):
-    part1 = s[:2]
-    part2 = s[2:]
-    part2 = part2[:-3] + ',' + part2[-3:]
-
-    result = part1 + '/' + part2
-    return result
 
 def docx_replace2(doc, **kwargs: str):
     for key, value in kwargs.items():
@@ -225,18 +218,19 @@ def addrecipients(request):
         return JsonResponse({'error': 'Invalid request method'}) """
     
 def addPA(request):
+    merge_fn = mergefunctions()
     if request.method == 'POST':
         data = request.POST.get('matterno')
         data = data.replace('"', "")
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
         relatedmatters = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid, relationdesc = 'Priority')
-        serialnos = transform_serialnumber(matter.serialnumber) + '*'
+        serialnos = merge_fn.transform_serialnumber(matter.serialnumber) + '*'
         dates = matter.fileddate.strftime("%B %d, %Y") + '*'
         countries = matter.country + '*'
 
         for relatedmatter in relatedmatters:
             relmatter = Matter.objects.using('FIP').get(matterid = relatedmatter.relatedmatterid)
-            serialnos = serialnos + transform_serialnumber(relmatter.serialnumber) + '*'
+            serialnos = serialnos + merge_fn.transform_serialnumber(relmatter.serialnumber) + '*'
             dates = dates + relmatter.fileddate.strftime("%B %d, %Y") + '*'
             countries = countries + relmatter.country + '*'
 
@@ -256,12 +250,13 @@ def addPA(request):
         return JsonResponse({'error': 'Invalid request method'})
     
 def addRelatedMatter(request):
+    merge_fn = mergefunctions()
     if request.method == 'POST':
         data = request.POST.get('matterno')
         data = data.replace('"', "")
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
         relatedmatters = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid)
-        serialnos = transform_serialnumber(matter.serialnumber) + '*'
+        serialnos = merge_fn.transform_serialnumber(matter.serialnumber) + '*'
         hostmatters = matter.hostmatterno
         relationships = ''
 
@@ -269,7 +264,7 @@ def addRelatedMatter(request):
             relmatter = Matter.objects.using('FIP').get(matterid = relatedmatter.relatedmatterid)
             hostmatters = relmatter.hostmatterno
             try:
-                serialnos = serialnos + transform_serialnumber(relmatter.serialnumber) + '*'
+                serialnos = serialnos + merge_fn.transform_serialnumber(relmatter.serialnumber) + '*'
             except:
                 serialnos = serialnos + ' *'
             relationships = relatedmatter.relationdesc
@@ -411,9 +406,7 @@ def Email(body, subject, recipients, cc, bcc, attachment):
     #mail.Display(True)
     
     # ------ NEW EMAIL ------
-
     link = create_mailto_link(subject, body, recipients, cc, bcc)
-
     webbrowser.open(link)
     
 def create_mailto_link(subject, body, to, cc=None, bcc=None):
@@ -531,8 +524,6 @@ def mergeDoc(matter , mergeinfo):
     docpath = mergeinfo_list[0].split('/')
     input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'Merged', 'Document.docx')
-    #input_path = "SideBar/project/documents/" + mergeinfo_list[0]
-    #output_path = 'SideBar/project/documents/Merged/Document.docx'
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -605,10 +596,18 @@ def mergeDoc(matter , mergeinfo):
         WordMerger(input_path, replace, output_path)
         
         # ----- Local -----
-        os.startfile(output_path)
+        #os.startfile(output_path)
         
-        # ----- Download Link -----
+        # ----- Azure Storage -----
+        file_name = os.path.basename(output_path)
+
+        with open(output_path, 'rb') as file:
+            default_storage.save(file_name, ContentFile(file.read()))
+
+        blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
         
+        webbrowser.open(blob_url)
+        #return redirect(blob_url)
 
     # outlook merges
     if contacts == "TRUE":

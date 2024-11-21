@@ -1499,6 +1499,11 @@
         </div>
     </div>
 </div>
+<script>
+    function recordedassnreportnext(answer){
+        $('#recordedassnreportyes').modal('show');
+    }
+</script>
 <div id="recordedassnreportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportyesModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -1662,6 +1667,20 @@
         </div>
     </div>
 </div>
+<script>
+    if(document.getElementById('pctcorrectmailext')){
+        const pctcorrectcheckbox = document.getElementById('pctcorrectmailext');
+        const pctcorrecttxt = document.getElementById('pctcorrecthide');
+
+        pctcorrectcheckbox.addEventListener('change', function() {
+            if (pctcorrectcheckbox.checked) {
+                pctcorrecttxt.style.display = 'block';
+            } else {
+                pctcorrecttxt.style.display = 'none';
+            }
+        });
+    }
+</script>
 <!-- PCT - report filing of application-->
 <div class="modal fade" id="PCTRptFileOfApp" tabindex="-1" role="dialog" aria-labelledby="PCTRptFileOfAppModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -3598,6 +3617,7 @@
                 document.getElementById("mergeform").submit();
             }
         }
+        
         function fillInventor() {
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
@@ -3932,9 +3952,6 @@
             });
         }
 
-        function recordedassnreportnext(answer){
-            $('#recordedassnreportyes').modal('show');
-        }
         // Update app data merge method
         if(document.getElementById('markedapp')){
             const updatecheckbox = document.getElementById('markedapp');
@@ -3942,19 +3959,6 @@
 
             updatecheckbox.addEventListener('change', function() {
                 updatepagect.disabled = !updatecheckbox.checked;
-            });
-        }
-
-        if(document.getElementById('pctcorrectmailext')){
-            const pctcorrectcheckbox = document.getElementById('pctcorrectmailext');
-            const pctcorrecttxt = document.getElementById('pctcorrecthide');
-
-            pctcorrectcheckbox.addEventListener('change', function() {
-                if (pctcorrectcheckbox.checked) {
-                    pctcorrecttxt.style.display = 'block';
-                } else {
-                    pctcorrecttxt.style.display = 'none';
-                }
             });
         }
 

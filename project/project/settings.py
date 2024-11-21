@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'members',
     'bootstrap5',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -70,18 +74,18 @@ MIDDLEWARE = [
 #}
 
 # ----- Azure Storage settings -----
-#DEFAULT_FILE_STORAGE = 'core.azure_storage.AzureMediaStorage'
-#STATICFILES_STORAGE = 'core.azure_storage.AzureStaticStorage'
+DEFAULT_FILE_STORAGE = 'project.azure_storage.AzureMediaStorage'
+#STATICFILES_STORAGE = 'project.azure_storage.AzureStaticStorage'
 
-#AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
-#AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
-#AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
 
 #STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
 #STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-#MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
-#MEDIA_ROOT = BASE_DIR / 'mediafiles'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 ROOT_URLCONF = 'project.urls'
 
