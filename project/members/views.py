@@ -6,6 +6,7 @@ from docx import Document as Document_compose
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
+import random, string
 
 from .models import Matter
 from .models import Rvwmatterinventors
@@ -37,7 +38,8 @@ def members(request):
             
         mergeinfo = request.POST['merge_info']
 
-        mergeDoc(matter, mergeinfo)
+        url = mergeDoc(matter, mergeinfo)
+        return url
 
     mergedict = MergeDef.objects.using('SideBar').all()
     roles = MergeRole.objects.using('SideBar').all()
@@ -600,14 +602,17 @@ def mergeDoc(matter , mergeinfo):
         
         # ----- Azure Storage -----
         file_name = os.path.basename(output_path)
+        file_name = file_name.split('.')
+        file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        file_name = file_name[0] + '.' + file_name[1]
 
         with open(output_path, 'rb') as file:
             default_storage.save(file_name, ContentFile(file.read()))
 
         blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
         
-        webbrowser.open(blob_url)
-        #return redirect(blob_url)
+        #webbrowser.open(blob_url)
+        return JsonResponse({'url': f'{blob_url}'})
 
     # outlook merges
     if contacts == "TRUE":
@@ -640,6 +645,8 @@ def mergeDoc(matter , mergeinfo):
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
         Email(body, subject, TO, CC, BCC, '')
+        contact = 'false'
+        return JsonResponse({'url': f'{contact}'})
 
 def check_email(email):
     pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'

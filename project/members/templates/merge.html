@@ -299,6 +299,37 @@
                 {% endfor %}
             </table>
         </form>
+    
+    <!-- Redirect to Azure Storage Link -->
+    <script>
+        function submitForm() {
+            const form = document.getElementById("mergeform");
+            const formData = new FormData(form);  // Gather form data
+            $.ajax({
+                type: 'POST',
+                url: form.action,  // Use the form's action URL
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRFToken': csrftoken,  // Include the CSRF token
+                },
+                success: function(response) {
+                    //alert(response.url);
+                    if(response.url != 'false'){
+                        let windowurl = window.open(response.url);  // Open the URL in a new tab
+                        setTimeout(() => {
+                            windowurl.close();
+                        }, 500);
+                    }
+                },
+                error: function(error) {
+                    alert('An error occurred: ' + error.statusText);  // Alert the error
+                    console.error('Error:', error);  // Log the error for debugging
+                }
+            });
+        }
+    </script>
         
     </div>
     <!-- Esign -->
@@ -3568,7 +3599,8 @@
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
             //alert(document.getElementById('mergedata').value);
-            document.getElementById('mergeform').submit();
+            //document.getElementById('mergeform').submit();
+            submitForm();
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     console.log("Merge complete");
