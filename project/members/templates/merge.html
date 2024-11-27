@@ -190,6 +190,9 @@
         #ffepApprovalofTxt .modal-dialog{
             max-width: 650px;
         }
+        #miscitemsdue .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3531,19 +3534,86 @@
         </div>
     </div>
 </div>
-<!--  -->
-<div id="downloadlink" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="downloadlinkModalLabel" aria-hidden="true">
+<!-- Report out - miscellaneous items due miscitemsdue -->
+<div id="miscitemsdue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="miscitemsdueModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Download Merged Word Document</h4>
+                <h4 class="modal-title">Miscellaneous Items Due</h4>
                 <button type="button" class="close" data-dismiss="modal">×</button>
             </div>
             <div class="modal-body">
-
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the first due date for filing a response </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="miscitemsdueresp"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the requested response date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="miscitemsduereqresp"></td>
+                    </tr>
+                </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(miscitemsdueresp.value, miscitemsduereqresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Report out - corrected filing receipt correctedfrreport -->
+<div id="correctedfrreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="correctedfrreportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enter the Reason for the Correction</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                 <textarea rows="4" cols="60" id = "correctedfrreportcorr"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(correctedfrreportcorr.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function ids_citedparent(corrval){
+        document.getElementById('mergedata').value += corrval;
+        $('#ids_citedparent_20122').modal('show');
+    }
+</script>
+<!-- IDS - 1449 Form-cited in patent ids_citedparent_2012 #1 -->
+<div id="ids_citedparent_20122" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_20122ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Use Applicant Name INSTEAD of Inventor?</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('NO')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('YES')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- IDS - 1449 Form-cited in patent ids_citedparent_2012 #2 -->
+<div id="ids_citedparent_2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_2012ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Enter Parent Matter for Cited References</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                 <input type="text" id="ids_citedparent_2012citref" size="50">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="ids_citedparent(ids_citedparent_2012citref.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -3598,7 +3668,7 @@
         function submitbtnmerge(...args){
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
-            //alert(document.getElementById('mergedata').value);
+            alert(document.getElementById('mergedata').value);
             //document.getElementById('mergeform').submit();
             submitForm();
             return new Promise((resolve, reject) => {
@@ -3626,7 +3696,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -3866,15 +3936,16 @@
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
-                            'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls'
+                            'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
+                            'correctedfrreport'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
                             $('#' + mergemethod).modal('show');
                         }
-                        else if(mergemethod == 'PCTRptFileOfApp'){
+                        else if(mergemethod == 'PCTRptFileOfApp' || mergemethod == 'pctorderform'){
                             fillPA()
                         }
                         else if(mergemethod == 'idsmemo'){
@@ -3939,14 +4010,13 @@
                                 //document.getElementById("mergedata").value += date2List[index] + ',';     
                             }
                         });
-                        if (mergemethod == 'honureport'){
+                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue'){
                             document.getElementById("mergedata").value += date1sel.join(';') + ','
                             document.getElementById("mergedata").value += namesel.join(';') + ','
-                            $('#honureport').modal('show');
+                            $('#' + mergemethod).modal('show');
                         }
                         else{
                             submitbtnmerge(date1sel.join(';'), namesel.join(';'));
-                            submitbtnmerge();
                         }
                     };
                     

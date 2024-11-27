@@ -485,3 +485,27 @@ class Rvwactivitydateattribute(models.Model):
     class Meta:
         managed = False
         db_table = 'rvwactivityDateAttribute'
+        
+class Docketentry(models.Model):
+    docketentryid = models.IntegerField(db_column='docketEntryId', primary_key = True)  # Field name made lowercase.
+    taskid = models.IntegerField(db_column='taskId')  # Field name made lowercase.
+    computedduedate = models.DateTimeField(db_column='computedDueDate', blank=True, null=True)  # Field name made lowercase.
+    deltaparam = models.CharField(db_column='deltaParam', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    docketentrytypeid = models.IntegerField(db_column='docketEntryTypeId')  # Field name made lowercase.
+    name = models.CharField(max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    notes = models.CharField(max_length=512, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    isdatecomputed = models.BooleanField(db_column='isDateComputed')  # Field name made lowercase.
+    showinsummaryview = models.BooleanField(db_column='showInSummaryView')  # Field name made lowercase.
+    emailleadtimeparam = models.CharField(db_column='emailLeadTimeParam', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    emailfreqparam = models.CharField(db_column='emailFreqParam', max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    nextemaildate = models.DateTimeField(db_column='nextEmailDate', blank=True, null=True)  # Field name made lowercase.
+    emailbody = models.TextField(db_column='emailBody', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    immutable = models.BooleanField()
+    privname = models.CharField(db_column='privName', max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    pindate = models.BooleanField(db_column='pinDate')  # Field name made lowercase.
+    docketentryruleid = models.IntegerField(db_column='docketEntryRuleId', blank=True, null=True)  # Field name made lowercase.
+    daycomponentfrombase = models.BooleanField(db_column='dayComponentFromBase')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'DocketEntry'

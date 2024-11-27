@@ -1,5 +1,5 @@
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter
+from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
@@ -2556,5 +2556,117 @@ class ffepApprovalofTxt:
             'salutation' : '',
             'cdueDate' : function_instance.formatDate(mergeinfo[0]),
             'crespDate' : function_instance.formatDate(mergeinfo[1])
+        })
+        return replace
+    
+class reqexamdue:
+    def reqexamdue(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        try:
+            reqactivity = function_instance.getactivityid(matter_data, "REXN")
+            task = Task.objects.using('FIP').filter(activityid = reqactivity.activityid)
+            docket = Docketentry.objects.using('FIP').filter(taskid = task.taskid, docketentrytypeid = '2')
+            if docket:
+                reqduedate = reqactivity.smryonevalue.strftime('%B %d, %Y')
+                priordate = (reqduedate + relativedelta(weeks=2)).strftime('%B %d, %Y')
+        except:
+            reqduedate = ''
+            priordate = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'REXNdueDate' : reqduedate,
+            'PriorDueDate2Week' : priordate,
+        })
+        return replace
+
+# not filling because of tables in doc
+class pctorderform:
+    def pctorderform(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+    
+class miscitemsdue:
+    def miscitemsdue(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        if 'Mail' in mergeinfo[0]:
+            datemail = function_instance.extract_date(mergeinfo[0])
+            datemail = datemail.split('/')
+            datemail = datemail[2] + '-' + datemail[0] + '-' + datemail[1]
+        else:
+            datemail = 'MAIL DATE NOT FOUND'
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'dueDate' : function_instance.formatDate(mergeinfo[2]),
+            'requestedDate' : function_instance.formatDate(mergeinfo[3]),
+            'activityName' : mergeinfo[1],
+            'dateMailed' : function_instance.formatDate(datemail),
+        })
+        return replace
+
+class correctedfrreport:
+    def correctedfrreport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update({
+            'salutation' : '',
+            'correctionText' : mergeinfo[0]
+        })
+        return replace
+
+class tm_basicreport:
+    def tm_basicreport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            actdate = function_instance.extract_date(date)
+            date_object = datetime.strptime(actdate, "%m/%d/%Y")
+            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'activityname' : mergeinfo[0],
+            'dateFiled' : formatted_data,
+            'docFiled' : '',   
+        })
+        return replace
+
+# Tables not filling
+class ids_citedparent_2012:
+    def ids_citedparent_2012(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
         })
         return replace

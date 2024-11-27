@@ -699,7 +699,8 @@ class mergefunctions:
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
         info = {
             'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
-            'cmgEmail' : contact.email
+            'cmgEmail' : contact.email,
+            'cmgPhone' : contact.phone1
         }
         return info
     
