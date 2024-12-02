@@ -524,6 +524,7 @@ def mergeDoc(matter , mergeinfo):
     merge_instance = curMerge()
 
     docpath = mergeinfo_list[0].split('/')
+    
     input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'Merged', 'Document.docx')
 
@@ -532,6 +533,12 @@ def mergeDoc(matter , mergeinfo):
     mergefninfo.pop(0)
     mergefninfo.pop(0)
     mergefninfo.pop(0)
+    
+    if mergeinfo_list[1] == 'ffSndItmsToAssoc':
+        if mergefninfo[6] == '1':
+            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_HONU.docx')
+        if mergefninfo[6] == '2':
+            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_NYHonu.docx')
 
     contacts = mergeinfo_list[2]
     # Pop emails in merge data
@@ -582,16 +589,16 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
             
-    doccount = 0
-    success = False
-    while not success:
-        try:
-            WordMerger(input_path, replace, output_path)
-            success = True
-        except:
-            doccount += 1
-            output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
-            continue
+    #doccount = 0
+    #success = False
+    #while not success:
+    #    try:
+    #        WordMerger(input_path, replace, output_path)
+    #        success = True
+    #    except:
+    #        doccount += 1
+    #        output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
+    #        continue
 
     # doc merges
     if contacts == "FALSE":

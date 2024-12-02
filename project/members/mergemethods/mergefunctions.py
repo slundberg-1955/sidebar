@@ -121,6 +121,7 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56690', roleorderno = 1)
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+            personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
             if 'GB' in contact.country:
                 country = 'United Kingdom'
             if contact.country == 'US':
@@ -133,7 +134,8 @@ class mergefunctions:
                 'faCSZ' : '',
                 'faAssignee' : profile.orgname,
                 'recipientEmail' : contact.email,
-                'faclientRefNo' : part.matterno
+                'faclientRefNo' : part.matterno,
+                'faRecipient' : personprofile.fname
             }
             for key, value in basic.items():
                 if key in keys:
@@ -189,6 +191,7 @@ class mergefunctions:
             'assigneeStreet1' : contact.address1,
             'assigneeStreet2' : contact.address2,
             'assignee' : profile.orgname,
+            'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip
         }
         return info
     
@@ -218,14 +221,14 @@ class mergefunctions:
             'applicantName' : profile.orgname,
         }
         return info
-    
+
     def ffcmgFill(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
 
         try:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '79091', roleorderno = 1)
-            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
             fcmg = profile.fname + ' ' + profile.mname + ' ' + profile.lname
         except:
             fcmg = 'NO FF CMG PERSONNEL'

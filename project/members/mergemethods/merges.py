@@ -2670,3 +2670,37 @@ class ids_citedparent_2012:
 
         })
         return replace
+
+class ffSndItmsToAssoc:
+    def ffSndItmsToAssoc(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        docs = [mergeinfo[0], mergeinfo[1], mergeinfo[2], mergeinfo[3], mergeinfo[4]]
+        
+        docnames = ''
+        count = 0
+        for doc in docs:
+            if doc != '':
+                count += 1
+                docnames += '\t' + str(count) + '. ' + doc + '\n'
+                
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'documentName' : docnames,
+            'cdeadLine' : 'Kindly see to the prompt filing of the enclosed document(s) by the',
+            'dueDate' : function_instance.formatDate(mergeinfo[5])
+        })
+        return replace
+    
+class BSCCombinedAssnDec:
+    def BSCCombinedAssnDec(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+
+        })
+        return replace

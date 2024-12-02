@@ -193,6 +193,9 @@
         #miscitemsdue .modal-dialog{
             max-width: 600px;
         }
+        #ffSndItmsToAssoc .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3618,6 +3621,76 @@
         </div>
     </div>
 </div>
+<!-- letter - ff send items to associate -->
+<div id="ffSndItmsToAssoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffSndItmsToAssocModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">FF Send Items to Associate</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                        <b>Items Enclosed:</b>
+                    <br>  1) <input type="text" id="ffSndItmsToAssoc1" size="50">
+                    <br>  2) <input type="text" id="ffSndItmsToAssoc2" size="50">
+                    <br>  3) <input type="text" id="ffSndItmsToAssoc3" size="50">
+                    <br>  4) <input type="text" id="ffSndItmsToAssoc4" size="50">
+                    <br>  5) <input type="text" id="ffSndItmsToAssoc5" size="50">
+                </div>
+                <div>
+                    <br>  If there is a due date, please enter it <input type="date" id="ffSndItmsToAssocdate">
+                </div>
+                <div>
+                      HONU Portal: <input type="radio" id="ffSndItmsToAssochonu" name="ffSndItmsToAssocrad" value="1">
+                     Not Registered Yet: <input type="radio" id="ffSndItmsToAssocreg" name="ffSndItmsToAssocrad" value="2">
+                     Do NOT use HONU: <input type="radio" id="ffSndItmsToAssocnothonu" name="ffSndItmsToAssocrad" value="3">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffSndItmsToAssoc1.value, ffSndItmsToAssoc2.value, ffSndItmsToAssoc3.value, ffSndItmsToAssoc4.value, ffSndItmsToAssoc5.value, ffSndItmsToAssocdate.value, radioFill('ffSndItmsToAssocrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- BSCCombinedAssnDec Esign -->
+<div id="BSCCombinedAssnDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Enable Esign?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-footer">
+                <!-- Pass the button element to the onclick function -->
+                <button type="button" class="btn btn-default" onclick="submitbtnBSCCombinedAssnDec()" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUEesign')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- BSCCombinedAssnDec #2 -->
+<div id="BSCCombinedAssnDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Do you wish to include slashes '/' on the signature line?</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-footer">
+                <!-- Pass the button element to the onclick function -->
+                <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUEslash')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitbtnBSCCombinedAssnDec(){
+        $('#BSCCombinedAssnDecesign2').modal('show');
+    }
+</script>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -3696,7 +3769,7 @@
 
             // Esign popUp
             const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012"];
+            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec"];
 
             // Check conditions
             if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
