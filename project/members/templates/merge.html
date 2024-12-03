@@ -196,6 +196,9 @@
         #ffSndItmsToAssoc .modal-dialog{
             max-width: 600px;
         }
+        #ffOfficeActRcvdAuNz .modal-dialog{
+            max-width: 600px;
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -3691,6 +3694,43 @@
         $('#BSCCombinedAssnDecesign2').modal('show');
     }
 </script>
+<!-- ff report out - office actions received (AU or NZ) ffOfficeActRcvdAuNz -->
+<div id="ffOfficeActRcvdAuNz" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOfficeActRcvdAuNzModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Office Actions Received (AU or NZ)</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Enter the type of action (Office Action, Subsequent Report, etc.)
+                    <br>  <textarea rows="4" cols="60" id = "ffSndItmsToAssocaction"></textarea>
+                </div>
+                <div>
+                    <table style="border-collapse: collapse; border: none;">
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the Acceptance deadline date: </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffOfficeActRcvdAuNzacc"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  Enter the requested response date: </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffOfficeActRcvdAuNzreq"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="left" style="border: none; padding: 4px;">  </td>
+                            <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffOfficeActRcvdAuNzref"> Cited References are attached</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -4010,7 +4050,7 @@
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
-                            'correctedfrreport'
+                            'correctedfrreport', 'ffOfficeActRcvdAuNz'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport'){
                             fillActivities(mergemethod);

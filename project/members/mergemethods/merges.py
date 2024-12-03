@@ -2692,10 +2692,13 @@ class ffSndItmsToAssoc:
             'dueDate' : function_instance.formatDate(mergeinfo[5])
         })
         return replace
-    
+
+# inventors appearing on new page
 class BSCCombinedAssnDec:
     def BSCCombinedAssnDec(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        
+        
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))

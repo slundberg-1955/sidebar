@@ -498,6 +498,19 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc3)
         
         composer.append(docend)
+        
+    if method == 'BSCCombinedAssnDec':
+        composer = Composer(doc1)
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        invCount = len(inventors) + 1
+        for i in range(1, invCount, 2):
+            replace = {}
+            replace.update(merge_fn.inventorInfoBSC(matter, i))
+            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'BSCCombinedAssnDecinventors.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'BSCCombinedAssnDecinventorsout.docx'))
+            doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'BSCCombinedAssnDecinventorsout.docx')) 
+            composer.append(doc2)
 
     if email == 'TRUE':
         merge_fn = mergefunctions()
@@ -589,16 +602,21 @@ def mergeDoc(matter , mergeinfo):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow)
             
-    #doccount = 0
-    #success = False
-    #while not success:
-    #    try:
-    #        WordMerger(input_path, replace, output_path)
-    #        success = True
-    #    except:
-    #        doccount += 1
-    #        output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
-    #        continue
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec':
+        combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
+        input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
+        doc = Document(input_path)
+            
+    # doccount = 0
+    # success = False
+    # while not success:
+    #     try:
+    #         WordMerger(input_path, replace, output_path)
+    #         success = True
+    #     except:
+    #         doccount += 1
+    #         output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
+    #         continue
 
     # doc merges
     if contacts == "FALSE":
@@ -623,6 +641,7 @@ def mergeDoc(matter , mergeinfo):
 
     # outlook merges
     if contacts == "TRUE":
+        WordMerger(input_path, replace, output_path)
         tolist = mergeinfo_list[3].split(';')
         cclist = mergeinfo_list[4].split(';')
         bcclist = mergeinfo_list[5].split(';')

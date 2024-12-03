@@ -363,6 +363,28 @@ class mergefunctions:
         }
         return info
     
+    def inventorInfoBSC(self, matter, inv):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = inv)
+        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+        invCount = len(inventors)
+        
+        inv2 = ''
+        if invCount >= (inv + 1):
+            part2 = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = inv + 1)
+            profile2 = Personprofile.objects.using('FIP').get(ppid = part2.contactid)
+            inv2 = profile2.fname + ' ' + profile2.mname + '. ' + profile2.lname
+
+        info = {
+            'Inventor1' : profile.fname + ' ' + profile.mname + '. ' + profile.lname,
+            'Inventor2' : inv2,
+        }
+        return info
+        
+    
     def inventorInfo(self, matter, inv):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
