@@ -408,16 +408,26 @@ def Email(body, subject, recipients, cc, bcc, attachment):
     #mail.Display(True)
     
     # ------ NEW EMAIL ------
-    link = create_mailto_link(subject, body, recipients, cc, bcc)
-    webbrowser.open(link)
+    link = create_outlook_web_link(subject, body, recipients, cc, bcc)
+    return link
     
-def create_mailto_link(subject, body, to, cc=None, bcc=None):
-    mailto_link = f"mailto:{to}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body)}"
+def create_outlook_web_link(subject, body, to, cc=None, bcc=None):
+    base_url = "https://outlook.office.com/mail/deeplink/compose"
+    params = {
+        "to": to,
+        "subject": subject,
+        "body": body
+    }
     if cc:
-        mailto_link += f"&cc={urllib.parse.quote(cc)}"
+        params["cc"] = cc
     if bcc:
-        mailto_link += f"&bcc={urllib.parse.quote(bcc)}"
-    return mailto_link
+        params["bcc"] = bcc
+    
+    # Use urllib.parse.quote to ensure spaces are encoded as %20
+    query_string = '&'.join([f"{key}={urllib.parse.quote(value, safe='')}" for key, value in params.items()])
+    outlook_web_link = f"{base_url}?{query_string}"
+    
+    return outlook_web_link
 
 def testview(request):
     return render(request, 'dbtest.html')
@@ -670,8 +680,8 @@ def mergeDoc(matter , mergeinfo):
                     BCC = bcc
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
         # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
-        Email(body, subject, TO, CC, BCC, '')
-        contact = 'false'
+        contact = Email(body, subject, TO, CC, BCC, '')
+        #contact = 'false'
         return JsonResponse({'url': f'{contact}'})
 
 def check_email(email):

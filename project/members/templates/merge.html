@@ -339,7 +339,6 @@
             });
         }
     </script>
-        
     </div>
     <!-- Esign -->
     <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true">
@@ -3705,7 +3704,7 @@
             <div class="modal-body">
                 <div>
                       Enter the type of action (Office Action, Subsequent Report, etc.)
-                    <br>  <textarea rows="4" cols="60" id = "ffSndItmsToAssocaction"></textarea>
+                    <br>  <textarea rows="4" cols="60" id = "ffOfficeActRcvdAuNztypea"></textarea>
                 </div>
                 <div>
                     <table style="border-collapse: collapse; border: none;">
@@ -3726,7 +3725,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffOfficeActRcvdAuNztypea.value, ffOfficeActRcvdAuNzacc.value, ffOfficeActRcvdAuNzreq.value, ffOfficeActRcvdAuNzref.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -4050,9 +4049,9 @@
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
-                            'correctedfrreport', 'ffOfficeActRcvdAuNz'
+                            'correctedfrreport'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -4123,7 +4122,7 @@
                                 //document.getElementById("mergedata").value += date2List[index] + ',';     
                             }
                         });
-                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue'){
+                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue' || mergemethod == 'ffOfficeActRcvdAuNz'){
                             document.getElementById("mergedata").value += date1sel.join(';') + ','
                             document.getElementById("mergedata").value += namesel.join(';') + ','
                             $('#' + mergemethod).modal('show');

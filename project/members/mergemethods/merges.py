@@ -2707,3 +2707,21 @@ class BSCCombinedAssnDec:
 
         })
         return replace
+    
+class ffOfficeActRcvdAuNz:
+    def ffOfficeActRcvdAuNz(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        aselect = 'To ensure the best chances of acceptance by the deadline, we request your instructions by '+ mergeinfo[4] +' and, failing those, we will send regular reminders to you.'
+        cpend = 'Please refer to the associate\'s letter for more details regarding this matter. '
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'activityName' : mergeinfo[1],
+            'cdueDate' : mergeinfo[3],
+            'crespDate' : mergeinfo[4],
+            'actionType' : mergeinfo[2],
+            'salutation' : ''
+        })
+        return replace
