@@ -509,3 +509,64 @@ class Docketentry(models.Model):
     class Meta:
         managed = False
         db_table = 'DocketEntry'
+
+class FvMatter4(models.Model):
+    orgid = models.IntegerField(db_column='orgId')  # Field name made lowercase.
+    level = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    parenttype = models.CharField(db_column='parentType', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    actualtype = models.IntegerField(db_column='actualType')  # Field name made lowercase.
+    recordid = models.IntegerField(db_column='recordId')  # Field name made lowercase.
+    actual_filing_date = models.DateTimeField(db_column='ACTUAL_FILING_DATE', blank=True, null=True)  # Field name made lowercase.
+    adverse_party = models.TextField(db_column='ADVERSE_PARTY', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    adverse_party_2 = models.TextField(db_column='ADVERSE_PARTY_2', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    adverse_party_3 = models.TextField(db_column='ADVERSE_PARTY_3', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    adverse_party_4 = models.TextField(db_column='ADVERSE_PARTY_4', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    annuities = models.TextField(db_column='ANNUITIES', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    billing_id = models.TextField(db_column='BILLING_ID', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    claim_tracker = models.TextField(db_column='CLAIM_TRACKER', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    division = models.TextField(db_column='DIVISION', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    no_of_claims = models.DecimalField(db_column='NO_OF_CLAIMS', max_digits=28, decimal_places=10, blank=True, null=True)  # Field name made lowercase.
+    patent_nos = models.TextField(db_column='PATENT_NOS', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    priority_claim_date = models.DateTimeField(db_column='PRIORITY_CLAIM_DATE', blank=True, null=True)  # Field name made lowercase.
+    priority_information = models.TextField(db_column='PRIORITY_INFORMATION', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    priority_registration_number = models.TextField(db_column='PRIORITY_REGISTRATION_NUMBER', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    public_nametype = models.TextField(db_column='PUBLIC_NAMETYPE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    ranking = models.DecimalField(db_column='RANKING', max_digits=28, decimal_places=10, blank=True, null=True)  # Field name made lowercase.
+    ranking_comment = models.TextField(db_column='RANKING_COMMENT', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    reexamination_type = models.TextField(db_column='REEXAMINATION_TYPE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    source = models.TextField(db_column='SOURCE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    source_comment = models.TextField(db_column='SOURCE_COMMENT', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    syncmatter = models.BooleanField(db_column='SYNCMATTER', blank=True, null=True)  # Field name made lowercase.
+    tech_group = models.TextField(db_column='TECH_GROUP', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    term_extension = models.DecimalField(db_column='TERM_EXTENSION', max_digits=28, decimal_places=10, blank=True, null=True)  # Field name made lowercase.
+    transferredin_date = models.DateTimeField(db_column='TRANSFERREDIN_DATE', blank=True, null=True)  # Field name made lowercase.
+    mining = models.BooleanField(db_column='MINING', blank=True, null=True)  # Field name made lowercase.
+    generic_category = models.TextField(db_column='GENERIC_CATEGORY', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    summary = models.TextField(db_column='SUMMARY', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    test_high_priority = models.BooleanField(db_column='TEST_HIGH_PRIORITY', blank=True, null=True)  # Field name made lowercase.
+    generic_category_2 = models.TextField(db_column='GENERIC_CATEGORY_2', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    generic_category_3 = models.TextField(db_column='GENERIC_CATEGORY_3', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    copyright_creation_date = models.DateTimeField(db_column='COPYRIGHT_CREATION_DATE', blank=True, null=True)  # Field name made lowercase.
+    copyright_publication_date = models.DateTimeField(db_column='COPYRIGHT_PUBLICATION_DATE', blank=True, null=True)  # Field name made lowercase.
+    copyright_expiry_date = models.DateTimeField(db_column='COPYRIGHT_EXPIRY_DATE', blank=True, null=True)  # Field name made lowercase.
+    generic_notes = models.TextField(db_column='GENERIC_NOTES', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    generic_notes_2 = models.TextField(db_column='GENERIC_NOTES_2', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    type_of_work = models.TextField(db_column='TYPE_OF_WORK', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    copyright_description = models.TextField(db_column='COPYRIGHT_DESCRIPTION', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    supplemented_by = models.TextField(db_column='SUPPLEMENTED_BY', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    supplemented_to = models.TextField(db_column='SUPPLEMENTED_TO', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    copyright_claimant = models.TextField(db_column='COPYRIGHT_CLAIMANT', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    copyright_note = models.TextField(db_column='COPYRIGHT_NOTE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    scrape = models.BooleanField(db_column='SCRAPE', blank=True, null=True)  # Field name made lowercase.
+    portfolio = models.TextField(db_column='PORTFOLIO', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    examiner = models.TextField(db_column='EXAMINER', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    generic_category_4 = models.TextField(db_column='GENERIC_CATEGORY_4', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    brexit_clone = models.BooleanField(db_column='BREXIT_CLONE', blank=True, null=True)  # Field name made lowercase.
+    link_to_brexit_original_em = models.TextField(db_column='LINK_TO_BREXIT_ORIGINAL_EM', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    publication_figure = models.TextField(db_column='PUBLICATION_FIGURE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    for_monitoring_purposes_only = models.BooleanField(db_column='FOR_MONITORING_PURPOSES_ONLY', blank=True, null=True)  # Field name made lowercase.
+    cited_reference_count = models.DecimalField(db_column='CITED_REFERENCE_COUNT', max_digits=28, decimal_places=10, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'FV_MATTER_4'

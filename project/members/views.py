@@ -7,7 +7,11 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 import random, string
+from asgiref.sync import sync_to_async
+import asyncio
+from msgraph.generated.models.internet_message_header import InternetMessageHeader
 
+from concurrent.futures import ThreadPoolExecutor
 from .models import Matter
 from .models import Rvwmatterinventors
 from .models import MergeCategory
@@ -20,10 +24,26 @@ import re
 from datetime import datetime
 import os
 from .mergemethods.mergefunctions import mergefunctions
+import json
+import requests
 from django.conf import settings
+from .auth_helper import get_token
+import base64
+
+from msgraph import GraphServiceClient
+from msgraph.generated.models.message import Message
+from msgraph.generated.models.importance import Importance
+from msgraph.generated.models.item_body import ItemBody
+from msgraph.generated.models.body_type import BodyType
+from msgraph.generated.models.recipient import Recipient
+from msgraph.generated.models.email_address import EmailAddress
+from msgraph.generated.models.file_attachment import FileAttachment
+from .auth_helper import get_token
+from azure.identity import DeviceCodeCredential
+from azure.identity.aio import ClientSecretCredential
+from azure.identity import InteractiveBrowserCredential
 
 import urllib.parse
-import webbrowser
 
 from python_docx_replace.paragraph import Paragraph
 
@@ -38,7 +58,7 @@ def members(request):
             
         mergeinfo = request.POST['merge_info']
 
-        url = mergeDoc(matter, mergeinfo)
+        url = mergeDoc(matter, mergeinfo, request)
         return url
 
     mergedict = MergeDef.objects.using('SideBar').all()
@@ -60,6 +80,21 @@ def merges(request):
 def toolbox(request):
     return render(request, 'toolbox.html')
 
+def checkMatter(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        try:
+            matter = Matter.objects.using('FIP').get(hostmatterno = data)
+            matterchk = 'true'
+        except:
+            matterchk = 'false'
+    
+        return JsonResponse({'message': f'{matterchk}'})
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+        
 def docx_replace2(doc, **kwargs: str):
     for key, value in kwargs.items():
         key = f"<<{key}>>"
@@ -409,6 +444,7 @@ def Email(body, subject, recipients, cc, bcc, attachment):
     
     # ------ NEW EMAIL ------
     link = create_outlook_web_link(subject, body, recipients, cc, bcc)
+    #link = create_draft()
     return link
     
 def create_outlook_web_link(subject, body, to, cc=None, bcc=None):
@@ -428,6 +464,58 @@ def create_outlook_web_link(subject, body, to, cc=None, bcc=None):
     outlook_web_link = f"{base_url}?{query_string}"
     
     return outlook_web_link
+
+def create_draft():    
+    credentials = InteractiveBrowserCredential(
+        client_id=os.getenv('CLIENT_ID'),
+        tenant_id=os.getenv('TENANT_ID'),
+    )
+    
+    scopes = ['https://graph.microsoft.com/.default']
+    client = GraphServiceClient(credentials=credentials, scopes=scopes)
+
+    request_body = Message(
+        subject="9/8/2018: concert",
+        body=ItemBody(
+            content_type=BodyType.Html,
+            content="The group represents Washington.",
+        ),
+        to_recipients=[
+            Recipient(
+                email_address=EmailAddress(
+                    address="test@test123.com",
+                ),
+            ),
+        ],
+        internet_message_headers=[
+            InternetMessageHeader(
+                name="x-custom-header-group-name",
+                value="Washington",
+            ),
+            InternetMessageHeader(
+                name="x-custom-header-group-id",
+                value="WA001",
+            ),
+        ],
+    )
+
+    async def create_draft():
+        draft_message = await client.me.messages.post(request_body)
+        return draft_message
+
+    # Use ThreadPoolExecutor to run the async function in a synchronous context
+    def run_async_function():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop.run_until_complete(create_draft())
+
+    with ThreadPoolExecutor() as executor:
+        draft_message = executor.submit(run_async_function).result()
+
+    # Construct the URL to the draft
+    draft_id = draft_message.id
+    draft_url = f"https://outlook.office.com/mail/deeplink/compose/{draft_id}"
+    return draft_url
 
 def testview(request):
     return render(request, 'dbtest.html')
@@ -528,7 +616,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
-        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter':
+        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter' or method == 'TM_ChgCounsel' or method == 'sendorderletter' or method == 'fa_confirm' or method == 'nikeaction_new':
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'reportletters', 'signoff2.docx'))
         else:
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'reportletters', 'signoff.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
@@ -537,8 +625,29 @@ def combinedoc(path, method, mergeinfo, matter, email):
         
     composer.save("documents/multidocmerge/" + method +".docx")
 
+def pathChanger(input_path, mergeinfo_list, mergefninfo):
+    if mergeinfo_list[1] == 'ffSndItmsToAssoc':
+        if mergefninfo[6] == '1':
+            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_HONU.docx')
+        if mergefninfo[6] == '2':
+            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_NYHonu.docx')
+
+    if mergeinfo_list[1] == 'TM_NoticeofPubRep':
+        if mergefninfo[0] == 'NO':
+            input_path = input_path.replace('NoticeofPubRep', 'NoticeofPubRep2')
+            
+    if mergeinfo_list[1] == 'priorexam2012':
+        if mergefninfo[0] == '2':
+            input_path = input_path.replace('priorexam2012_E1', 'priorexam2012_E2')
+    
+    if mergeinfo_list[1] == 'sendorderletter':
+        if mergefninfo[2] == '1' or mergefninfo[2] == '2':
+            input_path = input_path.replace('orderLetter.docx', 'orderLetterHonu.docx')
+    
+    return input_path
+
 # New separate function for merging documents
-def mergeDoc(matter , mergeinfo):
+def mergeDoc(matter , mergeinfo, request):
     mergeinfo_list = mergeinfo.split(",") 
     module_name = ".mergemethods.merges"
     class_name = mergeinfo_list[1]
@@ -549,7 +658,7 @@ def mergeDoc(matter , mergeinfo):
     docpath = mergeinfo_list[0].split('/')
     
     input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
-    output_path = os.path.join(settings.BASE_DIR, 'documents', 'Merged', 'Document.docx')
+    output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -557,12 +666,6 @@ def mergeDoc(matter , mergeinfo):
     mergefninfo.pop(0)
     mergefninfo.pop(0)
     
-    if mergeinfo_list[1] == 'ffSndItmsToAssoc':
-        if mergefninfo[6] == '1':
-            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_HONU.docx')
-        if mergefninfo[6] == '2':
-            input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_NYHonu.docx')
-
     contacts = mergeinfo_list[2]
     # Pop emails in merge data
     if contacts == 'TRUE' and mergeinfo_list[1] != 'reportprvassnnew':
@@ -573,18 +676,21 @@ def mergeDoc(matter , mergeinfo):
     # without multiple docs
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
+    
+    input_path = pathChanger(input_path, mergeinfo_list, mergefninfo)
 
     if mergeinfo_list[1] == 'pctcorrect':
         if mergefninfo[5] == 'true':
             pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
             pctext = pctext.replace('pctcorrect', 'pctextention')
-            mergeDoc(matter, pctext)
+            mergeDoc(matter, pctext, '')
 
     if mergeinfo_list[1] == 'corrappln':
         if mergefninfo[1] != '' and int(mergefninfo[1]) > 0:
             extime = mergeinfo.replace('corrappln', 'exttimeCF')
             extime = extime.replace('communications', 'transmittal')
-            mergeDoc(matter, extime)
+            mergeDoc(matter, extime, '')
+
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
@@ -610,44 +716,33 @@ def mergeDoc(matter , mergeinfo):
         if mergefninfo[5] == 'true':
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
-            mergeDoc(matter, stateofallow)
+            mergeDoc(matter, stateofallow, '')
             
     if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
-            
-    # doccount = 0
-    # success = False
-    # while not success:
-    #     try:
-    #         WordMerger(input_path, replace, output_path)
-    #         success = True
-    #     except:
-    #         doccount += 1
-    #         output_path = output_path.replace('Document.docx', f'Document{doccount}.docx')
-    #         continue
 
     # doc merges
     if contacts == "FALSE":
         WordMerger(input_path, replace, output_path)
         
         # ----- Local -----
-        #os.startfile(output_path)
+        os.startfile(output_path)
         
         # ----- Azure Storage -----
-        file_name = os.path.basename(output_path)
-        file_name = file_name.split('.')
-        file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
-        file_name = file_name[0] + '.' + file_name[1]
+        #file_name = os.path.basename(output_path)
+        #file_name = file_name.split('.')
+        #file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        #file_name = file_name[0] + '.' + file_name[1]
 
-        with open(output_path, 'rb') as file:
-            default_storage.save(file_name, ContentFile(file.read()))
+        #with open(output_path, 'rb') as file:
+        #    default_storage.save(file_name, ContentFile(file.read()))
 
-        blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
+        #blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
         
-        #webbrowser.open(blob_url)
-        return JsonResponse({'url': f'{blob_url}'})
+        # webbrowser.open(blob_url)
+        #return JsonResponse({'url': f'{blob_url}'})
 
     # outlook merges
     if contacts == "TRUE":
@@ -655,6 +750,9 @@ def mergeDoc(matter , mergeinfo):
         tolist = mergeinfo_list[3].split(';')
         cclist = mergeinfo_list[4].split(';')
         bcclist = mergeinfo_list[5].split(';')
+        #tolist = ''
+        #cclist = ''
+        #bcclist = ''
         TO = ''
         CC = ''
         BCC = ''

@@ -19,7 +19,7 @@
             margin-left: 10px;
         }
         .sidebar{
-            background-color: #333;
+            background-color: #313131;
             color: #b8b8b8;
             padding: 1px 10px;
             text-align: left;
@@ -39,7 +39,7 @@
         }
         .sidebar-tabs li a:hover{
             background-color:#fff;
-            color: #333;
+            color: #313131;
         }
         table{
             border-collapse: collapse;
@@ -199,6 +199,46 @@
         #ffOfficeActRcvdAuNz .modal-dialog{
             max-width: 600px;
         }
+        #micnffallow .modal-dialog{
+            max-width: 600px;
+        }
+        #priorexam2012 .modal-dialog{
+            max-width: 600px;
+        }
+        #ffOlp .modal-dialog{
+            max-width: 600px;
+        }
+        #mspostallow .modal-dialog{
+            max-width: 500px;
+        }
+        #ffNoticeOfAcceptAuNzFp .modal-dialog{
+            max-width: 700px;
+        }
+        #sendorderletter .modal-dialog{
+            max-width: 600px;
+        }
+        #ffMiscItemsDue .modal-dialog{
+            max-width: 690px;
+        }
+        #epOLP .modal-dialog{
+            max-width: 700px;
+        }
+        #noticeofAppeal .modal-dialog{
+            max-width: 360px;
+        }
+        #ffEPSrchRptandOpinion .modal-dialog{
+            max-width: 750px;
+        }
+        #matterNotFound .modal-dialog{
+            max-width: 400px;
+        }
+        .header-image {
+            float: right;
+            width: 300px;
+            height: auto;
+            margin-right: 10px; /* Adjust the right margin */
+            margin-top: 5px; /* Adjust the top margin */
+        }
     </style>
     <style>
         #recordation .pagecount {
@@ -246,13 +286,16 @@
         </ul>
     </div>
     -->
-    <div class = "sidebar">
-        <h1>SideBar</h1>
-        <ul class = "sidebar-tabs">
-            <li><a href = "#">Matters</a></li>
-            <li><a href = "#">FIP Reports</a></li>
-            <li><a href = "#">Merges</a></li>
-            <li><a href = "#">ToolBox</a></li>
+    <div class="sidebar">
+        <h1>
+            SideBar
+            <img src="https://storagepaygomerges01.blob.core.windows.net/media/schwegman.png" alt="SideBar Image" class="header-image">
+        </h1>
+        <ul class="sidebar-tabs">
+            <li><a href="#">Matters</a></li>
+            <li><a href="#">FIP Reports</a></li>
+            <li><a href="#">Merges</a></li>
+            <li><a href="#">ToolBox</a></li>
         </ul>
     </div>
 
@@ -327,9 +370,9 @@
                     //alert(response.url);
                     if(response.url != 'false'){
                         let windowurl = window.open(response.url);  // Open the URL in a new tab
-                        setTimeout(() => {
-                            windowurl.close();
-                        }, 500);
+                        //setTimeout(() => {
+                        //    windowurl.close();
+                        //}, 500);
                     }
                 },
                 error: function(error) {
@@ -691,18 +734,9 @@
                 </div>
             </div>
             <script>
-                if(document.getElementById('updateappdatamarked')){
-                    const updcheckbox = document.getElementById('updateappdatamarked');
-                    const updpagect = document.getElementById('updateappdatapagectdiv');
-
-                    updcheckbox.addEventListener('change', function() {
-                        if (updcheckbox.checked) {
-                            updpagect.style.display = 'block';
-                        } else {
-                            updpagect.style.display = 'none';
-                        }
-                    });
-                }
+                document.getElementById('updateappdatamarked').addEventListener('change', function() {
+                    toggleDisplay({ checkboxId: 'updateappdatamarked', targetId: 'updateappdatapagectdiv' });
+                });
             </script>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
@@ -1319,7 +1353,7 @@
                       <input type="radio" id="mpcapactionscorseq" name="mpcapactionsoptions" value="6"> Corrected Application Papers with Sequence Listing Received
                 </div>
                 <div>
-                      <input type="radio" id="mpcapactionsaft" name="mpcapactionsoptions" value="7"> Corrected Application Papers Notice Recieved (AFTER ALLOWANCE)
+                      <input type="radio" id="mpcapactionsaft" name="mpcapactionsoptions" value="7"> Corrected Application Papers Notice Received (AFTER ALLOWANCE)
                 </div>
                 <div>
                       <input type="radio" id="mpcapactionsnotins" name="mpcapactionsoptions" value="8"> Notification of Insufficiency Under 37 CFR 1.492 and/or 1.495
@@ -1617,7 +1651,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel">Have Continuation Instructions Been Recieved?</h4>
+                <h4 class="modal-title" id="myModalLabel">Have Continuation Instructions Been Received?</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             </div>
             <div class="modal-footer">
@@ -1707,18 +1741,9 @@
     </div>
 </div>
 <script>
-    if(document.getElementById('pctcorrectmailext')){
-        const pctcorrectcheckbox = document.getElementById('pctcorrectmailext');
-        const pctcorrecttxt = document.getElementById('pctcorrecthide');
-
-        pctcorrectcheckbox.addEventListener('change', function() {
-            if (pctcorrectcheckbox.checked) {
-                pctcorrecttxt.style.display = 'block';
-            } else {
-                pctcorrecttxt.style.display = 'none';
-            }
-        });
-    }
+    document.getElementById('pctcorrectmailext').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'pctcorrectmailext', targetId: 'pctcorrecthide' });
+    });
 </script>
 <!-- PCT - report filing of application-->
 <div class="modal fade" id="PCTRptFileOfApp" tabindex="-1" role="dialog" aria-labelledby="PCTRptFileOfAppModalLabel" aria-hidden="true">
@@ -2459,10 +2484,13 @@
                         <td align="left"style="border: none;"><input type="date" id="DraftOAInstructres"></td>
                     </tr>
                 </table>
+                <div>
+                    <br> HONU Portal: <input type="radio" name="DraftOAInstructrad" value="1"> Use HONU <input type="radio" name="DraftOAInstructrad" value="2"> Not Registered Yet <input type="radio" name="DraftOAInstructrad" value="3"> Do NOT use HONU
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(DraftOAInstructcorr.value, DraftOAInstructres.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(DraftOAInstructcorr.value, DraftOAInstructres.value, radioFill('DraftOAInstructrad'))">Continue</button>
             </div>
         </div>
     </div>
@@ -3234,19 +3262,11 @@
                     </tr>
                 </table><br>
                 <script>
-                        const FFcheckbox1 = document.getElementById('FFNoticePubRcvdvol');
-                        const FFdate1 = document.getElementById('FFNotdate1');
-                        const FFdate2 = document.getElementById('FFNotdate2');
-
-                        FFcheckbox1.addEventListener('change', function() {
-                            if (FFcheckbox1.checked) {
-                                FFdate1.style.display = 'block';
-                                FFdate2.style.display = 'block';
-                            } else {
-                                FFdate1.style.display = 'none';
-                                FFdate2.style.display = 'none';
-                            }
-                        });
+                    document.getElementById('FFNoticePubRcvdvol').addEventListener('change', function() {
+                        toggleDisplay({ checkboxId: 'FFNoticePubRcvdvol', targetId: 'FFNotdate1' }
+                            ,{ checkboxId: 'FFNoticePubRcvdvol', targetId: 'FFNotdate2' }
+                        );
+                    });
                 </script>
             </div>
             <div class="modal-footer">
@@ -3520,15 +3540,8 @@
                     </tr>
                 </table>
                 <script>
-                    const FnlAppbox1 = document.getElementById('FnlAppInvWfmlsenc');
-                    const FnlAppbox2 = document.getElementById('FnlAppInvWfmlshide');
-
-                    FnlAppbox1.addEventListener('change', function() {
-                        if (FnlAppbox1.checked) {
-                            FnlAppbox2.style.display = 'block';
-                        } else {
-                            FnlAppbox2.style.display = 'none';
-                        }
+                    document.getElementById('FnlAppInvWfmlsenc').addEventListener('change', function() {
+                        toggleDisplay({ checkboxId: 'FnlAppInvWfmlsenc', targetId: 'FnlAppInvWfmlshide' });
                     });
                 </script>
             </div>
@@ -3688,6 +3701,25 @@
         </div>
     </div>
 </div>
+<!-- MS Post Allowance Recommendation mspostallow -->
+<div id="mspostallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mspostallowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">MS Recommendation</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div>
+                  Were any claims canceled during prosecution in response to a 
+                <br>  Restriction Requirement?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" onclick="submitbtnmerge('FALSE')" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="submitbtnmerge('TRUE')" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     function submitbtnBSCCombinedAssnDec(){
         $('#BSCCombinedAssnDecesign2').modal('show');
@@ -3726,6 +3758,603 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffOfficeActRcvdAuNztypea.value, ffOfficeActRcvdAuNzacc.value, ffOfficeActRcvdAuNzreq.value, ffOfficeActRcvdAuNzref.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Micron Allowance Reccomendaion - Foreign -->
+<div id="micnffallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="micnffallowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Micron Allowance Reccomendaion - Foreign</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Due date: </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="micnffallowdue"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Total Claims: </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="text" id="micnffallowtotal" size="20"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Independent Claims: </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="text" id="micnffallowind" size="20"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitmicnffallow(micnffallowdue.value, micnffallowtotal.value, micnffallowind.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PTO Form - Certification and Request for Prioritized Examination (AIA/424) priorexam2012 -->
+<div id="priorexam2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="priorexam2012ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Certification and Request for Prioritized Examination</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  <input type="radio" id="priorexam2012orap" name="priorexam2012rad" value="1"></td>
+                        <td align="right" style="border: none; padding: 4px;"> Original Application - Prioritized Examination Under 1.102(e)(1)</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  <input type="radio" id="priorexam2012reqcon" name="priorexam2012rad" value="2"></td>
+                        <td align="right" style="border: none; padding: 4px;"> Request for Continued Examination - Prioritized Under 1.102(e)(2)</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  <input type="radio" id="priorexam2012na" name="priorexam2012rad" value="3"></td>
+                        <td align="right" style="border: none; padding: 4px;"> N/A</td>
+                    </tr>
+                </table>
+                <div>
+                <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select>            <input type="checkbox" id="priorexam2012esign"> E-Signature Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('priorexam2012rad'), priorexam2012SAdrop.value, priorexam2012esign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Header - Preliminary Amendment prelimamend -->
+<div id="prelimamend" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="prelimamendModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Preliminary Amendment Header</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="prelimamendesign"> E-Signature Enable
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="prelimamendsupprelim"> Supplemental Preliminary Amendment
+                </div>
+                <div>
+                    <br>&emsp;&emsp;Mail Stop: <input type="text" id="idsCommCfNewmstop" size="15" value="MS Amendment">
+                </div>
+                <div>
+                    <br>&emsp;&emsp;<select id="prelimamendsa">
+                        <option>Select Signing Attorney</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(prelimamendesign.checked, prelimamendsupprelim.checked, idsCommCfNewmstop.value, prelimamendsa.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitmicnffallow(...args){
+        const merged_data = args.join(',');
+        document.getElementById('mergedata').value += (merged_data + ',') 
+        fillActivities('micnffallow');
+    }
+</script>
+<!-- FF Report out - original letters patent (OLP) ffOlp -->
+<div id="ffOlp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOlpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Preliminary Amendment Header</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  SLW is Responsible for Annuities</td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffOlpslw"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Confirm the due date for the next Annuity </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffOlpcondate"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Number of Claims</td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="text" id="ffOlpclaimno" size="5" value="0"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  PTA Due Date (if applicable)</td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffOlpduedate"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffOlpslw.checked, ffOlpcondate.value, ffOlpclaimno.value, ffOlpduedate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Header - Communication Regarding Filing of Priority Document CommFilingPriDoc -->
+<div id="CommFilingPriDoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommFilingPriDocModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Communication Regarding Filing of Priority Document</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Mail Stop: <input type="text" id="CommFilingPriDocmail" size="15" value="Mail Stop">
+                </div>
+                <div>
+                    <br>  Signing Attorney: <select id="CommFilingPriDocSAdrop"><option>Select Signing Attorney</option></select>
+                </div>  
+                <div>
+                    <br>  <input type="checkbox" id="CommFilingPriDocesign"> E-Signature Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(CommFilingPriDocmail.value, CommFilingPriDocSAdrop.value, CommFilingPriDocesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Laid Open for Public Inspection ffapplaidopen -->
+<div id="ffapplaidopen" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffapplaidopenModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Laid Open for Public Inspection</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Laid Open Date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffapplaidopenopendte"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Laid Open # </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="text" id="ffapplaidopennum" size="15"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffapplaidopenreq"> Request for Exam is Due</td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none; display:none;" id="ffapplaidopenhide">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the deadline for exam date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffapplaidopenexm"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the requested response date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffapplaidopenresp"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffapplaidopenopendte.value, ffapplaidopennum.value, ffapplaidopenreq.checked, ffapplaidopenexm.value, ffapplaidopenresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('ffapplaidopenreq').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'ffapplaidopenreq', targetId: 'ffapplaidopenhide' });
+    });
+</script>
+<!-- FINISH THIS. NOT MUCH LEFT -->
+<!-- FF report out - notice of acceptance (au/nz) ffNoticeOfAcceptAuNzFp -->
+<div id="ffNoticeOfAcceptAuNzFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAcceptAuNzFpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Notice of Acceptance (AU/NZ)</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffNoticeOfAcceptAuNzFpaus" id="AcceptAuNzFp3"> <b>Australian Matter:</b> </td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none; display: none;" id="AcceptAuNzFp1">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the date advertised in the Official Journal </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffNoticeOfAcceptAuNzFpadv"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the Acceptance Fee Due Date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffNoticeOfAcceptAuNzFpacc"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the Requested Response Date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffNoticeOfAcceptAuNzFpreqresp"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Related matters currently pending in other jurisdictions?</td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffNoticeOfAcceptAuNzFprel"></td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffNoticeOfAcceptAuNzFpann"> SLW is responsible for annuity payment</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;" id="AcceptAuNzFp4">  </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffNoticeOfAcceptAuNzFpnz"> <b>New Zealand matter:</b> </td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none; display: none;" id="AcceptAuNzFp2">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the Journal No. </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="text" id="ffNoticeOfAcceptAuNzFpjour" size="15"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Enter the Journal Date</td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffNoticeOfAcceptAuNzFpjourdate"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffNoticeOfAcceptAuNzFpaus.checked, ffNoticeOfAcceptAuNzFpadv.value, ffNoticeOfAcceptAuNzFpacc.value, ffNoticeOfAcceptAuNzFpreqresp.value, ffNoticeOfAcceptAuNzFprel.checked, ffNoticeOfAcceptAuNzFpann.checked, ffNoticeOfAcceptAuNzFpnz.checked, ffNoticeOfAcceptAuNzFpjour.value, ffNoticeOfAcceptAuNzFpjourdate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('ffNoticeOfAcceptAuNzFpaus').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'ffNoticeOfAcceptAuNzFpaus', targetId: 'AcceptAuNzFp1' },
+
+         );
+    });
+    document.getElementById('ffNoticeOfAcceptAuNzFpnz').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'ffNoticeOfAcceptAuNzFpnz', targetId: 'AcceptAuNzFp2' },
+
+         );
+    });
+</script>
+<!-- Trademark - Report Notice of Publication -->
+<div id="TM_NoticeofPubRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_NoticeofPubRepModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Expecting a Notice of Allowance?</h5>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('NO')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('YES')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Trademark - Report Office Action Received -->
+<div id="TM_OaReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_OaReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Is this a FINAL Office Action?</h5>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('NO')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('YES')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - Request for Instructions (CMG Follow-up Reminder: FF/Conversion) -->
+<div id="ffremind" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffremindModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Request for Instructions</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Foreign Filing Due Date </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffremindffdte"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Instructions Due </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffremindinst"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  Date of Previous Letter </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="date" id="ffremindprev"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;">  U.S. (Non-Provisional) has been Filed </td>
+                        <td align="right" style="border: none; padding: 4px;"> <input type="checkbox" id="ffremindus"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffremindffdte.value, ffremindinst.value, ffremindprev.value, ffremindus.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Email - Send Order Letter to Associate (New) -->
+<div id="sendorderletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendorderletterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Send Order Letter to Associate</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter 'Month' Deadline (ex:31): </td>
+                        <td align="left"style="border: none;"><input type="text" id="sendorderlettermo" size="25"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Confirm Filing Deadline: </td>
+                        <td align="left"style="border: none;"><input type="date" id="sendorderletterdate"></td>
+                    </tr>
+                </table>
+                <div>
+                    <br> HONU Portal: <input type="radio" name="sendorderletterrad" value="1"> Use HONU <input type="radio" name="sendorderletterrad" value="2"> Not Registered Yet <input type="radio" name="sendorderletterrad" value="3"> Do NOT use HONU
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(sendorderlettermo.value, sendorderletterdate.value, radioFill('sendorderletterrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Miscellaneous Items Due -->
+<div id="ffMiscItemsDue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffMiscItemsDueModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Miscellaneous Items Due</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter the type of action </td>
+                        <td align="left"style="border: none;"><input type="text" id="ffMiscItemsDueact" size="30"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter the deadline date for filing a response </td>
+                        <td align="left"style="border: none;"><input type="date" id="ffMiscItemsDuedead"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Enter the requested response date</td>
+                        <td align="left"style="border: none;"><input type="date" id="ffMiscItemsDueresp"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffMiscItemsDueact.value, ffMiscItemsDuedead.value, ffMiscItemsDueresp.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF report out - original letters patent (OLP) for EP epOLP -->
+<div id="epOLP" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="epOLPModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Original Letters Patent (OLP) for EP</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  SLW is Responsible for Annuities</td>
+                        <td align="left"style="border: none;"><input type="checkbox" id="epOLPann"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Confirm the due date for the next Annuity</td>
+                        <td align="left"style="border: none;"><input type="date" id="epOLPanndte"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Unitary Patent</td>
+                        <td align="left"style="border: none;"><input type="checkbox" id="epOLPuni"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  Number of Claims</td>
+                        <td align="left"style="border: none;"><input type="text" id="epOLPcla" size="10" value="0"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  EP Validation countries (separate by comma) </td>
+                        <td align="left"style="border: none;"><textarea rows="2" cols="33" id="epOLPcou"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  EP Validation Instructions Received?</td>
+                        <td align="left"style="border: none;"><input type="radio" id="epOLPyes" name="epOLPrad"> Yes <input type="radio" id="epOLPno" name="epOLPrad"> No</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(epOLPann.checked, epOLPanndte.value, epOLPuni.checked, epOLPcla.value, epOLPcou.value, radioFill('epOLPrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PTO Form - Notice of Appeal (AIA/31) noticeofAppeal -->
+<div id="noticeofAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="noticeofAppealModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Notice of Appeal</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="noticeofAppealext"> Extension of Time Being Filed</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="noticeofAppealesign" checked> E-Signature Enable</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(noticeofAppealext.checked, noticeofAppealesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PCT - Power of Attorney NEW -->
+<div id="pctpoa_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctpoa_newModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">PCT Power of Attorney</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Signor name: </td>
+                        <td align="right"style="border: none;">  <input type="text" id="pctpoa_newsname" size="25"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Signor title: </td>
+                        <td align="right"style="border: none;">  <input type="text" id="pctpoa_newstitle" size="25"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="pctpoa_newgpoa"> This is a General Power of Attorney</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="pctpoa_newrev"> Include Revocation Language</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right"style="border: none;">  <input type="checkbox" id="pctpoa_newesign"> E-Signature Enable</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctpoa_newsname.value, pctpoa_newstitle.value, pctpoa_newgpoa.checked, pctpoa_newrev.checked, pctpoa_newesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Nike Action Required (HTML) nikeaction_new -->
+<div id="nikeaction_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="nikeaction_newModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Nike Action Required</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Due Date: </td>
+                        <td align="right"style="border: none;">  <input type="date" id="nikeaction_newdue"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Drop Dead Due Date: </td>
+                        <td align="right"style="border: none;">  <input type="date" id="nikeaction_newdead"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(nikeaction_newdue.value, nikeaction_newdead.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report out - EP Search Report and Opinion ffEPSrchRptandOpinion -->
+<div id="ffEPSrchRptandOpinion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffEPSrchRptandOpinionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EP Search Report and Opinion</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  The Intent to Proceed has been Received? </td>
+                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionintent"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Enter the Due Date </td>
+                        <td align="right"style="border: none;">  <input type="date" id="ffEPSrchRptandOpiniondue"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  Enter the Requested Response Date </td>
+                        <td align="right"style="border: none;">  <input type="date" id="ffEPSrchRptandOpinionresp"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  A response to the search report and written opinion is mandatory </td>
+                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionsearch"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;">  SLW is responsible to annuity payment </td>
+                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionann"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ffEPSrchRptandOpinionintent.checked, ffEPSrchRptandOpiniondue.value, ffEPSrchRptandOpinionresp.value, ffEPSrchRptandOpinionsearch.checked, ffEPSrchRptandOpinionann.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Report Out - Decision on Appeal DecisionAppeal -->
+<div id="matterNotFound" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="matterNotFoundModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Matter Not Found</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                  Verify that matter is correct.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
             </div>
         </div>
     </div>
@@ -3775,61 +4404,93 @@
                 }
             }       
         }
-
-        // New shared submit button
-        function submitbtnmerge(...args){
-            const merged_data = args.join(',');
-            document.getElementById('mergedata').value += merged_data;
-            alert(document.getElementById('mergedata').value);
-            //document.getElementById('mergeform').submit();
-            submitForm();
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    console.log("Merge complete");
-                    resolve();
-                }, 2000); // Simulate a 2-second operation
-            });
-            submitbtnmerge().then(() => {
-                window.location.reload();
+        // popup show/hide function
+        function toggleDisplay(...elementIds) {
+            elementIds.forEach(({ checkboxId, targetId }) => {
+                const checkbox = document.getElementById(checkboxId);
+                const targetElement = document.getElementById(targetId);
+                targetElement.style.display = checkbox.checked ? 'block' : 'none';
             });
         }
 
+        // New shared submit button
+        function submitbtnmerge(...args){
+            //document.getElementById('mergeform').submit();
+
+            const merged_data = args.join(',');
+            document.getElementById('mergedata').value += merged_data;
+            alert(document.getElementById('mergedata').value);
+            submitForm();
+
+            // return new Promise((resolve, reject) => {
+            //     setTimeout(() => {
+            //         console.log("Merge complete");
+            //         resolve();
+            //     }, 2000); // Simulate a 2-second operation
+            // });
+            // submitbtnmerge().then(() => {
+            //     window.location.reload();
+            // });
+        }
+
         function fillmerge(mergeid, mergepath, mergemethod, esign, contacts){
-            const Input = document.createElement('input');
-            Input.name = 'merge_info';
-            Input.id = 'mergedata';
-            Input.value += mergepath + ',';
-            // Input.value += mergeid + ',';
-            // mergemethod = 'appealfwd';
-            Input.value += mergemethod + ',';
-            Input.value += contacts + ',';
-            document.getElementById("mergeform").appendChild(Input);
-            // contacts = 'TRUE';
+            const inputData = document.getElementById("matterInput").value;
 
-            // Esign popUp
-            const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp"];
-            const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec"];
+            $.ajax({
+                type: 'POST',
+                url: 'merge_chkmatter/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const matterStatus = response.message;
+                    if (inputData == '' || matterStatus == 'false'){
+                        $('#matterNotFound').modal('show');
+                    }
+                    else{
+                        const Input = document.createElement('input');
+                        Input.name = 'merge_info';
+                        Input.id = 'mergedata';
+                        Input.value += mergepath + ',';
+                        // Input.value += mergeid + ',';
+                        // mergemethod = 'appealfwd';
+                        Input.value += mergemethod + ',';
+                        Input.value += contacts + ',';
+                        document.getElementById("mergeform").appendChild(Input);
+                        // contacts = 'TRUE';
 
-            // Check conditions
-            if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
-                $('#esign').modal('show');
-            } else if (otherMethods.includes(mergemethod)) {
-                $('#' + mergemethod).modal('show');
-            }else if (mergemethod == 'recordation'){ 
-                fillInventor();
-            }else if (contacts == 'TRUE'){ 
-                fillRecipients(mergemethod);
-            //}else if (mergemethod == 'Statement373c'){
-            //    fillSA();
-            }else if (mergemethod == 'UpdateAppDataSheet'){
-                $('#UpdateAppDataSheet').modal('show');
-            //}else if (mergemethod == 'incorrectfilerect'){
-            //    $('#filingEsign').modal('show');
-            }else if (mergemethod == 'invchange'){
-                fillInventorChange();
-            }else {
-                document.getElementById("mergeform").submit();
-            }
+                        // Esign popUp
+                        const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow" ,"priorexam2012", "prelimamend", "CommFilingPriDoc", "mspostallow", "noticeofAppeal"];
+
+                        // Check conditions
+                        if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
+                            $('#esign').modal('show');
+                        } else if (otherMethods.includes(mergemethod)) {
+                            $('#' + mergemethod).modal('show');
+                        }else if (mergemethod == 'recordation'){ 
+                            fillInventor();
+                        }else if (contacts == 'TRUE'){ 
+                            fillRecipients(mergemethod);
+                            //submitForm();
+                        //}else if (mergemethod == 'Statement373c'){
+                        //    fillSA();
+                        }else if (mergemethod == 'UpdateAppDataSheet'){
+                            $('#UpdateAppDataSheet').modal('show');
+                        //}else if (mergemethod == 'incorrectfilerect'){
+                        //    $('#filingEsign').modal('show');
+                        }else if (mergemethod == 'invchange'){
+                            fillInventorChange();
+                        }else {
+                            submitbtnmerge('NA');
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
         }
         
         function fillInventor() {
@@ -4049,9 +4710,10 @@
                             'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
-                            'correctedfrreport'
+                            'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -4064,7 +4726,7 @@
                             fillRM();
                         }
                         else{
-                            submitbtnmerge();
+                            submitbtnmerge('NA');
                         }
                     };
                 },
@@ -4122,7 +4784,7 @@
                                 //document.getElementById("mergedata").value += date2List[index] + ',';     
                             }
                         });
-                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue' || mergemethod == 'ffOfficeActRcvdAuNz'){
+                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'nikeaction_new'){
                             document.getElementById("mergedata").value += date1sel.join(';') + ','
                             document.getElementById("mergedata").value += namesel.join(';') + ','
                             $('#' + mergemethod).modal('show');

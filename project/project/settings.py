@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -111,8 +108,14 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {},
+    'default': {
+         'NAME': 'SideBar_data',
+         'ENGINE': 'django.db.backends.sqlite3',
+         'USER': '',
+         'PASSWORD': '',
+    },
     'FIP': {
         'ENGINE': 'mssql',
         #'NAME': os.environ.get('DBNAME'),
@@ -136,6 +139,20 @@ DATABASES = {
     },
 }
 
+# TEST ---- django-outlook-email-backend
+#OUTLOOK_CREDENTIALS = {
+#    'OUTLOOK_CLIENT_ID': 'your-client-id',
+#    'OUTLOOK_CLIENT_SECRET': 'your-client-secret',
+#    'OUTLOOK_TENANT_ID': 'your-tenant-id',
+#}
+#EMAIL_BACKEND = 'django_outlook_email.django_outlook_email_backend.OutlookEmailBackend'
+
+# TEST ---- msal for email merges
+CLIENT_ID = os.getenv('MICROSOFT_PROVIDER_CLIENT_ID')
+CLIENT_SECRET = os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET')
+TENANT_ID = os.getenv('TENANT_ID')
+AUTHORITY = f'https://login.microsoftonline.com/faf1d7d5-3374-4da3-9836-b7765bc44ef9'
+REDIRECT_URI = f'http://localhost:8000/callback'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

@@ -74,7 +74,9 @@ class mergefunctions:
             basic = {
                 'inventorEtal' : inventoretal,
                 'firstInventor' : inventor_data.inventor,
-                'inventorList': invlist                                                            
+                'inventorList': invlist,
+                'inventorNameList': invlist, 
+                'inventorName' : inventor_data.inventor,                                                
             }
             for key, value in basic.items():
                 if key in keys:
@@ -121,7 +123,11 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56690', roleorderno = 1)
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
-            personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            try:
+                personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+                farecipient = personprofile.lname
+            except:
+                farecipient = ''
             if 'GB' in contact.country:
                 country = 'United Kingdom'
             if contact.country == 'US':
@@ -135,7 +141,7 @@ class mergefunctions:
                 'faAssignee' : profile.orgname,
                 'recipientEmail' : contact.email,
                 'faclientRefNo' : part.matterno,
-                'faRecipient' : personprofile.fname
+                'faRecipient' : farecipient
             }
             for key, value in basic.items():
                 if key in keys:
@@ -191,7 +197,8 @@ class mergefunctions:
             'assigneeStreet1' : contact.address1,
             'assigneeStreet2' : contact.address2,
             'assignee' : profile.orgname,
-            'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip
+            'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip,
+            'assigneeStateInc' : profile.incstate + ', ' + merge_fn.fullCountry(profile.inccountry)
         }
         return info
     
@@ -221,6 +228,36 @@ class mergefunctions:
             'applicantName' : profile.orgname,
         }
         return info
+    
+    def correspondenceContactfill(self, matter):
+        try:
+            merge_fn = mergefunctions()
+            matter_data = merge_fn.matterFill(matter)
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34610', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            correspondenceContact = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+        except:
+            correspondenceContact = ''
+
+        info = {
+            'correspondenceContact' : correspondenceContact
+        }
+        return info
+    
+    def copyContactfill(self, matter):
+        try:
+            merge_fn = mergefunctions()
+            matter_data = merge_fn.matterFill(matter)
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34611', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            copyContact = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+        except:
+            copyContact = ''
+
+        info = {
+            'copyContact' : copyContact
+        }
+        return info
 
     def ffcmgFill(self, matter):
         merge_fn = mergefunctions()
@@ -234,7 +271,7 @@ class mergefunctions:
             fcmg = 'NO FF CMG PERSONNEL'
 
         info = {
-            'fcmgName' : fcmg
+            'fcmgName' : fcmg,
         }
         return info   
 
@@ -270,6 +307,8 @@ class mergefunctions:
             'This.paraName' : profile.fname + ' ' + profile.lname,
             'This.paraPhone' : contact.phone1,
             'This.paraEmail' : contact.email,
+            'clientparaname' : profile.fname + ' ' + profile.lname,
+            'clientparaemail' : contact.email
         }
         return info
     
@@ -287,6 +326,7 @@ class mergefunctions:
             'This.WAName' : profile.fname + ' ' + profile.lname,
             'This.WAPhone' : contact.phone1,
             'This.WAEmail' : contact.email,
+            'WARegNo' : profile.registrationno
         }
         return info
     
@@ -420,10 +460,14 @@ class mergefunctions:
             'inventorName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'inventorCityState' : contact.city + ' ' + contact.state,
             'inventorCountry' : merge_fn.fullCountry(contact.country),
+            'inventorAddress' : contact.address1,
             'inventorAddress1' : contact.address1,
             'inventorAddress2' : contact.address2,
             'inventorCSZ' : '',
             'Inventor2PCTdeclaration' : '',
+            
+            'inventorWorkEmail' : profile.sendemailtowork,
+            'inventorResidence' : contact.city + contact.state + ',' + contact.country,
         }
         return info
     
@@ -495,6 +539,8 @@ class mergefunctions:
             'matterCountryName' : 'matter',
             'inventorEtal' : 'inventor',
             'inventorList': 'inventor',
+            'inventorNameList': 'inventor', 
+            'inventorName': 'inventor', 
             'filedDate' : 'matter',
             'custNoCorresp' : 'matter',
             'title' : 'matter',
@@ -517,6 +563,7 @@ class mergefunctions:
             'This.WAName' : 'WA',
             'This.WAPhone' : 'WA',
             'This.WAEmail' : 'WA',
+            'WARegNo' : 'WA',
             'paraName' : 'para',
             'paraPhone' : 'para',
             'paraEmail' : 'para',
@@ -564,11 +611,17 @@ class mergefunctions:
     def esigncheck(self, esign):
         esign_out = ""
         esigndate_out = ""
-        if(esign == 'true' or esign == True):
+        if(esign == 'true' or esign == True or esign == 'TRUE'):
             esign_out = "/ {{Sig_es_:signer1:signature}} /"
             esigndate_out = "{{Dte_es_:signer1:date}}"
+            
+        esignout = {
+            'echoSignature' : esign_out,
+            'signatureDate' : esigndate_out,
+            'signatureName' : esign_out
+        }
 
-        return esign_out, esigndate_out
+        return esignout
     
     def inventoretal(self, inventor):
         firstinventor = inventor.split(", ")
@@ -726,6 +779,24 @@ class mergefunctions:
             'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'cmgEmail' : contact.email,
             'cmgPhone' : contact.phone1
+        }
+        return info
+    
+    def counselfill(self, matter):
+        merge_fn = mergefunctions()
+        try:
+            matter_data = merge_fn.matterFill(matter)
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '35905', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            name = profile.fname + ' ' + profile.lname
+            email = contact.email
+        except:
+            name = ''
+            email = ''
+        info = {
+            'ClientCorporateCounselname' : name,
+            'ClientCorporateCounselemail' : email,
         }
         return info
     

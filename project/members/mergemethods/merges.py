@@ -1,5 +1,6 @@
+import webbrowser
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task
+from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task, FvMatter4
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
@@ -7,18 +8,14 @@ from django.db.models import Q
 class appealfwd:
     def appealfwd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        esign = mergeinfo[0]
 
         entitystatus = function_instance.entityfill(matter)
-
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
 
         # Fill Data
         matter_data = function_instance.matterFill(matter)
         patent_data = function_instance.patentFill(matter_data)
 
-        depnum = function_instance.depnumFill(matter_data)
         artunitno = patent_data.artunitno
         custcor = function_instance.corrcustnumFill(matter_data)
 
@@ -34,11 +31,10 @@ class appealfwd:
         if(entitystatus == 1):
             billamt = '472.00'
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'feeAmount' : billamt,
-            'depAccount' : depnum,
+            'depAccount' : function_instance.depnumFill(matter_data),
         })
         return replace
     
@@ -63,8 +59,7 @@ class issuefee:
         numfact = mergeinfo[3]
         drawnum = mergeinfo[4]
         prevpaiddate = mergeinfo[7]
-        esign = mergeinfo[12]
-
+        
         dateIssueFee = ''
         try:
             feeactivity = function_instance.getactivityid(matter_data, 'IFEE')
@@ -138,14 +133,12 @@ class issuefee:
         
         if mergeinfo[11] == 'true':
             increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of  to cover the issue fee increase.'
-
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
+            
         depnum = function_instance.depnumFill(matter_data)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[12]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             #'nickU' : '',
             'dateIssueFee': prevpaiddate,
@@ -177,7 +170,6 @@ class Statement373c:
     def Statement373c(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
 
-        esign = mergeinfo[1]
         recoccur = mergeinfo[0]
 
         if mergeinfo[2] == 'oth':
@@ -189,9 +181,8 @@ class Statement373c:
         esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[1]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'orgType' : org,
         })
         return replace
@@ -233,11 +224,9 @@ class recordation:
         if mergeinfo[3] == 'check':
             chkX = 'X'            
 
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[3])
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[3]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'depAccount' : depnum,
             'dateExecutionText' : function_instance.formatDate(mergeinfo[5]),
             'selectedInventorList' : selinv,
@@ -251,10 +240,7 @@ class recordation:
 # Only need duedate and nickU
 class LateSubmissionOfDec:
     def LateSubmissionOfDec(self, matter, mergeinfo, keys):
-        esign = mergeinfo[3]
-        
         function_instance = mergefunctions.mergefunctions()
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
 
         # Fill Data
@@ -290,9 +276,8 @@ class LateSubmissionOfDec:
             deptxt = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ feeamt +' to cover the Late Submission Surcharge. '
 
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[3]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'depAccount' : depnum,
             'decsubX' : decsubx,
             'decsubText' : decsubtxt,
@@ -317,12 +302,10 @@ class UpdateAppDataSheet:
         dsX = 'X'
         dsText = 'Communication Re: Update to Application Data Sgeet (1 Pg.).'
 
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[2])
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'dsX' : dsX,
             'dsText'  : dsText,
             'muX' : muX,
@@ -400,20 +383,30 @@ class mpcapactions:
 
         try:
             activity = function_instance.getactivityid(matter_data, code)
-            if action == 5:
-                actname = 'Missing Parts with Corrected Application Papers Received'
-            if action == 7:
-                actname = 'Corrected Application Papers with Sequence Listing Action Received'
-            else:
-                actname = activity.name
+            attr = Rvwactivitydateattribute.objects.using('FIP').filter(activityid = activity.activityid)
+            if attr.attrvallabel == 'Date Mailed':
+                if action == 5:
+                    actname = 'Missing Parts with Corrected Application Papers Received'
+                if action == 7:
+                    actname = 'Corrected Application Papers with Sequence Listing Action Received'
+                else:
+                    actname = activity.name
+                datemailed = activity.smryonevalue
+                duedate = (datemailed + relativedelta(months=2)).strftime('%B %d, %Y')
+                duedate1mo = (datemailed + relativedelta(months=1)).strftime('%B %d, %Y')
         except:
             actname = ''
+            duedate = ''
+            duedate1mo = ''
+            datemailed = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'activityName' : actname,
-            'THIS.dueDate' : activity.smryonelabel,
+            'dueDate' : duedate,
+            'dueDate1mo' : duedate1mo,
+            'dateMailed' : datemailed
         })
         return replace
 
@@ -433,15 +426,11 @@ class applicationdata_new2:
         noinclude = mergeinfo[9]
         includeboth = mergeinfo[10]
 
-        esign = mergeinfo[11]
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[2])
-
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[11])) #or 2?
         replace.update({
             'drawingSheets' : draw,
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
         })
         return replace
         
@@ -449,15 +438,13 @@ class stateofallow:
     def stateofallow(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[12])
 
             replace = {}
             depnum = function_instance.depnumFill(matter_data)
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.esigncheck(mergeinfo[12]))
             replace.update({
                 'depAccount' : depnum,
-                'signatureDate' : esigndate_out,
-                'echoSignature' : esign_out,
                 'allowType' : 'Notice of Allowability',
                 'dateNALL' : date.today().strftime("%B %d, %Y"),
             })
@@ -525,16 +512,13 @@ class appReportFp:
 class ownerchange:
     def ownerchange(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update(function_instance.applicantfill(matter, 1))
+            replace.update(function_instance.esigncheck(mergeinfo[0]))  
             replace.update({
-                'echoSignature' : esign_out,
-                'signatureDate' : esigndate_out,
                 'applicantName' : mergeinfo[2]
-
             })
             return replace
     
@@ -543,7 +527,6 @@ class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[6])
             depnum = function_instance.depnumFill(matter_data)
 
             SubX = ''
@@ -605,9 +588,8 @@ class corrappln:
 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.esigncheck(mergeinfo[6]))
             replace.update({
-                'echoSignature' : esign_out,
-                'signatureDate' : esigndate_out,
                 'depAccount' : depnum,
                 'SubX' : SubX,
                 'AbsX' : AbsX,
@@ -688,7 +670,6 @@ class rptissuefee:
         }) 
         return replace
 
-# Not running
 class adobesign:
     def adobesign(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -844,15 +825,28 @@ class RepNoticeofAllow:
 class PCTRptOutMiscItmsRcvd:
     def PCTRptOutMiscItmsRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            actdate = function_instance.extract_date(date)
+            date_object = datetime.strptime(actdate, "%m/%d/%Y")
+            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
+        
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-
         replace.update({
-            
-        })
+            'salutation' : '',
+            'dateFiled' : formatted_data,
+            'activityName' : (mergeinfo[1]).replace(';',', '),
+        })  
         return replace
+
 
 # use activity and attributeval to get reel and frames
 class recordedassnreport:
@@ -958,7 +952,6 @@ class pctcorrect:
         matter_data = function_instance.matterFill(matter)
         depacc = mergeinfo[0]
         check = mergeinfo[1]
-        esign = mergeinfo[2]
         annexA = mergeinfo[7]
         annexAtxt = mergeinfo[8]
         annexB = mergeinfo[9]
@@ -985,12 +978,10 @@ class pctcorrect:
 
         label = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: MS PCT, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of '+ str(datetime.now().strftime("%B")) +', '+ str(datetime.now().year) +'.'
 
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'mailDate' : function_instance.formatDate(mergeinfo[3]),
             # add phone number at end
             'cAnnexAText' : Atxt,
@@ -1024,9 +1015,6 @@ class pctextention:
     def pctextention(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        esign = mergeinfo[2]
-
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         annexes = []
 
@@ -1050,9 +1038,8 @@ class pctextention:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'extensionLenTextHdr' : function_instance.number_to_words(int(mergeinfo[6])),
             'mailDate' : mergeinfo[3],
             'properApplicant' : 'Applicant',
@@ -1161,7 +1148,6 @@ class RptInvtPayFees:
             'groupNbr' : groups,
             'claims' : claims,
             'npdueDate' : '',
-            
         })
         return replace
 
@@ -1170,7 +1156,6 @@ class PctCommRe:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[7])
 
         if int(mergeinfo[4]) > 0:
             seqpaper = 'Sequence Listing on Paper (' + mergeinfo[4] + ' pgs).'
@@ -1219,12 +1204,12 @@ class PctCommRe:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[7]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'mailDate' : function_instance.formatDate(mergeinfo[3]),
             'lpX' : lpX,
             'seqListingLine' : seqpaper,
+            'seqRFLine' : '',
             'rfX' : '',
             # 'seqRFLine' : mergeinfo[9],
             'cdX' : cdX,
@@ -1305,7 +1290,10 @@ class nopreport:
 
         patent = function_instance.patentFill(matter_data)
         pubno = patent.pubno
-        pubdate = (patent.pubdate).strftime('%B %d, %Y')
+        try:
+            pubdate = (patent.pubdate).strftime('%B %d, %Y')
+        except:
+            pubdate = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1320,11 +1308,31 @@ class foarreport:
     def foarreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        try:
+            foaract = (function_instance.getactivityid(matter_data, 'FOAR'))
+            foardate = foaract.smryonevalue.strftime('%B %d, %Y')
+            foar2date = (foaract.smryonevalue + relativedelta(months=2)).strftime('%B %d, %Y')
+            foar3date = (foaract.smryonevalue + relativedelta(months=2)).strftime('%B %d, %Y')
+            instdate = (foaract.smryonevalue + relativedelta(months=1)).strftime('%B %d, %Y')
+            actname = foaract.name
+
+        except:
+            foardate = '*bad date*' 
+            foar2date = '*bad date*'
+            foar3date = '*bad date*'
+            instdate = '*bad date*'
+            actname = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-
+            'foar2Mo' : foar2date,
+            'foar3Mo' : foar3date,
+            'instDate' : instdate,
+            'foarDate' : foardate,
+            'salutation'  : '',
+            'activityName' : actname
         })
         return replace
 
@@ -1332,7 +1340,6 @@ class generalxmitCF:
     def generalxmitCF(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
 
         mailstop = 'Mail Stop Amendment'
         aftFinal = ''
@@ -1377,10 +1384,9 @@ class generalxmitCF:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'mailStopText' : mailstop,
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'afterFinalX' : aftFinalX,
             'afterFinalText' : aftFinal,
             'terminalX' : terminalX,
@@ -1395,7 +1401,6 @@ class generalxmitCF:
             'commX' : commX,
             'drawText' : formal,
             'drawX' : formalX,
-
         })
         return replace
     
@@ -1495,9 +1500,10 @@ class PctSearchRep:
         replace.update(function_instance.mergebasic(keys, matter))
         # Need to fix doc
         replace.update({
-            '19duedate' : mergeinfo[0],
-            '34duedate' : mergeinfo[1],
-            '30mduedate' : mergeinfo[3],
+            '19duedate' : function_instance.formatDate(mergeinfo[1]),
+            '34duedate' : function_instance.formatDate(mergeinfo[2]),
+            '30mduedate' : function_instance.formatDate(mergeinfo[3]),
+            'instructionsDue' : function_instance.formatDate(mergeinfo[0])
         })
         return replace
     
@@ -1518,15 +1524,17 @@ class PCTRptOutIpRp:
         
         if mergeinfo[0] == 'false':
             action = '\nACTION REQUIRED:  Since the PCT application is complete, no action is needed at this time.\n'
+            addnotes = 'ADDITIONAL NOTES: If you have any questions or comments, please contact <<This.WAName>> at <<This.WAPhone>> or <<This.paraName>> at <<This.paraPhone>>.'
         else:
-            action = ''
-            action += ''
-            action += '\n\nADDITIONAL NOTES:  Please contact if you would like to discuss this matter more fully, or if you need a cost estimate for filing in specific countries/regions.'
+            action = 'Now that we have received the Report, you must make a decision regarding the conversion of the Application filed under the Patent Cooperation Treaty (PCT) to one or more national or regional stage applications in the various countries and/or regional offices for which you would like to procure patent protection.  Under the rules of the PCT, the Application will terminate for many countries on '+' (that is, 30 months from the priority date of the PCT Application).  Therefore, to seek patent protection in those countries/regions, the Application must be converted to national/regional applications prior to that date.  Currently, based on the rules in a given country or region, the Application must be converted from 30 months to 42 months of the priority date of the Application.'
+            action += '\nPlease give this matter your prompt consideration.  The time for converting from the international stage under the PCT to national/regional stage patent applications is non-extendable.  Since each national application requires a number of documents to be prepared, and possibly translated into different languages, to be received by the various country or regional patent offices, we must receive your instructions regarding this matter by '+'.  As indicated above, the national stage application filings for many countries/regions must be completed by '+'.  A decision not to file national stage applications by the due date for that country/region will result in abandonment of the PCT Application.\n'
+            addnotes = 'ADDITIONAL NOTES:  Please contact <<This.WAName>> at <<This.WAPhone>> if you would like to discuss this matter more fully, or if you need a cost estimate for filing in specific countries/regions.'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'actionRequired' : action,
+            'addNotes' : addnotes,
             'salutation' : '',
         })
         return replace
@@ -1579,8 +1587,6 @@ class utilityapp:
     def utilityapp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[28]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         entitystatus = function_instance.entityfill(matter)
 
         drawx = ''
@@ -1631,9 +1637,8 @@ class utilityapp:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[28]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'appTypeText' : 'Utility Patent Application under 37 CFR 1.53(b) comprising:',
             'docx' : 'DOCX',
             'specPages' : mergeinfo[4],
@@ -1709,6 +1714,8 @@ class DraftOAInstruct:
     def DraftOAInstruct(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
+        
+        radio = mergeinfo[2]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1716,7 +1723,8 @@ class DraftOAInstruct:
             'corrDate' : function_instance.formatDate(mergeinfo[0]),
             'cdueDate' : function_instance.formatDate(mergeinfo[1]),
             # Need to edit country
-            'countryType' : 'American',
+            'countryType' : matter_data.countryname,
+            'ffparaEmail' : ''
         })
         return replace
 
@@ -1725,8 +1733,6 @@ class exttimeCF:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
         depnum = function_instance.depnumFill(matter_data)
-        esign = mergeinfo[17]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         try:
             datemail = function_instance.formatDate(mergeinfo[9])
@@ -1745,9 +1751,8 @@ class exttimeCF:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[17]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'extLength' : mergeinfo[12].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
             'feeAmount' : mergeinfo[1],
@@ -1769,15 +1774,12 @@ class incorrectfilerect:
     def incorrectfilerect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[0]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         depnum = function_instance.depnumFill(matter_data)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'depAccount' : depnum,
             'nickU' : '',
             'postcardX' :'',
@@ -1791,14 +1793,11 @@ class corrinventorship:
     def corrinventorship(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[0]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'depAccount' : function_instance.depnumFill(matter_data),
         })
         return replace
@@ -1807,14 +1806,11 @@ class corrinventorship:
 class corrapplicant:
     def corrapplicant(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        esign = mergeinfo[0]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
         })
         return replace
 
@@ -1823,15 +1819,12 @@ class pctdeclaration2:
     def pctdeclaration2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[0]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'clientRefText' : '',
         })
         return replace
@@ -1840,8 +1833,6 @@ class rcexmit3:
     def rcexmit3(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[2]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         aarfx = ''
         aarftxt = ''
@@ -1872,9 +1863,8 @@ class rcexmit3:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'aarfX' : aarfx,
             'aarfText' : aarftxt,
             'abrfX' : abrfx,
@@ -1891,8 +1881,6 @@ class pctgeneric:
     def pctgeneric(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[3]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
 
         deptxt = ''
         pctaddr = ''
@@ -1916,9 +1904,8 @@ class pctgeneric:
             pass
 
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[3]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'headerText' : mergeinfo[1],
             'pctAddress' : pctaddr,
             'depositText' : deptxt,
@@ -1930,8 +1917,6 @@ class invchange:
     def invchange(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
-        esign = mergeinfo[0]
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         
         inventlist = mergeinfo[2:]
         inventlist = inventlist[:-1]
@@ -1951,9 +1936,8 @@ class invchange:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'SAName' : mergeinfo[1],
             'invList' : invtxt,
             'hasText' : hastxt,
@@ -2076,10 +2060,8 @@ class pv2appReport:
     def pv2appReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
-        
-        if 'PRV' in matter:
-            matter_data = function_instance.matterFill(matter)
-            deadlinedte = (matter_data.fileddate + relativedelta(months=12)).strftime('%B %d, %Y')
+        matter_data = function_instance.matterFill(matter)
+        deadlinedte = (matter_data.fileddate + relativedelta(months=12)).strftime('%B %d, %Y')
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2093,25 +2075,33 @@ class pv2appReport:
 class PCTRptPubApp:
     def PCTRptPubApp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        patent = function_instance.patentFill(matter_data)
+        pubno = patent.pubno
+        try:
+            pubdate = (patent.pubdate).strftime('%B %d, %Y')
+        except:
+            pubdate = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'salutation' : '',
+            'pubDate' : pubdate,
+            'pubNo' : pubno
         })
         return replace
     
 class pctdeclaration2:
     def pctdeclaration2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
         })
         return replace
 
@@ -2413,23 +2403,18 @@ class anncomm:
 class StatementUnder373b:
     def StatementUnder373b(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        
-        esign = mergeinfo[2]
 
         if mergeinfo[0] == 'oth':
             org = mergeinfo[3]
         else:
             if mergeinfo[0]:
                 org = mergeinfo[0]
-                
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         
         replace = {}
         replace.update(function_instance.assigneefill(matter, 1))
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
-            'echoSignature' : esign_out,
-            'signatureDate' : esigndate_out,
             'orgType' : org,
         })
         return replace
@@ -2519,13 +2504,10 @@ class genericheader:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
-        
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'signatureDate' : esigndate_out,
-            'echoSignature' : esign_out,
             'headerText' : mergeinfo[1],
             'mailStopText' : mergeinfo[2],
             'depAccount' : function_instance.depnumFill(matter_data),
@@ -2712,8 +2694,10 @@ class ffOfficeActRcvdAuNz:
     def ffOfficeActRcvdAuNz(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
-        aselect = 'To ensure the best chances of acceptance by the deadline, we request your instructions by '+ mergeinfo[4] +' and, failing those, we will send regular reminders to you.'
-        cpend = 'Please refer to the associate\'s letter for more details regarding this matter. '
+        if mergeinfo[5] == 'true':
+            citeref = 'and cited references '
+        else:
+            citeref = ''
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2722,6 +2706,762 @@ class ffOfficeActRcvdAuNz:
             'cdueDate' : mergeinfo[3],
             'crespDate' : mergeinfo[4],
             'actionType' : mergeinfo[2],
+            'citedRef' : citeref,
             'salutation' : ''
+        })
+        return replace
+
+# priority not filling correctly
+class adiassign:
+    def adiassign(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        try:
+            relatedmatter = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid)[0]
+            primatter = function_instance.matterFill(relatedmatter.relatedmatterid)
+            pridate = primatter.fileddate.strftime("%B %d, %Y")
+            priser = primatter.serialnumber
+            pricountry = primatter.country
+            prititle = primatter.title
+        except:
+            pridate = ''
+            priser = ''
+            pricountry = ''
+            prititle = ''
+        
+        prioritytxt = ' , and which are described in a patent application filed on '+ pridate +', which application was assigned '+ pricountry +' application serial number '+ priser +', and which is titled '+ prititle +'<<priorCont>>'
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+            'priorInformation' : prioritytxt,
+            'inventorNameList' : ''
+        })
+        return replace
+    
+class micnffallow:
+    def micnffallow(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        try:
+            gen = FvMatter4.objects.using('FIP').get(recordid = matter_data.matterid)
+            gencat3 = gen.generic_category_3
+        except:
+            gencat3 = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'DueDate' : function_instance.formatDate(mergeinfo[0]),
+            'totalclaims' : mergeinfo[1],
+            'independent' : mergeinfo[2],
+            'prosecutionItem' : mergeinfo[4],
+            'GenCat3' : gencat3
+        })
+        return replace
+    
+class priorexam2012:
+    def priorexam2012(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update({
+        })
+        return replace
+    
+class prelimamend:
+    def prelimamend(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        amendtxt = 'PRELIMINARY AMENDMENT'
+        if mergeinfo[1] == 'true':
+            amendtxt = 'SUPPLEMENTAL PRELIMINARY AMENDMENT'
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update({
+            'amendmentText' : amendtxt,
+            'mailStopText' : mergeinfo[0],
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'preperApplicant' : 'Applicant',
+            'submitText' : 'submits'
+        })
+        return replace
+
+# Not done
+class ffOlp:
+    def ffOlp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            expdate = (matter_data.fileddate + relativedelta(years=20)).strftime('%B %d, %Y')
+        except:
+            expdate = ''
+            
+        resptxt = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'annuDate' : function_instance.formatDate(mergeinfo[1]),
+            'expirDate': expdate,
+            'claimNo' : mergeinfo[2],
+            'countryList' : '',
+            'slwResp' : resptxt,
+            'applicant' : ''
+        })
+        try:
+            replace.update(function_instance.applicantfill(matter, 1))
+        except:
+            pass
+        
+        return replace
+
+class incorrectrecd:
+    def incorrectrecd(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            assnact = Activity.objects.using('FIP').filter(matterid = matter.matterid, code__icontains = 'ASSN')[0]
+            assndate = ''
+            if 'Mailed' in assnact.smryonelabel:
+                assndate = assnact.smryonevalue.strftime("%B %d, %Y")
+        except:
+            assndate = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'dueDate' : assndate
+        })
+        return replace
+
+# Not done
+class CommFilingPriDoc:
+    def CommFilingPriDoc(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update({
+            'mailStopText' : mergeinfo[0]
+        })
+        return replace
+    
+class mspostallow:
+    def mspostallow(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        if mergeinfo[0] == 'TRUE':
+            cancel = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update({
+
+        })
+        return replace
+        
+class adiassign:
+    def adiassign(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        priortxt = ', and which are described in a patent application filed on '+ matter_data.fileddate +', which application was assigned US application serial number '+ matter_data.serialnumber +', and which is titled '+ matter_data.title +', and which are described in a patent application filed on '+ matter_data.fileddate +', which application was assigned US application serial number '+', and which is titled '+''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+            'priorInformation' : priortxt,
+        })
+        return replace
+        
+class LtrGeneralPOA:
+    def LtrGeneralPOA(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        try:
+            lrtact = Activity.objects.using('FIP').filter(matterid = matter.matterid, code__icontains = 'LFDC')[0]
+        except:
+            pass
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update({
+            'salutation' : '',
+            'returnDate' : (date.today() + relativedelta(weeks=2)).strftime('%B %d, %Y'),
+            
+        })  
+        return replace
+    
+class microndec:
+    def microndec(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })  
+        return replace
+    
+class ffapplaidopen:
+    def ffapplaidopen(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        duedate = ''
+        respdate = ''
+        acttxt = 'None at this time '
+        loexamdue = ''
+        if mergeinfo[2] == 'true':
+            duedate = '\nDeadline Date: ' + function_instance.formatDate(mergeinfo[3])
+            respdate = '\nRequested Response Date: ' + function_instance.formatDate(mergeinfo[4])
+            acttxt = 'Instructions to file the Request for Examination '
+            loexamdue = '\nA request for examination has not yet been filed in connection with this application.  Such a request must be filed no later than '+ function_instance.formatDate(mergeinfo[3]) +' or the application will become abandoned.  Please provide us with your instructions by '+ function_instance.formatDate(mergeinfo[4]) +', so that we may authorize the associate to file the request for examination.\n'
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update({
+            'salutation' : '',
+            'actionReq' : acttxt,
+            'cdueDate' : duedate,
+            'crespDate' : respdate,
+            'openDate' : function_instance.formatDate(mergeinfo[0]),
+            'openNo' :  mergeinfo[1],
+            'loexamdue' : loexamdue
+        })  
+        return replace
+    
+class ffNoticeOfAcceptAuNzFp:
+    def ffNoticeOfAcceptAuNzFp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'activityName' : '',
+            'salutation' : '',
+            'actionReq' : '',
+            'cdueDate' : '',
+            'crespDate' : '',
+            'auornzSelect' : '',
+        })  
+        return replace
+
+class PCTRptOutBasicLtr:
+    def PCTRptOutBasicLtr(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            actdate = function_instance.extract_date(date)
+            date_object = datetime.strptime(actdate, "%m/%d/%Y")
+            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'dateFiled' : formatted_data,
+            'activityName' : (mergeinfo[1]).replace(';',', '),
+        })  
+        return replace
+
+class tmrecdReport:
+    def tmrecdReport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        selnames = mergeinfo[1].replace(';','\n')
+        
+        seldates = mergeinfo[0].split(';')
+        finaldates = ''
+        for date in seldates:
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND'
+
+        rows = zip(finaldates.split('\n'), selnames.split('\n'))
+        formatted_data = "\n".join(["\t\t".join(row) for row in rows])
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'dateMailed' : formatted_data,
+            'This.MarkType' : '',
+            'docReceived' : mergeinfo[1].split(';')[0]
+        })
+        return replace
+    
+class TM_ChgCounsel:
+    def TM_ChgCounsel(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        try:
+            replace.update(function_instance.applicantfill(matter, 1))
+        except:
+            replace.update({
+                'applicant' : '',
+            })  
+        replace.update({
+            'This.MarkType' : '',
+            'userName' : '',
+            'owner' : ''
+        })  
+        return replace
+    
+class TM_NoticeofPubRep:
+    def TM_NoticeofPubRep(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        patent = function_instance.patentFill(matter_data)
+        pubno = patent.pubno
+        try:
+            pubdate = (patent.pubdate).strftime('%B %d, %Y')
+        except:
+            pubdate = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update({
+            'pubDate' : pubdate
+        })
+        return replace
+
+class TM_OaReport:
+    def TM_OaReport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        actiontxt = 'Non-Final Office Action'
+        if mergeinfo[0] == 'YES':
+            actiontxt = 'Final Office Action'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'action' : actiontxt
+        })
+        return replace
+
+class expartereport:
+    def expartereport(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            activity = function_instance.getactivityid(matter_data, 'EPQA')
+            epqadte = (activity.smryonevalue).strftime('%B %d, %Y')
+            instdte = (epqadte + relativedelta(months=1)).strftime('%B %d, %Y')
+            epqa2dte = (epqadte + relativedelta(months=2)).strftime('%B %d, %Y')
+        except:
+            epqadte = ''
+            instdte = ''
+            epqa2dte = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'instDate' : instdte,
+            'exparteDate' : epqa2dte,
+            'exparte2Mo' : epqa2dte,
+        })
+        return replace
+
+class reqtermadj:
+    def reqtermadj(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            activity = function_instance.getactivityid(matter_data, 'PPTA2')
+            pptadte = (activity.smryonevalue).strftime('%B %d, %Y')
+
+        except:
+            pptadte = 'NO PPTA2 Activity'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'currentMo' : datetime.now().strftime("%B"),
+            'currentYr' : datetime.now().year,
+            'certificateText' : 'filed using the USPTO\'s electronic filing system EFS-Web, and is ',
+            'dueDate' : pptadte
+        })
+        return replace
+
+class ffremind:
+    def ffremind(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            relatedmatter = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid, relationdesc__icontains = 'Priority')[0]
+            primatter = function_instance.matterFill(relatedmatter.relatedmatterid)
+            pridate = primatter.fileddate.strftime("%B %d, %Y")
+            priser = primatter.serialnumber
+        except:
+            pridate = ''
+            priser = ''
+            
+        conversion = 'INTERNATIONAL FILING AND NON-PROVISIONAL CONVERSION '
+        nonprov1 = 'regular non-provisional and'
+        nonprov2 = 'or regular non-provisional U.S.'
+        rptout = 'Instructions Needed - U.S. Non-Provisional/Foreign Filing'
+        if mergeinfo[3] == 'true':
+            conversion = 'INTERNATIONAL FILING '
+            nonprov1 = ''
+            nonprov2 = ''
+            rptout = ' Foreign Filing Instructions Needed'
+
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'earlyPriorFilingDate' : pridate,
+            'instDate' : function_instance.formatDate(mergeinfo[1]),
+            'ffDueDate' : function_instance.formatDate(mergeinfo[0]),
+            'prevDate' : function_instance.formatDate(mergeinfo[2]),
+            'cFFNonProvText2' : nonprov2,
+            'cFFNonProvText1' : nonprov1,
+            'earlyPrioSerialNo' : priser,
+            'conversionType' : conversion,
+            'rptout' : rptout
+        })
+        return replace
+
+class ReportOutFilingReceipt:
+    def ReportOutFilingReceipt(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'activityName' : 'PCT Filing Receipt'
+        })
+        return replace
+
+class ltrFFNS:
+    def ltrFFNS(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+    
+class sapsummary:
+    def sapsummary(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            targactivity = function_instance.getactivityid(matter_data, 'TARG')
+            targetdate = targactivity.smryonevalue.strftime("%B %d, %Y")
+        except:
+            targetdate = ''
+            
+        try:
+            bardactivity = function_instance.getactivityid(matter_data, 'BARD')
+            barddate = bardactivity.smryonevalue.strftime("%B %d, %Y")
+        except:
+            barddate = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.correspondenceContactfill(matter))
+        replace.update(function_instance.copyContactfill(matter))
+        replace.update({
+            'TARG' : targetdate,
+            'BARD' : barddate
+        }) 
+        return replace
+    
+class sendorderletter:
+    def sendorderletter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        try:
+            relatedmatter = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid, relationdesc__icontains = 'Priority')[0]
+            relmatter = function_instance.matterFill(relatedmatter.relatedmatterid)
+            reldate = relmatter.fileddate.strftime("%B %d, %Y")
+            relser = relmatter.serialnumber
+            relcountry = relmatter.countryname
+            
+        except:
+            reldate = ''
+            relser = ''
+            relcountry = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'DEADLINEDATE' : function_instance.formatDate(mergeinfo[1]) + '('+ mergeinfo[0] +' MONTH DEADLINE) ',
+            'relSerial' : relser,
+            'relFiled' : reldate,
+            'relCountry' : relcountry
+        })
+        return replace
+
+class ffMiscItemsDue:
+    def ffMiscItemsDue(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'actionType' : mergeinfo[2],
+            'cdueDate' : function_instance.formatDate(mergeinfo[3]),
+            'crespDate' : function_instance.formatDate(mergeinfo[4]),
+            'activityname' : (mergeinfo[1].split(';'))[0]
+        })
+        return replace
+
+class poatransmit:
+    def poatransmit(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+
+        })
+        return replace
+    
+# Need usename
+class mspar:
+    def mspar(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update(function_instance.counselfill(matter))
+        replace.update({
+            'userName' : '',
+        })
+        return replace
+
+# needs work
+class epOLP:
+    def epOLP(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            expdate = (matter_data.fileddate + relativedelta(years=20)).strftime('%B %d, %Y')
+        except:
+            expdate = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'annuDate' : function_instance.formatDate(mergeinfo[1]),
+            'exprirDate' : expdate,
+            'claimNo' : mergeinfo[3],
+        })
+        return replace
+
+# Might need different para data
+class msemails:
+    def msemails(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.counselfill(matter))
+        replace.update(function_instance.parafill(0, matter))
+        replace.update({
+            'Item being reported' : mergeinfo[1]
+        })
+        return replace
+
+class noticeofAppeal:
+    def noticeofAppeal(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        entitystatus = function_instance.entityfill(matter)
+
+        microfee = ''
+        smallfee = ''
+        if(entitystatus == 0):
+            smallfee = '362.00'
+        if(entitystatus == 1):
+            microfee = '181.00'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[1]))
+        replace.update({
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'smallFee' : smallfee,
+            'microFee' : microfee,
+            'echoSignatureDatePara' : '',
+            'echoSignaturePara' : ''
+        })
+        return replace
+
+# Need attach for act
+class fa_confirm:
+    def fa_confirm(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'recipientName' : '',
+            'fullName' : ''
+        })
+        return replace
+    
+class intelcorp:
+    def intelcorp(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'countryText' : '',
+        })
+        return replace
+
+class zimmerdec:
+    def zimmerdec(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+
+        })
+        return replace
+    
+class msfilingsummary:
+    def msfilingsummary(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update({
+            'Abstract' : '',
+            'priorityMatterList' : ''
+        })
+        return replace
+
+class pctpoa_new:
+    def pctpoa_new(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+
+class nikeaction_new:
+    def nikeaction_new(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'dueDate' : function_instance.formatDate(mergeinfo[2]),
+            'deadDueDate' : function_instance.formatDate(mergeinfo[3]),
+            'documentName' : mergeinfo[1],
+            'Other Information' : ''
+        })
+        return replace
+    
+class ffEPSrchRptandOpinion:
+    def ffEPSrchRptandOpinion(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        pleasenote = ''
+        if mergeinfo[3] == 'true':
+            pleasenote = 'PLEASE NOTE:  A response to the search report and opinion is mandatory.  If a response is not filed, the application will be withdrawn.'
+
+        intent = ''
+        if mergeinfo[0] == 'true':
+            intent = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'cdueDate' : function_instance.formatDate(mergeinfo[1]),
+            'crespDate' : function_instance.formatDate(mergeinfo[2]),
+            'salutation' : '',
+            'deadLineConfirmTop' : '',
+            'pleaseNote' : pleasenote,
+            'deadLineConfirmBot' : ''
+        })
+        return replace
+    
+class micnallow:
+    def micnallow(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
         })
         return replace

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import addinventors, addcorp, addrecipients,  addactivities, addPA, members, matters, fip_reports, merges, toolbox, addRelatedMatter
+from .views import addinventors, addcorp, addrecipients,  addactivities, addPA, members, matters, fip_reports, merges, toolbox, addRelatedMatter, checkMatter
 #from django.contrib import admin
 # from .views import mergeEmailButton
 from .views import testview
@@ -16,6 +16,7 @@ urlpatterns = [
     path('merge_activities/', addactivities, name = 'merge_activities'),
     path('merge_PA/', addPA, name = 'merge_PA'),
     path('merge_RM/', addRelatedMatter, name = 'merge_RM'),
+    path('merge_chkmatter/', checkMatter, name = 'merge_chkmatter'),
 
     path('fip-reports/', fip_reports, name='fip_reports'),
     path('merges/', merges, name='merges'),
