@@ -139,6 +139,7 @@ class mergefunctions:
                 'faWorkAddr' : addr,
                 'faCSZ' : '',
                 'faAssignee' : profile.orgname,
+                'associateName' : profile.orgname,
                 'recipientEmail' : contact.email,
                 'faclientRefNo' : part.matterno,
                 'faRecipient' : farecipient
@@ -206,27 +207,31 @@ class mergefunctions:
     def applicantfill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56691', roleorderno = count)
-        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+        
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56691', roleorderno = count)
+            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
-        applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
-        applicantlen = len(applicant)
+            applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
+            applicantlen = len(applicant)
 
-        if applicantlen == 1:
-            count = 'Applicant: '
+            if applicantlen == 1:
+                count = 'Applicant: '
 
-        info = {
-            'applCnt' : count,
-            'applicantCity' : contact.city,
-            'applicantState' : contact.state,
-            'applicantZip' : contact.zip,
-            'applicantCountry' : contact.country,
-            'applicantStreet1' : contact.address1,
-            'applicantStreet2' : contact.address2,
-            'applicant' : profile.orgname,
-            'applicantName' : profile.orgname,
-        }
+            info = {
+                'applCnt' : count,
+                'applicantCity' : contact.city,
+                'applicantState' : contact.state,
+                'applicantZip' : contact.zip,
+                'applicantCountry' : contact.country,
+                'applicantStreet1' : contact.address1,
+                'applicantStreet2' : contact.address2,
+                'applicant' : profile.orgname,
+                'applicantName' : profile.orgname,
+            }
+        except:
+            info = {}
         return info
     
     def correspondenceContactfill(self, matter):
@@ -805,3 +810,16 @@ class mergefunctions:
             return datetime.strptime(date, '%Y-%m-%d').strftime('%B %d, %Y')
         except:
             return date
+    
+    def ffparafill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '58125', roleorderno = 1)
+        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+        info = {
+            'ffparaName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+            'ffparaEmail' : contact.email,
+            'ffparaPhone' : contact.phone1
+        }
+        return info

@@ -140,9 +140,10 @@ class issuefee:
         replace.update(function_instance.esigncheck(mergeinfo[12]))
         replace.update({
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            #'nickU' : '',
-            'dateIssueFee': prevpaiddate,
+            'nickU' : '',
+            'dateIssueFee': function_instance.formatDate(prevpaiddate),
             'withDrawText' : wdrwtxt,
+            'withdrawCopyText' : '',
             #'increaseText' : '',
             'dateNOAR' : noarDate,
             'depAccount' : depnum,
@@ -162,7 +163,7 @@ class issuefee:
             #'applyPreviousText' : '',
             #'commentX' : '',
             #'commentText' : '',
-            'dueDate' : dateIssueFee,
+            'dueDate' : function_instance.formatDate(dateIssueFee),
         })
         return replace
     
@@ -1270,17 +1271,29 @@ class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        
+        sadata = function_instance.rvwmatterpersonnelFill(matter_data)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        #replace.update(function_instance.inventorInfo(matter))
-        replace.update(function_instance.assigneefill(matter, 1))
-        replace.update(function_instance.applicantfill(matter, 1))
+        replace.update(function_instance.esigncheck(mergeinfo[7]))
         replace.update({
-            'pageDraw' : mergeinfo[3],
             # get update tag
-            '' : mergeinfo[6]
+            '' : mergeinfo[6],
+            'custNoEmail' : 'request@slwip.com',
+            'apptitle' : matter_data.title,
+            'appmatterNo' : matter_data.hostmatterno,
+            'appmatterType' : matter_data.mattertypedescription,
+            'drawingSheets' : mergeinfo[3],
+            'appprov' : 'Non-Provisional',
+            'SAFirstName' : sadata.fname,
+            'SALastName' : sadata.lname,
+            'SARegNo' : sadata.registrationno
         })
+        if mergeinfo[1] == 'false':
+            replace.update({'custNoCorresp' : '', 'custNoEmail' : ''})
+        if mergeinfo[2] == 'false':
+            replace.update({'apptitle' : '', 'appmatterNo' : '', 'appmatterType' : '', 'drawingSheets' : '', 'appprov' : ''})
         return replace
 
 class nopreport:
@@ -2666,12 +2679,21 @@ class ffSndItmsToAssoc:
                 count += 1
                 docnames += '\t' + str(count) + '. ' + doc + '\n'
                 
+        if mergeinfo[5]:
+            duedate = 'by the ' + function_instance.formatDate(mergeinfo[5]) + ' deadline'
+        else:
+            duedate = 'at your earliest convenience'
+                
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update(function_instance.ffparafill(matter))
         replace.update({
             'documentName' : docnames,
-            'cdeadLine' : 'Kindly see to the prompt filing of the enclosed document(s) by the',
-            'dueDate' : function_instance.formatDate(mergeinfo[5])
+            'cdeadLine' : 'Kindly see to the prompt filing of the enclosed document(s) ',
+            'dueDate' : duedate,
+            'faRecipientTitle' : '',
+            
         })
         return replace
 

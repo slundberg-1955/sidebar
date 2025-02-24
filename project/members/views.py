@@ -555,26 +555,90 @@ def combinedoc(path, method, mergeinfo, matter, email):
         invCount = len(inventors) + 1
         appCount = len(applicants) + 1
         assignCount = len(assignees) + 1
-
-        for i in range(1, invCount):
+            
+        for i in range(0, invCount):
             replace = {}
-            replace.update(merge_fn.inventorInfo(matter, i))
+            if (method == 'applicationdata_updnew' and mergeinfo[0] == 'false') or invCount == 0:
+                blank = {            
+                    'inventorCnt' : '',
+                    'inventor' : '',
+                    'invpre' : '',
+                    'inventorFirstName' : '',
+                    'inventorMiddleInitial' : '',
+                    'inventorLastName' : '',
+                    'inventorSuffix' : '',
+                    'inventorHomeCity' : '',
+                    'inventorHomeState' : '',
+                    'inventorHomeCountry' : '',
+                    'inventorMailingStreet1' : '',
+                    'inventorMailingStreet2' : '',
+                    'inventorMailingCity' : '',
+                    'inventorMailingState' : '',
+                    'inventorMailingZip' : '',
+                    'inventorMailingCountry' : ''
+                    }
+                replace.update(blank)
+                invCount = 0
+            else:  
+                if i != 0:
+                    replace.update(merge_fn.inventorInfo(matter, i))
+            if i == 0 and invCount > 0:
+                continue
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx'))
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx')) 
             composer.append(doc3)
         
         composer.append(doc1)
         
-        for i in range(1, appCount):
+        for i in range(0, appCount):
             replace = {}
-            replace.update(merge_fn.applicantfill(matter, i))
+            if (method == 'applicationdata_updnew' and mergeinfo[4] == 'false') or appCount == 0:
+                blank = {            
+                    'applCnt' : '',
+                    'applicantCity' : '',
+                    'applicantState' : '',
+                    'applicantZip' : '',
+                    'applicantCountry' : '',
+                    'applicantStreet1' : '',
+                    'applicantStreet2' : '',
+                    'applicant' : '',
+                    'applicantName' : ''
+                    }
+                replace.update(blank)
+                appCount = 0
+            else: 
+                if i != 0:
+                    replace.update(merge_fn.applicantfill(matter, i))
+            if i == 0 and appCount > 0:
+                continue
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx'))
             doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx')) 
             composer.append(doc4)
 
-        for i in range(1, assignCount):
+        for i in range(0, assignCount):
             replace = {}
-            replace.update(merge_fn.assigneefill(matter, i))
+            if (method == 'applicationdata_updnew' and mergeinfo[5] == 'false') or assignCount == 0:
+                blank = {            
+                    'assigneeCnt' : '',
+                    'assigneeName' : '',
+                    'assigneeStreet' : '',
+                    'assigneeCity' : '',
+                    'assigneeState' : '',
+                    'assigneeZip' : '',
+                    'assigneeCountry' : '',
+                    'assigneeStreet1' : '',
+                    'assigneeStreet2' : '',
+                    'assignee' : '',
+                    'assigneeAddress' : '',
+                    'assigneeStateInc' : ''
+                    }
+                replace.update(blank)
+                assignCount = 0
+            else: 
+                if i != 0:
+                    replace.update(merge_fn.assigneefill(matter, i))
+            if i == 0 and assignCount > 0:
+                continue
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx'))
             doc5 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx')) 
             composer.append(doc5)
