@@ -555,7 +555,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         invCount = len(inventors) + 1
         appCount = len(applicants) + 1
         assignCount = len(assignees) + 1
-            
+
         for i in range(0, invCount):
             replace = {}
             if (method == 'applicationdata_updnew' and mergeinfo[0] == 'false') or invCount == 0:
@@ -603,10 +603,10 @@ def combinedoc(path, method, mergeinfo, matter, email):
                     'applicantStreet2' : '',
                     'applicant' : '',
                     'applicantName' : ''
-                    }
+                }
                 replace.update(blank)
                 appCount = 0
-            else: 
+            else:
                 if i != 0:
                     replace.update(merge_fn.applicantfill(matter, i))
             if i == 0 and appCount > 0:
@@ -673,6 +673,19 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'BSCCombinedAssnDecinventors.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'BSCCombinedAssnDecinventorsout.docx'))
             doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'BSCCombinedAssnDecinventorsout.docx')) 
             composer.append(doc2)
+
+    if method == 'aiashortdecl':
+        doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'miscellaneous', 'blank.docx')) 
+        composer = Composer(doc2)
+        merge_fn = mergefunctions()
+        invsellist = mergeinfo[1:]
+        invsellist = invsellist[:-1]
+        for inv in invsellist:
+            replace = {}
+            replace.update(merge_fn.inventorInfoName(matter, inv))
+            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'aiaShortDeclaration_esign.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'aiaShortDeclaration_out.docx'))
+            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'aiaShortDeclaration_out.docx')) 
+            composer.append(doc3)
 
     if email == 'TRUE':
         merge_fn = mergefunctions()
@@ -782,7 +795,7 @@ def mergeDoc(matter , mergeinfo, request):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow, '')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)

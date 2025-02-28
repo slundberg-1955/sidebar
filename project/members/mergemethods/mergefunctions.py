@@ -95,12 +95,18 @@ class mergefunctions:
                     basicOut.update({key: value})
                     
         if 'org' in tables_list:
-            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
-            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-            basic = {
-                'orgName' : profile.orgname,
-                'This.orgName' : profile.orgname,
-            }
+            try:
+                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
+                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+                basic = {
+                    'orgName' : profile.orgname,
+                    'This.orgName' : profile.orgname,
+                }
+            except:
+                basic = {
+                    'orgName' : '',
+                    'This.orgName' : ''
+                }
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -152,14 +158,23 @@ class mergefunctions:
             basicOut.update({'currentDate': datetime.now().strftime("%B %d, %Y")})
 
         if 'matterparticipant' in tables_list:
-            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
-            basic = {
-                'clientRefNo' : 'Ref. No. ' + part.matterno,
-                'clientNo' : part.matterno,
-                'This.clientRefNo' : 'Ref. No. ' + part.matterno,
-                'clientRefText' : 'Client Ref. No. ' + part.matterno,
-                'RefNo' : part.matterno
-            }
+            try:
+                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+                basic = {
+                    'clientRefNo' : 'Ref. No. ' + part.matterno,
+                    'clientNo' : part.matterno,
+                    'This.clientRefNo' : 'Ref. No. ' + part.matterno,
+                    'clientRefText' : 'Client Ref. No. ' + part.matterno,
+                    'RefNo' : part.matterno
+                }
+            except:
+                basic = {
+                    'clientRefNo' : 'Ref. No. ',
+                    'clientNo' : '',
+                    'This.clientRefNo' : 'Ref. No. ',
+                    'clientRefText' : 'Client Ref. No. ',
+                    'RefNo' : ''
+                }
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -177,30 +192,46 @@ class mergefunctions:
     def assigneefill(self, matter, count):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
-        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
+            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
-        assigne = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
-        assigneelen = len(assigne)
+            assigne = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
+            assigneelen = len(assigne)
 
-        if assigneelen == 1:
-            count = 'Assignee: '
+            if assigneelen == 1:
+                count = 'Assignee: '
 
-        info = {
-            'assigneeCnt' : count,
-            'assigneeName' : profile.orgname,
-            'assigneeStreet' : contact.address1,
-            'assigneeCity' : contact.city,
-            'assigneeState' : contact.state,
-            'assigneeZip' : contact.zip,
-            'assigneeCountry' : contact.country,
-            'assigneeStreet1' : contact.address1,
-            'assigneeStreet2' : contact.address2,
-            'assignee' : profile.orgname,
-            'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip,
-            'assigneeStateInc' : profile.incstate + ', ' + merge_fn.fullCountry(profile.inccountry)
-        }
+            info = {
+                'assigneeCnt' : count,
+                'assigneeName' : profile.orgname,
+                'assigneeStreet' : contact.address1,
+                'assigneeCity' : contact.city,
+                'assigneeState' : contact.state,
+                'assigneeZip' : contact.zip,
+                'assigneeCountry' : contact.country,
+                'assigneeStreet1' : contact.address1,
+                'assigneeStreet2' : contact.address2,
+                'assignee' : profile.orgname,
+                'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip,
+                'assigneeStateInc' : profile.incstate + ', ' + merge_fn.fullCountry(profile.inccountry)
+            }
+        except:
+            info = {
+                'assigneeCnt' : '',
+                'assigneeName' : '',
+                'assigneeStreet' : '',
+                'assigneeCity' : '',
+                'assigneeState' : '',
+                'assigneeZip' : '',
+                'assigneeCountry' : '',
+                'assigneeStreet1' : '',
+                'assigneeStreet2' : '',
+                'assignee' : '',
+                'assigneeAddress' : '',
+                'assigneeStateInc' : ''
+            }
         return info
     
     # Applicant information fill. Update roleid  56691
@@ -302,37 +333,60 @@ class mergefunctions:
     def parafill(self, keys, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34609', roleorderno = 1)
-        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
-        info = {
-            'paraName' : profile.fname + ' ' + profile.lname,
-            'paraPhone' : contact.phone1,
-            'paraEmail' : contact.email,
-            'This.paraName' : profile.fname + ' ' + profile.lname,
-            'This.paraPhone' : contact.phone1,
-            'This.paraEmail' : contact.email,
-            'clientparaname' : profile.fname + ' ' + profile.lname,
-            'clientparaemail' : contact.email
-        }
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34609', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'paraName' : profile.fname + ' ' + profile.lname,
+                'paraPhone' : contact.phone1,
+                'paraEmail' : contact.email,
+                'This.paraName' : profile.fname + ' ' + profile.lname,
+                'This.paraPhone' : contact.phone1,
+                'This.paraEmail' : contact.email,
+                'clientparaname' : profile.fname + ' ' + profile.lname,
+                'clientparaemail' : contact.email
+            }
+        except:
+            info = {
+                'paraName' : 'NO PARALEGAL',
+                'paraPhone' : 'NO PARALEGAL PHONE ',
+                'paraEmail' : 'NO PARALEGAL EMAIL',
+                'This.paraName' : 'NO PARALEGAL',
+                'This.paraPhone' : 'NO PARALEGAL PHONE',
+                'This.paraEmail' : 'NO PARALEGAL EMAIL',
+                'clientparaname' : '',
+                'clientparaemail' : ''
+            }
         return info
     
     # WA fill
     def WAfill(self, keys, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34615', roleorderno = 1)
-        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
-        info = {
-            'WAName' : profile.fname + ' ' + profile.lname,
-            'WAPhone' : contact.phone1,
-            'WAEmail' : contact.email,
-            'This.WAName' : profile.fname + ' ' + profile.lname,
-            'This.WAPhone' : contact.phone1,
-            'This.WAEmail' : contact.email,
-            'WARegNo' : profile.registrationno
-        }
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34615', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'WAName' : profile.fname + ' ' + profile.lname,
+                'WAPhone' : contact.phone1,
+                'WAEmail' : contact.email,
+                'This.WAName' : profile.fname + ' ' + profile.lname,
+                'This.WAPhone' : contact.phone1,
+                'This.WAEmail' : contact.email,
+                'WARegNo' : profile.registrationno
+            }
+        except:
+            info = {
+                'WAName' : 'NO WORKING ATTORNEY',
+                'WAPhone' : 'NO WORKING ATTORNEY PHONE',
+                'WAEmail' : 'NO WORKING ATTORNEY EMAIL',
+                'This.WAName' : 'NO WORKING ATTORNEY',
+                'This.WAPhone' : 'NO WORKING ATTORNEY PHONE',
+                'This.WAEmail' : 'NO WORKING ATTORNEY EMAIL',
+                'WARegNo' : ''
+            }
         return info
     
     def fullCountry(self, country):
@@ -623,7 +677,8 @@ class mergefunctions:
         esignout = {
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
-            'signatureName' : esign_out
+            'signatureName' : esign_out,
+            'inventorSignature' : esign_out
         }
 
         return esignout
@@ -777,14 +832,21 @@ class mergefunctions:
     def cmgfill(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34614', roleorderno = 1)
-        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
-        info = {
-            'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
-            'cmgEmail' : contact.email,
-            'cmgPhone' : contact.phone1
-        }
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34614', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'cmgName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+                'cmgEmail' : contact.email,
+                'cmgPhone' : contact.phone1
+            }
+        except:
+            info = {
+                'cmgName' : 'NO CMG PERSONNEL',
+                'cmgEmail' : '',
+                'cmgPhone' : ''
+            }
         return info
     
     def counselfill(self, matter):

@@ -2357,19 +2357,46 @@ class FFNoticePubRcvd:
     def FFNoticePubRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
+        matter_data = function_instance.matterFill(matter)
+        patent = function_instance.patentFill(matter_data)
+        
+        if 'CN' in matter_data.country :
+            hactreq = '\nACTION REQUIRED: Instructions to file in Hong Kong\n'
+            try:
+                activity = function_instance.getactivityid(matter_data, 'HKRR')
+                smryone = activity.smryonevalue
+                hkduedate = smryone.strftime('%B %d, %Y')
+                hkrespdate = (smryone - relativedelta(months=1)).strftime('%B %d, %Y')
+                
+            except:
+                hkduedate = 'No date found'
+                hkrespdate = 'No date found'
+                
+            cnmatter = '\nIn view of the publication, the deadline to extend the above-mentioned Chinese application to Hong Kong is ' + hkduedate + '.  If you are interested in registering the application in Hong Kong, please provide us with your instructions by ' + hkrespdate + '.  Unless we receive your instructions by this date, we will take no further action in this regard.\n'
+            hactreq += 'Deadline Date: ' + hkduedate + '\nRequested Response Date: ' + hkrespdate
+        else:
+            hactreq = ''
+            cnmatter = ''
+        
         if mergeinfo[0] == 'true':
-            voltxt = '\nPlease note that the deadline to file a voluntary amendment is '+ function_instance.formatDate(mergeinfo[1]) +'.  Please let us have your instructions before '+ function_instance.formatDate(mergeinfo[2]) +' if an amendment should be filed.'
+            voltxt = '\nPlease note that the deadline to file a voluntary amendment is '+ function_instance.formatDate(mergeinfo[1]) +'.  Please let us have your instructions before '+ function_instance.formatDate(mergeinfo[2]) +' if an amendment should be filed.\n'
+            actreq = '\nACTION REQUIRED: Instructions for file Voluntary Amendment\n'
+            actreq += 'Deadline Date: ' + function_instance.formatDate(mergeinfo[1]) + '\nRequested Response Date: ' + function_instance.formatDate(mergeinfo[2])
+        else:
+            voltxt = ''
+            actreq = ''
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'volAmend' : voltxt,
-            'cnMatter' : '',
+            'cnMatter' : cnmatter,
             'salutation' : '',
-            'hkactionReq' : '',
-            'actionReq' : '',
-            'cpubDate' : '',
-            'cpubNo' : ''
+            'hkactionReq' : hactreq,
+            'actionReq' : actreq,
+            'cpubDate' : patent.opipublicationdate,
+            'cpubNo' : patent.pubno,
+            'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
         })
         return replace
     
@@ -3483,6 +3510,18 @@ class micnallow:
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+
+class aiashortdecl:
+    def aiashortdecl(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
 
         })
