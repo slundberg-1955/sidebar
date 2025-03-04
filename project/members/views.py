@@ -241,7 +241,7 @@ def addrecipients(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
-""" def addSA(request):
+def addSA(request):
     if request.method == 'POST':
         #Find a better way to get SA
         SAs = Rvwmatterpersonnel.objects.using('FIP').filter(roleid = 34619, orgid = 4).distinct()
@@ -252,7 +252,7 @@ def addrecipients(request):
         return JsonResponse({'message': f'{SAarr}'})
     
     else:
-        return JsonResponse({'error': 'Invalid request method'}) """
+        return JsonResponse({'error': 'Invalid request method'})
     
 def addPA(request):
     merge_fn = mergefunctions()

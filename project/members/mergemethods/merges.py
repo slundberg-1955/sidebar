@@ -422,10 +422,7 @@ class applicationdata_new2:
         mailapp = mergeinfo[5]
         smallent = mergeinfo[6]
 
-        includeapp = mergeinfo[7]
-        includenonapp = mergeinfo[8]
-        noinclude = mergeinfo[9]
-        includeboth = mergeinfo[10]
+        radio = mergeinfo[7]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -3002,17 +2999,39 @@ class ffapplaidopen:
 class ffNoticeOfAcceptAuNzFp:
     def ffNoticeOfAcceptAuNzFp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-
-        
+        currtxt = ''
+        # Au
+        if mergeinfo[0] == 'true':
+            acttxt = 'Instructions to pay the Acceptance Fees and file Divisional Applications (Optional)'
+            deadline = '\nDeadline Date: ' + function_instance.formatDate(mergeinfo[2])
+            reqresp = '\nRequested Response Date: ' + function_instance.formatDate(mergeinfo[3])
+            auornztxt = 'Acceptance of the application was advertised in the Australian Official Journal on ' + function_instance.formatDate(mergeinfo[1]) + '.  Any interested party may file an opposition to the patentability of the application for a period of three months following advertisement.  If no opposition is filed, the final date for sealing will be ' + function_instance.formatDate(mergeinfo[2]) + '.  Please provide us with your instructions to pay the fees by ' + function_instance.formatDate(mergeinfo[3])
+            auornztxt = 'Please note that if any divisional applications need to be filed, they must be filed by the final date of sealing i.e. ' + function_instance.formatDate(mergeinfo[2])
+            if mergeinfo[4] == 'true':
+                currtxt = 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.'
+            
+        # Nz
+        if mergeinfo[6] == 'true':
+            acttxt = 'None at this time.'
+            deadline = ''
+            reqresp = ''
+            auornztxt = 'Acceptance of the application was advertised in the New Zealand Patent Office Journal No. 1 on ' + function_instance.formatDate(mergeinfo[8]) + '.  Any interested party may file an opposition to the patentability of the application for a period of three months following advertisement.  If no opposition is filed, the New Zealand associate will automatically pay the sealing fee without further instruction.'
+            
+        if mergeinfo[5] == 'true':
+            currtxt += '\n\nWe will pay any annuity or maintenances fees on your behalf unless instructed to the contrary.\n\n'
+        else:
+            currtxt += '\n\nIt is our understanding that you will be responsible for any annuity/maintenance fee payments.  If our understanding is incorrect, please advise us.\n\n'            
+            
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'activityName' : '',
             'salutation' : '',
-            'actionReq' : '',
-            'cdueDate' : '',
-            'crespDate' : '',
-            'auornzSelect' : '',
+            'actionReq' : acttxt,
+            'cdueDate' : deadline,
+            'crespDate' : reqresp,
+            'auornzSelect' : auornztxt,
+            'currFutPend' : currtxt
         })  
         return replace
 
@@ -3455,12 +3474,31 @@ class pctpoa_new:
     def pctpoa_new(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
 
-
-
+        if mergeinfo[5] == 'true':
+            genpoa = 'GENERAL POWER OF ATTORNEY'
+        else:
+            genpoa = 'POWER OF ATTORNEY'
+        
+        if mergeinfo[6] == 'true':
+            revpoa = 'revokes all former Powers of Attorney and appoints the following attorneys/agents of the firm of Schwegman Lundberg & Woessner (SLW) as Agents for so long as they remain with SLW, to act before all competent International Authorities via the U.S. Receiving Office and to make and receive payments on behalf of, in connection with:'
+            revpoa += '\n\n\t(a) any and all International Applications filed by one or more of the named attorneys/agents acting on behalf of; and\n\n\t(b) any and all International Applications previously on file but into which this General Power of Attorney document is filed by one or more of the named attorneys/agents acting on behalf of: '
+        else:
+            revpoa = 'appoints the following attorneys/agents of the firm of Schwegman Lundberg & Woessner (SLW) as Agents for so long as they remain with SLW, to act before all competent International Authorities via the U.S. Receiving Office and to make and receive payments on behalf of, in connection with International Application No. <<serialNo>>, Attorney Reference No. <<matterNo>>, and entitled <<title>>'
+            
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[7]))
         replace.update({
-
+            'assigneeCity' : mergeinfo[0],
+            'assigneeState' : mergeinfo[1],
+            'assigneeCountry' : mergeinfo[2],
+            'authSignor' : mergeinfo[3],
+            'authSignorTitle' : mergeinfo[4],
+            'cGenPOA' : genpoa,
+            'revApt' : 'Appointment of Agent\n',
+            'agentGS' : '',
+            'assignee' : '',
+            'revPoA' : revpoa
         })
         return replace
 
