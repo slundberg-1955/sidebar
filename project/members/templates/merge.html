@@ -283,6 +283,9 @@
         #nikeaction_new .modal-dialog{
             max-width: 465px;
         }
+        #intelformal .modal-dialog{
+            max-width: 550px;
+        }
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
@@ -4398,6 +4401,24 @@
         </div>
     </div>
 </div>
+<!-- Intel - Send Formal Document(s) -->
+<div id="intelformal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelformalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Intel - Send Formal Document(s)</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Date for Returning Executed Documents: <input type="date" id="intelformaldate">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(intelformaldate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Matter not found UI -->
 <div id="matterNotFound" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="matterNotFoundModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -4779,7 +4800,7 @@
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
-                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion'
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new'){
                             fillActivities(mergemethod);

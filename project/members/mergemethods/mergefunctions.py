@@ -678,7 +678,8 @@ class mergefunctions:
             'echoSignature' : esign_out,
             'signatureDate' : esigndate_out,
             'signatureName' : esign_out,
-            'inventorSignature' : esign_out
+            'inventorSignature' : esign_out,
+            'clientSignature' : esign_out
         }
 
         return esignout

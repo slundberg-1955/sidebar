@@ -896,7 +896,6 @@ class reportprvassnnew:
         replace.update({
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'salutation' : '',
-            
             'haveInvSgn' : 'have the inventor(s) ',
             'ascFax' : '612-339-3061',
             'returnDate' : rdate,
@@ -1508,12 +1507,13 @@ class PctSearchRep:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        # Need to fix doc
+        replace.update(function_instance.applicantfill(matter, 1))
         replace.update({
             '19duedate' : function_instance.formatDate(mergeinfo[1]),
             '34duedate' : function_instance.formatDate(mergeinfo[2]),
             '30mduedate' : function_instance.formatDate(mergeinfo[3]),
-            'instructionsDue' : function_instance.formatDate(mergeinfo[0])
+            'instructionsDue' : function_instance.formatDate(mergeinfo[0]),
+            'activityName'  : ''
         })
         return replace
     
@@ -2329,13 +2329,26 @@ class FFDecisiontoGrant_NEW:
         })
         return replace
 
-# WORK ON
 class natlphase:
     def natlphase(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
         
+        try:
+            activity = function_instance.getactivityid(matter_data, 'NPAD')
+            npaddte = (activity.smryonevalue).strftime('%B %d, %Y')
+            duedte = (npaddte - relativedelta(months=1)).strftime('%B %d, %Y')
+
+        except:
+            duedte = ''
         
-        
+        if mergeinfo[3] == 'false':
+            nonprov1 = 'Since no separate United States patent application was filed for this case, domestic as well as foreign patent rights will be lost unless corresponding national stage patent applications are filed in the countries or regional patent offices in which you seek protection. '
+            nonprov2 = ''
+        else:
+            nonprov1 = ''
+            nonprov2 = ''
+            
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
@@ -2343,9 +2356,9 @@ class natlphase:
             'instDate' : function_instance.formatDate(mergeinfo[2]),
             'priorityDate' : function_instance.formatDate(mergeinfo[1]),
             'npdueDate' : function_instance.formatDate(mergeinfo[0]),
-            'nonProvText1' : '',
-            'nonProvText2' : '',
-            'dueDate1mo' : '',
+            'nonProvText1' : nonprov1,
+            'nonProvText2' : nonprov2,
+            'dueDate1mo' : duedte
         })
         return replace
     
@@ -2525,14 +2538,14 @@ class clientagree_sp:
     def clientagree_sp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
-        esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'salutation' : '',
-            'signatureDate' : esigndate_out,
-            'clientSignature' : esign_out
+            'retainerParagraph' : '',
+            
         })
         return replace
 
@@ -2844,12 +2857,16 @@ class ffOlp:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
+        resptxt = 'It is our understanding that you will be responsible for the payment of the renewal fees for this patent.  As such, we have not entered this date into our computerized docketing system.  If our understanding is incorrect, please advise immediately. '
+        if mergeinfo[0] == 'true':
+            resptxt = 'With regard to the maintenance fees, unless we hear from you to the contrary, we will contact you closer to the deadline date for your payment instructions. '
+        
         try:
             expdate = (matter_data.fileddate + relativedelta(years=20)).strftime('%B %d, %Y')
         except:
             expdate = ''
             
-        resptxt = ''
+        resptxt += 'If a supplemental sheet is enclosed, please review the details relating to working requirements, compulsory licenses and marking requirement as there are dates that will affect the patent.  Please contact us if you have any questions about the information and dates noted in the supplemental sheet.  Unless instructed in writing, we will not send any further reminders regarding the deadlines and requirements for working and/or marking your patent. '
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -3562,5 +3579,17 @@ class aiashortdecl:
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
 
+        })
+        return replace
+
+class intelformal:
+    def intelformal(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
+        replace.update({
+            'returnDate' : function_instance.formatDate(mergeinfo[0])
         })
         return replace
