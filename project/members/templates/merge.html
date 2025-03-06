@@ -179,7 +179,7 @@
             max-width: 850px;
         }
         #Statement373c .modal-dialog{
-            max-width: 700px;
+            max-width: 760px;
         }
         #PTOAIA82 .modal-dialog{
             max-width: 635px;
@@ -2258,7 +2258,7 @@
                 </div>
                 <div>
                       <button type="button" >Additional Documents</button>
-                      <select id="generalxmitCFselSA">
+                      <select id="generalxmitCFSAdrop">
                         <option value="select">Select Signing Attorney</option>
                     </select>
                       <input type="checkbox" id="generalxmitCFesign"> E-Signature Enable
@@ -2347,7 +2347,7 @@
                 <div>
                             &emsp;<input type="checkbox" id="idsCommCfNewcertm"> Include Certificate of Mailing
                             <select id="idsCommCfNewSAdrop">
-                        <option value="selSA">Select Signing Attorney</option>
+                        <option value="idsCommCfNewSAdrop">Select Signing Attorney</option>
                     </select>
                 </div>
                 <div>
@@ -2481,7 +2481,7 @@
                         <option value="Office Action">Office Action</option>
                         <option value="Office Action Response">Office Action Response</option>
                         <option value="PCT Search Report">PCT Search Report</option>
-                        <option value="Select Signing Attorney">Select Signing Attorney</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div>
@@ -3094,8 +3094,8 @@
             <div class="modal-body">
                 <div>
                       <input type="checkbox" id="poa82combinedesign"> E-Signature Enable
-                                <input type="radio" name="poa82combinedaccoptions"> Deposit Account
-                     <input type="radio" name="poa82combinedaccoptions"> Check
+                                <input type="radio" name="poa82combinedaccoptions" value="dep"> Deposit Account
+                     <input type="radio" name="poa82combinedaccoptions" value="chk"> Check
                 </div>
                 <div>
                     <table style="border-collapse: collapse; border: none;">
@@ -3118,30 +3118,40 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"></td>
-                            <td align="center" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions"> Mail Stop Amendment</td>
-                            <td align="right" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions"> Mail Stop AF</td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions" value="Mail Stop Amendment"> Mail Stop Amendment</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions" value="Mail Stop AF"> Mail Stop AF</td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 4px;"></td>
-                            <td align="center" style="border: none; padding: 4px;"><input type="radio" id="poa82combinedmailab" name="poa82combinedoptions"> Mail Stop Appeal Brief - Patents</td>
-                            <td align="right" style="border: none; padding: 4px;"><input type="radio" id="poa82combinedoth" name="poa82combinedoptions"> Other</td>
+                            <td align="center" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions" value="Mail Stop Appeal Brief - Patents"> Mail Stop Appeal Brief - Patents</td>
+                            <td align="right" style="border: none; padding: 4px;"><input type="radio" name="poa82combinedoptions" value="Other" id="poa82combinedothrad"> Other</td>
                         </tr>
                     </table> 
                 </div>
+                <div style="display:none;" id="poa82combinedothfill">
+                           <input type="text" id="poa82combinedoth" size="40">
+                </div>
                 <div>
                     <br>  <button type="button" class="btn btn-primary">Additional Documents</button>
-                                <select id="pctgenericsa">
+                                <select id="poa82combinedSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(poa82combinedesign.checked, radioFill('poa82combinedaccoptions'), poa82combinedtpoa.value, poa82combinedpoa.value, radioFill('poa82combinedoptions'), poa82combinedoth.value, poa82combinedSAdrop.value)">Continue</button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('input[name="poa82combinedoptions"]').forEach((elem) => {
+        elem.addEventListener("change", function() {
+            document.getElementById('poa82combinedothfill').style.display = this.value === 'Other' ? 'block' : 'none';
+        });
+    });
+</script>
 <!-- Letter - FF Instructions to Pay Grant Fees -->
 <div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -3525,7 +3535,7 @@
                 <br><br>  Mail Stop: <input type="text" id="genericheadermail" size="25">
             </div>
             <div>
-                   <select id="genericheadersa">
+                   <select id="genericheaderSAdrop">
                     <option>Select Signing Attorney</option>
                 </select>
             </div><br>
@@ -3863,7 +3873,7 @@
                     </tr>
                 </table>
                 <div>
-                <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select>            <input type="checkbox" id="priorexam2012esign"> E-Signature Enable
+                <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select> <input type="checkbox" id="priorexam2012esign"> E-Signature Enable
                 </div>
             </div>
             <br><div class="modal-footer">
@@ -3892,7 +3902,7 @@
                     <br>&emsp;&emsp;Mail Stop: <input type="text" id="idsCommCfNewmstop" size="20" value="MS Amendment">
                 </div>
                 <div>
-                    <br>&emsp;&emsp;<select id="prelimamendsa">
+                    <br>&emsp;&emsp;<select id="prelimamendSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
                 </div>
@@ -4551,7 +4561,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "generalxmitCF", "idsCommCfNew", "DraftOAInstruct", "mrgfforder", "rcexmit3", "provisionalapp", "poa82combined", "StatementUnder373b", "Statement373c", "PTOAIA82", "genericheader", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow" ,"priorexam2012", "prelimamend", "CommFilingPriDoc", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -4563,8 +4573,8 @@
                         }else if (contacts == 'TRUE'){ 
                             fillRecipients(mergemethod);
                             //submitForm();
-                        //}else if (mergemethod == 'Statement373c'){
-                        //    fillSA();
+                        }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc'){
+                            fillSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');
                         //}else if (mergemethod == 'incorrectfilerect'){
@@ -4890,7 +4900,7 @@
             });
         }
 
-        function fillSA(){
+        function fillSA(mergemethod) {
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
                 type: 'POST',
@@ -4900,16 +4910,26 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    alert(response.message);
                     const sattList = response.message;
-                    var sel = document.getElementById('SAdrop');
+                    var sel = document.getElementById(mergemethod + 'SAdrop');
+                    
+                    // Clear existing options
+                    sel.innerHTML = '';
+
+                    // Add the default option
+                    var defaultOpt = document.createElement('option');
+                    defaultOpt.innerHTML = 'Select Signing Attorney';
+                    defaultOpt.value = '';
+                    sel.appendChild(defaultOpt);
+
+                    // Add the options from the response
                     for (var i = 0; i < sattList.length; i++) {
                         var opt = document.createElement('option');
                         opt.innerHTML = sattList[i];
                         opt.value = sattList[i];
                         sel.appendChild(opt);
                     }
-                    $('#statement373c').modal('show');
+                    $('#' + mergemethod).modal('show');
                 },
                 error: function(error) {
                     alert('no');

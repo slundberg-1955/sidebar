@@ -243,13 +243,17 @@ def addrecipients(request):
     
 def addSA(request):
     if request.method == 'POST':
-        #Find a better way to get SA
-        SAs = Rvwmatterpersonnel.objects.using('FIP').filter(roleid = 34619, orgid = 4).distinct()
-        SAarr = []  # Initialize an empty list
-        for SA in SAs:
-            SAarr.append(SA.personname)
+        # Query the database for distinct personLastNameFirstName values, sorted by fName
+        SAs = (Rvwmatterpersonnel.objects.using('FIP')
+               .filter(roleid=34619, orgid=4)
+               .values('fname', 'lname')
+               .distinct()
+               .order_by('fname'))
 
-        return JsonResponse({'message': f'{SAarr}'})
+        # Extract the required values into a list of concatenated strings
+        SAarr = [f"{SA['fname']} {SA['lname']}" for SA in SAs]
+
+        return JsonResponse({'message': SAarr})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})

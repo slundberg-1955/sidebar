@@ -3593,3 +3593,19 @@ class intelformal:
             'returnDate' : function_instance.formatDate(mergeinfo[0])
         })
         return replace
+    
+class poa82combined:
+    def poa82combined(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        mailstop = mergeinfo[4]
+        if mergeinfo[4] == 'Other':
+            mailstop = mergeinfo[5]
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'mailStopText' : mailstop
+        })
+        return replace
