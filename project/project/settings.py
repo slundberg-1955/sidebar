@@ -20,15 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # --------------- AZURE ---------------
-#SECRET_KEY = os.getenv('SECRET_KEY')
-#DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
-#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
-#CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
-#SECURE_SSL_REDIRECT = \
-#    os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
-#if SECURE_SSL_REDIRECT:
-#    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-#SESSION_COOKIE_SECURE = True
+# SECRET_KEY = os.getenv('SECRET_KEY')
+# DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+# CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
+# SECURE_SSL_REDIRECT = \
+#     os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
+# if SECURE_SSL_REDIRECT:
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SESSION_COOKIE_SECURE = True
 
 
 # --------------- LOCAL ---------------
@@ -148,11 +148,11 @@ DATABASES = {
 #EMAIL_BACKEND = 'django_outlook_email.django_outlook_email_backend.OutlookEmailBackend'
 
 # TEST ---- msal for email merges
-CLIENT_ID = os.getenv('MICROSOFT_PROVIDER_CLIENT_ID')
-CLIENT_SECRET = os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET')
-TENANT_ID = os.getenv('TENANT_ID')
-AUTHORITY = f'https://login.microsoftonline.com/faf1d7d5-3374-4da3-9836-b7765bc44ef9'
-REDIRECT_URI = f'http://localhost:8000/callback'
+#CLIENT_ID = os.getenv('MICROSOFT_PROVIDER_CLIENT_ID')
+#CLIENT_SECRET = os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET')
+#TENANT_ID = os.getenv('TENANT_ID')
+#AUTHORITY = f'https://login.microsoftonline.com/faf1d7d5-3374-4da3-9836-b7765bc44ef9'
+#REDIRECT_URI = f'http://localhost:8000/callback'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

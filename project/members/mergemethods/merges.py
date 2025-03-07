@@ -3597,15 +3597,49 @@ class intelformal:
 class poa82combined:
     def poa82combined(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        replace = {}
         
         mailstop = mergeinfo[4]
         if mergeinfo[4] == 'Other':
             mailstop = mergeinfo[5]
+            
+        # Finish
+        docs = ['1', '2', '3']
+        for doc in docs:
+            replace.update({
+                'doc' + doc + 'X' : 'X',
+                'doc' + doc + 'Text' : doc
+            })
+            
+        xmitx = ''
+        xmittxt = ''
+        if int(mergeinfo[2]) > 0:
+            tpg = 'pg'
+            if int(mergeinfo[2]) > 1:
+                tpg = 'pgs'
+            xmitx = 'X'
+            xmittxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergeinfo[2] +' '+ tpg +'.)'
+            
+        poax = ''
+        poatxt = ''
+        if int(mergeinfo[3]) > 0:
+            ppg = 'pg'
+            if int(mergeinfo[2]) > 1:
+                ppg = 'pgs'
+            poax = 'X'
+            poatxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergeinfo[3] +' '+ ppg +'.)'
         
-        replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'mailStopText' : mailstop
+            'mailStopText' : mailstop,
+            'xmitX' : xmitx,
+            'xmitText' : xmittxt,
+            'POAX' : poax,
+            'POAText' : poatxt,
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'postcardX' : '',
+            'postcardText' : ''
         })
         return replace

@@ -3101,11 +3101,11 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Transmittal for Power of Attorney (PTO/AIA/82) </td>
-                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedtpoa" size="10" placeholder="0"></td>
+                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedtpoa" size="10" placeholder="0" value="0"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Power of Attorney (PTO/AIA/82B) </td>
-                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedpoa" size="10" placeholder="0"></td>
+                            <td align="right" style="border: none;"> # of Pages <input type="text" id="poa82combinedpoa" size="10" placeholder="0" value="0"></td>
                         </tr>
                     </table> 
                 </div>
@@ -3132,7 +3132,7 @@
                            <input type="text" id="poa82combinedoth" size="40">
                 </div>
                 <div>
-                    <br>  <button type="button" class="btn btn-primary">Additional Documents</button>
+                    <br>  <button type="button" class="btn btn-primary" onclick="poa82combinedadd()">Additional Documents</button>
                                 <select id="poa82combinedSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
@@ -3151,7 +3151,69 @@
             document.getElementById('poa82combinedothfill').style.display = this.value === 'Other' ? 'block' : 'none';
         });
     });
+    function poa82combinedadd(){
+        $('#poa82combinedadd').modal('show');
+    }
 </script>
+<!-- POA - Combined Transmittal and PTO/AIA/82A 2 -->
+<div id="poa82combinedadd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poa82combinedaddModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Additional Documents</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 1</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 2</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 3</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 4</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 5</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 6</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 7</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 8</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 9</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 10</td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                    </tr>
+                </table> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Letter - FF Instructions to Pay Grant Fees -->
 <div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true">
     <div class="modal-dialog">

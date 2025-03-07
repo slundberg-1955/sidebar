@@ -818,12 +818,14 @@ def mergeDoc(matter , mergeinfo, request):
         #file_name = file_name[0] + '.' + file_name[1]
 
         #with open(output_path, 'rb') as file:
-        #    default_storage.save(file_name, ContentFile(file.read()))
+        #   default_storage.save(file_name, ContentFile(file.read()))
 
         #blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
         
-        # webbrowser.open(blob_url)
         #return JsonResponse({'url': f'{blob_url}'})
+    
+        # Web open
+        #webbrowser.open(blob_url)
 
     # outlook merges
     if contacts == "TRUE":
