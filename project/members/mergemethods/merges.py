@@ -3643,3 +3643,33 @@ class poa82combined:
             'postcardText' : ''
         })
         return replace
+    
+class retainer:
+    def retainer(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
+        })
+        return replace
+    
+class msassn:
+    def msassn(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        invname = ''
+        try:
+            invname = ", ".join(mergeinfo[1:])
+        except:
+            pass
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'inventorName' : invname
+        })
+        return replace

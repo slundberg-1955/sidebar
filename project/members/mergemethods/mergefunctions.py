@@ -57,6 +57,7 @@ class mergefunctions:
                 'artUnit' : artunit,
                 'patNo' : patent_data.patentno,
                 'issueDate' : issdate,
+                'countryPatentOffice' : merge_fn.patentCountry(matter_data.country)
             }
             for key, value in basic.items():
                 if key in keys:
@@ -607,6 +608,7 @@ class mergefunctions:
             'artUnit' : 'patent',
             'patNo' : 'patent',
             'issueDate' : 'patent',
+            'countryPatentOffice' : 'patent',
             'matterNo' : 'matter',
             'confirmNo' : 'matter',
             'SAName' : 'rvwmatterpersonnel',

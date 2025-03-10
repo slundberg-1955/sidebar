@@ -1487,7 +1487,7 @@
                                     tableBody.appendChild(newRow);
                                 }
                                 $('#invchange').modal('show');
-                                if (mergemethod == 'aiashortdecl'){
+                                if (mergemethod == 'aiashortdecl' || mergemethod == 'msassn'){
                                     document.getElementById("invchangeSAdrop").style.display = "none";
                                 }
                                 document.getElementById('invchangeselall').addEventListener('change', function() {
@@ -3152,11 +3152,11 @@
         });
     });
     function poa82combinedadd(){
-        $('#poa82combinedadd').modal('show');
+        $('#additionalDocs').modal('show');
     }
 </script>
-<!-- POA - Combined Transmittal and PTO/AIA/82A 2 -->
-<div id="poa82combinedadd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poa82combinedaddModalLabel" aria-hidden="true">
+<!-- Additional Documents -->
+<div id="additionalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="additionalDocsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3167,53 +3167,63 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 1</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs1"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 2</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs2"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 3</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs3"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 4</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs4"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 5</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs5"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 6</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs6"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 7</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs7"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 8</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs8"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 9</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs9"></textarea></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="left" style="border: none; padding: 4px;"> 10</td>
-                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = ""></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalDocs10"></textarea></td>
                     </tr>
                 </table> 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge()">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtndocs(additionalDocs1.value, additionalDocs2.value, additionalDocs3.value, additionalDocs4.value, additionalDocs5.value, additionalDocs6.value, additionalDocs7.value, additionalDocs8.value, additionalDocs9.value, additionalDocs10.value)">Continue</button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function submitbtndocs(...args){
+        const filteredArgs = args.filter(arg => arg !== '');
+        alert(filteredArgs);
+        if (filteredArgs.length > 0) {
+            const merged_data = filteredArgs.join(',');
+            document.getElementById('mergedata').value += merged_data;
+        }                         
+    }
+</script>
 <!-- Letter - FF Instructions to Pay Grant Fees -->
 <div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -4641,7 +4651,7 @@
                             $('#UpdateAppDataSheet').modal('show');
                         //}else if (mergemethod == 'incorrectfilerect'){
                         //    $('#filingEsign').modal('show');
-                        }else if (mergemethod == 'invchange' || mergemethod == 'aiashortdecl'){
+                        }else if (mergemethod == 'invchange' || mergemethod == 'aiashortdecl' || mergemethod == 'msassn'){
                             fillInventorChange(mergemethod);
                         }else {
                             submitbtnmerge('NA');
@@ -4874,7 +4884,7 @@
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
                             'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new'){
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
