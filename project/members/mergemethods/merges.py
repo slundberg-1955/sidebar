@@ -3673,3 +3673,42 @@ class msassn:
             'inventorName' : invname
         })
         return replace
+
+class expressaban:
+    def expressaban(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'depAccount' : function_instance.depnumFill(matter_data),
+        })
+        return replace
+    
+class expressaban2:
+    def expressaban2(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'depAccount' : function_instance.depnumFill(matter_data),
+        })
+        return replace
+    
+class poaMatter:
+    def poaMatter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'returnDate' : function_instance.formatDate(mergeinfo[0])
+        })
+        return replace

@@ -286,6 +286,12 @@
         #intelformal .modal-dialog{
             max-width: 550px;
         }
+        #expressaban .modal-dialog{
+            max-width: 450px;
+        }
+        #poaMatter .modal-dialog{
+            max-width: 400px;
+        }
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
@@ -4518,6 +4524,60 @@
         </div>
     </div>
 </div>
+<!-- PTO Form - Express Abandonment (AIA/24, 24A, 24B) -->
+<div id="expressaban" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="expressabanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Express Abandonment</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      <input type="checkbox" id="expressabanesign"> E-Sign Enable
+                </div>
+                <div>
+                    <br>  <input type="radio" name="expressabanrad" value="1"> Avoid Publication (AIA/24A)
+                    <br>  <input type="radio" name="expressabanrad" value="2"> Request Refund (AIA/24B)
+                    <br>  <input type="radio" name="expressabanrad" value="3"> Expressly Abandon - post publication (AIA/24)
+                </div>
+                <div id="expressabanhide">
+                    <br>  <b>Fee Information</b>
+                    <br>  <input type="radio" name="expressabanfrad" value="1"> Deposit Account <input type="radio" name="expressabanfrad" value="2"> Check <input type="radio" name="expressabanfrad" value="3"> Credit Card
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(expressabanesign.checked, radioFill('expressabanrad'), radioFill('expressabanfrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - Send POA (Matter Specific) -->
+<div id="poaMatter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poaMatterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Send POA</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Enter Return Date: <input type="date" id="poaMatterdte">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(poaMatterdte.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll('input[name="expressabanrad"]').forEach((elem) => {
+        elem.addEventListener("change", function() {
+            document.getElementById('expressabanhide').style.display = this.value === '1' ? 'block' : 'none';
+        });
+    });
+</script>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -4633,7 +4693,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -4882,7 +4942,7 @@
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
-                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal'
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer'){
                             fillActivities(mergemethod);

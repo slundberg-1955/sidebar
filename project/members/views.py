@@ -771,7 +771,18 @@ def mergeDoc(matter , mergeinfo, request):
             extime = mergeinfo.replace('corrappln', 'exttimeCF')
             extime = extime.replace('communications', 'transmittal')
             mergeDoc(matter, extime, '')
-
+    
+    if mergeinfo_list[1] == 'expressaban':
+        if mergefninfo[1] == '1':
+            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanAvoidPub.docx')
+            aban2 = aban2.replace('expressaban', 'expressaban2')
+        if mergefninfo[1] == '2':
+            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanRefund.docx')
+            aban2 = aban2.replace('expressaban', 'expressaban2')
+        if mergefninfo[1] == '3':
+            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'Express_Abandonment.docx')
+            aban2 = aban2.replace('expressaban', 'expressaban2')
+        mergeDoc(matter, aban2, '')
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
@@ -806,10 +817,17 @@ def mergeDoc(matter , mergeinfo, request):
 
     # doc merges
     if contacts == "FALSE":
-        WordMerger(input_path, replace, output_path)
-        
-        # ----- Local -----
-        os.startfile(output_path)
+        out = False
+        count = 0
+        while out is False:
+            try:
+                WordMerger(input_path, replace, output_path)
+                # ----- Local -----
+                os.startfile(output_path)
+                out = True
+            except:
+                count = count + 1
+                output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document' + str(count) + '.docx')
         
         # ----- Azure Storage -----
         #file_name = os.path.basename(output_path)
