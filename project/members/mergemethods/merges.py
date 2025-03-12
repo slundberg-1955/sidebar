@@ -2828,8 +2828,9 @@ class priorexam2012:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
+            'SAName' : mergeinfo[1]
         })
-        return replace
+        return replace 
     
 class prelimamend:
     def prelimamend(self, matter, mergeinfo, keys):
@@ -3710,5 +3711,45 @@ class poaMatter:
         replace.update({
             'salutation' : '',
             'returnDate' : function_instance.formatDate(mergeinfo[0])
+        })
+        return replace
+
+class cornellassnnew:
+    def cornellassnnew(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        apptxt = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'applicationTypeText' : apptxt
+        })
+        return replace
+    
+class intelbasic:
+    def intelbasic(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        codes = ['RCEF', 'ABRF', 'NPDPABR']
+        for code in codes:
+            try:
+                activity = function_instance.getactivityid(matter_data, code)
+                break
+            except:
+                pass
+            
+        try:
+            noardte = (activity.smryonevalue + relativedelta(weeks=2)).strftime('%B %d, %Y')
+        except:
+            noardte = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'NOARDate' : noardte,
+            'userName' : ''
         })
         return replace

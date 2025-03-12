@@ -292,6 +292,9 @@
         #poaMatter .modal-dialog{
             max-width: 400px;
         }
+        #intelbasic .modal-dialog{
+            max-width: 400px;
+        }
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
@@ -1493,7 +1496,7 @@
                                     tableBody.appendChild(newRow);
                                 }
                                 $('#invchange').modal('show');
-                                if (mergemethod == 'aiashortdecl' || mergemethod == 'msassn'){
+                                if (mergemethod == 'aiashortdecl' || mergemethod == 'msassn' || mergemethod == 'cornellassnnew'){
                                     document.getElementById("invchangeSAdrop").style.display = "none";
                                 }
                                 document.getElementById('invchangeselall').addEventListener('change', function() {
@@ -3945,10 +3948,6 @@
                         <td align="left" style="border: none; padding: 4px;">  <input type="radio" id="priorexam2012reqcon" name="priorexam2012rad" value="2"></td>
                         <td align="right" style="border: none; padding: 4px;"> Request for Continued Examination - Prioritized Under 1.102(e)(2)</td>
                     </tr>
-                    <tr style="border: none;">
-                        <td align="left" style="border: none; padding: 4px;">  <input type="radio" id="priorexam2012na" name="priorexam2012rad" value="3"></td>
-                        <td align="right" style="border: none; padding: 4px;"> N/A</td>
-                    </tr>
                 </table>
                 <div>
                 <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select> <input type="checkbox" id="priorexam2012esign"> E-Signature Enable
@@ -4553,6 +4552,13 @@
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('input[name="expressabanrad"]').forEach((elem) => {
+        elem.addEventListener("change", function() {
+            document.getElementById('expressabanhide').style.display = this.value === '1' ? 'block' : 'none';
+        });
+    });
+</script>
 <!-- Letter - Send POA (Matter Specific) -->
 <div id="poaMatter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poaMatterModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -4571,13 +4577,24 @@
         </div>
     </div>
 </div>
-<script>
-    document.querySelectorAll('input[name="expressabanrad"]').forEach((elem) => {
-        elem.addEventListener("change", function() {
-            document.getElementById('expressabanhide').style.display = this.value === '1' ? 'block' : 'none';
-        });
-    });
-</script>
+<!-- Intel EOU Questions to Inventors -->
+<div id="intelbasic" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelbasicModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">EOU Questions to Inventors</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Is this a CS or WCNS Matter?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('FALSE')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -4650,7 +4667,7 @@
 
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
-            alert(document.getElementById('mergedata').value);
+            //alert(document.getElementById('mergedata').value);
             submitForm();
 
             // return new Promise((resolve, reject) => {
@@ -4711,7 +4728,7 @@
                             $('#UpdateAppDataSheet').modal('show');
                         //}else if (mergemethod == 'incorrectfilerect'){
                         //    $('#filingEsign').modal('show');
-                        }else if (mergemethod == 'invchange' || mergemethod == 'aiashortdecl' || mergemethod == 'msassn'){
+                        }else if (mergemethod == 'invchange' || mergemethod == 'aiashortdecl' || mergemethod == 'msassn' || mergemethod == 'cornellassnnew'){
                             fillInventorChange(mergemethod);
                         }else {
                             submitbtnmerge('NA');
@@ -4942,7 +4959,7 @@
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
-                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter'
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter', 'intelbasic'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer'){
                             fillActivities(mergemethod);
