@@ -308,7 +308,7 @@ class mergefunctions:
             fcmg = 'NO FF CMG PERSONNEL'
 
         info = {
-            'fcmgName' : fcmg,
+            'ffcmgName' : fcmg,
         }
         return info   
 
@@ -327,6 +327,7 @@ class mergefunctions:
             'assigneeCountry' : contact.country,
             'assigneeStreet' : contact.address1,
             'assigneeName' : profile.orgname,
+            'assignee' : profile.orgname,
         }
         return info
 

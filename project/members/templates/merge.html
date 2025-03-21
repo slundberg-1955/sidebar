@@ -295,6 +295,12 @@
         #intelbasic .modal-dialog{
             max-width: 400px;
         }
+        #entstatus .modal-dialog{
+            max-width: 600px;
+        }
+        #intelfoa .modal-dialog{
+            max-width: 400px;
+        }
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
@@ -518,12 +524,14 @@
                 <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
             </div>
             <div class="modal-body">
-                <button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
-                &emsp;&emsp;Esign Enable: <input type="checkbox" id="recordationesign" name="esign">
-                &ensp;&emsp;Number of Pages: <input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
-                <div class="pagecount">
-                    &emsp;&emsp;Deposit Account: <input type="radio" id="recordationdepacc" name="recordationoptions" value="depacc">
-                    &ensp;Check: <input type="radio" id="recordationcheck" name="recordationoptions" value="check">
+                &emsp;<button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
+                <div id="recordationhide">
+                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="recordationesign" name="esign">
+                    &ensp;&emsp;Number of Pages: <input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
+                    <div class="pagecount">
+                        &emsp;&emsp;Deposit Account: <input type="radio" id="recordationdepacc" name="recordationoptions" value="depacc">
+                        &ensp;Check: <input type="radio" id="recordationcheck" name="recordationoptions" value="check">
+                    </div>
                 </div>
                 <table class="table">
                     <thead>
@@ -4595,6 +4603,52 @@
         </div>
     </div>
 </div>
+<!-- Header - Change of Entity Status -->
+<div id="entstatus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entstatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Communication Regarding Change of Entity Status</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Mail Stop: <input type="text" id="entstatusmstop" size="30" value="Mail Stop Amendment">
+                <br><br>  <input type="checkbox" id="entstatussmallw"> Small Entity Status is being Withdrawn
+                <br>   If Enclosed, amount of back fee due: <input type="text" id="entstatusamtf" size="10" placeholder="0.00">
+                <br>   Small Entity Fees will be paid when the following is due: 
+                <br>   <input type="radio" name="entstatusrad" value="1"> None <input type="radio" name="entstatusrad" value="2"> Issue Fee <input type="radio" name="entstatusrad" value="3"> Maintenance fee
+                <br><br>  <input type="checkbox" id="entstatussmalle"> Small Entity Status is being Established
+                <br>   If requested, amount of repayment of back fees: <input type="text" id="entstatusamtr" size="10" placeholder="0.00">
+                <br><br>   <select id="entstatusSAdrop">
+                        <option>Select Signing Attorney</option>
+                    </select>
+                <br><br>  <input type="checkbox" id="entstatusesign"> E-Signature Enable
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(entstatusmstop.value, entstatussmallw.checked, entstatusamtf.value, radioFill('entstatusrad'), entstatussmalle.checked, entstatusamtr.value, entstatusSAdrop.value, entstatusesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Intel - Report out Final Office Action -->
+<div id="intelfoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelfoaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Report out Final Office Action</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Is this a WTI matter?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnmerge('FALSE')">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -4667,7 +4721,7 @@
 
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
-            //alert(document.getElementById('mergedata').value);
+            alert(document.getElementById('mergedata').value);
             submitForm();
 
             // return new Promise((resolve, reject) => {
@@ -4709,7 +4763,7 @@
                         // contacts = 'TRUE';
 
                         // Esign popUp
-                        const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec"];
+                        const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth"];
                         const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban"];
 
                         // Check conditions
@@ -4717,12 +4771,12 @@
                             $('#esign').modal('show');
                         } else if (otherMethods.includes(mergemethod)) {
                             $('#' + mergemethod).modal('show');
-                        }else if (mergemethod == 'recordation'){ 
-                            fillInventor();
+                        }else if (mergemethod == 'recordation' || mergemethod == 'nsnotarialcert'){ 
+                            fillInventor(mergemethod);
                         }else if (contacts == 'TRUE'){ 
                             fillRecipients(mergemethod);
                             //submitForm();
-                        }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc'){
+                        }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus'){
                             fillSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');
@@ -4741,7 +4795,7 @@
             });
         }
         
-        function fillInventor() {
+        function fillInventor(mergemethod) {
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
                 type: 'POST',
@@ -4772,6 +4826,10 @@
                         const dateFields = newRow.querySelectorAll('[contenteditable]');
                     }
                     $('#recordation').modal('show');
+                    if (mergemethod == 'nsnotarialcert'){
+                        document.getElementById("recordationhide").style.display = "none";
+
+                    }
 
                     const inventorselname = [];
                     const inventorselassign = [];
@@ -4959,7 +5017,7 @@
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
-                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter', 'intelbasic'
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter', 'intelbasic', 'intelfoa'
                         ];
                         if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer'){
                             fillActivities(mergemethod);

@@ -195,6 +195,7 @@ class recordation:
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
         replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
         if mergeinfo[0] == '1':
             replace.update(function_instance.assigneefill(matter, 1))
             selinv = mergeinfo[4]
@@ -225,7 +226,6 @@ class recordation:
         if mergeinfo[3] == 'check':
             chkX = 'X'            
 
-        replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[3]))
         replace.update({
             'depAccount' : depnum,
@@ -3751,5 +3751,152 @@ class intelbasic:
         replace.update({
             'NOARDate' : noardte,
             'userName' : ''
+        })
+        return replace
+
+class nsnotarialcert:
+    def nsnotarialcert(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        
+        if mergeinfo[0] == '1':
+            replace.update(function_instance.assigneefill(matter, 1))
+            selinv = mergeinfo[4]
+            
+        if mergeinfo[0] == '2':
+            selinv = mergeinfo[4]
+            name = mergeinfo[7].split(": ", 1)[0]
+            if name == 'Applicant':
+                roleid = '56691'
+            if name == 'Assignee':
+                roleid = '34606'
+            if name == 'Client':
+                roleid = '34617'
+            if name == 'Previous Client/Matter Number':
+                roleid = '93476'
+            if name == 'Licensee':
+                roleid = '34607'
+            try:
+                replace.update(function_instance.recordationRoleFill(matter, roleid))
+            except:
+                pass
+        
+        replace.update(function_instance.ffcmgFill(matter))
+        replace.update({
+            'inventorList' : selinv
+        })
+        return replace
+    
+class internetauth:
+    def internetauth(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        sadata = function_instance.rvwmatterpersonnelFill(matter_data)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'SAName' : sadata.fname + ' ' + sadata.lname
+        })
+        return replace
+    
+class entstatus:
+    def entstatus(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        if mergeinfo[2] == '':
+            fee1 = 0
+        else:
+            fee1 = int(mergeinfo[2])
+        if mergeinfo[5] == '':
+            fee2 = 0
+        else:
+            fee2 = int(mergeinfo[5])
+        
+        fee = fee1 + fee2
+        withtxt = ''
+        entytxt = ''
+        willpay = ''
+        repay = ''
+        
+        if mergeinfo[1] == 'true':
+            fee = mergeinfo[2]
+            withtxt = 'It has been brought to the attention of Applicant\'s Representatives that the small entity status is no longer appropriate in the above-identified application.  In accordance with the duty set forth in 37 C.F.R. § 1.27, the entitlement to small entity status is withdrawn.'
+            entytxt = ''
+            willpay = ''
+            repay = ''
+    
+        if mergeinfo[4] == 'true':
+            fee = mergeinfo[5]
+            withtxt = ''
+            entytxt = 'It has been brought to the attention of Applicant\'s Representatives that the above-identified application is eligible for small entity status in accordance with 37 C.F.R. § 1.27.'
+            willpay = ''
+            repay = ''
+        
+        if mergeinfo[1] == 'true' or mergeinfo[4] == 'true':
+            deppay = 'Please charge '+ fee +' to Deposit Account '+ function_instance.depnumFill(matter_data) +' for the total deficiency payment owed resulting from the previous erroneous payment of small entity fees.'
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[7]))
+        replace.update({
+            'mailStopText' : mergeinfo[0],
+            'entityWithdrawText' : withtxt,
+            'willPayText' : willpay,
+            'depPayText' : deppay,
+            'entityEstablishText' : entytxt,
+            'repayText' : repay,
+            'depAccount' : function_instance.depnumFill(matter_data)
+        })
+        return replace
+    
+class msformal:
+    def msformal(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.counselfill(matter))
+        replace.update({
+            'userName' : ''
+        })
+        return replace
+    
+class intelfoa:
+    def intelfoa(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        wireless = ''
+        if mergeinfo[0] == 'TRUE':
+            duedate = ''
+            wireless = 'We have received a Final Office Action in the above referenced matter. Per Intel\'s new instructions you are required to provide the WTI Committee a Proposed Strategy/Response including a forwarded copy of the report out letter, pending claims and Office Action. The proposed strategy should be reviewed by the SLW PM prior to sending to the client and should be based on \'The Rights Patents\' Initiative. \n\nPlease create a proposed strategy/response for sending to the client 7-14 days prior to the 2 month deadline of ' + duedate + '\n'
+
+        act = False
+        for code in ['FOAR', 'FOAR-PE']:
+            try:
+                activity = function_instance.getactivityid(matter_data, code)
+                if activity:
+                    act = True
+            except:
+                continue
+            
+        foardte = ''
+        foar2 = ''
+        foar3 = ''
+        if act == True:
+            foardte = activity.smryonevalue.strftime("%B %d, %Y")
+            foar2 = foardte + relativedelta(months=2)
+            foar3 = foardte + relativedelta(months=3)
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'Wireless' : wireless,
+            'foarDate' : foardte,
+            'foar3Mo' : foar3,
+            'foar2Mo' : foar2
         })
         return replace
