@@ -1,6 +1,6 @@
 import webbrowser
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task, FvMatter4
+from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task, FvMatter4, Trademark
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
@@ -3600,39 +3600,68 @@ class poa82combined:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         replace = {}
-        
-        mailstop = mergeinfo[4]
-        if mergeinfo[4] == 'Other':
-            mailstop = mergeinfo[5]
+            
+        adddocsodd = []
+        adddocseven = []
+        mergedata = []
+        split_found = False
+        index = 0
+
+        for entry in mergeinfo:
+            if entry == 'split':
+                split_found = True
+                continue
+            if split_found:
+                mergedata.append(entry)
+            else:
+                if index % 2 == 0:
+                    adddocseven.append(entry)
+                else:
+                    adddocsodd.append(entry)
+                index += 1
             
         # Finish
-        docs = ['1', '2', '3']
-        for doc in docs:
+        docs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        i = 0
+        # Assuming adddocs is defined somewhere above
+        for doc in adddocseven:
             replace.update({
-                'doc' + doc + 'X' : 'X',
-                'doc' + doc + 'Text' : doc
+                'doc' + docs[i] + 'X': 'X',
+                'doc' + docs[i] + 'Text': doc + ' (' + adddocsodd[i] + ' pg)'
             })
+            i += 1
+
+        # Fill remaining unfilled docs with blank values
+        for j in range(i, len(docs)):
+            replace.update({
+                'doc' + docs[j] + 'X': '',
+                'doc' + docs[j] + 'Text': ''
+            })
+            
+        mailstop = mergedata[4]
+        if mergedata[4] == 'Other':
+            mailstop = mergedata[5]
             
         xmitx = ''
         xmittxt = ''
-        if int(mergeinfo[2]) > 0:
+        if int(mergedata[2]) > 0:
             tpg = 'pg'
-            if int(mergeinfo[2]) > 1:
+            if int(mergedata[2]) > 1:
                 tpg = 'pgs'
             xmitx = 'X'
-            xmittxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergeinfo[2] +' '+ tpg +'.)'
+            xmittxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergedata[2] +' '+ tpg +'.)'
             
         poax = ''
         poatxt = ''
-        if int(mergeinfo[3]) > 0:
+        if int(mergedata[3]) > 0:
             ppg = 'pg'
-            if int(mergeinfo[2]) > 1:
+            if int(mergedata[2]) > 1:
                 ppg = 'pgs'
             poax = 'X'
-            poatxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergeinfo[3] +' '+ ppg +'.)'
+            poatxt = 'Transmittal for Power of Attorney to one or More Registered Practioners (PTO/AIA/82) ('+ mergedata[3] +' '+ ppg +'.)'
         
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update(function_instance.esigncheck(mergedata[0]))
         replace.update({
             'mailStopText' : mailstop,
             'xmitX' : xmitx,
@@ -3641,7 +3670,8 @@ class poa82combined:
             'POAText' : poatxt,
             'depAccount' : function_instance.depnumFill(matter_data),
             'postcardX' : '',
-            'postcardText' : ''
+            'postcardText' : '',
+            'SAName' : mergedata[6]
         })
         return replace
     
@@ -3898,5 +3928,24 @@ class intelfoa:
             'foarDate' : foardte,
             'foar3Mo' : foar3,
             'foar2Mo' : foar2
+        })
+        return replace
+    
+class patchgcounsel:
+    def patchgcounsel(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        try:
+            TMm = Trademark.objects.using('FIP').get(matterid = matter_data.matterid)
+            tmreg = TMm.registrationno
+        except:
+            tmreg = ''
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'userName' : '',
+            'TMRegNo' : tmreg
         })
         return replace

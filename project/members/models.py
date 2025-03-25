@@ -570,3 +570,56 @@ class FvMatter4(models.Model):
     class Meta:
         managed = False
         db_table = 'FV_MATTER_4'
+        
+class Trademark(models.Model):
+    matterid = models.IntegerField(db_column='matterId')  # Field name made lowercase.
+    applicant = models.CharField(max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    intenttouse = models.BooleanField(db_column='intentToUse')  # Field name made lowercase.
+    appbasedonuse = models.BooleanField(db_column='appBasedOnUse')  # Field name made lowercase.
+    specimen = models.BooleanField()
+    datefirstuse = models.DateTimeField(db_column='dateFirstUse', blank=True, null=True)  # Field name made lowercase.
+    markdescription = models.TextField(db_column='markDescription', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    goodsmarked = models.TextField(db_column='goodsMarked', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    servicesmarked = models.TextField(db_column='servicesMarked', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    mark = models.CharField(max_length=128, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    serialnumber = models.CharField(db_column='serialNumber', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    contactid = models.IntegerField(db_column='contactId', blank=True, null=True)  # Field name made lowercase.
+    registrationdate = models.DateTimeField(db_column='registrationDate', blank=True, null=True)  # Field name made lowercase.
+    registrationno = models.CharField(db_column='registrationNo', max_length=30, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    pubsupreg = models.BooleanField(db_column='pubSupReg', blank=True, null=True)  # Field name made lowercase.
+    pubdate = models.DateTimeField(db_column='pubDate', blank=True, null=True)  # Field name made lowercase.
+    alloweddate = models.DateTimeField(db_column='allowedDate', blank=True, null=True)  # Field name made lowercase.
+    commercedate = models.DateTimeField(db_column='commerceDate', blank=True, null=True)  # Field name made lowercase.
+    artunitno = models.IntegerField(db_column='artUnitNo', blank=True, null=True)  # Field name made lowercase.
+    tmtypeid = models.IntegerField(db_column='tmTypeId', blank=True, null=True)  # Field name made lowercase.
+    designcode = models.CharField(db_column='designCode', max_length=8, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    signorname = models.CharField(db_column='signorName', max_length=32, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    signortitle = models.CharField(db_column='signorTitle', max_length=64, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    state = models.CharField(max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
+    countriescovered = models.CharField(db_column='countriesCovered', max_length=256, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    expirationdate = models.DateTimeField(db_column='expirationDate', blank=True, null=True)  # Field name made lowercase.
+    abandoneddate = models.DateTimeField(db_column='abandonedDate', blank=True, null=True)  # Field name made lowercase.
+    tmtype = models.IntegerField(db_column='tmType')  # Field name made lowercase.
+    prioritydate = models.DateTimeField(db_column='priorityDate', blank=True, null=True)  # Field name made lowercase.
+    prioritycountry = models.CharField(db_column='priorityCountry', max_length=2, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    basisappno = models.CharField(db_column='basisAppNo', max_length=30, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    basiscountry = models.CharField(db_column='basisCountry', max_length=4, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    agmtextensions = models.CharField(db_column='agmtExtensions', max_length=512, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    protextensions = models.CharField(db_column='protExtensions', max_length=512, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    fmtregistrationno = models.CharField(db_column='fmtRegistrationNo', max_length=30, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    priorityno = models.CharField(db_column='priorityNo', max_length=50, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    pubno = models.CharField(db_column='pubNo', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    filingbasis = models.IntegerField(db_column='filingBasis')  # Field name made lowercase.
+    parentdate = models.DateTimeField(db_column='parentDate', blank=True, null=True)  # Field name made lowercase.
+    parentregdate = models.DateTimeField(db_column='parentRegDate', blank=True, null=True)  # Field name made lowercase.
+    localfilingdate = models.DateTimeField(db_column='localFilingDate', blank=True, null=True)  # Field name made lowercase.
+    ibpubno = models.CharField(db_column='ibPubNo', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    ibpubdate = models.DateTimeField(db_column='ibPubDate', blank=True, null=True)  # Field name made lowercase.
+    parentpubno = models.CharField(db_column='parentPubNo', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    parentpubdate = models.DateTimeField(db_column='parentPubDate', blank=True, null=True)  # Field name made lowercase.
+    grantofprotectiondate = models.DateTimeField(db_column='grantOfProtectionDate', blank=True, null=True)  # Field name made lowercase.
+    unformattedpubno = models.CharField(db_column='unformattedPubNo', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Trademark'
