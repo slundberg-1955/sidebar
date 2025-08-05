@@ -81,7 +81,41 @@
         </ul>
     </div>
     <div>
-        <b>Matter #: </b><input type="text" id="matternum" size="10">
+          <select id="matterdrop">
+            <option value="Matter">Matter #</option>
+            <option value="CLient">Client #</option>
+            <option value="Serial">Serial #</option>
+            <option value="Patent">Patent #</option>
+            <option value="CLientName">Client Name</option>
+          </select>
+          <input type="text" id="findmatter" size="10">
+    </div>
+    <div>
+        <br>  <b>Matter #: </b><input type="text" id="matternum" size="10">
+          <b>Client: </b><input type="text" id="clientnum" size="40">
+        <br><br>  <b>Title: </b><textarea rows="1" cols="75" id="mattertitle"></textarea>
+    </div>
+    <div>
+        <table style="border-collapse: collapse; border: none;">
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Matter Type: </b><input type="text" id="mattertype" size="10"></td>
+                <td align="center"style="border: none;"><b>Status: </b><input type="text" id="matterstatus" size="10"></td>
+                <td align="left"style="border: none;"><b>Custom Status: </b><input type="text" id="mattercstatus" size="10"></td>
+            </tr>
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Serial #: </b><input type="text" id="matteserial" size="10"></td>
+                <td align="center"style="border: none;"><b>Filing Date: </b><input type="text" id="matterfdate" size="10"></td>
+                <td align="left"style="border: none;"><b>Client Ref: </b><input type="text" id="matterclientr" size="10"></td>
+            </tr>
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Patent #: </b><input type="text" id="matterpat" size="10"></td>
+                <td align="center"style="border: none;"> <b>Issue Date: </b><input type="text" id="matterpat" size="10"></td>
+                <td align="left"style="border: none;"></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+          Special Instructions
     </div>
 </body>
 </html>

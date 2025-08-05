@@ -1,0 +1,39 @@
+{
+  "descriptionHash": "40F7E809DAB5A8CD74C54B0838FB352CC3CA08F14C087BCABEA87C73A3912985E5A29497367213728E27D7EE587297AA3C8BE29E13758F967F5AC2A1E568A4A9",
+  "descriptionLocation": "../../msgraph-metadata/clean_v10_openapi/openapi.yaml",
+  "lockFileVersion": "1.0.0",
+  "kiotaVersion": "1.21.0",
+  "clientClassName": "BaseGraphServiceClient",
+  "typeAccessModifier": "Public",
+  "clientNamespaceName": "msgraph.generated",
+  "language": "Python",
+  "usesBackingStore": true,
+  "excludeBackwardCompatible": false,
+  "includeAdditionalData": true,
+  "disableSSLValidation": false,
+  "serializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Text.TextSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Form.FormSerializationWriterFactory",
+    "Microsoft.Kiota.Serialization.Multipart.MultipartSerializationWriterFactory"
+  ],
+  "deserializers": [
+    "Microsoft.Kiota.Serialization.Json.JsonParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Text.TextParseNodeFactory",
+    "Microsoft.Kiota.Serialization.Form.FormParseNodeFactory"
+  ],
+  "structuredMimeTypes": [
+    "application/json",
+    "text/plain;q=0.9",
+    "application/x-www-form-urlencoded;q=0.2",
+    "multipart/form-data;q=0.1"
+  ],
+  "includePatterns": [],
+  "excludePatterns": [
+    "/me",
+    "/me/**",
+    "/copilot",
+    "/copilot/**"
+  ],
+  "disabledValidationRules": []
+}

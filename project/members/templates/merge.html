@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang = "en">
 <head>
     <meta charset = "UTF-8">
-    <title>Merges Page</title>
+    <title>Merges - SideBar Cloud</title>
+    <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
     <style>
         body{
             font-family: Arial, sans-serif;
@@ -19,28 +21,43 @@
             margin-left: 10px;
         }
         .sidebar{
-            background-color: #313131;
+            background-color: #33373A;
             color: #b8b8b8;
             padding: 1px 10px;
             text-align: left;
             margin-bottom: 20px;
             height: 110px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
         }
-        .sidebar-tabs li{
-            display: inline-block;
-            margin-right: 10px;
+        .sidebar-tabs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 15px;
+            margin-left: 15px;
+            margin-top: 5px;
         }
-        .sidebar-tabs li a{
+
+        .sidebar-tabs li a {
             color: #fff;
             text-decoration: none;
             padding: 5px 10px;
             border: 1px solid #fff;
-            border-radius: 5px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: transparent;
         }
-        .sidebar-tabs li a:hover{
-            background-color:#fff;
-            color: #313131;
+
+        .sidebar-tabs li a:hover {
+            background-color: #fff;
+            color: #33373A;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
+
         table{
             border-collapse: collapse;
             margin-top: 20px;
@@ -304,16 +321,56 @@
         #additionalDocs .modal-dialog{
             max-width: 570px;
         }
+        #Qp_Ids .modal-dialog{
+            max-width: 350px;
+        }
+        #novemail .modal-dialog{
+            max-width: 300px;
+        }
+        #blankletter .modal-dialog{
+            max-width: 350px;
+        }
+        #bardateq .modal-dialog{
+            max-width: 400px;
+        }
+        #tm_unitaryGrant .modal-dialog{
+            max-width: 600px;
+        }
+        #AppealBrief3 .modal-dialog{
+            max-width: 570px;
+        }
+        #auditletter .modal-dialog{
+            max-width: 710px;
+        }
+        #annunonpay .modal-dialog{
+            max-width: 400px;
+        }
+        #nonpubrequest .modal-dialog{
+            max-width: 360px;
+        }
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
         .header-image {
             float: right;
-            width: 300px;
-            height: auto;
+            width: 95px;
+            height: 95px;
             margin-right: 10px; /* Adjust the right margin */
             margin-top: 5px; /* Adjust the top margin */
         }
+        .logo-image {
+            float: left;
+            width: auto;
+            height: 60px;
+            margin-left: 10px; /* Adjust the right margin */
+            margin-top: 5px; /* Adjust the top margin */
+        }
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
     </style>
     <style>
         #recordation .pagecount {
@@ -334,7 +391,7 @@
 
 </head>
 <body>
-    <!--
+<!--     
     <div class = "sidebar">
         <h1>SideBar</h1>
         <ul class="sidebar-tabs">
@@ -359,19 +416,19 @@
                 </form>
             </li>
         </ul>
-    </div>
-    -->
+    </div> -->
+   
     <div class="sidebar">
-        <h1>
-            SideBar
-            <img src="https://storagepaygomerges01.blob.core.windows.net/media/schwegman.png" alt="SideBar Image" class="header-image">
-        </h1>
-        <ul class="sidebar-tabs">
-            <li><a href="#">Matters</a></li>
-            <li><a href="#">FIP Reports</a></li>
-            <li><a href="#">Merges</a></li>
-            <li><a href="#">ToolBox</a></li>
-        </ul>
+        <div class="left-column">
+            <img src="{% static 'images/sidebar_logo4.PNG' %}" alt="SideBar Image" class="logo-image">
+            <ul class="sidebar-tabs">
+                <li><a href="#">Matters</a></li>
+                <li><a href="#">FIP Reports</a></li>
+                <li><a href="#">Merges</a></li>
+                <li><a href="#">ToolBox</a></li>
+            </ul>
+        </div>
+        <img src="{% static 'images/SLW_logobackdrop.PNG' %}" alt="SLW Image" class="header-image">
     </div>
 
     <div class = "container">
@@ -392,7 +449,6 @@
                 {% endfor %}
             </select>
         </div>
-        
         <form id = "mergeform" action = "{% url 'members' %}" method = "post">
             {% csrf_token %}
             <div class = "search-container">
@@ -429,36 +485,102 @@
     
     <!-- Redirect to Azure Storage Link -->
     <script>
-        function submitForm() {
-            const form = document.getElementById("mergeform");
-            const formData = new FormData(form);  // Gather form data
-            $.ajax({
-                type: 'POST',
-                url: form.action,  // Use the form's action URL
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-CSRFToken': csrftoken,  // Include the CSRF token
-                },
-                success: function(response) {
-                    //alert(response.url);
-                    if(response.url != 'false'){
-                        let windowurl = window.open(response.url);  // Open the URL in a new tab
-                        //setTimeout(() => {
-                        //    windowurl.close();
-                        //}, 500);
+        function submitForm(contacts) {
+            if (contacts == 'TRUE'){
+                $('#mergeToast').toast({ autohide: false });
+                $('#mergeToast').toast('show');
+                const form = document.getElementById("mergeform");
+                const formData = new FormData(form);  // Gather form data
+                $.ajax({
+                    type: 'POST',
+                    url: form.action,  // Use the form's action URL
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRFToken': csrftoken,  // Include the CSRF token
+                    },
+                    success: function(response) {
+                        //alert('Opening outlook URL');
+                        if (response.redirect) {
+                            window.location.href = response.redirect;
+                        }else if (response.url) {
+                            window.open(response.url);
+                            refreshmerge();
+                        }
+                    },
+                    error: function(error) {
+                        alert('An error occurred: ' + error.statusText);  // Alert the error
+                        console.error('Error:', error);  // Log the error for debugging
+                        refreshmerge();
                     }
+                });
+            }
+            if (contacts == 'FALSE'){
+                $('#mergeToast').toast({ autohide: false });
+                $('#mergeToast').toast('show');
+                // setTimeout(() => {
+                //     $('#mergeToast').toast('hide');
+                // }, 6000); 
+                
+                waitForDownloadCookie('downloadComplete', () => {
+                    $('#mergeToast').toast('hide');
                     refreshmerge();
-                },
-                error: function(error) {
-                    alert('An error occurred: ' + error.statusText);  // Alert the error
-                    console.error('Error:', error);  // Log the error for debugging
-                    refreshmerge();
+                });
+
+                document.getElementById('mergeform').submit();
+            }
+        }
+    
+        function waitForDownloadCookie(cookieName, callback) {
+            const interval = setInterval(() => {
+                if (document.cookie.includes(`${cookieName}=true`)) {
+                    clearInterval(interval);
+                    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`; // Clear cookie
+                    callback();
                 }
-            });
+            }, 500);
         }
     </script>
+    <!-- Merge Notification -->
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1100;">  
+        <div id="mergeToast" class="toast text-white border-0" style="background-color: #007bff;" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Running merge...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Email Notification -->
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1100;">  
+        <div id="emailToast" class="toast text-white border-0" style="background-color: #007bff;" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Fetching Emails...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Activity Notification -->
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1100;">  
+        <div id="actToast" class="toast text-white border-0" style="background-color: #007bff;" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Fetching Activities...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Document Notification -->
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1100;">  
+        <div id="docToast" class="toast text-white border-0" style="background-color: #007bff;" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    Fetching Documents...
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Esign -->
     <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true">
@@ -866,6 +988,10 @@
                             <td align="right"style="border: none;">  Formal Drawings:</td>
                             <td align="left"style="border: none;"><input type="text" id="corrapplnfor" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnmad" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                        </tr>
                     </table>
                 </div>
                 <div>
@@ -878,7 +1004,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplndepacc.checked, corrapplnext.value, 
-                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
+                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked, corrapplnmad.checked)">Continue</button>
             </div>
             <script>
                 function submitbtncorrappln(...args){
@@ -1452,6 +1578,12 @@
                 </div>
                 <div>
                       <input type="radio" id="mpcapactionsnotins" name="mpcapactionsoptions" value="8"> Notification of Insufficiency Under 37 CFR 1.492 and/or 1.495
+                </div>
+                <div>
+                      <input type="radio" id="mpcapactionsnotins" name="mpcapactionsoptions" value="9"> Missing Parts - EBD over 6 years
+                </div>
+                <div>
+                      <input type="radio" id="mpcapactionsnotins" name="mpcapactionsoptions" value="10"> Missing Parts - EBD over 9 years
                 </div>
             </div>
             <div class="modal-footer">
@@ -2277,7 +2409,7 @@
                       <input type="checkbox" id="generalxmitCFfincon"> After Final Consideration Program Request
                 </div>
                 <div>
-                      <button type="button" >Additional Documents</button>
+                      <button type="button" onclick="adddocsadd()">Additional Documents</button>
                       <select id="generalxmitCFSAdrop">
                         <option value="select">Select Signing Attorney</option>
                     </select>
@@ -2504,11 +2636,11 @@
                         <option value="Other">Other</option>
                     </select>
                 </div>
-                <div>
-                              &ensp;<input type="text" id="idsmemoblank" size="30">
+                <div id='idsmemohide' style="display:none;">
+                             &ensp;<input type="text" id="idsmemoblank" size="30">
                 </div>
                 <div>
-                      3-Month Due Date <input type="date" id="idsmemo3mblank"> (3 months from Mailing Date)
+                    <br>  3-Month Due Date <input type="date" id="idsmemo3mblank"> (3 months from Mailing Date)
                 </div>
                 <div>
                     <br>                 <b>Related Matters</b>             <input type="checkbox" id="idsmemosel"> Select All
@@ -2532,6 +2664,11 @@
                 <button type="button" class="btn btn-primary" data-dismiss="modal" id="idsmemocontinue">Continue</button>
             </div>
         </div>
+        <script>
+            document.getElementById('idsmemodrop').addEventListener('change', function () {
+                document.getElementById('idsmemohide').style.display = this.value === 'Other' ? 'block' : 'none';
+            });
+        </script>
     </div>
 </div>
 <!-- Formal Document - Assignment (with or w/out Notary) -->
@@ -2544,13 +2681,13 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="radio" id="assignment2016not" name="assignment2016options"> Use Notary Block
+                      <input type="radio" id="assignment2016not" name="assignment2016options" value="1"> Use Notary Block
                 </div>
                 <div>
-                      <input type="radio" id="assignment2016wit" name="assignment2016options"> Use Witness Attestation
+                      <input type="radio" id="assignment2016wit" name="assignment2016options" value="2"> Use Witness Attestation
                 </div>
                 <div>
-                      <input type="radio" id="assignment2016non" name="assignment2016options"> None of the Above
+                      <input type="radio" id="assignment2016non" name="assignment2016options" value="3"> None of the Above
                 </div>
                 <div>
                     <br>  <input type="checkbox" id="assignment2016use"> Use Assignee Acceptance Block
@@ -2586,7 +2723,7 @@
                     </tr>
                 </table>
                 <div>
-                    <br> HONU Portal: <input type="radio" name="DraftOAInstructrad" value="1"> Use HONU <input type="radio" name="DraftOAInstructrad" value="2"> Not Registered Yet <input type="radio" name="DraftOAInstructrad" value="3"> Do NOT use HONU
+                    <br> HONU Portal: <input type="radio" name="DraftOAInstructrad" value="1"> Use HONU <input type="radio" name="DraftOAInstructrad" value="2"> Not Registered Yet <input type="radio" name="DraftOAInstructrad" value="3" checked> Do NOT use HONU
                 </div>
             </div>
             <div class="modal-footer">
@@ -2876,7 +3013,7 @@
                     </select>
                 </div>
                 <div>
-                     <button type="button">Additional Documents</button>
+                     <button type="button" onclick="adddocsadd()">Additional Documents</button>
                 </div>
             </div>
             <div class="modal-footer">
@@ -3152,7 +3289,7 @@
                            <input type="text" id="poa82combinedoth" size="40">
                 </div>
                 <div>
-                    <br>  <button type="button" class="btn btn-primary" onclick="poa82combinedadd()">Additional Documents</button>
+                    <br>  <button type="button" class="btn btn-primary" onclick="adddocsadd()">Additional Documents</button>
                                 <select id="poa82combinedSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
@@ -3171,7 +3308,7 @@
             document.getElementById('poa82combinedothfill').style.display = this.value === 'Other' ? 'block' : 'none';
         });
     });
-    function poa82combinedadd(){
+    function adddocsadd(){
         $('#additionalDocs').modal('show');
     }
 </script>
@@ -3925,7 +4062,7 @@
         </div>
     </div>
 </div>
-<!-- Micron Allowance Reccomendaion - Foreign -->
+<!-- Micron Allowance Recomendaion - Foreign -->
 <div id="micnffallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="micnffallowModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -4002,7 +4139,7 @@
                     &emsp;&emsp;<input type="checkbox" id="prelimamendsupprelim"> Supplemental Preliminary Amendment
                 </div>
                 <div>
-                    <br>&emsp;&emsp;Mail Stop: <input type="text" id="idsCommCfNewmstop" size="20" value="MS Amendment">
+                    <br>&emsp;&emsp;Mail Stop: <input type="text" id="prelimamendmstop" size="20" value="MS Amendment">
                 </div>
                 <div>
                     <br>&emsp;&emsp;<select id="prelimamendSAdrop">
@@ -4012,7 +4149,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(prelimamendesign.checked, prelimamendsupprelim.checked, idsCommCfNewmstop.value, prelimamendsa.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(prelimamendesign.checked, prelimamendsupprelim.checked, prelimamendmstop.value, prelimamendSAdrop.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -4292,7 +4429,7 @@
                     </tr>
                 </table>
                 <div>
-                    <br> HONU Portal: <input type="radio" name="sendorderletterrad" value="1"> Use HONU <input type="radio" name="sendorderletterrad" value="2"> Not Registered Yet <input type="radio" name="sendorderletterrad" value="3"> Do NOT use HONU
+                    <br> HONU Portal: <input type="radio" name="sendorderletterrad" value="1"> Use HONU <input type="radio" name="sendorderletterrad" value="2"> Not Registered Yet <input type="radio" name="sendorderletterrad" value="3" checked> Do NOT use HONU
                 </div>
             </div>
             <div class="modal-footer">
@@ -4667,6 +4804,391 @@
         </div>
     </div>
 </div>
+<!-- IDS - QPIDS Form -->
+<div id="Qp_Ids" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Qp_IdsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">QPIDS Form</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                    <select id="Qp_IdsSAdrop">
+                        <option>Select Signing Attorney</option>
+                    </select>
+                    <div>
+                          <input type="radio" name="Qp_Idsrad" value="1"> 51-100 cited cumulative references
+                          <input type="radio" name="Qp_Idsrad" value="2"> 101-200 cited cumulative references
+                          <input type="radio" name="Qp_Idsrad" value="3"> 201+ cited cumulative references
+                          <input type="radio" name="Qp_Idsrad" value="4"> None
+                    </div>
+                <br><br>    <input type="checkbox" id="Qp_Idsesign"> E-Signature Enable
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(Qp_IdsSAdrop.value, Qp_Idsesign.checked, radioFill('Qp_Idsrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- NOV - Email Template -->
+<div id="novemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="novemailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Action Type</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <input type="radio" name="novemailrad" value="1"> Reporting Only
+                </div>
+                <div>
+                    <input type="radio" name="novemailrad" value="2"> Action Required
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('novemailrad'))">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- PTO Form - Request for Deferral of Examination (PTO/SB/37) -->
+<div id="deferRequest" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deferRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Request for Deferral of Examination</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Enter Number of Months for Deferral: <input type="text" id="deferRequestnummo" size="10">
+                </div>
+                <div>
+                    <br>  <input type="checkbox" id="deferRequestesign"> E-Signature Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(deferRequestnummo.value, deferRequestesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Letter - Blank Letter -->
+<div id="blankletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blankletterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Is this Blank Letter for the Foreign Associate?</h6>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="submitbtnblankletter()">No</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge('TRUE')">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitbtnblankletter(){
+        fillRecipients('blankletter');
+    }
+</script>
+<!-- Header - Amendment Under 1.312 -->
+<div id="amend37cfr" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="amend37cfrModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Amendment Under 37 C.F.R. 1.312</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Date of NOA <input type="date" id="amend37cfrdte">
+                </div>
+                <div>
+                    <br>  <select id="amend37cfrSAdrop">
+                        <option>Select Signing Attorney</option>
+                    </select>
+                       <input type="checkbox" id="amend37cfresign"> E-Signature Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(amend37cfrdte.value, amend37cfrSAdrop.value, amend37cfresign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- DOCKETING: Bar Date Questionnaire -->
+<div id="bardateq" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="bardateqModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Bar Date Questionnaire</h6>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Enter Response Date: <input type="date" id="bardateqdte">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(bardateqdte.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Decision to Grant (EP) - Need Unitary Patent Instructions -->
+<div id="tm_unitaryGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_unitaryGrantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Decision to Grant (EP) - Need Unitary Patent Instructions</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  <input type="checkbox" id="tm_unitaryGrantrel"> Related matters currently pending in other jurisdictions
+                <br>  <input type="checkbox" id="tm_unitaryGrantdiv"> Include Divisional Language
+                <div id="tm_unitaryGranthide" style="display:none;">
+                      Enter the Requested Response Date <input type="date" id="tm_unitaryGrantreq">
+                </div>
+                <br>  <input type="checkbox" id="tm_unitaryGrantres"> SLW is responsible for annuity payment
+                <br><br><div>
+                      If EP Validation Instructions were NOT received, <br>  please enter the due date for EP Validation    <input type="date" id="tm_unitaryGrantnotep">
+                </div>
+                <br><div>
+                      If Unitary Patent Instructions were NOT received, <br>  please enter the Due date for the Unitary Patent <input type="date" id="tm_unitaryGrantnotin">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(tm_unitaryGrantrel.checked, tm_unitaryGrantdiv.checked, tm_unitaryGrantreq.value, tm_unitaryGrantres.checked, tm_unitaryGrantnotep.value, tm_unitaryGrantnotin.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('tm_unitaryGrantdiv').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'tm_unitaryGrantdiv', targetId: 'tm_unitaryGranthide' });
+    });
+</script>
+<!-- Header - Appeal Brief (Notice of Appeal filed after 1-22-2012) -->
+<div id="AppealBrief3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="AppealBrief3ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Appeal Brief 2012</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Verify Date of the Final/Non-Final OA </td>
+                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3oa"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Verify Date of the Notice of Appeal was Mailed </td>
+                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3mail"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Mailing Date of the Pre-Appeal Brief Decision </td>
+                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3preap"></td>
+                    </tr>
+                </table>
+                <br>  List of the Claims being Appealed
+                <br>  <textarea rows="2" cols="60" id = "AppealBrief3cl"></textarea>
+                <br>  <input type="checkbox" id="AppealBrief3esign"> E-Signature Enable
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(AppealBrief3oa.value, AppealBrief3mail.value, AppealBrief3preap.value, AppealBrief3cl.value, AppealBrief3esign.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="auditletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="auditletterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Audit Letter</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Date Specified in the Request Letter </td>
+                        <td align="right"style="border: none;"><input type="date" id="auditletterreq"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Amount owed to SLW by the client (Unpaid Fees & Disb) </td>
+                        <td align="right"style="border: none;"><input type="text" id="auditletterslw" size="10" placeholder="0"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left"style="border: none;"> Amount of unbilled fees and disbursements (Unbilled Fees & Disb) </td>
+                        <td align="right"style="border: none;"><input type="text" id="auditletterunb" size="10" placeholder="0"></td>
+                    </tr>
+                </table>
+                <br>              <select id="auditletterSAdrop"><option>Select Signing Attorney</option></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(auditletterreq.value, auditletterslw.value, auditletterunb.value, auditletterSAdrop.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Notice of Non-Payment of Annuities -->
+<div id="annunonpay" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notice of Non-Payment of Annuities</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  Enter the deadline for payment of the fees
+                <br><br>       <input type="date" id="annunonpaydate">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(annunonpaydate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Activity Documents -->
+<div id="activityDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Documents</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="activities-docs"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "activityDocsnext">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Trademark - US Rport Notice of Allowance ITU -->
+<div id="tm_noticeallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_noticeallowModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">US Report Notice of Allowance ITU</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                      Confirm Statement of Use Ext Date <input type="date" id="tm_noticeallowextdate">
+                </div>
+                <div>
+                    <br>  Instructions Due Date <input type="date" id="tm_noticeallowinsdate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(tm_noticeallowextdate.value, tm_noticeallowinsdate.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FF Report Out - Decision to Grant (EP) - NEW -->
+<div id="EPDecisiontoGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="EPDecisiontoGrantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Decision to Grant (EP)</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                  <input type="checkbox" id="EPDecisiontoGrantrel"> Related matters currently pending in other jurisdictions?
+                <br>  <input type="checkbox" id="EPDecisiontoGrantdiv"> Include divisional language?
+                <div id="EPDecisiontoGranthide" style="display:none;">
+                      Enter the requested response date <input type="date" id="EPDecisiontoGrantdte1">
+                </div>
+                <br>  <input type="checkbox" id="EPDecisiontoGrantann"> SLW is responsible for annuity payment?
+                <br><br>  If EP validation instructions were not received please enter
+                <br>  the due date for EP validation <input type="date" id="EPDecisiontoGrantdte2">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(EPDecisiontoGrantrel.checked, EPDecisiontoGrantdiv.checked, EPDecisiontoGrantdte1.checked, EPDecisiontoGrantann.checked, EPDecisiontoGrantdte2.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('EPDecisiontoGrantdiv').addEventListener('change', function() {
+        toggleDisplay({ checkboxId: 'EPDecisiontoGrantdiv', targetId: 'EPDecisiontoGranthide' });
+    });
+</script>
+<div id="applicationdata_updnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_updnewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Sections to Update</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewinv"> Inventor Information
+                </div>
+                <div>
+                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="applicationdata_updnewoptions"> Home
+                    <input type="radio" id="applicationdata_updnewclientmail" name="applicationdata_updnewoptions"> Client
+                    <input type="radio" id="applicationdata_updnewappmail" name="applicationdata_updnewoptions"> Applicant
+                </div>
+                <script>
+                    function applicationdata_updnewsub(inv, corr, app, drw, appinfo, assign, updt, esign){
+                        let apprad = radioFill('applicationdata_updnewoptions')
+                        submitbtnmerge(inv, corr, app, drw, appinfo, assign, updt, esign, apprad);
+                    }
+                </script>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewcorr"> Correspondence Information
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewapp"> Application Information
+                </div>
+                <div>
+                        Total number of drawing sheets? <input type="text" id="applicationdata_updnewdrw" size="5" placeholder = '0'>
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewappinfo"> Applicant Information
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewassign"> Assignee Information
+                </div>
+                <div>
+                        Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign"> E-Sign Enable
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="applicationdata_updnewsub(applicationdata_updnewinv.checked, applicationdata_updnewcorr.checked, applicationdata_updnewapp.checked, applicationdata_updnewdrw.value, applicationdata_updnewappinfo.checked, applicationdata_updnewassign.checked, applicationdata_updnewupdt.value, applicationdata_updnewesign.checked)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -4736,11 +5258,12 @@
         // New shared submit button
         function submitbtnmerge(...args){
             //document.getElementById('mergeform').submit();
-
             const merged_data = args.join(',');
             document.getElementById('mergedata').value += merged_data;
+            const contacts = (document.getElementById('mergedata').value).split(',')[2];
             //alert(document.getElementById('mergedata').value);
-            submitForm();
+            //alert(contacts);
+            submitForm(contacts);
 
             // return new Promise((resolve, reject) => {
             //     setTimeout(() => {
@@ -4751,6 +5274,11 @@
             // submitbtnmerge().then(() => {
             //     window.location.reload();
             // });
+        }
+
+        function submitbtnadd(...args){
+            const merged_data = args.join(',');
+            document.getElementById('mergedata').value += merged_data + ',';
         }
 
         function fillmerge(mergeid, mergepath, mergemethod, esign, contacts){
@@ -4781,8 +5309,8 @@
                         // contacts = 'TRUE';
 
                         // Esign popUp
-                        const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban"];
+                        const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -4794,7 +5322,7 @@
                         }else if (contacts == 'TRUE'){ 
                             fillRecipients(mergemethod);
                             //submitForm();
-                        }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus'){
+                        }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus' || mergemethod =='auditletter' || mergemethod == 'Qp_Ids' || mergemethod == 'amend37cfr'){
                             fillSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');
@@ -4978,7 +5506,8 @@
 
         function fillRecipients(mergemethod){
             const inputData = document.getElementById("matterInput").value;
-
+            $('#emailToast').toast({ autohide: false });
+            $('#emailToast').toast('show');
             $.ajax({
                 type: 'POST',
                 url: 'merge_recipients/',
@@ -4987,14 +5516,14 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    const contactList = response.message.split(';');
-                    const nameList = contactList[0].split(',');
-                    const emailList = contactList[1].split(',');
-                    const roleList = contactList[2].split(',');
+                    //const contactList = response.message.split(';');
+                    const nameList = response.message.names.split(';');
+                    const emailList = response.message.emails.split(';');
+                    const roleList = response.message.roles.split(';');
                     const tableBody = document.getElementById('contact-info');
 
                     tableBody.innerHTML = '';
-                    for(var i = 0; i < nameList.length - 1; i++){
+                    for(var i = 0; i < nameList.length; i++){
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
                             <td><input type="checkbox" name = "to"></td>
@@ -5006,6 +5535,7 @@
                         `;
                         tableBody.appendChild(newRow);
                     }
+                    $('#emailToast').toast('hide');
                     $('#contacts').modal('show'); 
                     
                     document.getElementById("contactsnext").onclick = function() {
@@ -5031,13 +5561,15 @@
                             'abandonReport', 'reportprvassnnew', 'recordedassnreport', 'rptissuefee', 'mpcapactions', 
                             'advisoryreport', 'PctSearchRep', 'LtrSendFmlDocNew', 'filerectreportNw2', 'adobesign', 
                             'olpemail', 'appReportFp', 'RepNoticeofAllow', 'issuereport', 'nonfinalreportFp', 
-                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'ffOfficeActRcvd', 'FFFilingReceipt',
+                            'PCTAsgnPOALetter', 'RptInvtPayFees', 'PCTRptOutIpRp', 'FFFilingReceipt',
                             'ffinstructions', 'CommunicationLetter', 'FFDecisiontoGrant_NEW', 'natlphase', 'FFNoticePubRcvd',
                             'ffNoticeOfAllancRcvdFp', 'DecisionAppeal', 'ffLtrSndFormalDocs', 'ffepApprovalofTxt', 'FnlAppInvWfmls',
                             'correctedfrreport', 'ffOlp', 'ffapplaidopen', 'ffNoticeOfAcceptAuNzFp', 'TM_NoticeofPubRep', 'TM_OaReport',
-                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter', 'intelbasic', 'intelfoa'
+                            'ffremind', 'sendorderletter', 'epOLP', 'ffEPSrchRptandOpinion', 'intelformal', 'poaMatter', 'intelbasic', 'intelfoa',
+                            'annunonpay', 'bardateq', 'tm_unitaryGrant', 'tm_noticeallow', 'EPDecisiontoGrant'
                         ];
-                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'msemails' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer'){
+                        if(mergemethod == 'OriginalPatReportNew'){mergemethod = 'olpemail'}
+                        if(mergemethod == 'ptorecdReport' || mergemethod == 'basicreport' || mergemethod == 'PCTRptOutMiscItmsRcvd' || mergemethod == 'PCTRptOutBasicLtr' || mergemethod == 'msemails' || mergemethod == 'FFRptOutBasic' || mergemethod == 'honureport' || mergemethod == 'ffMiscItemsRcvd' || mergemethod == 'miscitemsdue' || mergemethod == 'tm_basicreport' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'tmrecdReport' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'fa_confirm' || mergemethod == 'nikeaction_new' || mergemethod == 'retainer' || mergemethod == 'novemail' || mergemethod == 'ffOfficeActRcvd' || mergemethod == 'litoclient'){
                             fillActivities(mergemethod);
                         }
                         else if (mergeMethods.includes(mergemethod)) {
@@ -5061,6 +5593,8 @@
         }
 
         function fillActivities(mergemethod){
+            $('#actToast').toast({ autohide: false });
+            $('#actToast').toast('show');
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
                 type: 'POST',
@@ -5070,16 +5604,16 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    const activityList = response.message.split(';');
-                    const nameList = activityList[0].split(',');
-                    const commentsList = activityList[1].split(',');
-                    const statusList = activityList[2].split(',');
-                    const date1List = activityList[3].split(',');
-                    const date2List = activityList[4].split(',');
+                    const nameList = response.message.names.split(';');
+                    const commentsList = response.message.notes.split(';');
+                    const statusList = response.message.status.split(';');
+                    const date1List = response.message.smryonelabels.split(';');
+                    const date2List = response.message.smrytwolabels.split(';');
+                    const actidList = response.message.actids.split(';');
 
                     const tableBody = document.getElementById('activities-info');
                     tableBody.innerHTML = '';
-                    for(var i = 0; i < nameList.length - 1; i++){
+                    for(var i = 0; i < nameList.length; i++){
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
                             <td><input type="checkbox" name = "actcheck"></td>
@@ -5091,11 +5625,13 @@
                         `;
                         tableBody.appendChild(newRow);
                     }
+                    $('#actToast').toast('hide');
                     $('#activities').modal('show'); 
                     
                     document.getElementById("activitiesnext").onclick = function() {
                         let namesel = [];
                         let date1sel = [];
+                        let actidsel = [];
                         const checkboxesAct = document.querySelectorAll('input[type="checkbox"][name="actcheck"]');
                         checkboxesAct.forEach((checkbox, index) => {
                             if (checkbox.checked) {
@@ -5105,19 +5641,29 @@
                                 //document.getElementById("mergedata").value += statusList[index] + ',';
                                 date1sel.push(date1List[index]);
                                 //document.getElementById("mergedata").value += date1List[index] + ';'
-                                //document.getElementById("mergedata").value += date2List[index] + ',';     
+                                //document.getElementById("mergedata").value += date2List[index] + ','; 
+                                actidsel.push(actidList[index].replace(/\s+/g, ''));
                             }
                         });
-                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'nikeaction_new'){
-                            document.getElementById("mergedata").value += date1sel.join(';') + ','
-                            document.getElementById("mergedata").value += namesel.join(';') + ','
-                            $('#' + mergemethod).modal('show');
+                        if (mergemethod == 'honureport' || mergemethod == 'miscitemsdue' || mergemethod == 'ffOfficeActRcvdAuNz' || mergemethod == 'ffMiscItemsDue' || mergemethod == 'nikeaction_new' || mergemethod == 'novemail' || mergemethod == 'ffOfficeActRcvd'){
+                            //alert('UI pre-actdoc: ' + mergemethod);
+                            document.getElementById("mergedata").value += date1sel.join(';') + ',';
+                            document.getElementById("mergedata").value += namesel.join(';') + ',';
+                            fillActivitydoc(actidsel.join(';'), mergemethod);
+                            //$('#' + mergemethod).modal('show');
                         }
                         else{
-                            submitbtnmerge(date1sel.join(';'), namesel.join(';'));
+                            document.getElementById("mergedata").value += date1sel.join(';') + ',';
+                            document.getElementById("mergedata").value += namesel.join(';') + ',';
+                            if (mergemethod != 'micnffallow'){
+                                //alert('No UI pre-actdoc' + mergemethod);
+                                fillActivitydoc(actidsel.join(';'), 'None');
+                            }
+                            else{
+                                submitbtnmerge();
+                            }
                         }
                     };
-                    
                 },
                 error: function(error) {
                     console.error('Error:', error);
@@ -5271,15 +5817,13 @@
                     'X-CSRFTOKEN': csrftoken,
                 },
                 success: function(response) {
-                    //alert('yes');
-                    const RMlist = response.message.split(';');
-                    const matterList = RMlist[0].split('*');
-                    const serialnoList = RMlist[1].split('*');
-                    const relList = RMlist[2].split('*');
+                    const matterList = response.message.matternos.split(';');
+                    const serialnoList = response.message.serialnos.split(';');
+                    const relList = response.message.relationships.split(';');
 
                     const tableBody = document.getElementById('idsmemoselect');
                     tableBody.innerHTML = '';
-                    for(var i = 0; i < serialnoList.length - 1; i++){
+                    for(var i = 0; i < matterList.length; i++){
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
                             <td><input type="checkbox" name = "RMcheck"></td>
@@ -5293,6 +5837,13 @@
                     let matterArray = [];
                     let serialArray = [];
                     let relArray = [];
+
+                    document.getElementById('idsmemosel').addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('input[name="RMcheck"]');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = this.checked;
+                        });
+                     });
 
                     const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="RMcheck"]`);
                     checkboxes.forEach((checkbox, index) => {
@@ -5328,7 +5879,8 @@
                         selrel = relArray.join(';');
                         selrel = selrel.replace(/,/g, '*');
 
-                        submitbtnmerge(document.getElementById("idsmemodrop").value, document.getElementById("idsmemoblank").value, document.getElementById("idsmemo3mblank").value, selmatter, selserial, selrel);
+                        submitbtnadd(document.getElementById("idsmemodrop").value, document.getElementById("idsmemoblank").value, document.getElementById("idsmemo3mblank").value, selmatter, selserial, selrel, 'endrellist');
+                        fillActivities('idsmemo');
                     };
                 },
                 error: function(error) {
@@ -5346,6 +5898,96 @@
                 }
             });
             return selectedValue;
+        }
+
+        function fillActivitydoc(actids, merge){
+            const inputData = document.getElementById("matterInput").value;
+            $.ajax({
+                type: 'POST',
+                url: 'merge_activity_docs/',
+                data: {
+                    matterno: JSON.stringify(inputData),
+                    actids: actids
+                },
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    //alert(response.message.names);
+                    if(response.message.names != ''){
+
+                        let documentList = response.message.names.split(';');
+                        let idList = response.message.ids.split(';');
+
+                        //alert(documentList);
+
+                        const tableBody = document.getElementById('activities-docs');
+                        tableBody.innerHTML = '';
+                        for(var i = 0; i < documentList.length; i++){
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td>${documentList[i]}</td>
+                                <td><input type="checkbox" name = "actdoccheck"></td>
+                            `;
+                            tableBody.appendChild(newRow);
+                        }
+                        $('#activityDocs').modal('show');
+                        
+                        document.getElementById("activityDocsnext").onclick = function() {
+                            let attidsel = [];
+                            let attnamesel = [];
+                            const checkboxesAtt = document.querySelectorAll('input[type="checkbox"][name="actdoccheck"]');
+                            checkboxesAtt.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    attidsel.push(idList[index]);
+                                    attnamesel.push(documentList[index]);
+                                }
+                            });
+                            if(merge != 'None'){
+                                if (attidsel.length === 0){
+                                    document.getElementById("mergedata").value += 'NoAttachSelected,';
+                                    document.getElementById("mergedata").value += ' ,';
+                                    $('#' + merge).modal('show');
+                                }
+                                else{
+                                    document.getElementById("mergedata").value += attidsel.join(';') + ',';
+                                    document.getElementById("mergedata").value += attnamesel.join(';') + ',';
+                                    //alert(attidsel.join(';') + ',');
+                                    $('#' + merge).modal('show');
+                                }
+                            }
+                            else{
+                                if (attidsel.length === 0){
+                                    //alert('Act no select');
+                                    //submitbtnmerge(attidsel.join(';'), attnamesel.join(';'));
+                                    //submitbtnmerge('NoAttachSelected,', ' ,');
+                                    submitbtnmerge('NoAttachSelected, ');
+                                }
+                                else{
+                                    //alert('Act select');
+                                    submitbtnmerge(attidsel.join(';'), attnamesel.join(';'));
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        if(merge != 'None'){
+                            //alert('UI pre-submit');
+                            //submitbtnadd('NoAttachSelected');
+                            document.getElementById('mergedata').value += 'NoAttachSelected, ,';
+                            $('#' + merge).modal('show');
+                        }
+                        else{
+                            //alert('No UI pre-submit');
+                            //document.getElementById("mergedata").value += 'NoAttachSelected' + ','
+                            submitbtnmerge('NoAttachSelected, ');
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                }
+            });
         }
 </script>
 </body>

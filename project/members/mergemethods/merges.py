@@ -5,6 +5,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 
+# Transmittal - Communication Appeal Forwarding Fee
 class appealfwd:
     def appealfwd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -38,6 +39,7 @@ class appealfwd:
         })
         return replace
     
+# Header - Pending Claims
 class pclaims:
     def pclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -51,6 +53,7 @@ class pclaims:
         })
         return replace
 
+# Transmittal - Issue Fee
 class issuefee:
     def issuefee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -167,6 +170,7 @@ class issuefee:
         })
         return replace
     
+# PTO Form - Statement Under 3.73(c) - App filed on/or after Sept 16, 2012
 class Statement373c:
     def Statement373c(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -179,7 +183,6 @@ class Statement373c:
             if mergeinfo[2]:
                 org = mergeinfo[2]
         
-        esign_out, esigndate_out = function_instance.esigncheck(esign)
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[1]))
@@ -188,6 +191,7 @@ class Statement373c:
         })
         return replace
     
+# Formal Document - Assignment Recordation Cover Sheet
 # may need to add other organization types. May need totalfee
 class recordation:
     def recordation(self, matter, mergeinfo, keys):
@@ -238,6 +242,7 @@ class recordation:
         })
         return replace
  
+# Transmittal - Late Submission of Declaration or Substitute Statement
 # Only need duedate and nickU
 class LateSubmissionOfDec:
     def LateSubmissionOfDec(self, matter, mergeinfo, keys):
@@ -291,6 +296,7 @@ class LateSubmissionOfDec:
         })
         return replace     
 
+# Transmittal - Update to Application Data Sheet
 class UpdateAppDataSheet:
     def UpdateAppDataSheet(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -316,7 +322,8 @@ class UpdateAppDataSheet:
             'currentYr' : datetime.now().year,
         })
         return replace
-    
+
+# Report Out - Original Letters Patent (Email)
 class olpemail:
     def olpemail(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -361,7 +368,8 @@ class olpemail:
             'cutilityText2' : cultxt,
         })
         return replace
-    
+
+# Report Out - MP/CAP/Sequence Listing Actions
 class mpcapactions:
     def mpcapactions(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -381,6 +389,10 @@ class mpcapactions:
             nummonths = 'two'
         if action == 8:
             code = 'PCT/DO/EO/923'
+        if action == 9:
+            code = 'MPTA'
+        if action == 10:
+            code = 'MPTA'
 
         try:
             activity = function_instance.getactivityid(matter_data, code)
@@ -411,6 +423,7 @@ class mpcapactions:
         })
         return replace
 
+# PTO Form - Application Data Sheet - On/after Sept 16, 2012
 class applicationdata_new2:
     def applicationdata_new2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -448,6 +461,7 @@ class stateofallow:
             })
             return replace
     
+# Report Out - Application Filed (including CIP and Design)
 class appReportFp:
     def appReportFp(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
@@ -507,6 +521,7 @@ class appReportFp:
             })
             return replace
 
+# PCT - 92bis Comm: Change in Rights of Ownership
 class ownerchange:
     def ownerchange(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
@@ -520,6 +535,7 @@ class ownerchange:
             })
             return replace
     
+# Transmittal - Communication Regarding Corrected Application Papers
 # Need due date and fee
 class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
@@ -531,6 +547,9 @@ class corrappln:
             AbsX = ''
             SeqX = ''
             FrmlX = ''
+            
+            madx = ''
+            madpg = ''
 
             SubPg = ''
             AbsPg = ''
@@ -562,6 +581,10 @@ class corrappln:
                 FrmlX = 'X'
                 FrmlPg = 'Formal Drawings (' + mergeinfo[5] + ' pg.).'
                 docs.append('Formal Drawings')
+                
+            if mergeinfo[6] != '' and int(mergeinfo[6]) > 0:
+                madx = 'X'
+                madpg = 'Marked-up Application Data Sheet (' + mergeinfo[6] + ' pgs.)'
 
             if len(docs) == 4:
                 doclist = 'A Substitute Specification, a Substitute Abstract, a Sequence Listing, and Formal Drawings are attached.'
@@ -605,9 +628,13 @@ class corrappln:
                 'extPg' : extpg,
                 'depX' : depx,
                 'depPg' : deppg,
+                
+                'MadX' : madx,
+                'DataPg' : madpg
             })
             return replace
-    
+
+# Transmittal - Missing Parts Response
 class missingpartsNw:
     def missingpartsNw(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
@@ -645,6 +672,7 @@ class missingpartsNw:
             })
             return replace
     
+# Report Out - Issue Fee
 class rptissuefee:
     def rptissuefee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -668,6 +696,7 @@ class rptissuefee:
         }) 
         return replace
 
+# Letter - Send Formal Documents via Adobe Sign
 class adobesign:
     def adobesign(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -686,6 +715,7 @@ class adobesign:
         })
         return replace
 
+# Letter - Send Formal Document(s)
 class LtrSendFmlDocNew:
     def LtrSendFmlDocNew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -722,7 +752,8 @@ class LtrSendFmlDocNew:
             'fmlContent' : mergeinfo[5]
         })
         return replace
-    
+
+# Report Out - Basic Letter
 class basicreport:
     def basicreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -733,9 +764,12 @@ class basicreport:
         seldates = mergeinfo[0].split(';')
         finaldates = ''
         for date in seldates:
-            actdate = function_instance.extract_date(date)
-            date_object = datetime.strptime(actdate, "%m/%d/%Y")
-            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
@@ -744,17 +778,16 @@ class basicreport:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'salutation' : '',
-            'activityname' : mergeinfo[0],
+            'activityname' : mergeinfo[1],
             'dateFiled' : formatted_data,
             'docFiled' : '',
-            
         })
         return replace
 
+# Report Out - Miscellaneous Items Received from the PTO
 class ptorecdReport:
     def ptorecdReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         selnames = mergeinfo[1].replace(';','\n')
         
@@ -766,7 +799,7 @@ class ptorecdReport:
                 date_object = datetime.strptime(actdate, "%m/%d/%Y")
                 finaldates += date_object.strftime("%B %d, %Y") + '\n'
             except:
-                finaldates += 'NO DATE FOUND'
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t".join(row) for row in rows])
@@ -777,10 +810,12 @@ class ptorecdReport:
             'dateMailed' : formatted_data,
             'docReceived' : '',
             'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'salutation' : ''
+            'salutation' : '',
+            'activityname' : mergeinfo[1].split(';')[0]
         })
         return replace
-    
+
+# Report Out - Notice of Allowance
 class RepNoticeofAllow:
     def RepNoticeofAllow(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -820,6 +855,7 @@ class RepNoticeofAllow:
         })
         return replace
     
+# PCT - Report Out Miscellaneous Items Received
 class PCTRptOutMiscItmsRcvd:
     def PCTRptOutMiscItmsRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -829,9 +865,12 @@ class PCTRptOutMiscItmsRcvd:
         seldates = mergeinfo[0].split(';')
         finaldates = ''
         for date in seldates:
-            actdate = function_instance.extract_date(date)
-            date_object = datetime.strptime(actdate, "%m/%d/%Y")
-            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
@@ -846,6 +885,7 @@ class PCTRptOutMiscItmsRcvd:
         return replace
 
 
+# Report Out - Recorded Assignment
 # use activity and attributeval to get reel and frames
 class recordedassnreport:
     def recordedassnreport(self, matter, mergeinfo, keys):
@@ -873,6 +913,7 @@ class recordedassnreport:
         })
         return replace
 
+# Letter - Send Provisional Assignment
 class reportprvassnnew:
     def reportprvassnnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -905,6 +946,7 @@ class reportprvassnnew:
         })
         return replace
 
+# Report Out - Notice of Abandonment
 class abandonReport:
     def abandonReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -918,6 +960,7 @@ class abandonReport:
         })
         return replace
     
+# Report Out - Issue Notification
 class issuereport:
     def issuereport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -942,6 +985,7 @@ class issuereport:
         })
         return replace
 
+# PCT - Response to Invitation to Correct Defects (PCT/RO/106)
 # check/dep
 class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
@@ -964,7 +1008,7 @@ class pctcorrect:
             Atxt = ''
 
         if annexB == 'true':
-            Btxt = 'Replacement description pages ' + descpg + ', replacement claims pages ' + claimpg + ' and replacement claims pages ' + abspg + ' which are believed to be in compliance with Annex B1 of the Invitation.'
+            Btxt = 'Replacement description pages ' + descpg + ', replacement claims pages ' + claimpg + ' and replacement abstract pages ' + abspg + ' which are believed to be in compliance with Annex B1 of the Invitation.'
         else:
             Btxt = ''
 
@@ -994,6 +1038,7 @@ class pctcorrect:
         })
         return replace
 
+# PTO Form - Application Data Sheet - On/after Sept 16, 2012
 class applicationdata_new2:
     def applicationdata_new2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1051,6 +1096,7 @@ class pctextention:
         })
         return replace
 
+# Report Out - Non-Final Office Action Received
 class nonfinalreportFp:
     def nonfinalreportFp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1085,6 +1131,7 @@ class nonfinalreportFp:
         })
         return replace
 
+# PCT - Letter to send Assignment and POA
 class PCTAsgnPOALetter:
     def PCTAsgnPOALetter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1108,6 +1155,7 @@ class PCTAsgnPOALetter:
         })
         return replace
     
+# PCT - Report out Invitation to Pay Additional Fees
 class RptInvtPayFees:
     def RptInvtPayFees(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1148,6 +1196,7 @@ class RptInvtPayFees:
         })
         return replace
 
+# PCT - Response to Invitation to Furnish Sequence Listing
 class PctCommRe:
     def PctCommRe(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1219,6 +1268,7 @@ class PctCommRe:
         })
         return replace
     
+# PCT - Report Filing of Application
 class PCTRptFileOfApp:
     def PCTRptFileOfApp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1263,6 +1313,7 @@ class PCTRptFileOfApp:
         })
         return replace
     
+# PTO Form - Update Application Data Sheet
 class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1292,6 +1343,7 @@ class applicationdata_updnew:
             replace.update({'apptitle' : '', 'appmatterNo' : '', 'appmatterType' : '', 'drawingSheets' : '', 'appprov' : ''})
         return replace
 
+# Report Out - Notice of Publication
 class nopreport:
     def nopreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1313,6 +1365,7 @@ class nopreport:
         })
         return replace
 
+# Report Out - Final Office Action Received
 class foarreport:
     def foarreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1345,6 +1398,7 @@ class foarreport:
         })
         return replace
 
+# Transmittal - General
 class generalxmitCF:
     def generalxmitCF(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1413,6 +1467,7 @@ class generalxmitCF:
         })
         return replace
     
+# Report Out - Filing Receipt Received
 class filerectreportNw2:
     def filerectreportNw2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1461,6 +1516,7 @@ class filerectreportNw2:
         })
         return replace
     
+# PCT - General Transmittal (WIPO)
 class PatentCoopTreaty2:
     def PatentCoopTreaty2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1501,6 +1557,7 @@ class PatentCoopTreaty2:
         })
         return replace
     
+# PCT - Report out Search Report and Written Opinion    
 class PctSearchRep:
     def PctSearchRep(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1517,6 +1574,7 @@ class PctSearchRep:
         })
         return replace
     
+# PCT - Report Out IPRP
 class PCTRptOutIpRp:
     def PCTRptOutIpRp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1549,6 +1607,7 @@ class PCTRptOutIpRp:
         })
         return replace
 
+# IDS - Communication New
 class idsCommCfNew:
     def idsCommCfNew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1577,22 +1636,40 @@ class idsCommCfNew:
         })
         return replace
 
+# IDS - Search Report Memo
 class idsmemo:
     def idsmemo(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
 
         actionrec = mergeinfo[0]
-        blank = mergeinfo[1]
-        moduedate = mergeinfo[2]  
+        if actionrec == 'Other':
+            actionrec = mergeinfo[1]
+        
+        relmattersAct = mergeinfo[5:]
+        
+        actindex = relmattersAct.index('endrellist')
+        activitylist = relmattersAct[actindex + 1:]
+        relmatters = relmattersAct[:actindex]
+        
+        selmatter = relmatters[0].replace('*', ',').replace(';','\n')
+        selserial = relmatters[1].replace('*', ',').replace(';','\n')
+        selstatus = relmatters[2].replace('*', ',').replace(';','\n')
+
+        rows = zip(selmatter.split('\n'), selserial.split('\n'), selstatus.split('\n'))
+        formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-
+            'relmatterdata' : formatted_data,
+            'docFiled' : actionrec,
+            'actionDueDate' : function_instance.formatDate(mergeinfo[4]),
+            'activityname' : activitylist[0],
+            'userName' : ''
         })
         return replace
 
+# Transmittal - Patent Application (Utility)
 class utilityapp:
     def utilityapp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1672,27 +1749,33 @@ class utilityapp:
         })
         return replace
 
+# Formal Document - Assignment (with or w/out Notary)
 class assignment2016:
     def assignment2016(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
 
         replace = {}
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
         replace.update({
-
+            'hasHave' : 'has'
         })
         return replace
     
+# FF Report Out - Office Actions Received
 class ffOfficeActRcvd:
     def ffOfficeActRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
 
-        typeaction = mergeinfo[0]
-        deadline = function_instance.formatDate(mergeinfo[1])
-        reqresp = function_instance.formatDate(mergeinfo[2])
-        citedref = mergeinfo[3]
+        typeaction = mergeinfo[4]
+        deadline = function_instance.formatDate(mergeinfo[5])
+        reqresp = function_instance.formatDate(mergeinfo[6])
+        citedref = mergeinfo[7]
+        cite = ''
         if citedref == 'true' and typeaction != '':
             cite = ' and cited references '
         if citedref == 'true' and typeaction == '':
@@ -1700,14 +1783,18 @@ class ffOfficeActRcvd:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.cmgfill(matter))
         replace.update({
             'cdueDate' : deadline,
             'crespDate' : reqresp,
             'actionType' : typeaction,
             'citedRef' : cite,
+            'activityName' : (mergeinfo[1].split(';'))[0],
+            'salutation' : ''
         })
         return replace
 
+# Letter - FF Order Letter
 class mrgfforder:
     def mrgfforder(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1715,29 +1802,28 @@ class mrgfforder:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
         replace.update({
 
         })
         return replace
     
+# Letter - FF Draft OA Instructions to Associate
 class DraftOAInstruct:
     def DraftOAInstruct(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter) 
-        
-        radio = mergeinfo[2]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.ffparafill(matter))
+        replace.update(function_instance.countryType(matter))
         replace.update({
             'corrDate' : function_instance.formatDate(mergeinfo[0]),
-            'cdueDate' : function_instance.formatDate(mergeinfo[1]),
-            # Need to edit country
-            'countryType' : matter_data.countryname,
-            'ffparaEmail' : ''
+            'cdueDate' : function_instance.formatDate(mergeinfo[1])
         })
         return replace
 
+# Header - Extension of Time
 class exttimeCF:
     def exttimeCF(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1779,6 +1865,7 @@ class exttimeCF:
         })
         return replace
 
+# Transmittal - Communication Regarding Incorrect Filing Receipt
 # Only need dueDate
 class incorrectfilerect:
     def incorrectfilerect(self, matter, mergeinfo, keys):
@@ -1798,6 +1885,7 @@ class incorrectfilerect:
         })
         return replace
     
+# PTO Form - Correction of Inventorship  (AIA/40)
 # Need to fix SARegNo - will not fill with mergebasic
 class corrinventorship:
     def corrinventorship(self, matter, mergeinfo, keys):
@@ -1812,6 +1900,7 @@ class corrinventorship:
         })
         return replace
 
+# PTO Form - Correction of Applicant  (AIA/41)
 # e-signature and SA data not filling correctly.
 class corrapplicant:
     def corrapplicant(self, matter, mergeinfo, keys):
@@ -1824,6 +1913,7 @@ class corrapplicant:
         })
         return replace
 
+# PCT - Declaration
 # Need small changes. clientreftxt and inventor info
 class pctdeclaration2:
     def pctdeclaration2(self, matter, mergeinfo, keys):
@@ -1839,6 +1929,7 @@ class pctdeclaration2:
         })
         return replace
 
+# Transmittal - RCE
 class rcexmit3:
     def rcexmit3(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1887,6 +1978,7 @@ class rcexmit3:
         })
         return replace
     
+# PCT - Generic Header
 class pctgeneric:
     def pctgeneric(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1923,6 +2015,7 @@ class pctgeneric:
         })
         return replace
 
+# PCT - 92bis Comm: Change in Inventor Address
 class invchange:
     def invchange(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1955,7 +2048,8 @@ class invchange:
             'SARegNo' : '',
         })
         return replace       
-    
+
+# Report Out - Application Filed (Provisional)
 class prvAppReport:
     def prvAppReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -1978,6 +2072,7 @@ class prvAppReport:
         })
         return replace
 
+# Report Out - Advisory Action Received
 class advisoryreport:
     def advisoryreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2030,6 +2125,7 @@ class advisoryreport:
         })
         return replace
     
+# Report Out - Certificate of Correction (Email)
 class cocReportEmail:
     def cocReportEmail(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2041,6 +2137,7 @@ class cocReportEmail:
         })
         return replace
 
+# PCT - Report Out Invitation to Correct Defects
 class correctdefects:
     def correctdefects(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2066,6 +2163,7 @@ class correctdefects:
         })
         return replace
 
+# Report Out - Application Filed (Provisional - PV2)
 class pv2appReport:
     def pv2appReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2082,6 +2180,7 @@ class pv2appReport:
         })
         return replace
     
+# PCT - Report Out Published Application
 class PCTRptPubApp:
     def PCTRptPubApp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2103,6 +2202,7 @@ class PCTRptPubApp:
         })
         return replace
     
+# PCT - Declaration
 class pctdeclaration2:
     def pctdeclaration2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2115,6 +2215,7 @@ class pctdeclaration2:
         })
         return replace
 
+# Report Out - Restriction Requirement
 class rerrReport:
     def rerrReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2148,6 +2249,7 @@ class rerrReport:
         })
         return replace
     
+# Report Out - Maintenance Fee Reminder
 class maintfee:
     def maintfee(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2166,19 +2268,8 @@ class maintfee:
             'activityname' : 'Maintenance Fee'
         })
         return replace
-
-class msemails:
-    def msemails(self, matter, mergeinfo, keys):
-        function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
-        
-        replace = {}
-        replace.update(function_instance.mergebasic(keys, matter))
-        replace.update({
-            'Item being reported' : mergeinfo[1]
-        })
-        return replace
     
+# FF Report Out - Items Filed with Foreign PTO
 class FFRptOutBasic:
     def FFRptOutBasic(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2195,6 +2286,7 @@ class FFRptOutBasic:
         })
         return replace
 
+# FF Report Out - Associate Confirms Filing/Filing Receipt
 class FFFilingReceipt:
     def FFFilingReceipt(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2205,21 +2297,22 @@ class FFFilingReceipt:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-
+            
         })
         return replace
 
+# FF Report Out - SLW Report / Honu
 class honureport:
     def honureport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
-        if mergeinfo[2] == 'NO':
+        if mergeinfo[4] == 'NO':
             cortxt = '.'
             actreq = ''
         else:
             cortxt = 'together with the correspondence from the associate.'
-            actreq = '\nACTION REQUIRED:\nThe deadline for responding to the communication is:  '+ function_instance.formatDate(mergeinfo[2]) +'\nWe would welcome your instructions no later than:  '+ function_instance.formatDate(mergeinfo[3]) + '\n'
+            actreq = '\nACTION REQUIRED:\nThe deadline for responding to the communication is:  '+ function_instance.formatDate(mergeinfo[4]) +'\nWe would welcome your instructions no later than:  '+ function_instance.formatDate(mergeinfo[5]) + '\n'
                     
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2231,6 +2324,7 @@ class honureport:
         })
         return replace
 
+# Letter - Request for Instructions (FF/Conversion)
 class ffinstructions:
     def ffinstructions(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2267,6 +2361,7 @@ class ffinstructions:
         })
         return replace
     
+# FF Report Out - Miscellaneous Items Received
 class ffMiscItemsRcvd:
     def ffMiscItemsRcvd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2282,6 +2377,7 @@ class ffMiscItemsRcvd:
         })
         return replace
 
+# Letter - FF Instructions to Pay Grant Fees
 class CommunicationLetter:
     def CommunicationLetter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2295,6 +2391,7 @@ class CommunicationLetter:
         })
         return replace
     
+# FF Report Out - Decision to Grant
 class FFDecisiontoGrant_NEW:
     def FFDecisiontoGrant_NEW(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2329,6 +2426,7 @@ class FFDecisiontoGrant_NEW:
         })
         return replace
 
+# Letter - Request for Instructions (PCT National Stage)
 class natlphase:
     def natlphase(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2362,6 +2460,7 @@ class natlphase:
         })
         return replace
     
+# FF Report Out - Notice of Publication Received
 # not done
 class FFNoticePubRcvd:
     def FFNoticePubRcvd(self, matter, mergeinfo, keys):
@@ -2410,6 +2509,7 @@ class FFNoticePubRcvd:
         })
         return replace
     
+# FF Report Out - Notice of Allowance Received
 class ffNoticeOfAllancRcvdFp:
     def ffNoticeOfAllancRcvdFp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2438,6 +2538,7 @@ class ffNoticeOfAllancRcvdFp:
         }) 
         return replace
 
+# FF Report Out - Annuity or Patent Expiration Communication
 class anncomm:
     def anncomm(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2450,6 +2551,7 @@ class anncomm:
         })
         return replace
     
+# PTO Form - Statement Under 3.73(b)
 class StatementUnder373b:
     def StatementUnder373b(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2469,6 +2571,7 @@ class StatementUnder373b:
         })
         return replace
     
+# Report Out - Decision on Appeal
 class DecisionAppeal:
     def DecisionAppeal(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2513,6 +2616,7 @@ class DecisionAppeal:
         })
         return replace
     
+# FF Report Out - Letter to Send Formal Documents
 class ffLtrSndFormalDocs:
     def ffLtrSndFormalDocs(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2534,6 +2638,7 @@ class ffLtrSndFormalDocs:
         })
         return replace
 
+# Letter - Client Agreement Letter
 class clientagree_sp:
     def clientagree_sp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2549,6 +2654,7 @@ class clientagree_sp:
         })
         return replace
 
+# Header - Generic Header
 class genericheader:
     def genericheader(self,matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2567,6 +2673,7 @@ class genericheader:
         })
         return replace
     
+# Header - Allowed Claims
 class allowedclaims:
      def allowedclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2578,6 +2685,7 @@ class allowedclaims:
         })
         return replace
     
+# FF Report Out - EP Approval of Text (Rule 71(3))
 class ffepApprovalofTxt:
     def ffepApprovalofTxt(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2591,6 +2699,7 @@ class ffepApprovalofTxt:
         })
         return replace
     
+# FF Report Out - Notice to Request Exam
 class reqexamdue:
     def reqexamdue(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2616,6 +2725,7 @@ class reqexamdue:
         })
         return replace
 
+# PCT - Foreign Filing Order Form
 # not filling because of tables in doc
 class pctorderform:
     def pctorderform(self, matter, mergeinfo, keys):
@@ -2630,6 +2740,7 @@ class pctorderform:
         })
         return replace
     
+# Report Out - Miscellaneous Items Due
 class miscitemsdue:
     def miscitemsdue(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2645,13 +2756,14 @@ class miscitemsdue:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'dueDate' : function_instance.formatDate(mergeinfo[2]),
-            'requestedDate' : function_instance.formatDate(mergeinfo[3]),
-            'activityName' : mergeinfo[1],
+            'dueDate' : function_instance.formatDate(mergeinfo[4]),
+            'requestedDate' : function_instance.formatDate(mergeinfo[5]),
+            'activityName' : mergeinfo[1].split(';')[0],
             'dateMailed' : function_instance.formatDate(datemail),
         })
         return replace
 
+# Report Out - Corrected Filing Receipt
 class correctedfrreport:
     def correctedfrreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2665,6 +2777,7 @@ class correctedfrreport:
         })
         return replace
 
+# Trademark - Basic Report Out Letter
 class tm_basicreport:
     def tm_basicreport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2674,9 +2787,12 @@ class tm_basicreport:
         seldates = mergeinfo[0].split(';')
         finaldates = ''
         for date in seldates:
-            actdate = function_instance.extract_date(date)
-            date_object = datetime.strptime(actdate, "%m/%d/%Y")
-            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
@@ -2691,6 +2807,7 @@ class tm_basicreport:
         })
         return replace
 
+# IDS - 1449 Form-Cited in Parent
 # Tables not filling
 class ids_citedparent_2012:
     def ids_citedparent_2012(self, matter, mergeinfo, keys):
@@ -2703,6 +2820,7 @@ class ids_citedparent_2012:
         })
         return replace
 
+# Letter - FF Send Items to Associate
 class ffSndItmsToAssoc:
     def ffSndItmsToAssoc(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2734,6 +2852,7 @@ class ffSndItmsToAssoc:
         })
         return replace
 
+# Formal Document - BSC Combined Assn/Dec -App filed on/after Sept. 16, 2012
 # inventors appearing on new page
 class BSCCombinedAssnDec:
     def BSCCombinedAssnDec(self, matter, mergeinfo, keys):
@@ -2749,11 +2868,12 @@ class BSCCombinedAssnDec:
         })
         return replace
     
+# FF Report Out - Office Actions Received (AU or NZ)
 class ffOfficeActRcvdAuNz:
     def ffOfficeActRcvdAuNz(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         
-        if mergeinfo[5] == 'true':
+        if mergeinfo[7] == 'true':
             citeref = 'and cited references '
         else:
             citeref = ''
@@ -2761,15 +2881,16 @@ class ffOfficeActRcvdAuNz:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'activityName' : mergeinfo[1],
-            'cdueDate' : mergeinfo[3],
-            'crespDate' : mergeinfo[4],
-            'actionType' : mergeinfo[2],
+            'activityName' : mergeinfo[1].split(';')[0],
+            'cdueDate' : mergeinfo[5],
+            'crespDate' : mergeinfo[6],
+            'actionType' : mergeinfo[4],
             'citedRef' : citeref,
             'salutation' : ''
         })
         return replace
 
+# Formal Document - ADI Assignment
 # priority not filling correctly
 class adiassign:
     def adiassign(self, matter, mergeinfo, keys):
@@ -2799,6 +2920,7 @@ class adiassign:
         })
         return replace
     
+# Micron Allowance Recommendation - Foreign
 class micnffallow:
     def micnffallow(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2820,6 +2942,7 @@ class micnffallow:
         })
         return replace
     
+# PTO Form - Certification and Request for Prioritized Examination (AIA/424)
 class priorexam2012:
     def priorexam2012(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2832,6 +2955,7 @@ class priorexam2012:
         })
         return replace 
     
+# Header - Preliminary Amendment
 class prelimamend:
     def prelimamend(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2842,16 +2966,17 @@ class prelimamend:
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'amendmentText' : amendtxt,
-            'mailStopText' : mergeinfo[0],
+            'mailStopText' : mergeinfo[2],
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'preperApplicant' : 'Applicant',
             'submitText' : 'submits'
         })
         return replace
 
+# FF Report Out - Original Letters Patent (OLP)
 # Not done
 class ffOlp:
     def ffOlp(self, matter, mergeinfo, keys):
@@ -2884,9 +3009,9 @@ class ffOlp:
             replace.update(function_instance.applicantfill(matter, 1))
         except:
             pass
-        
         return replace
 
+# Transmittal - Communication Regarding Incorrect Notice of Recordation
 class incorrectrecd:
     def incorrectrecd(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2908,6 +3033,7 @@ class incorrectrecd:
         })
         return replace
 
+# Header - Communication Regarding Filing of Priority Document
 # Not done
 class CommFilingPriDoc:
     def CommFilingPriDoc(self, matter, mergeinfo, keys):
@@ -2924,6 +3050,7 @@ class CommFilingPriDoc:
         })
         return replace
     
+# MS Post Allowance Recommendation
 class mspostallow:
     def mspostallow(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2939,6 +3066,7 @@ class mspostallow:
         })
         return replace
         
+# Formal Document - ADI Assignment
 class adiassign:
     def adiassign(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2955,6 +3083,7 @@ class adiassign:
         })
         return replace
         
+# Letter - Send General POA- App filed on/after Sep. 16, 2012
 class LtrGeneralPOA:
     def LtrGeneralPOA(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2974,6 +3103,7 @@ class LtrGeneralPOA:
         })  
         return replace
     
+# Formal Document - Micron Declaration Using an ADS
 class microndec:
     def microndec(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -2986,6 +3116,7 @@ class microndec:
         })  
         return replace
     
+# FF Report Out - Laid Open for Public Inspection
 class ffapplaidopen:
     def ffapplaidopen(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3014,6 +3145,7 @@ class ffapplaidopen:
         })  
         return replace
     
+# FF Report Out - Notice of Acceptance (AU/NZ)
 class ffNoticeOfAcceptAuNzFp:
     def ffNoticeOfAcceptAuNzFp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3053,6 +3185,7 @@ class ffNoticeOfAcceptAuNzFp:
         })  
         return replace
 
+# PCT - Report Out Basic Letter
 class PCTRptOutBasicLtr:
     def PCTRptOutBasicLtr(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3062,9 +3195,12 @@ class PCTRptOutBasicLtr:
         seldates = mergeinfo[0].split(';')
         finaldates = ''
         for date in seldates:
-            actdate = function_instance.extract_date(date)
-            date_object = datetime.strptime(actdate, "%m/%d/%Y")
-            finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            try:
+                actdate = function_instance.extract_date(date)
+                date_object = datetime.strptime(actdate, "%m/%d/%Y")
+                finaldates += date_object.strftime("%B %d, %Y") + '\n'
+            except:
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t\t".join(row) for row in rows])
@@ -3078,6 +3214,7 @@ class PCTRptOutBasicLtr:
         })  
         return replace
 
+# Trademark - Report Out Miscellaneous Items Received
 class tmrecdReport:
     def tmrecdReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3092,7 +3229,7 @@ class tmrecdReport:
                 date_object = datetime.strptime(actdate, "%m/%d/%Y")
                 finaldates += date_object.strftime("%B %d, %Y") + '\n'
             except:
-                finaldates += 'NO DATE FOUND'
+                finaldates += 'NO DATE FOUND' + '\n'
 
         rows = zip(finaldates.split('\n'), selnames.split('\n'))
         formatted_data = "\n".join(["\t\t".join(row) for row in rows])
@@ -3106,6 +3243,7 @@ class tmrecdReport:
         })
         return replace
     
+# Trademark - Notice of Change of Counsel
 class TM_ChgCounsel:
     def TM_ChgCounsel(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3126,6 +3264,7 @@ class TM_ChgCounsel:
         })  
         return replace
     
+# Trademark - Report Notice of Publication
 class TM_NoticeofPubRep:
     def TM_NoticeofPubRep(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3146,6 +3285,7 @@ class TM_NoticeofPubRep:
         })
         return replace
 
+# Trademark - Report Office Action Received
 class TM_OaReport:
     def TM_OaReport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3163,6 +3303,7 @@ class TM_OaReport:
         })
         return replace
 
+# Report Out - Ex Parte Quayle
 class expartereport:
     def expartereport(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3188,6 +3329,7 @@ class expartereport:
         })
         return replace
 
+# Header - Request for Patent Term Adjustment
 class reqtermadj:
     def reqtermadj(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3213,6 +3355,7 @@ class reqtermadj:
         })
         return replace
 
+# Letter - Request for Instructions (CMG Follow-up Reminder: FF/Conversion)
 class ffremind:
     def ffremind(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3254,6 +3397,7 @@ class ffremind:
         })
         return replace
 
+# PCT - Report Out Filing Receipt
 class ReportOutFilingReceipt:
     def ReportOutFilingReceipt(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3266,6 +3410,7 @@ class ReportOutFilingReceipt:
         })
         return replace
 
+# Letter - Request for Instructions (FF/NS Email to Client)
 class ltrFFNS:
     def ltrFFNS(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3277,6 +3422,7 @@ class ltrFFNS:
         })
         return replace
     
+# SAP Filing Summary
 class sapsummary:
     def sapsummary(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3304,6 +3450,7 @@ class sapsummary:
         }) 
         return replace
     
+# Email - Send Order Letter to Associate (New)
 class sendorderletter:
     def sendorderletter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3319,18 +3466,26 @@ class sendorderletter:
             reldate = ''
             relser = ''
             relcountry = ''
+        
+        honunotreg = ''
+        if mergeinfo[2] == '2':
+            honunotreg = 'Access to the HONU reporting platform is by invitation only. If your firm has not yet received an invitation to report directly to the HONU platform, please let us know immediately and we can organise for an invitation to be sent to your firm.'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.applicantfill(matter, 1))
+        replace.update(function_instance.ffparafill(matter))
         replace.update({
             'salutation' : '',
             'DEADLINEDATE' : function_instance.formatDate(mergeinfo[1]) + '('+ mergeinfo[0] +' MONTH DEADLINE) ',
             'relSerial' : relser,
             'relFiled' : reldate,
-            'relCountry' : relcountry
+            'relCountry' : relcountry,
+            'honuNotReg' : honunotreg
         })
         return replace
 
+# FF Report Out - Miscellaneous Items Due
 class ffMiscItemsDue:
     def ffMiscItemsDue(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3339,13 +3494,14 @@ class ffMiscItemsDue:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
             'salutation' : '',
-            'actionType' : mergeinfo[2],
-            'cdueDate' : function_instance.formatDate(mergeinfo[3]),
-            'crespDate' : function_instance.formatDate(mergeinfo[4]),
+            'actionType' : mergeinfo[4],
+            'cdueDate' : function_instance.formatDate(mergeinfo[5]),
+            'crespDate' : function_instance.formatDate(mergeinfo[6]),
             'activityname' : (mergeinfo[1].split(';'))[0]
         })
         return replace
 
+# PTO Form - Transmittal of POA (PTO/AIA/82A)
 class poatransmit:
     def poatransmit(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3358,6 +3514,7 @@ class poatransmit:
         })
         return replace
     
+# MS Email - PAR to MS
 # Need usename
 class mspar:
     def mspar(self, matter, mergeinfo, keys):
@@ -3372,6 +3529,7 @@ class mspar:
         })
         return replace
 
+# FF Report Out - Original Letters Patent (OLP) for EP
 # needs work
 class epOLP:
     def epOLP(self, matter, mergeinfo, keys):
@@ -3392,21 +3550,22 @@ class epOLP:
         })
         return replace
 
+# MS Email - To Client
 # Might need different para data
 class msemails:
     def msemails(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
 
-
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.counselfill(matter))
-        replace.update(function_instance.parafill(0, matter))
+        replace.update(function_instance.clientParafill(matter))
         replace.update({
-            'Item being reported' : mergeinfo[1]
+            'Item being reported' : mergeinfo[1].split(';')[0]
         })
         return replace
 
+# PTO Form - Notice of Appeal (AIA/31)
 class noticeofAppeal:
     def noticeofAppeal(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3433,11 +3592,10 @@ class noticeofAppeal:
         })
         return replace
 
-# Need attach for act
+# Letter - Email Filing Confirmation to Associate
 class fa_confirm:
     def fa_confirm(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -3447,6 +3605,7 @@ class fa_confirm:
         })
         return replace
     
+# Formal Document - Intel Inventor to Intel Corporation Assignment
 class intelcorp:
     def intelcorp(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3459,6 +3618,7 @@ class intelcorp:
         })
         return replace
 
+# Formal Document - Zimmer Combined Dec Assignment
 class zimmerdec:
     def zimmerdec(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3473,6 +3633,7 @@ class zimmerdec:
         })
         return replace
     
+# Microsoft Application Filing Summary
 class msfilingsummary:
     def msfilingsummary(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3488,6 +3649,7 @@ class msfilingsummary:
         })
         return replace
 
+# PCT - Power of Attorney NEW
 class pctpoa_new:
     def pctpoa_new(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3520,6 +3682,7 @@ class pctpoa_new:
         })
         return replace
 
+# Nike Action Required (HTML)
 class nikeaction_new:
     def nikeaction_new(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3529,13 +3692,14 @@ class nikeaction_new:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update({
-            'dueDate' : function_instance.formatDate(mergeinfo[2]),
-            'deadDueDate' : function_instance.formatDate(mergeinfo[3]),
+            'dueDate' : function_instance.formatDate(mergeinfo[4]),
+            'deadDueDate' : function_instance.formatDate(mergeinfo[5]),
             'documentName' : mergeinfo[1],
             'Other Information' : ''
         })
         return replace
     
+# FF Report Out - EP Search Report and Opinion
 class ffEPSrchRptandOpinion:
     def ffEPSrchRptandOpinion(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3560,6 +3724,7 @@ class ffEPSrchRptandOpinion:
         })
         return replace
     
+# Micron Allowance email for inventors (first allowance)
 class micnallow:
     def micnallow(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3571,6 +3736,7 @@ class micnallow:
         })
         return replace
 
+# PTO Form - Declaration - Apps filed on/or after Sept. 16, 2012 (AIA/01)
 class aiashortdecl:
     def aiashortdecl(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3583,6 +3749,7 @@ class aiashortdecl:
         })
         return replace
 
+# Intel - Send Formal Document(s)
 class intelformal:
     def intelformal(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3595,6 +3762,7 @@ class intelformal:
         })
         return replace
     
+# POA - Combined Transmittal and PTO/AIA/82A
 class poa82combined:
     def poa82combined(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3675,6 +3843,7 @@ class poa82combined:
         })
         return replace
     
+# Request Retainer US Items
 class retainer:
     def retainer(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3686,6 +3855,7 @@ class retainer:
         })
         return replace
     
+# Formal Document - Microsoft Assignment
 class msassn:
     def msassn(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3705,6 +3875,7 @@ class msassn:
         })
         return replace
 
+# PTO Form - Express Abandonment (AIA/24, 24A, 24B)
 class expressaban:
     def expressaban(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3731,6 +3902,7 @@ class expressaban2:
         })
         return replace
     
+# Letter - Send POA (Matter Specific)
 class poaMatter:
     def poaMatter(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3758,6 +3930,7 @@ class cornellassnnew:
         })
         return replace
     
+# Intel EOU Questions to Inventors
 class intelbasic:
     def intelbasic(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3784,6 +3957,7 @@ class intelbasic:
         })
         return replace
 
+# Formal Document - Notarial Certificate
 class nsnotarialcert:
     def nsnotarialcert(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3818,6 +3992,7 @@ class nsnotarialcert:
         })
         return replace
     
+# PTO Form - Authorization for Internet Communications (SB/439)
 class internetauth:
     def internetauth(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3832,6 +4007,7 @@ class internetauth:
         })
         return replace
     
+# Header - Change of Entity Status
 class entstatus:
     def entstatus(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3882,6 +4058,7 @@ class entstatus:
         })
         return replace
     
+# MS Email - Send Formal Papers (Post-Filing)
 class msformal:
     def msformal(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3894,6 +4071,7 @@ class msformal:
         })
         return replace
     
+# Intel - Report out Final Office Action
 class intelfoa:
     def intelfoa(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3931,6 +4109,7 @@ class intelfoa:
         })
         return replace
     
+# Patent - Notice of Change of Counsel
 class patchgcounsel:
     def patchgcounsel(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
@@ -3947,5 +4126,370 @@ class patchgcounsel:
         replace.update({
             'userName' : '',
             'TMRegNo' : tmreg
+        })
+        return replace
+
+# IDS - QPIDS Form (PTO/SB/09)
+class Qp_Ids:
+    def Qp_Ids(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        idsrad = mergeinfo[2]
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[1]))
+        replace.update({
+            'depAccount' : function_instance.depnumFill(matter_data),
+            'SAName' : mergeinfo[0]
+        })
+        return replace
+
+# Formal Document - Caterpillar Assignment
+class catassn:
+    def catassn(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update({
+            'countryName' : matter_data.countryname,
+            'provText' : '',
+            'ASSIGNORTEXT' : 'FULLNAME OF SOLE OR FIRST ASSIGNOR',
+            'inventorcitizen' : ''
+        })
+        return replace
+     
+# Microsoft Application Filing Summary
+class msfilingsummary:
+    def msfilingsummary(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.inventorInfo(matter , 1))
+        replace.update({
+            'PubFig' : '',
+            'priorityMatterList' : '',
+            'Abstract' : ''
+        })
+        return replace
+    
+# NOV - Email Template
+class novemail:
+    def novemail(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        if mergeinfo[4] == '1':
+            purpose = 'Reporting Only'
+
+        if mergeinfo[4] == '2':
+            purpose = 'Action Required'
+
+        patent = function_instance.patentFill(matter_data)
+        pubno = patent.pubno
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'Purpose' : purpose,
+            'pubtxt' : 'Publication No.',
+            'pct' : '',
+            'pubNo' : pubno,
+            'actionName' : (mergeinfo[1].split(';'))[0]
+        })
+        return replace
+
+# PTO Form - Request for Deferral of Examination (PTO/SB/37)
+class deferRequest:
+    def deferRequest(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[1]))
+        replace.update({
+            'deferralMonths' : mergeinfo[0],
+            'depAccount' : function_instance.depnumFill(matter_data)
+        })
+        return replace
+    
+# Letter - Blank Letter
+class blankletter:
+    def blankletter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        try:
+            sal = mergeinfo[0]
+        except:
+            sal = ''
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : sal,
+            'userName' : '',
+            'CSZ' : '',
+            'workAddr' : '',
+            'recipientTitle' : '',
+            'ccTag' : '',
+            'ccName' : ''
+        })
+        return replace
+
+# Header - Amendment Under 1.312
+class amend37cfr:
+    def amend37cfr(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update({
+            'dateNOAR' : function_instance.formatDate(mergeinfo[0]),
+            'SAName' : mergeinfo[1],
+            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+        })
+        return replace
+
+# DOCKETING:  Bar Date Questionnaire
+class bardateq:
+    def bardateq(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'userName' : '',
+            'responseDate' : mergeinfo[0],
+        })
+        return replace
+
+# FF Report Out - Decision to Grant (EP) - Need Unitary Patent Instructions
+class tm_unitaryGrant:
+    def tm_unitaryGrant(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            
+        })
+        return replace
+
+# Header - Appeal Brief (Notice of Appeal filed after 1-22-2012)
+class AppealBrief3:
+    def AppealBrief3(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        patxt = ''
+        if mergeinfo[3] != '':
+            patxt = 'in response to the Notice of Panel Decision from Pre-Appeal Brief Review mailed on '+ function_instance.formatDate(mergeinfo[2]) +' and further '
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[4]))
+        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update({
+            'noaDate' : function_instance.formatDate(mergeinfo[1]),
+            'oaDate' : function_instance.formatDate(mergeinfo[0]),
+            'paDecisionText' : patxt,
+            'rejectClaims' : mergeinfo[3],
+            'properAppellant' : 'Appellant',
+            'requestText' : 'requests',
+            'referText' : 'refers'
+        })
+        return replace
+
+# Letter - Audit Letter
+class auditletter:
+    def auditletter(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'currentDate' : function_instance.formatDate(str(date.today())),
+            'effectiveDate' : function_instance.formatDate(mergeinfo[0]),
+            'billedFees' : mergeinfo[1],
+            'unbilledFees' : mergeinfo[2],
+            
+        })
+        return replace
+    
+# Letter - Request for Instructions (Non-PCT FF)
+class nonpct:
+    def nonpct(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'salutation' : '',
+            'dueDate' : '',
+            'requestDate' : '',
+            'WAInformal'  : '',
+            'earlyPriorFilingDate' : '',
+            'earlyPrioSerialNo' : ''
+        })
+        return replace
+    
+# Formal Document - Purdue Assignment
+class purdueassn:
+    def purdueassn(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update(function_instance.inventorInfo(matter, 1))
+        replace.update({
+
+        })
+        return replace
+
+# PTO Form - Nonpublication Request (PTO/SB/35)
+class nonpubrequest:
+    def nonpubrequest(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update({
+            'certificateText' : 'This paper or fee is being filed on the date indicated above using the USPTO\'s electronic filing system EFS-Web, and is addressed to The Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450.',
+            'expressMailText' : ''
+        })
+        return replace      
+    
+# Trademark - US Report Notice of Allowance ITU
+class tm_noticeallow:
+    def tm_noticeallow(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'statementUseExtDue' : function_instance.formatDate(mergeinfo[0]),
+            'instDate' : function_instance.formatDate(mergeinfo[1]),
+            'salutation' : '',
+            'classCode' : '',
+            'classDescription' : ''
+        })
+        return replace     
+    
+# Report Out - Original Letters Patent
+class OriginalPatReportNew:
+    def OriginalPatReportNew(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        replace = {}
+        # Fill Data
+        matter_data = function_instance.matterFill(matter)
+
+        # May need editing
+        utilityText1 = "The patent will remain in effect for a term of twenty years from the date of the earliest filing.  To maintain the patent for its entire term, maintenance fees must be paid when due.  The fees are due as follows:"
+        utilityFee1 = "3-1/2 years from the issue date"
+        utilityFee2 = "7-1/2 years from the issue date"
+        utilityFee3 = "11-1/2 years from the issue date"
+        
+        try:
+            actname = function_instance.getactivityid(matter_data, 'OLPR').name
+        except:
+            actname = ''
+        try:    
+            if matter_data.fileddate and matter_data.fileddate > datetime(2015, 5, 13):
+                designtxt = 'The term of a design patent extends up to a maximum of 15 years from the date of issue.", "The term of a design patent extends up to a maximum of 14 years from the date of issue.'
+            else:
+                designtxt = ''
+        except:
+            designtxt = ''
+            
+        cultxt = ''
+        if mergeinfo[0] == 'TRUE':
+            cultxt = 'Prior instructions have been received acknowledging SLW responsibility for payment of the maintenance fees through our preferred 3rd party provider, Black Hills AI (www.blackhills.ai).  If for any reason this process is no longer valid, please reach out to us expeditiously to confirm new instructions.'
+        else:
+            cultxt = 'Maintenance fees may be submitted by any recognized party, including a patentee or third party. Generally we refer clients to Black Hills AI (www.blackhills.ai) for maintenance payment services. However, this is in no way an endorsement of their services and you may choose to pay the maintenance fees directly or may have another third party administer payment. Therefore, if you haven\'t already done so, please provide instructions regarding who will be handling your maintenance fee payments.'
+            
+        # Need to add use case for answer
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'activityname' : actname,
+            'THIS.title'  : matter_data.title,
+            'designText' : designtxt,
+            'utilityText1' : utilityText1,
+            'utilityFee1' : utilityFee1,
+            'utilityFee2' : utilityFee2,
+            'utilityFee3' : utilityFee3,
+            'cutilityText2' : cultxt,
+            'salutation' : ''
+        })
+        return replace 
+    
+# FF Report Out - Decision to Grant (EP) - NEW
+class EPDecisiontoGrant:
+    def EPDecisiontoGrant(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        
+        actreq = ''
+        curr = ''       
+        cinst = ''
+        if mergeinfo[0] == 'false' and mergeinfo[1] == 'false' and mergeinfo[4] == '' and mergeinfo[2] == '':
+            actreq = ''
+            curr = 'Please be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'true' and mergeinfo[1] == 'false' and mergeinfo[4] == '':
+            actreq = ''
+            curr = 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.\n\nPlease be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'false' and mergeinfo[1] == 'true' and mergeinfo[4] == '':
+            actreq = '\nACTION REQUIRED:  PROVIDE DIVISIONAL INSTRUCTIONS IMMEDIATELY\n\nIf you are interested in filing a divisional application, please provide your instructions by <<respDate>>. In the absence of your instructions, we will not file a divisional application.\n\n'
+            curr = 'Please be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'false' and mergeinfo[1] == 'false' and mergeinfo[4] != '':
+            actreq = '\nACTION REQUIRED:  VALIDATION INSTRUCTIONS BY <<datePlus1mo>>\n\nWe note that instructions for validation have not yet been received. The deadline to validate the above patent in various designated states is <<dueDate>>. Please provide us with a list of countries in which the European patent should be perfected so we may timely attend to validation country requirements, including possible full patent translation and execution of country specific power of attorney documents.\n\n'
+            curr = 'Please be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'true' and mergeinfo[1] == 'true' and mergeinfo[4] == '':
+            actreq = '\nACTION REQUIRED:  PROVIDE DIVISIONAL INSTRUCTIONS IMMEDIATELY\n\nIf you are interested in filing a divisional application, please provide your instructions by <<respDate>>. In the absence of your instructions, we will not file a divisional application.\n\n'
+            curr = ' In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.\n\nPlease be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'true' and mergeinfo[1] == 'false' and mergeinfo[4] != '':
+            actreq = '\nACTION REQUIRED:  VALIDATION INSTRUCTIONS BY <<datePlus1mo>>\n\nWe note that instructions for validation have not yet been received. The deadline to validate the above patent in various designated states is <<dueDate>>. Please provide us with a list of countries in which the European patent should be perfected so we may timely attend to validation country requirements, including possible full patent translation and execution of country specific power of attorney documents.\n\n'
+            curr = 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.\n\nPlease be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'false' and mergeinfo[1] == 'true' and mergeinfo[4] != '':
+            actreq = 'ACTION REQUIRED:  PROVIDE DIVISIONAL INSTRUCTIONS IMMEDIATELY\n\nIf you are interested in filing a divisional application, please provide your instructions by <<respDate>>. In the absence of your instructions, we will not file a divisional application.\n\nACTION REQUIRED:  VALIDATION INSTRUCTIONS BY <<datePlus1mo>>\n\nWe note that instructions for validation have not yet been received. The deadline to validate the above patent in various designated states is <<dueDate>>. Please provide us with a list of countries in which the European patent should be perfected so we may timely attend to validation country requirements, including possible full patent translation and execution of country specific power of attorney documents.\n\n'
+            curr = 'Please be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+        if mergeinfo[0] == 'true' and mergeinfo[1] == 'true' and mergeinfo[4] != '':
+            actreq = '\nACTION REQUIRED:  PROVIDE DIVISIONAL INSTRUCTIONS IMMEDIATELY\n\nIf you are interested in filing a divisional application, please provide your instructions by <<respDate>>. In the absence of your instructions, we will not file a divisional application.\n\nACTION REQUIRED:  VALIDATION INSTRUCTIONS BY <<datePlus1mo>>\n\nWe note that instructions for validation have not yet been received. The deadline to validate the above patent in various designated states is <<dueDate>>. Please provide us with a list of countries in which the European patent should be perfected so we may timely attend to validation country requirements, including possible full patent translation and execution of country specific power of attorney documents.\n\n'
+            curr = 'In view of the current pending status of corresponding applications, you may be eligible for voluntary participation in the Patent Prosecution Highway (PPH) program to possibly reduce costs and obtain accelerated examination. Please contact us to discuss your options should you wish to further explore this program.\n\nPlease be advised that the product(s) covered by the above granted patent application may be eligible in certain European countries for a Supplementary Protection Certificate (SPC). Eligible technologies are those subject to premarket regulatory approval, such as medicinal or plant products.  If you would like more information about SPC eligibility or requirements, please contact your regulatory attorney(s).\n\n'
+            
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+            'actionReq' : actreq,
+            'currFutPend' : curr,
+            'cinstEPVal' : cinst,
+            'salutation' : ''
+        })
+        return replace
+    
+# LinkedIn Email - To Client
+class litoclient:
+    def litoclient(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.linkedinRAfill(matter))
+        replace.update({
+            'Item being reported' : mergeinfo[1].split(';')[0]
         })
         return replace

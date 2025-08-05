@@ -8,8 +8,16 @@ from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 import random, string
 from asgiref.sync import sync_to_async
-import asyncio
 from msgraph.generated.models.internet_message_header import InternetMessageHeader
+
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+#from dotenv import load_dotenv
+from django.db import connections
+#import win32com.client as win32
+#import pythoncom
+from urllib.parse import quote
+import mimetypes
 
 from concurrent.futures import ThreadPoolExecutor
 from .models import Matter
@@ -39,9 +47,19 @@ from msgraph.generated.models.recipient import Recipient
 from msgraph.generated.models.email_address import EmailAddress
 from msgraph.generated.models.file_attachment import FileAttachment
 from .auth_helper import get_token
-from azure.identity import DeviceCodeCredential
-from azure.identity.aio import ClientSecretCredential
 from azure.identity import InteractiveBrowserCredential
+
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
+import asyncio
+import time
+
+from msal import ConfidentialClientApplication
+from azure.core.credentials import AccessToken
+
+from azure.identity import DefaultAzureCredential, ManagedIdentityCredential, ClientSecretCredential
+from azure.storage.blob import BlobClient, BlobServiceClient
 
 import urllib.parse
 
@@ -59,13 +77,18 @@ def members(request):
         mergeinfo = request.POST['merge_info']
 
         url = mergeDoc(matter, mergeinfo, request)
+        
         return url
 
-    mergedict = MergeDef.objects.using('SideBar').all()
+    mergedict = MergeDef.objects.using('SideBar').filter(operational="TRUE").order_by('mergename')
     roles = MergeRole.objects.using('SideBar').all()
     categories = MergeCategory.objects.using('SideBar').all()
-
+ 
     return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
+
+# Health Check
+def health_check(request):
+    return HttpResponse("Healthy", status=200)
 
 # Other pages
 def matters(request):
@@ -194,49 +217,43 @@ def addrecipients(request):
         # MUST REMOVE
         if data == '':
             data = '1.003us1'
-
-        matter = Matter.objects.using('FIP').get(hostmatterno = data)
-        parts = Matterparticipant.objects.using('FIP').filter(matterid = matter.matterid)
-        contacts = ''
-        profile = ''
-        names = ''
-        roles = ''
-        for part in parts:
-            try:
-                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-                personnel = Rvwmatterpersonnel.objects.using('FIP').filter(matterid = matter.matterid, ppid = profile.ppid)
-                # names = names + profile.fname + ' ' + profile.lname + ','
-                fullname = profile.fname + ' ' + profile.lname
-                if fullname in names:
-                    i = names.count(fullname)
-                    if i < len(personnel):
-                        roles = roles + personnel[i].rolename + ','
-                        names = names + fullname + ','
-                    else:
-                        roles = roles + personnel[0].rolename + ','
-                        names = names + fullname + ','
-                else:
-                    names = names + fullname + ','
-                    roles = roles + personnel[0].rolename + ','
-            except:
-                pass
-            try:
-                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-                contacts = contacts + Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid).email + ','
-            except:
-                contacts = contacts + ' '
-
-        recout = '' 
-        for name in names:
-            recout = recout + name
-        recout = recout + ';'
-        for contact in contacts:
-            recout = recout + contact
-        recout = recout + ';'
-        for role in roles:
-            recout = recout + role
         
-        return JsonResponse({'message': f'{recout}'})
+        results = []
+        names = []
+        emails = []
+        roles = []
+        if data != '':
+            query = f"""
+                SELECT 
+                    CONCAT(pp.fname, ' ', pp.lname) AS fullname,
+                    ci.email,
+                    rp.rolename
+                FROM Matter m
+                JOIN Matterparticipant mp ON mp.matterid = m.matterid
+                JOIN Personprofile pp ON pp.ppid = mp.contactid
+                LEFT JOIN Contactinfo ci ON ci.contactinfoid = pp.workcontactinfoid
+                LEFT JOIN Rvwmatterpersonnel rp ON rp.matterid = m.matterid AND rp.ppid = pp.ppid
+                WHERE m.hostmatterno = '{data}'
+                ORDER BY rolename;
+            """
+                
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                results = cursor.fetchall()
+
+            for result in results:
+                fullname, email, rolename = result
+                if (fullname, email, rolename) not in zip(names, emails, roles):
+                    names.append(fullname)
+                    emails.append(email)
+                    roles.append(rolename)
+
+        # Format the results for printing
+        names = '; '.join(str(name).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for name in names)
+        emails = '; '.join(str(email).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for email in emails)
+        roles = '; '.join(str(role).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for role in roles)
+    
+        return JsonResponse({'message': {'names': names, 'emails': emails, 'roles': roles}})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -296,31 +313,41 @@ def addRelatedMatter(request):
         data = request.POST.get('matterno')
         data = data.replace('"', "")
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
-        relatedmatters = Relatedmatter.objects.using('FIP').filter(primarymatterid = matter.matterid)
-        serialnos = merge_fn.transform_serialnumber(matter.serialnumber) + '*'
-        hostmatters = matter.hostmatterno
-        relationships = ''
+        
+        family = re.sub(r'[^a-zA-Z]', '', data)
+        
+        query = f"""
+            SELECT relationship.relationdesc, cast(hostmatterno as varchar(15)) as hostmatterno,
+            cast(fmtserialno as varchar(30)) as fmtserialno, stageDescription
+            FROM matter
+            left JOIN patent on matter.matterid = patent.matterid
+            left join country on matter.country = country.code
+            left JOIN relatedmatter on matter.matterid = relatedmatter.relatedmatterid
+            left JOIN relationship on relationtype = relationid
+            WHERE primarymatterid = {matter.matterid}
+            AND orgid = 4
+            AND hostMatterNo like '%{family}%'
+        """
+                
+        with connections['FIP'].cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
 
-        for relatedmatter in relatedmatters:
-            relmatter = Matter.objects.using('FIP').get(matterid = relatedmatter.relatedmatterid)
-            hostmatters = relmatter.hostmatterno
-            try:
-                serialnos = serialnos + merge_fn.transform_serialnumber(relmatter.serialnumber) + '*'
-            except:
-                serialnos = serialnos + ' *'
-            relationships = relatedmatter.relationdesc
+        matternos = []
+        serialnos = []
+        relationships = []
 
-        PAout = '' 
-        for hostmatter in hostmatters:
-            PAout = PAout + hostmatter
-        PAout = PAout + ';'
-        for serial in serialnos:
-            PAout = PAout + serial
-        PAout = PAout + ';'
-        for relationship in relationships:
-            PAout = PAout + relationship
+        for result in results:
+            relationship, hostmatter, serialno, desc = result
+            matternos.append(hostmatter)
+            serialnos.append(serialno)
+            relationships.append(str(relationship) + '/' + str(desc))
+        
+        matternos = '; '.join(str(id).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for id in matternos)
+        serialnos = '; '.join(str(id).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for id in serialnos)
+        relationships = '; '.join(str(rel).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for rel in relationships)
 
-        return JsonResponse({'message': f'{PAout}'})
+        return JsonResponse({'message': {'matternos': matternos, 'serialnos': serialnos, 'relationships': relationships}})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -334,66 +361,63 @@ def addactivities(request):
 
         matter = Matter.objects.using('FIP').get(hostmatterno = data)
         
-        activityData = Activity.objects.using('FIP').filter(matterid = matter.matterid)
+        query = f"""
+            SELECT 
+                name, 
+                CASE 
+                    WHEN notes IS NULL THEN '' 
+                    ELSE CAST(notes AS VARCHAR(8000)) 
+                END AS notes, 
+                status, 
+                smryonelabel,
+                smryonevalue,
+                smrytwolabel,
+                smrytwovalue,
+                activityid
+            FROM activity 
+            WHERE matterid = {matter.matterid}
+            ORDER BY 
+                CASE 
+                    WHEN name = 'Matter Management' THEN '3000-01-01' 
+                    ELSE smryonevalue 
+                END DESC;
+        """
+                
+        with connections['FIP'].cursor() as cursor:
+            cursor.execute(query)
+            results = cursor.fetchall()
 
-        names = ''
-        comments = ''
-        status = ''
-        dates1 = ''
-        dates2 = ''
+        names = []
+        notes = []
+        status = []
+        smryonelabels = []
+        smrytwolabels = []
+        actids = []
 
-        for activity in activityData:
-            if activity.name is not None:
-                names = names + activity.name + ','
-            else:
-                names = names + 'None,'
-            if activity.notes is not None:
-                comments = comments + activity.notes + ','
-            else:
-                comments = comments + 'None,'
-            if activity.status is not None:
-                status = status + activity.status + ','
-            else:
-                status = status + 'None,'
+        for result in results:
+            name, note, stat, smryonelabel, smryonevalue, smrytwolabel, smrytwovalue, actid = result
+            names.append(name)
+            notes.append(note)
+            status.append(stat)
+            smryone = ''
+            smrytwo = ''
+            if smryonelabel != '' and smryonelabel != None and smryonevalue != None and smryonevalue != '':
+                smryone = str(smryonelabel) + ': ' + str(smryonevalue.strftime("%m/%d/%Y"))
+            if smrytwolabel != '' and smrytwolabel != None and smrytwovalue != None and smrytwovalue != '':
+                smrytwo = str(smrytwolabel) + ': ' + str(smrytwovalue.strftime("%m/%d/%Y"))
+    
+            smryonelabels.append(smryone)
+            smrytwolabels.append(smrytwo)
+            actids.append(actid)
+        
+        names = '; '.join(str(na).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for na in names)
+        notes = '; '.join(str(no).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for no in notes)
+        status = '; '.join(str(st).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for st in status)
+        smryonelabels = '; '.join(str(smryone).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for smryone in smryonelabels)
+        smrytwolabels = '; '.join(str(smrytwo).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for smrytwo in smrytwolabels)
+        actids = '; '.join(str(id).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for id in actids)
 
-            if activity.smryonename is not None:
-                dates1 = dates1 + activity.smryonename
-            if activity.smryonelabel is not None:
-                dates1 = dates1 + ' ' + activity.smryonelabel
-            if activity.smryonevalue is not None:    
-                dates1 = dates1 + ' ' + datetime.fromisoformat(str(activity.smryonevalue)).strftime('%m/%d/%Y') + ','
-            else:
-                dates1 = dates1 + ' ,'
-            if str(activity.smrytwovalue) == '':
-                if activity.smrytwoname is not None:
-                    dates2 = dates2 + activity.smrytwoname
-                if activity.smrytwolabel is not None:
-                    dates2 = dates2 + ' ' + activity.smrytwolabel
-                if activity.smrytwovalue is not None:    
-                    dates2 = dates2 + ' ' + datetime.fromisoformat(str(activity.smrytwovalue)).strftime('%m/%d/%Y') + ','
-                else:
-                    dates2 = dates2 + ' ,'
-            else:
-                dates2 = dates2 + ' ,'
-
-        actout = ''
-        for name in names:
-            actout = actout + name
-        actout = actout + ';'
-        for comment in comments:
-            actout = actout + comment
-        actout = actout + ';'
-        for stat in status:
-            actout = actout + stat
-        actout = actout + ';'
-        for date1 in dates1:
-            actout = actout + date1
-        actout = actout + ';'
-        for date2 in dates2:
-            actout = actout + date2
-        actout = actout + ';'
-
-        return JsonResponse({'message': f'{actout}'})
+        return JsonResponse({'message': {'names': names, 'notes': notes, 'status': status, 'smryonelabels' : smryonelabels, 'smrytwolabels' : smrytwolabels, 'actids' : actids}})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -428,86 +452,83 @@ def DocumentReader(docxpath, mergemethod):
         
     return subject, body
 
-def Email(body, subject, recipients, cc, bcc, attachment): 
-    # ------ OLD EMAIL ------
-    #pythoncom.CoInitialize()  
-    #outlook = win32.Dispatch('outlook.application')
-    #mail = outlook.CreateItem(0)
-    #mail.Subject = subject
-    #mail.Body = body
-    #mail.To = recipients
-    #if(attachment != ''):
-    #    mail.Attachments.Add(attachment)
+def Email(body, subject, recipients, cc, bcc, attachments, request): 
+    # ------LOCAL EMAIL ------
+    # pythoncom.CoInitialize()  
+    # outlook = win32.Dispatch('outlook.application')
+    # mail = outlook.CreateItem(0)
+    # mail.Subject = subject
+    # mail.Body = body
+    # mail.To = recipients
+    # if attachments:
+    #     for file_path in attachments:
+    #         if os.path.isfile(file_path):
+    #             mail.Attachments.Add(file_path)
 
-    #if cc:
+    # if cc:
     #    mail.CC = cc
-    #if bcc:
+    # if bcc:
     #    mail.BCC = bcc
 
-    #mail.Display(True)
+    # mail.Display(True)
     
     # ------ NEW EMAIL ------
-    link = create_outlook_web_link(subject, body, recipients, cc, bcc)
-    #link = create_draft()
+    link = create_draft(body, subject, recipients, cc, bcc, attachments, request)
     return link
-    
-def create_outlook_web_link(subject, body, to, cc=None, bcc=None):
-    base_url = "https://outlook.office.com/mail/deeplink/compose"
-    params = {
-        "to": to,
-        "subject": subject,
-        "body": body
-    }
-    if cc:
-        params["cc"] = cc
-    if bcc:
-        params["bcc"] = bcc
-    
-    # Use urllib.parse.quote to ensure spaces are encoded as %20
-    query_string = '&'.join([f"{key}={urllib.parse.quote(value, safe='')}" for key, value in params.items()])
-    outlook_web_link = f"{base_url}?{query_string}"
-    
-    return outlook_web_link
 
-def create_draft():    
-    credentials = InteractiveBrowserCredential(
-        client_id=os.getenv('CLIENT_ID'),
-        tenant_id=os.getenv('TENANT_ID'),
-    )
+def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):   
+    #load_dotenv()
     
+    # Managed Identity Auth
+    #credentials = ManagedIdentityCredential()
+    
+    # Client Secret Auth
+    tenant_id = os.getenv('TENANT_ID')
+    client_id = os.getenv('MICROSOFT_PROVIDER_CLIENT_ID')
+    client_secret = os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET')
+    credentials = ClientSecretCredential(
+        tenant_id=tenant_id,
+        client_id=client_id,
+        client_secret=client_secret)
+
     scopes = ['https://graph.microsoft.com/.default']
+
     client = GraphServiceClient(credentials=credentials, scopes=scopes)
+    
+    to_recipients = [
+        Recipient(email_address=EmailAddress(address=email))
+        for email in tolist if check_email(email)
+    ]
+
+    cc_recipients = [
+        Recipient(email_address=EmailAddress(address=email))
+        for email in cclist if check_email(email)
+    ]
+    bcc_recipients = [
+        Recipient(email_address=EmailAddress(address=email))
+        for email in bcclist if check_email(email)
+    ]
 
     request_body = Message(
-        subject="9/8/2018: concert",
+        subject=subject,
         body=ItemBody(
-            content_type=BodyType.Html,
-            content="The group represents Washington.",
+            content_type=BodyType.Text,
+            content=body,
         ),
-        to_recipients=[
-            Recipient(
-                email_address=EmailAddress(
-                    address="test@test123.com",
-                ),
-            ),
-        ],
-        internet_message_headers=[
-            InternetMessageHeader(
-                name="x-custom-header-group-name",
-                value="Washington",
-            ),
-            InternetMessageHeader(
-                name="x-custom-header-group-id",
-                value="WA001",
-            ),
-        ],
+        
+        to_recipients=to_recipients,
+        cc_recipients=cc_recipients,
+        bcc_recipients=bcc_recipients,
+        
+        attachments=get_attachments(attachments)
     )
 
     async def create_draft():
-        draft_message = await client.me.messages.post(request_body)
+        user_email = request.headers.get('X-MS-CLIENT-PRINCIPAL-NAME')
+        draft_message = await client.users.by_user_id(user_email).messages.post(request_body)
+        #draft_message = await client.me.messages.post(request_body)
         return draft_message
 
-    # Use ThreadPoolExecutor to run the async function in a synchronous context
     def run_async_function():
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -518,8 +539,28 @@ def create_draft():
 
     # Construct the URL to the draft
     draft_id = draft_message.id
-    draft_url = f"https://outlook.office.com/mail/deeplink/compose/{draft_id}"
+    print(draft_id)
+    #draft_url = f"https://outlook.office365.com/mail/compose/{draft_id}?ItemID={draft_id}"
+    draft_url = draft_message.web_link
     return draft_url
+
+def get_attachments(attachments):
+    attachment_objects = []
+    for file_path in attachments:
+        file_name = os.path.basename(file_path)
+        mime_type, _ = mimetypes.guess_type(file_path)
+        mime_type = mime_type or "application/octet-stream"
+        with open(file_path, "rb") as f:
+            content_bytes = f.read()
+
+        attachment = FileAttachment(
+            odata_type="#microsoft.graph.fileAttachment",
+            name=file_name,
+            content_type=mime_type,
+            content_bytes=content_bytes
+        )
+        attachment_objects.append(attachment)
+    return attachment_objects
 
 def testview(request):
     return render(request, 'dbtest.html')
@@ -690,6 +731,13 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'aiaShortDeclaration_esign.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'aiaShortDeclaration_out.docx'))
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'aiaShortDeclaration_out.docx')) 
             composer.append(doc3)
+            
+    if method == 'assignment2016':
+        composer = Composer(doc1)
+        if mergeinfo[1] == 'true':
+            doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'assignment2012_acc.docx')) 
+            doc2.add_page_break()
+            composer.append(doc2)
 
     if email == 'TRUE':
         merge_fn = mergefunctions()
@@ -697,7 +745,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         composer = Composer(doc2)
         replace = {}
         replace.update(merge_fn.cmgfill(matter))
-        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter' or method == 'TM_ChgCounsel' or method == 'sendorderletter' or method == 'fa_confirm' or method == 'nikeaction_new' or method == 'patchgcounsel':
+        if method == 'msemails' or method == 'FFRptOutBasic' or method == 'honureport' or method == 'CommunicationLetter' or method == 'TM_ChgCounsel' or method == 'sendorderletter' or method == 'fa_confirm' or method == 'nikeaction_new' or method == 'patchgcounsel' or method == 'idsmemo' or method == 'ffOfficeActRcvd' or method == 'EPDecisiontoGrant' or method == 'litoclient':
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'reportletters', 'signoff2.docx'))
         else:
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'reportletters', 'signoff.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
@@ -706,7 +754,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         
     composer.save("documents/multidocmerge/" + method +".docx")
 
-def pathChanger(input_path, mergeinfo_list, mergefninfo):
+def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
     if mergeinfo_list[1] == 'ffSndItmsToAssoc':
         if mergefninfo[6] == '1':
             input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_HONU.docx')
@@ -725,10 +773,23 @@ def pathChanger(input_path, mergeinfo_list, mergefninfo):
         if mergefninfo[2] == '1' or mergefninfo[2] == '2':
             input_path = input_path.replace('orderLetter.docx', 'orderLetterHonu.docx')
     
+    if mergeinfo_list[1] == 'DraftOAInstruct':
+        if mergefninfo[2] == '1':
+            input_path = input_path.replace('ltrffDraftOaInstructions_2', 'ltrffDraftOaInstructions_HONU')
+        if mergefninfo[2] == '2':
+            input_path = input_path.replace('ltrffDraftOaInstructions_2', 'ltrffDraftOaInstructions_NYHonu')
+            
+    if mergeinfo_list[1] == 'ffOlp':
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        if matter_data.country == 'CN' or matter_data.country == 'KR':
+            input_path = input_path.replace('ffOLP', 'FFOLP_PTA')
+            
     return input_path
 
 # New separate function for merging documents
 def mergeDoc(matter , mergeinfo, request):
+    merge_fn = mergefunctions()
     mergeinfo_list = mergeinfo.split(",") 
     module_name = ".mergemethods.merges"
     class_name = mergeinfo_list[1]
@@ -740,6 +801,7 @@ def mergeDoc(matter , mergeinfo, request):
     
     input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
+    input_path = merge_fn.find_case_insensitive_path(input_path)
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -758,7 +820,7 @@ def mergeDoc(matter , mergeinfo, request):
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
     
-    input_path = pathChanger(input_path, mergeinfo_list, mergefninfo)
+    input_path = pathChanger(input_path, mergeinfo_list, mergefninfo, matter)
 
     if mergeinfo_list[1] == 'pctcorrect':
         if mergefninfo[5] == 'true':
@@ -810,77 +872,111 @@ def mergeDoc(matter , mergeinfo, request):
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow, '')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl':
+    if mergeinfo_list[1] == 'assignment2016':
+        if mergefninfo[0] == '1':
+            input_path = input_path.replace('2012_2', '2012_not')
+        if mergefninfo[0] == '2':
+            input_path = input_path.replace('2012_2', '2012_att')
+            
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
 
     # doc merges
     if contacts == "FALSE":
-        out = False
-        count = 0
-        while out is False:
-            try:
-                WordMerger(input_path, replace, output_path)
-                # ----- Local -----
-                os.startfile(output_path)
-                out = True
-            except:
-                count = count + 1
-                output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document' + str(count) + '.docx')
+        # ----- Local -----
+        #load_dotenv()
+        # out = False
+        # count = 0
+        # while out is False:
+        #     try:
+        #         WordMerger(input_path, replace, output_path)
+        #         # ----- Local -----
+        #         os.startfile(output_path)
+        #         out = True
+        #     except:
+        #         count = count + 1
+        #         output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document' + str(count) + '.docx')
         
+        WordMerger(input_path, replace, output_path)
         # ----- Azure Storage -----
-        #file_name = os.path.basename(output_path)
-        #file_name = file_name.split('.')
-        #file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
-        #file_name = file_name[0] + '.' + file_name[1]
-
-        #with open(output_path, 'rb') as file:
-        #   default_storage.save(file_name, ContentFile(file.read()))
-
-        #blob_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net/media/{file_name}"
+        file_name = os.path.basename(output_path)
+        file_name = file_name.split('.')
+        file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        file_name = file_name[0] + '.' + file_name[1]
         
-        #return JsonResponse({'url': f'{blob_url}'})
-    
+        # ----- Azure Storage w/ Naming -----
+        # file_name = ''
+        
+        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+        container_name = 'media'
+        start = time.time()
+        try:
+            credential = ManagedIdentityCredential()
+            print(f"Credential setup: {time.time() - start:.2f}s")
+
+            blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=file_name)
+            print(f"Blob client setup: {time.time() - start:.2f}s")
+
+            with open(output_path, 'rb') as data:
+                blob_client.upload_blob(data, overwrite=True)
+            print(f"Upload time: {time.time() - start:.2f}s")
+        
+            # Authenticate using managed identity
+            blob_client = BlobClient(storage_account_url, container_name, file_name, credential=credential)
+
+            # Download the blob content
+            stream = blob_client.download_blob()
+            data = stream.readall()
+
+            # Return the file as a download
+            response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            #quoted_filename = quote(file_name)
+            response['Content-Disposition'] = f'attachment; filename={file_name}'
+            response.set_cookie('downloadComplete', 'true')
+
+            return response
+        except Exception as e:
+            return HttpResponse(f"Error: {str(e)}", status=500)
+        
         # Web open
         #webbrowser.open(blob_url)
 
     # outlook merges
     if contacts == "TRUE":
         WordMerger(input_path, replace, output_path)
-        tolist = mergeinfo_list[3].split(';')
-        cclist = mergeinfo_list[4].split(';')
-        bcclist = mergeinfo_list[5].split(';')
-        #tolist = ''
-        #cclist = ''
-        #bcclist = ''
-        TO = ''
-        CC = ''
-        BCC = ''
-        for to in tolist:
-            if check_email(to):
-                if TO != '':
-                    TO += ' ;' + to
-                else:
-                    TO = to
-                    
-        for cc in cclist:
-            if check_email(cc):
-                if CC != '':
-                    CC += '; ' + cc
-                else:
-                    CC = cc
-                    
-        for bcc in bcclist:
-            if check_email(bcc):
-                if BCC != '':
-                    BCC += '; ' + bcc
-                else:
-                    BCC = bcc
+        
+        tolist = [email.strip() for email in mergeinfo_list[3].split(';') if email.strip()]
+        cclist = [email.strip() for email in mergeinfo_list[4].split(';') if email.strip()]
+        bcclist = [email.strip() for email in mergeinfo_list[5].split(';') if email.strip()]
+        
         subject, body = DocumentReader(output_path, mergeinfo_list[1])
-        # attachment = "Q:/Contract Developers/SideBar/Merges/Django/SideBar/project/documents/communications/AppealFwdFee.docx"
-        contact = Email(body, subject, TO, CC, BCC, '')
-        #contact = 'false'
+
+        attachmethods = [
+            'ptorecdReport', 'basicreport', 'PCTRptOutMiscItmsRcvd', 'PCTRptOutBasicLtr',
+            'FFRptOutBasic', 'honureport', 'ffMiscItemsRcvd', 'miscitemsdue',
+            'tm_basicreport', 'ffOfficeActRcvdAuNz', 'tmrecdReport', 'ffMiscItemsDue',
+            'msemails', 'fa_confirm', 'nikeaction_new', 'retainer', 'novemail', 'idsmemo',
+            'micnffallow', 'ffOfficeActRcvd'
+        ]
+        
+        i = 0
+        if mergeinfo_list[1] == 'idsmemo':
+            i = 7
+
+        if (mergeinfo_list[1] in attachmethods) and (mergefninfo[2 + i] != 'NoAttachSelected'):
+            print(mergefninfo[2 + i])
+            attachids = mergefninfo[2 + i].split(';')
+            attachnames = mergefninfo[3 + i].split(';')
+            
+            attachpaths = get_documents(attachids, attachnames)
+        else:
+            attachpaths = []
+        
+        contact = Email(body, subject, tolist, cclist, bcclist, attachpaths, request)
+        
         return JsonResponse({'url': f'{contact}'})
 
 def check_email(email):
@@ -890,3 +986,130 @@ def check_email(email):
         return True
     else:
         return False
+
+def get_doc_names(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        actids = request.POST.get('actids')
+        actids = actids.replace('"', "")
+        
+        actlist = actids.split(';')
+        
+        print(actids)
+        
+        # report = await execute_report(data)
+        # await asyncio.sleep(30)
+        # await fetch_report(report)        
+
+        results = []
+        seen_ids = set()
+        logical_names = []
+        attachment_ids = []
+        if actids != '':
+            for act in actlist:
+                query = f"""
+                    SELECT CAST(subject AS VARCHAR(8000)) as subject, attachment.attachmentid
+                    FROM objectposting 
+                        JOIN posting on objectposting.postid = posting.postid
+                        JOIN containedattachment on posting.acid = containedattachment.containerid
+                        JOIN attachment on containedattachment.attachmentid = attachment.attachmentid
+                    Where locationid = {act}
+                        AND objtype = 28
+                        AND posting.type = 'D'
+                        AND subject NOT LIKE '%Postcard%'
+                        AND subject NOT LIKE '%e-receipt%'
+                        and physicalname not like '%.eml'
+                        and physicalname like '%.%'
+                    """
+                
+                with connections['FIP'].cursor() as cursor:
+                    #cursor.execute(query, (10920,))
+                    cursor.execute(query)
+                    results = cursor.fetchall()
+                    
+
+                for result in results:
+                    logical_name, attachment_id = result
+                    if attachment_id not in seen_ids:
+                        seen_ids.add(attachment_id)
+                        logical_names.append(logical_name)
+                        attachment_ids.append(attachment_id)
+
+        # Format the results for printing
+        logical_names = '; '.join(str(name).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for name in logical_names)
+        attachment_ids = '; '.join(str(id).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for id in attachment_ids)
+    
+        return JsonResponse({'message': {'names': logical_names, 'ids': attachment_ids}})
+    
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+def get_token():
+    # Read the public key from a file
+    public_key_pem_str = os.getenv("FIP_REST_PEM")
+    access_token = os.getenv("FIP_REST_TOKEN")
+    
+    rest_api_token = access_token
+    public_key_obj = serialization.load_pem_public_key(
+        public_key_pem_str.encode(),
+        backend=default_backend()
+    )
+    # Create the JSON to be encrypted for the authorization token
+    token_data = json.dumps({
+        "restApiToken": rest_api_token,
+        "timestamp": int(time.time() * 1000)
+    })
+    encrypted_bytes = public_key_obj.encrypt(
+        token_data.encode(),
+        padding.PKCS1v15()
+    )
+    encrypted_auth_token = base64.b64encode(encrypted_bytes).decode()
+
+    headers = {
+        'Authorization': encrypted_auth_token,
+        'X-FIP-API-TOKEN': rest_api_token,
+    }
+    
+    return headers
+
+def get_documents(documentids, documentnames):
+    attachpaths = []
+    for i, document in enumerate(documentids):
+        headers = get_token()
+        api_url = f"https://api.foundationip.com/fip-rest/v1/documents/{document}"
+        response = requests.get(api_url, headers=headers)
+
+        if response.status_code == 200:
+            content = response.content
+
+            filepath = os.path.join(settings.BASE_DIR, 'attachments', documentnames[i])
+            with open(filepath, 'wb') as file:
+                file.write(content)
+                print(f"Document saved as {documentnames[i]}")
+            attachpaths.append(filepath)
+        else:
+            print(f"Error: {response.status_code}, {response.text}")
+    
+    return attachpaths
+
+def download_doc(filename):
+    account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+    container_name = "media"
+
+    try:
+        # Authenticate using managed identity
+        credential = ManagedIdentityCredential()
+        blob_client = BlobClient(account_url, container_name, filename, credential=credential)
+
+        # Download the blob content
+        stream = blob_client.download_blob()
+        data = stream.readall()
+
+        # Return the file as a download
+        response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        quoted_filename = quote(filename)
+        response['Content-Disposition'] = f'attachment; filename={quoted_filename}'
+        return response
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)

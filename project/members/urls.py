@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
-from .views import addinventors, addcorp, addrecipients,  addactivities, addPA, members, matters, fip_reports, merges, toolbox, addRelatedMatter, checkMatter, addSA
+from .views import addinventors, health_check, addcorp, addrecipients,  addactivities, addPA, members, matters, fip_reports, merges, toolbox, addRelatedMatter, checkMatter, addSA, get_doc_names
 #from django.contrib import admin
 # from .views import mergeEmailButton
 from .views import testview
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', members, name='members'),
@@ -17,10 +19,12 @@ urlpatterns = [
     path('merge_PA/', addPA, name = 'merge_PA'),
     path('merge_RM/', addRelatedMatter, name = 'merge_RM'),
     path('merge_chkmatter/', checkMatter, name = 'merge_chkmatter'),
+    path('merge_activity_docs/', get_doc_names, name = 'merge_activity_docs'),
 
     path('fip-reports/', fip_reports, name='fip_reports'),
     path('merges/', merges, name='merges'),
     path('toolbox/', toolbox, name='toolbox'),
     
+    path('health/', health_check, name='health_check'),
     #path('admin/', admin.site.urls),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

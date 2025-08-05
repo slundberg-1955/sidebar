@@ -8,6 +8,7 @@ from ..models import Contactinfo
 from ..models import Patent, Customernumbers, CustomerNos, Activity
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import os
 
 import re
 
@@ -26,10 +27,15 @@ class mergefunctions:
                 confirm = 'Unknown'
             if(custcor == ''):
                 custcor = 'Unknown'
+                                
+            try:
+                filedte = matter_data.fileddate.strftime("%B %d, %Y")
+            except:
+                filedte = ''
 
             basic = {
                 'serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
-                'filedDate' : matter_data.fileddate.strftime("%B %d, %Y"),
+                'filedDate' : filedte,
                 'title' : matter_data.title,
                 'matterNo' : matter_data.hostmatterno,
                 'custNoCorresp' : custcor,
@@ -85,11 +91,21 @@ class mergefunctions:
 
         if 'rvwmatterpersonnel' in tables_list:
             SA_data = merge_fn.rvwmatterpersonnelFill(matter_data)
+            try:
+                saname = SA_data.fname + ' ' + SA_data.mname + ' ' + SA_data.lname
+                saregno = SA_data.registrationno
+                nicksa = SA_data.nickname
+                saphone = merge_fn.phoneFill(matter_data)
+            except:
+                saname = ''
+                saregno = ''
+                nicksa = ''
+                saphone = ''
             basic = {
-                'SAName' : SA_data.fname + ' ' + SA_data.mname + ' ' + SA_data.lname,
-                'SARegNo' : SA_data.registrationno,
-                'nickSA' : SA_data.nickname,
-                'SAPhone' : merge_fn.phoneFill(matter_data),
+                'SAName' : saname,
+                'SARegNo' : saregno,
+                'nickSA' : nicksa,
+                'SAPhone' : saphone,
             }
             for key, value in basic.items():
                 if key in keys:
@@ -161,12 +177,14 @@ class mergefunctions:
         if 'matterparticipant' in tables_list:
             try:
                 part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+                profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
                 basic = {
                     'clientRefNo' : 'Ref. No. ' + part.matterno,
                     'clientNo' : part.matterno,
                     'This.clientRefNo' : 'Ref. No. ' + part.matterno,
                     'clientRefText' : 'Client Ref. No. ' + part.matterno,
-                    'RefNo' : part.matterno
+                    'RefNo' : part.matterno,
+                    'clientName' : profile.orgname
                 }
             except:
                 basic = {
@@ -174,7 +192,8 @@ class mergefunctions:
                     'clientNo' : '',
                     'This.clientRefNo' : 'Ref. No. ',
                     'clientRefText' : 'Client Ref. No. ',
-                    'RefNo' : ''
+                    'RefNo' : '',
+                    'clientName' : ''
                 }
             for key, value in basic.items():
                 if key in keys:
@@ -183,6 +202,13 @@ class mergefunctions:
         if 'firm' in tables_list:
             basic = {}
             basic.update(merge_fn.firmfill())
+            for key, value in basic.items():
+                if key in keys:
+                    basicOut.update({key: value})
+                    
+        if 'QA' in tables_list:
+            basic = {}
+            basic.update(merge_fn.QAfill(keys, matter))
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -263,7 +289,17 @@ class mergefunctions:
                 'applicantName' : profile.orgname,
             }
         except:
-            info = {}
+            info = {
+                'applCnt' : '',
+                'applicantCity' : '',
+                'applicantState' : '',
+                'applicantZip' : '',
+                'applicantCountry' : '',
+                'applicantStreet1' : '',
+                'applicantStreet2' : '',
+                'applicant' : '',
+                'applicantName' : '',
+            }
         return info
     
     def correspondenceContactfill(self, matter):
@@ -362,6 +398,25 @@ class mergefunctions:
             }
         return info
     
+    # Para fill
+    def clientParafill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '164406', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'clientparaname' : profile.fname + ' ' + profile.lname,
+                'clientparaemail' : contact.email
+            }
+        except:
+            info = {
+                'clientparaname' : '',
+                'clientparaemail' : ''
+            }
+        return info
+    
     # WA fill
     def WAfill(self, keys, matter):
         merge_fn = mergefunctions()
@@ -372,6 +427,7 @@ class mergefunctions:
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
             info = {
                 'WAName' : profile.fname + ' ' + profile.lname,
+                'WAattorney' : profile.fname + ' ' + profile.lname,
                 'WAPhone' : contact.phone1,
                 'WAEmail' : contact.email,
                 'This.WAName' : profile.fname + ' ' + profile.lname,
@@ -388,6 +444,25 @@ class mergefunctions:
                 'This.WAPhone' : 'NO WORKING ATTORNEY PHONE',
                 'This.WAEmail' : 'NO WORKING ATTORNEY EMAIL',
                 'WARegNo' : ''
+            }
+        return info
+    
+    # QA fill
+    def QAfill(self, keys, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '81432', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'QAName' : profile.fname + ' ' + profile.lname,
+                'QAPhone' : contact.phone1,
+            }
+        except:
+            info = {
+                'QAName' : '',
+                'QAPhone' : '',
             }
         return info
     
@@ -511,6 +586,10 @@ class mergefunctions:
             'inventorHomeCity' : contact.city,
             'inventorHomeState' : contact.state,
             'inventorHomeCountry' : contact.country,
+            'inventorHomeStreet1' : contact.address1,
+            'inventorcitizen': profile.citizenship,
+            'inventorHomeZip' : contact.zip,
+            'inventorCitizenship' : profile.citizenship,
             'inventorMailingStreet1' : contact.address1,
             'inventorMailingStreet2' : contact.address2,
             'inventorMailingCity' : contact.city,
@@ -520,7 +599,7 @@ class mergefunctions:
 
             'inventorName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'inventorCityState' : contact.city + ' ' + contact.state,
-            'inventorCountry' : merge_fn.fullCountry(contact.country),
+            'inventorCountry' : contact.country,
             'inventorAddress' : contact.address1,
             'inventorAddress1' : contact.address1,
             'inventorAddress2' : contact.address2,
@@ -581,9 +660,14 @@ class mergefunctions:
                 confirm = 'Unknown'
             if(custcor == ''):
                 custcor = 'Unknown'
+                
+            try:
+                filedte = matter_data.fileddate.strftime("%B %d, %Y")
+            except:
+                filedte = ''
             basic = {
                 'This.serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
-                'This.filedDate' : matter_data.fileddate.strftime("%B %d, %Y"),
+                'This.filedDate' : filedte,
                 'This.title' : matter_data.title,
                 'This.matterNo' : matter_data.hostmatterno,
                 'recipient' : Rvwmatterinventors.objects.using('FIP').get(matterid = matter_data.matterid).inventor
@@ -620,6 +704,7 @@ class mergefunctions:
             'This.orgName' : 'org',
             'recipient' : 'rvwmatterinventors',
             'WAName' : 'WA',
+            'WAattorney' : 'WA',
             'WAPhone' : 'WA',
             'WAEmail' : 'WA',
             'This.WAName' : 'WA',
@@ -632,6 +717,8 @@ class mergefunctions:
             'This.paraName' : 'para',
             'This.paraPhone' : 'para',
             'This.paraEmail' : 'para',
+            'QAName' : 'QA',
+            'QAPhone' : 'QA',
             'This.serialNo' : 'matter',
             'This.filedDate' : 'matter',
             'This.title' : 'matter',
@@ -647,6 +734,7 @@ class mergefunctions:
             'clientNo' : 'matterparticipant',
             'clientRefText' : 'matterparticipant',
             'This.clientRefNo' : 'matterparticipant',
+            'clientName' : 'matterparticipant',
             'RefNo' : 'matterparticipant',
             'firstInventor' : 'inventor',
             'firmName' : 'firm',
@@ -871,6 +959,24 @@ class mergefunctions:
         }
         return info
     
+    def linkedinRAfill(self, matter):
+        merge_fn = mergefunctions()
+        try:
+            matter_data = merge_fn.matterFill(matter)
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '195797', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            name = profile.fname + ' ' + profile.lname
+            email = contact.email
+        except:
+            name = ''
+            email = ''
+        info = {
+            'LIResponsibleAttorneyname' : name,
+            'LIResponsibleAttorneyemail' : email,
+        }
+        return info
+    
     def formatDate(self, date):
         try:
             return datetime.strptime(date, '%Y-%m-%d').strftime('%B %d, %Y')
@@ -880,12 +986,53 @@ class mergefunctions:
     def ffparafill(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '58125', roleorderno = 1)
-        profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '58125', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            info = {
+                'ffparaName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+                'ffparaEmail' : contact.email,
+                'ffparaPhone' : contact.phone1
+            }
+        except:
+            info = {
+                'ffparaName' : '',
+                'ffparaEmail' : '',
+                'ffparaPhone' : ''
+            }
+        return info
+    
+    def countryType(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+
+        if matter_data.countryname == 'United States of America':
+            countrytype = 'American'
+        
         info = {
-            'ffparaName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
-            'ffparaEmail' : contact.email,
-            'ffparaPhone' : contact.phone1
+            'countryType' : countrytype
         }
         return info
+    
+    def find_case_insensitive_path(self, path):
+        parts = path.strip(os.sep).split(os.sep)
+        current_path = os.sep if path.startswith(os.sep) else "."
+
+        for part in parts:
+            try:
+                entries = os.listdir(current_path)
+            except FileNotFoundError:
+                return None
+
+            match = next((entry for entry in entries if entry.lower() == part.lower()), None)
+            if match is None:
+                return None
+
+            current_path = os.path.join(current_path, match)
+
+        return current_path if os.path.exists(current_path) else None
+
+    # Retainer Language
+    def retainer(self, matter):
+        pass
