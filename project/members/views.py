@@ -148,63 +148,74 @@ def addinventors(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
+def addassignee(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(data)
+        roleordernos = ''
+        profiles = ''
+
+        assignees = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='34606')
+        i = 0
+        for assignee in assignees:
+            if i == 0:
+                profiles = profiles + Orgprofile.objects.using('FIP').get(opid = assignee.contactid).orgname 
+                roleordernos = roleordernos + str(assignee.roleorderno)
+                i = 1
+            else:
+                profiles = profiles + ';' + Orgprofile.objects.using('FIP').get(opid = assignee.contactid).orgname
+                roleordernos = roleordernos + ';' + str(assignee.roleorderno)
+   
+        return JsonResponse({'message': {'assignees': profiles, 'ordernos': roleordernos}})
+    
 def addcorp(request):
     if request.method == 'POST':
         data = request.POST.get('matterno')
         data = data.replace('"', "")
 
-        matter = Matter.objects.using('FIP').get(hostmatterno = data)
-        orgout = ''
-        try:
-            apppart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '56691')
-            apporg = Orgprofile.objects.using('FIP').get(opid = apppart.contactid)
-            apporgname = apporg.orgname
-            orgout = orgout + 'Applicant: ' + apporgname + ';'
-        except:
-            orgout = ''
+        results = []
+        names = []
+        roles = []
+        roleids = []
+        if data != '':
+            query = f"""
+                SELECT  
+                    CAST(orgname as varchar(500)) AS orgname, 
+                    role.name AS rolename,
+                    role.roleid
+                FROM matterparticipant mp 
+                    JOIN orgprofile op ON mp.contactid = op.opid
+                    JOIN contactinfo ci on op.contactinfoid = ci.contactinfoid
+                    JOIN country ON ci.country = country.code
+                    JOIN role ON mp.roleid = role.roleid
+                WHERE op.opid <>  32
+                and matterid IN 
+                (SELECT matterid from matter where hostmatterno LIKE '{data}')
+                ORDER BY rolename
+            """
+                
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                results = cursor.fetchall()
 
-        try:
-            assigneepart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34606')
-            assigneeorg = Orgprofile.objects.using('FIP').get(opid = assigneepart.contactid)
-            assigneeorgname = assigneeorg.orgname
-            orgout = orgout + 'Assignee: ' + assigneeorgname + ';'
-        except:
-            orgout = orgout + ''
+            for result in results:
+                fullname, rolename, roleid = result
+                if (fullname, rolename) not in zip(names, roles):
+                    names.append(fullname)
+                    roles.append(rolename + ': ' + fullname)
+                    roleids.append(roleid)
 
-        try:
-            clpart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34617')
-            clorg = Orgprofile.objects.using('FIP').get(opid = clpart.contactid)
-            clorgname = clorg.orgname
-            orgout = orgout + 'Client: ' + clorgname + ';'
-        except:
-            orgout = orgout + ''
-
-        try:
-            prepart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '93476')
-            preorg = Orgprofile.objects.using('FIP').get(opid = prepart.contactid)
-            preorgname = preorg.orgname
-            orgout = orgout + 'Previous Client/Matter Number: ' + preorgname + ';'
-        except:
-            orgout = orgout + ''
-
-        """         
-        try:
-            fopart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '125766')
-            foorg = Orgprofile.objects.using('FIP').get(opid = fopart.contactid)
-            foorgname = foorg.orgname
-            orgout = orgout + 'Foreign Associate: ' + foorgname + ';'
-        except:
-            orgout = orgout + 'fail;' """
-
-        try:
-            lpart = Matterparticipant.objects.using('FIP').get(matterid = matter.matterid, roleid = '34607')
-            lorg = Orgprofile.objects.using('FIP').get(opid = lpart.contactid)
-            lorgname = lorg.orgname
-            orgout = orgout + 'Licensee: ' + lorgname
-        except:
-            orgout = orgout + ''
-
-        return JsonResponse({'message': f'{orgout}'})
+        # Format the results for printing
+        names = '; '.join(str(name).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for name in names)
+        roles = '; '.join(str(role).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for role in roles)
+        roleids = '; '.join(str(roleid).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for roleid in roleids)
+        
+        print(names + ' ' + roles)
+    
+        return JsonResponse({'message': {'names': names, 'roles': roles, 'roleids': roleids}})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -738,6 +749,48 @@ def combinedoc(path, method, mergeinfo, matter, email):
             doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'assignment2012_acc.docx')) 
             doc2.add_page_break()
             composer.append(doc2)
+            
+    if method == 'appdataupdate':
+        composer = Composer(doc1)
+        for i in range(int(mergeinfo[7])):
+            doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_Updated_RPOAstage.docx')) 
+            composer.append(doc2)
+            
+        doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_Updated_RPOAstageA.docx')) 
+        doc3.add_page_break()
+        composer.append(doc3)
+        
+    if method == 'recordation':
+        use_second_list2 = False
+        merge_fn = mergefunctions()
+        composer = Composer(doc1)
+        rolelist = []
+        for i in range(5, len(mergeinfo), 2):
+            if mergeinfo[i - 1] == "STARTNXT" or mergeinfo[i - 1] == "SELASSIGNEE":
+                use_second_list2 = True
+                
+            if use_second_list2:
+                rolelist.append(mergeinfo[i + 1])
+        try:
+            rolelist = rolelist[1:]
+        except:
+            rolelist = []
+
+        i = 0
+        for roleid in rolelist:       
+            replace = {}
+            if mergeinfo[0] == '2':
+                replace.update(merge_fn.recordationRoleFill(matter, roleid))
+            else:
+                replace.update(merge_fn.assigneefill(matter, roleid))
+            if i == 0:
+                i = 1
+                WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'miscellaneous', 'RecordationCoverSheet_Supplement.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'RecordationCoverSheet_Supplementout.docx'))
+                doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'RecordationCoverSheet_Supplementout.docx')) 
+            else:
+                WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'miscellaneous', 'RecordationCoverSheet_Supplement1.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'RecordationCoverSheet_Supplement1out.docx'))
+                doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'RecordationCoverSheet_Supplement1out.docx')) 
+            composer.append(doc3)
 
     if email == 'TRUE':
         merge_fn = mergefunctions()
@@ -878,7 +931,7 @@ def mergeDoc(matter , mergeinfo, request):
         if mergefninfo[0] == '2':
             input_path = input_path.replace('2012_2', '2012_att')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)

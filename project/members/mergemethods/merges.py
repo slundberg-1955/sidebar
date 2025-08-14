@@ -198,47 +198,106 @@ class recordation:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
+        addrecY = '  '
+        addrecN = 'X'
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         if mergeinfo[0] == '1':
-            replace.update(function_instance.assigneefill(matter, 1))
-            selinv = mergeinfo[4]
+            # Start from index 4
+            nameslist = []  # Every third item starting from index 4 is a name
+            ordernolist = []
+            dateslist = []
+            use_second_list = False
+            for i in range(4, len(mergeinfo)):
+                if mergeinfo[i] == "SELASSIGNEE":
+                    use_second_list = True
+
+                if use_second_list:
+                    try:
+                        if (i - 4) % 2 == 0:
+                            if mergeinfo[i] != "SELASSIGNEE":
+                                ordernolist.append(mergeinfo[i])
+                    except:
+                        pass
+                else:
+                    if (i - 4) % 2 == 0:
+                        nameslist.append(mergeinfo[i])
+                    else:
+                        dateslist.append(function_instance.formatDate2(mergeinfo[i]))
+            if ordernolist != []:
+                replace.update(function_instance.assigneefill(matter, ordernolist[0]))
+            else:
+                replace.update(function_instance.assigneefill(matter, 1))
+
+            if len(ordernolist) >= 2:
+                addrecY = 'X'
+                addrecN = '  '
+            
+            # Join into a comma-delimited string
+            selinv = ", ".join(nameslist)
+            seldate = ", ".join(dateslist)
 
         if mergeinfo[0] == '2':
-            selinv = mergeinfo[4]
-            name = mergeinfo[7].split(": ", 1)[0]
-            if name == 'Applicant':
-                roleid = '56691'
-            if name == 'Assignee':
-                roleid = '34606'
-            if name == 'Client':
-                roleid = '34617'
-            if name == 'Previous Client/Matter Number':
-                roleid = '93476'
-            if name == 'Licensee':
-                roleid = '34607'
+            nameslist = []
+            nameslist2 = []
+            dateslist = []
+            rolelist = []
+            use_second_list = False
+            use_second_list2 = False
+            for i in range(4, len(mergeinfo), 2):
+                if mergeinfo[i] == "STARTNXT":
+                    use_second_list = True
+                    continue
+
+                if use_second_list:
+                    try:
+                        nameslist2.append(mergeinfo[i - 1])
+                    except:
+                        pass
+                else:
+                    try:
+                        nameslist.append(mergeinfo[i].split(": ")[1])
+                    except:
+                        nameslist.append(mergeinfo[i])
+            
+            selinv = ", ".join(nameslist)
+            for i in range(5, len(mergeinfo), 2):
+                if mergeinfo[i - 1] == "STARTNXT":
+                    use_second_list2 = True
+
+                if use_second_list2:
+                    rolelist.append(mergeinfo[i + 1])
+                else:
+                    dateslist.append(function_instance.formatDate2(mergeinfo[i]))
+            
+            seldate = ", ".join(dateslist)
             try:
+                if nameslist2[1]:
+                    addrecY = 'X'
+                    addrecN = '  '
+            except:
+                pass
+            try:
+                roleid = rolelist[0]
                 replace.update(function_instance.recordationRoleFill(matter, roleid))
             except:
                 pass
 
         totfee = 0
-        depX = ''
         chkX = ''
-        if mergeinfo[3] == 'depacc':
-            depX = 'X'
-        if mergeinfo[3] == 'check':
-            chkX = 'X'            
-
-        replace.update(function_instance.esigncheck(mergeinfo[3]))
+        depX = 'X'
+         
+        replace.update(function_instance.esigncheck(mergeinfo[1]))
         replace.update({
             'depAccount' : depnum,
-            'dateExecutionText' : function_instance.formatDate(mergeinfo[5]),
+            'dateExecutionText' : seldate,
             'selectedInventorList' : selinv,
             'totalFee' : totfee,
             'numPages' : mergeinfo[2],
             'depAcctX' : depX,
             'checkX' : chkX,
+            'addRecY' : addrecY,
+            'addRecN' : addrecN
         })
         return replace
  
@@ -4491,5 +4550,16 @@ class litoclient:
         replace.update(function_instance.linkedinRAfill(matter))
         replace.update({
             'Item being reported' : mergeinfo[1].split(';')[0]
+        })
+        return replace
+
+class appdataupdate:
+    def appdataupdate(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update({
+
         })
         return replace

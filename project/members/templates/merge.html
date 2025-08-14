@@ -351,6 +351,9 @@
         #matterNotFound .modal-dialog{
             max-width: 400px;
         }
+        #appdataupdate .modal-dialog{
+            max-width: 690px;
+        }
         .header-image {
             float: right;
             width: 95px;
@@ -651,12 +654,8 @@
             <div class="modal-body">
                 &emsp;<button type="button" class="btn btn-primary" id="corp-button">Corporation to Corporation</button>
                 <div id="recordationhide">
-                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="recordationesign" name="esign">
+                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="recordationesign" name="esign" checked>
                     &ensp;&emsp;Number of Pages: <input type="text" id="recordationpagenum" name="pagenum" size="10" placeholder = "0">
-                    <div class="pagecount">
-                        &emsp;&emsp;Deposit Account: <input type="radio" id="recordationdepacc" name="recordationoptions" value="depacc">
-                        &ensp;Check: <input type="radio" id="recordationcheck" name="recordationoptions" value="check">
-                    </div>
                 </div>
                 <table class="table">
                     <thead>
@@ -664,7 +663,6 @@
                             <th>Select</th>
                             <th>Name(s)</th>
                             <th>Date Assignment Signed</th>
-                            <th>Date Declaration Signed</th>
                         </tr>
                     </thead>
                     <tbody id="inventor-list"></tbody>
@@ -677,6 +675,34 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button id = "recordationsub" type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Recordation Assignees w inventor -->
+<div class="modal fade" id="assignees">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- Add host matter no here -->
+                <h4 class="modal-title"> Select Assignee: </h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Your modal body content here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignee-info"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id = "assigneesnext" >Continue</button>
             </div>
         </div>
     </div>
@@ -5138,7 +5164,7 @@
         toggleDisplay({ checkboxId: 'EPDecisiontoGrantdiv', targetId: 'EPDecisiontoGranthide' });
     });
 </script>
-<div id="applicationdata_updnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_updnewModalLabel" aria-hidden="true">
+<div id="appdataupdate" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="appdataupdateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5147,44 +5173,36 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewinv"> Inventor Information
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateinv"> Inventor Information
                 </div>
                 <div>
-                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="applicationdata_updnewoptions"> Home
-                    <input type="radio" id="applicationdata_updnewclientmail" name="applicationdata_updnewoptions"> Client
-                    <input type="radio" id="applicationdata_updnewappmail" name="applicationdata_updnewoptions"> Applicant
-                </div>
-                <script>
-                    function applicationdata_updnewsub(inv, corr, app, drw, appinfo, assign, updt, esign){
-                        let apprad = radioFill('applicationdata_updnewoptions')
-                        submitbtnmerge(inv, corr, app, drw, appinfo, assign, updt, esign, apprad);
-                    }
-                </script>
-                <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewcorr"> Correspondence Information
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdatecorr"> Correspondence Information
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewapp"> Application Information
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateapp"> Application Information
                 </div>
                 <div>
-                        Total number of drawing sheets? <input type="text" id="applicationdata_updnewdrw" size="5" placeholder = '0'>
+                        Total number of drawing sheets? <input type="text" id="appdataupdatedrw" size="5" placeholder = '0'>
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewappinfo"> Applicant Information
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateappinfo"> Applicant Information
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewassign"> Assignee Information
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateassign"> Assignee Information
                 </div>
                 <div>
-                        Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdaterep"> Representative Information
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign"> E-Sign Enable
+                        Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="appdataupdateupdt" size="5" placeholder = '0'>
+                </div>
+                <div>
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateesign"> E-Sign Enable
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="applicationdata_updnewsub(applicationdata_updnewinv.checked, applicationdata_updnewcorr.checked, applicationdata_updnewapp.checked, applicationdata_updnewdrw.value, applicationdata_updnewappinfo.checked, applicationdata_updnewassign.checked, applicationdata_updnewupdt.value, applicationdata_updnewesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(appdataupdateinv.checked, appdataupdatecorr.checked, appdataupdateapp.checked, appdataupdatedrw.value, appdataupdateappinfo.checked, appdataupdateassign.checked, appdataupdaterep.checked, appdataupdateupdt.value, appdataupdateesign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -5310,7 +5328,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -5363,10 +5381,9 @@
                     for(var i = 0; i < inventorList.length; i++){
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
-                            <td><input type="checkbox" name = "invchk"></td>
+                            <td><input type="checkbox" name = "invchk" checked></td>
                             <td>${inventorList[i]}</td>
-                            <td contenteditable></td>
-                            <td contenteditable></td>
+                            <td contenteditable>//</td>
                         `;
                         tableBody.appendChild(newRow);
                         const dateFields = newRow.querySelectorAll('[contenteditable]');
@@ -5374,7 +5391,6 @@
                     $('#recordation').modal('show');
                     if (mergemethod == 'nsnotarialcert'){
                         document.getElementById("recordationhide").style.display = "none";
-
                     }
 
                     const inventorselname = [];
@@ -5415,7 +5431,7 @@
                                 selectedData.push(rowData);
                             }
                         });
-                        submitbtnmerge('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
+                        submitbtnrecoinv('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                     };
                     
                 },
@@ -5441,7 +5457,9 @@
                         'X-CSRFTOKEN': csrftoken,
                     },
                     success: function(response) {
-                        const corpList = response.message.split(';');
+                        const corpList = response.message.roles.split(';');
+                        const corproleList = response.message.names.split(';');
+                        const corproleidList = response.message.roleids.split(';');
                         const tableBody = document.getElementById('inventor-list');
                         tableBody.innerHTML = '';
                         for(var i = 0; i < corpList.length; i++){
@@ -5449,8 +5467,7 @@
                             newRow.innerHTML = `
                                 <td><input type="checkbox" name = "corpchk1"></td>
                                 <td>${corpList[i]}</td>
-                                <td contenteditable></td>
-                                <td contenteditable></td>
+                                <td contenteditable>//</td>
                             `;
                             tableBody.appendChild(newRow);
                             const dateFields = newRow.querySelectorAll('[contenteditable]');
@@ -5461,8 +5478,6 @@
                         newHead.innerHTML = `
                             <th>Select</th>
                             <th>Name(s)</th>
-                            <th>Date Assignment Signed</th>
-                            <th>Date Declaration Signed</th>
                         `;
                         corpHead.appendChild(newHead);
                         const corpBody = document.getElementById('corp-list');
@@ -5472,8 +5487,6 @@
                                 newRow.innerHTML = `
                                     <td><input type="checkbox" name="corpchk2"></td>
                                     <td>${corpList[i]}</td>
-                                    <td contenteditable></td>
-                                    <td contenteditable></td>
                                 `;
                             corpBody.appendChild(newRow);
                             const dateFields = newRow.querySelectorAll('[contenteditable]');
@@ -5482,7 +5495,8 @@
                         $('#recordation').modal('show');
                         
                         document.getElementById("recordationsub").onclick = function() {
-                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"], input[type="checkbox"][name="corpchk2"]');
+                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"]');
+                            const checkboxesinv2 = document.querySelectorAll('input[type="checkbox"][name="corpchk2"]');
                             const selectedData = [];
                             checkboxesinv.forEach((checkbox, index) => {
                                 if (checkbox.checked) {
@@ -5493,6 +5507,15 @@
                                     selectedData.push(rowData);
                                 }
                             });
+                            selectedData.push("STARTNXT");
+                            checkboxesinv2.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    const row = checkbox.closest('tr');
+                                    const column1Value = row.children[1].innerText;
+                                    selectedData.push(column1Value + ',' + corproleidList[index]);
+                                }
+                            });
+                            //alert(selectedData);
                             submitbtnmerge('2', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                         };
                         },
@@ -5503,6 +5526,56 @@
             }
             isClicked = !isClicked;
         });
+
+        function submitbtnrecoinv(...args){
+            const inputData = document.getElementById("matterInput").value;
+            $.ajax({
+                type: 'POST',
+                url: 'merge_assignee/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const assigneeList = response.message.assignees.split(';');
+                    const ordernoList = response.message.ordernos.split(';');
+                    if(assigneeList != [] && assigneeList.length >= 2){
+                        const tableBody = document.getElementById('assignee-info');
+                        tableBody.innerHTML = '';
+                        for(var i = 0; i < assigneeList.length; i++){
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td><input type="checkbox" name = "assigneename"></td>
+                                <td>${assigneeList[i]}</td>
+                            `;
+                            tableBody.appendChild(newRow);
+                        }
+                        $('#assignees').modal('show'); 
+
+                        document.getElementById("assigneesnext").onclick = function() {
+                        const selAssignees = [];
+
+                        const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="assigneename"]`);
+                        checkboxes.forEach((checkbox, index) => {
+                            if (checkbox.checked) {
+                                selAssignees.push(assigneeList[index]);
+                                selAssignees.push(ordernoList[index])
+                            }
+                        });
+                        
+                        submitbtnmerge(...args, 'SELASSIGNEE', selAssignees.map(entry => String(entry).replace(/,/g, '`')));
+                        }
+                    }
+                    else{
+                        submitbtnmerge(...args);
+                    }
+                },
+                error: function(error) {
+                    alert('no');
+                    console.error('Error:', error);
+                }
+            });
+        }
 
         function fillRecipients(mergemethod){
             const inputData = document.getElementById("matterInput").value;

@@ -8,6 +8,7 @@ from ..models import Contactinfo
 from ..models import Patent, Customernumbers, CustomerNos, Activity
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from django.db import connections
 import os
 
 import re
@@ -351,20 +352,32 @@ class mergefunctions:
     def recordationRoleFill(self, matter, role):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
+        if role != '':
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = role, roleorderno = 1)
+            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
-        part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = role, roleorderno = 1)
-        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
-
-        info = {
-            'assigneeCity' : contact.city,
-            'assigneeState' : contact.state,
-            'assigneeZip' : contact.zip,
-            'assigneeCountry' : contact.country,
-            'assigneeStreet' : contact.address1,
-            'assigneeName' : profile.orgname,
-            'assignee' : profile.orgname,
-        }
+            info = {
+                'assigneeCity' : contact.city,
+                'assigneeState' : contact.state,
+                'assigneeZip' : contact.zip,
+                'assigneeCountry' : contact.country,
+                'assigneeStreet' : contact.address1,
+                'assigneeName' : profile.orgname,
+                'assignee' : profile.orgname,
+            }
+            
+        else:
+            info = {
+                'assigneeCity' : '',
+                'assigneeState' : '',
+                'assigneeZip' : '',
+                'assigneeCountry' : '',
+                'assigneeStreet' : '',
+                'assigneeName' : '',
+                'assignee' : '',
+            }
+            
         return info
 
     # Para fill
@@ -845,11 +858,28 @@ class mergefunctions:
         return Contactinfo.objects.using('FIP').get(contactinfoid = data.contactinfoid)
     
     def phoneFill(self,data):
-        part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34617')
-        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
         function_instance = mergefunctions()
-        phonenum = function_instance.appendphone(contact.phone1)
+        results = []
+        try:
+            if data != '':
+                query = f"""
+                    SELECT ci.phone1 as phone
+                    FROM matterparticipant mp 
+                        JOIN personprofile op ON mp.contactid = op.ppid
+                        JOIN contactinfo ci on op.workcontactinfoid = ci.contactinfoid
+                    WHERE matterid IN 
+                    (SELECT matterid from matter where hostmatterno LIKE '{data.hostmatterno}')
+                    and roleid = '34619'
+                """
+                
+                with connections['FIP'].cursor() as cursor:
+                    cursor.execute(query)
+                    results = cursor.fetchall()
+                phone = str(results[0]).replace('(', '').replace(')', '').replace("'", '').replace(',', '')
+                phonenum = function_instance.appendphone(phone)
+        except:
+            phonenum = '()-'
+                    
         return phonenum
     
     def depnumFill(self, data):
@@ -980,6 +1010,12 @@ class mergefunctions:
     def formatDate(self, date):
         try:
             return datetime.strptime(date, '%Y-%m-%d').strftime('%B %d, %Y')
+        except:
+            return date
+
+    def formatDate2(self, date):
+        try:
+            return datetime.strptime(date, '%Y/%m/%d').strftime('%B %d, %Y')
         except:
             return date
     
