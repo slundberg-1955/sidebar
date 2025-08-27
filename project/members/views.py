@@ -18,6 +18,7 @@ from django.db import connections
 #import pythoncom
 from urllib.parse import quote
 import mimetypes
+from io import BytesIO
 
 from concurrent.futures import ThreadPoolExecutor
 from .models import Matter
@@ -180,12 +181,14 @@ def addcorp(request):
         names = []
         roles = []
         roleids = []
+        roleorders = []
         if data != '':
             query = f"""
                 SELECT  
                     CAST(orgname as varchar(500)) AS orgname, 
                     role.name AS rolename,
-                    role.roleid
+                    role.roleid,
+                    mp.roleorderno
                 FROM matterparticipant mp 
                     JOIN orgprofile op ON mp.contactid = op.opid
                     JOIN contactinfo ci on op.contactinfoid = ci.contactinfoid
@@ -202,20 +205,22 @@ def addcorp(request):
                 results = cursor.fetchall()
 
             for result in results:
-                fullname, rolename, roleid = result
+                fullname, rolename, roleid, roleorder = result
                 if (fullname, rolename) not in zip(names, roles):
                     names.append(fullname)
                     roles.append(rolename + ': ' + fullname)
                     roleids.append(roleid)
+                    roleorders.append(roleorder)
 
         # Format the results for printing
         names = '; '.join(str(name).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for name in names)
         roles = '; '.join(str(role).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for role in roles)
         roleids = '; '.join(str(roleid).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for roleid in roleids)
+        roleorders = '; '.join(str(roleorder).replace('(', '').replace(')', '').replace("'", '').replace(',', '') for roleorder in roleorders)
         
         print(names + ' ' + roles)
     
-        return JsonResponse({'message': {'names': names, 'roles': roles, 'roleids': roleids}})
+        return JsonResponse({'message': {'names': names, 'roles': roles, 'roleids': roleids, 'roleorders': roleorders}})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -585,9 +590,9 @@ def find_checkbox_coordinates(element_coordinates):
 
 def combinedoc(path, method, mergeinfo, matter, email):
     doc1 = Document_compose(path)
-    doc1.add_page_break()
 
     if method == 'issuefee':
+        doc1.add_page_break()
         composer = Composer(doc1)
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit3.docx'))
         if mergeinfo[6] == 'true':
@@ -599,6 +604,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc2)
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
+        doc1.add_page_break()
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventor.docx'))
         docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2end.docx'))
         composer = Composer(doc2)
@@ -702,6 +708,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         composer.append(docend)
     
     if method == 'invchange':
+        doc1.add_page_break()
         merge_fn = mergefunctions()
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange.docx')) 
         docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_end.docx')) 
@@ -718,6 +725,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         composer.append(docend)
         
     if method == 'BSCCombinedAssnDec':
+        doc1.add_page_break()
         composer = Composer(doc1)
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
@@ -731,6 +739,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc2)
 
     if method == 'aiashortdecl':
+        doc1.add_page_break()
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'miscellaneous', 'blank.docx')) 
         composer = Composer(doc2)
         merge_fn = mergefunctions()
@@ -744,6 +753,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc3)
             
     if method == 'assignment2016':
+        doc1.add_page_break()
         composer = Composer(doc1)
         if mergeinfo[1] == 'true':
             doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'assignment2012_acc.docx')) 
@@ -751,6 +761,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc2)
             
     if method == 'appdataupdate':
+        doc1.add_page_break()
         composer = Composer(doc1)
         for i in range(int(mergeinfo[7])):
             doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_Updated_RPOAstage.docx')) 
@@ -793,6 +804,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc3)
 
     if email == 'TRUE':
+        doc1.add_page_break()
         merge_fn = mergefunctions()
         doc2 = Document_compose(path)
         composer = Composer(doc2)

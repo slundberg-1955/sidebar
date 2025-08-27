@@ -4,7 +4,7 @@ from ..models import Rvwmatterinventors
 from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
-from ..models import Contactinfo
+from ..models import Contactinfo, ClientSpec
 from ..models import Patent, Customernumbers, CustomerNos, Activity
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -28,17 +28,39 @@ class mergefunctions:
                 confirm = 'Unknown'
             if(custcor == ''):
                 custcor = 'Unknown'
-                                
+                
             try:
                 filedte = matter_data.fileddate.strftime("%B %d, %Y")
             except:
                 filedte = ''
+                
+            for i in range(3):
+                try:
+                    hostmatterno = matter_data.hostmatterno
+                    print(hostmatterno)
+                    if i == 0:
+                        zero = ''
+                    if i == 1:
+                        zero = '0'
+                    if i == 2:
+                        zero = '00'
+                    client = zero + hostmatterno.split(".")[0] 
+                    print(client)
+                    clientcode = ClientSpec.objects.using('SideBar').get(clientno=client)
+                    print(clientcode)
+                    part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+                    print(part.matterno, clientcode.format)
+                    matterno = part.matterno
+                    matternumber = eval(clientcode.format)
+                    break
+                except:
+                    matternumber = matter_data.hostmatterno
 
             basic = {
                 'serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
                 'filedDate' : filedte,
                 'title' : matter_data.title,
-                'matterNo' : matter_data.hostmatterno,
+                'matterNo' : matternumber,
                 'custNoCorresp' : custcor,
                 'custNoMFee' : custcor,
                 'confirmNo' : confirm,
@@ -114,8 +136,8 @@ class mergefunctions:
                     
         if 'org' in tables_list:
             try:
-                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = 1)
-                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+                profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
                 basic = {
                     'orgName' : profile.orgname,
                     'This.orgName' : profile.orgname,
@@ -242,8 +264,8 @@ class mergefunctions:
                 'assigneeStreet1' : contact.address1,
                 'assigneeStreet2' : contact.address2,
                 'assignee' : profile.orgname,
-                'assigneeAddress' : contact.address1 + ', ' + contact.city + ', ' + contact.state + ', ' + contact.zip,
-                'assigneeStateInc' : profile.incstate + ', ' + merge_fn.fullCountry(profile.inccountry)
+                'assigneeAddress' : str(contact.address1) + ', ' + str(contact.city) + ', ' + str(contact.state) + ', ' + str(contact.zip),
+                'assigneeStateInc' : str(profile.incstate) + ', ' + merge_fn.fullCountry(str(profile.inccountry))
             }
         except:
             info = {
@@ -353,7 +375,8 @@ class mergefunctions:
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
         if role != '':
-            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = role, roleorderno = 1)
+            roledata = role.split('/')
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = roledata[0], roleorderno = int(roledata[1].replace(" ", "")))
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
@@ -800,7 +823,7 @@ class mergefunctions:
         
     def appendphone(self, number):
         cleaned_number = ''.join(filter(str.isdigit, number))
-        formatted_number = f"({cleaned_number[:3]})-{cleaned_number[3:6]}-{cleaned_number[6:]}"
+        formatted_number = f"({cleaned_number[:3]}){cleaned_number[3:6]}-{cleaned_number[6:]}"
     
         return formatted_number
     
@@ -824,7 +847,7 @@ class mergefunctions:
 
     def rvwmatterpersonnelFill(self, data):
         try:
-            return Rvwmatterpersonnel.objects.using('FIP').get(matterid = data.matterid, roleid = "34619")
+            return Rvwmatterpersonnel.objects.using('FIP').get(matterid = data.matterid, roleid = "34619", roleorderno = 1)
         except:
             return ''
     
@@ -1015,7 +1038,7 @@ class mergefunctions:
 
     def formatDate2(self, date):
         try:
-            return datetime.strptime(date, '%Y/%m/%d').strftime('%B %d, %Y')
+            return datetime.strptime(date, '%m/%d/%Y').strftime('%B %d, %Y')
         except:
             return date
     

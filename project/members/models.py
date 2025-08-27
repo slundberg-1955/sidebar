@@ -624,3 +624,11 @@ class Trademark(models.Model):
     class Meta:
         managed = False
         db_table = 'Trademark'
+        
+class ClientSpec(models.Model):
+    clientno = models.TextField(primary_key=True, blank=True, null=True)
+    format = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'client_spec'

@@ -364,6 +364,9 @@ class UpdateAppDataSheet:
             muText = 'Marked Up Application Data Sheet (' + mergeinfo[1] + ' Pg.).'
             if mergeinfo[1] != '' and int(mergeinfo[1]) > 1:
                 muText = 'Marked Up Application Data Sheet (' + mergeinfo[1] + ' Pgs.).'
+        else:
+            muX = ''
+            muText = ''
         
         dsX = 'X'
         dsText = 'Communication Re: Update to Application Data Sgeet (1 Pg.).'
@@ -531,7 +534,7 @@ class appReportFp:
             efiled = mergeinfo[1]
             exmreq = mergeinfo[2]
 
-            ReqPriorExam = "We have requested Prioritized Examination in this matter. Participation in Prioritized Examination assumes compliance with United States Patent Office procedures as outlined at http://www.uspto.gov/aia_implementation/faq.jsp#heading-9. "
+            ReqPriorExam = "We have requested Prioritized Examination in this matter. Participation in Prioritized Examination assumes compliance with United States Patent Office procedures as outlined at http://www.uspto.gov/aia_implementation/faq.jsp#heading-9.\n\n"
                   
             if entitysize == 1 or entitysize == 0:
                 smallentitytext = "This patent application was filed claiming Small Entity Status.  If at any time you believe Small Entity Status should no longer be claimed, please notify us."
@@ -539,7 +542,7 @@ class appReportFp:
                 smallentitytext = ''
 
             if signeddec == 'true':
-                actionText = 'No action is required at this time.'
+                actionText = 'ACTION REQUIRED:  No action is required at this time.'
             else:
                 actionText = "ACTION REQUIRED:  This application was filed without a declaration executed by the inventors.  Please discard any formal documents you may have received up until this point.  "
                 actionText = actionText + "A new set of documents will be forwarded to you "
@@ -577,6 +580,7 @@ class appReportFp:
                 'cReqPriorExam' : ReqPriorExam,
                 'salutation' : '',
                 'This.upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+                'activityname' : 'Application Filed'
             })
             return replace
 

@@ -586,7 +586,7 @@
         </div>
     </div>
     <!-- Esign -->
-    <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true">
+    <div id="esign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -602,7 +602,7 @@
         </div>
     </div>
     <!-- E report action -->
-    <div id="ereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ereportModalLabel" aria-hidden="true">
+    <div id="ereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ereportModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -618,7 +618,7 @@
         </div>
     </div>
 <!-- Header - Pending Claims -->
-<div id="pclaims" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pendingClaimsModalLabel" aria-hidden="true">
+<div id="pclaims" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pendingClaimsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -644,7 +644,7 @@
     </div>
 </div>
 <!-- Formal Document - Assignment Recordation Cover Sheet -->
-<div class="modal fade" id="recordation">
+<div class="modal fade" id="recordation" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -680,7 +680,7 @@
     </div>
 </div>
 <!-- Recordation Assignees w inventor -->
-<div class="modal fade" id="assignees">
+<div class="modal fade" id="assignees" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -708,7 +708,7 @@
     </div>
 </div>
 <!-- Contacts -->
-<div class="modal fade" id="contacts">
+<div class="modal fade" id="contacts" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -740,7 +740,7 @@
     </div>
 </div>
 <!-- Late Submission Of Declaration -->
-<div id="LateSubmissionOfDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LateSubmissionOfDecModalLabel" aria-hidden="true">
+<div id="LateSubmissionOfDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LateSubmissionOfDecModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -755,14 +755,16 @@
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  Pages in Declaration: </td>
-                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'></td>
+                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'
+                            oninput="toggleInput('LateSubmissionOfDecpagedec', 'LateSubmissionOfDecpagesub')"></td></td>
                     </tr>
                     <tr style="border: none;">
                         <td align="right"style="border: none;">  Pages in Substitute Statement: </td>
-                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'></td>
+                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'
+                            oninput="toggleInput('LateSubmissionOfDecpagesub', 'LateSubmissionOfDecpagedec')"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">                <input type="checkbox" id="LateSubmissionOfDecesign" name="esign"></td>
+                        <td align="right"style="border: none;">                <input type="checkbox" id="LateSubmissionOfDecesign" name="esign" checked></td>
                         <td align="left"style="border: none;">Esign Enable</td>
                     </tr>
                 </table>
@@ -774,8 +776,20 @@
         </div>
     </div>
 </div>
+<script>
+    function toggleInput(activeId, otherId) {
+        const activeInput = document.getElementById(activeId);
+        const otherInput = document.getElementById(otherId);
+
+        if (activeInput.value.trim() !== "") {
+            otherInput.disabled = true;
+        } else {
+            otherInput.disabled = false;
+        }
+    }
+</script>
 <!-- Transmittal - Issue Fee -->
-<div id="issuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuefeeModalLabel" aria-hidden="true">
+<div id="issuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuefeeModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -817,7 +831,7 @@
                     &emsp;&emsp;&emsp;&emsp;Amount of First Issue Fee Payment: <input type="text" id="issuefeeamtfrst" size="10" placeholder = '0.00'>
                 </div>
                 <div>
-                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="issuefeeesign">
+                    <br>&emsp;&emsp;Esign Enable: <input type="checkbox" id="issuefeeesign" checked>
                 </div>
             </div>
             <script>
@@ -914,7 +928,7 @@
     });
 </script>
 <!-- PTO Form - Statement Under 3.73(c) - App filed on/or after Sept 16, 2012 -->
-<div id="Statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true">
+<div id="Statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -940,7 +954,7 @@
                 </div>
                 <div>
                     <br><label for="statement373cesign">&emsp;&emsp;E-Signature Enable </label>
-                    <input type="checkbox" id="statement373cesign">
+                    <input type="checkbox" id="statement373cesign" checked>
                 </div>
             </div>
             <div class="modal-footer">
@@ -951,7 +965,7 @@
     </div>
 </div>
 <!-- Transmittal - Update to Application Data Sheet -->
-<div id="UpdateAppDataSheet" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="UpdateAppDataSheetModalLabel" aria-hidden="true">
+<div id="UpdateAppDataSheet" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="UpdateAppDataSheetModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -966,7 +980,7 @@
                     &emsp;&emsp;Number of Pages <input type="text" id="updateappdatapagect" name="updatepagect" placeholder = '0' size = "3">
                 </div>
                 <div>
-                    <br>&emsp;&emsp;Esign Enable <input type="checkbox" id="updateappdataesign">
+                    <br>&emsp;&emsp;Esign Enable <input type="checkbox" id="updateappdataesign" checked>
                 </div>
             </div>
             <script>
@@ -982,7 +996,7 @@
     </div>
 </div>
 <!-- Transmittal - Communication regarding corrected application papers -->
-<div id="corrappln" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="corrapplnModalLabel" aria-hidden="true">
+<div id="corrappln" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="corrapplnModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1021,7 +1035,7 @@
                     </table>
                 </div>
                 <div>
-                    <br>  Esign Enable: <input type="checkbox" id="corrapplnesign">
+                    <br>  Esign Enable: <input type="checkbox" id="corrapplnesign" checked>
                 </div>
                 <div>
                     <br>  With Enclosures: <input type="checkbox" id="corrapplnenclosures">
@@ -1051,7 +1065,7 @@
     </div>
 </div>
 <!-- PTO Form - Application Data Sheet - On/after Sept 16, 2012 -->
-<div id="applicationdata_new2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_new2ModalLabel" aria-hidden="true">
+<div id="applicationdata_new2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_new2ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1099,7 +1113,7 @@
                       <input type="radio" id="applicationdata_new2both" name="applicationdata_new2options"> Include Both Applicant and Assignee Information
                 </div>
                 <div>
-                    <br>  Esign Enable: <input type="checkbox" id="applicationdata_new2esign">
+                    <br>  Esign Enable: <input type="checkbox" id="applicationdata_new2esign" checked>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1112,7 +1126,7 @@
 </div>
 
 <!-- Transmittal - Missing Parts Response -->
-<div id="missingpartsNw" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="misingpartsNwModalLabel" aria-hidden="true">
+<div id="missingpartsNw" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="misingpartsNwModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1182,7 +1196,7 @@
                     </table>
                 </div>
                 <div>
-                    <br>  Esign Enable: <input type="checkbox" id="misingpartsNwesign">
+                    <br>  Esign Enable: <input type="checkbox" id="misingpartsNwesign" checked>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1193,7 +1207,7 @@
     </div>
 </div>
 <!--Efiling/Paper filing and Esign-->
-<div id="filingEsign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filingEsignModalLabel" aria-hidden="true">
+<div id="filingEsign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filingEsignModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1206,7 +1220,7 @@
                     &ensp;Paper Filing:<input type="radio" id="filingEsignpaperfile" name="options">
                 </div>
                 <div>
-                    &emsp;&emsp;Esign Enable:<input type="checkbox" id="filingEsignesign">
+                    &emsp;&emsp;Esign Enable:<input type="checkbox" id="filingEsignesign" checked>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1217,7 +1231,7 @@
     </div>
 </div>
 <!-- PCT - General Transmittal (WIPO) PatentCoopTreaty2-->
-<div id="PatentCoopTreaty2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PatentCoopTreaty2ModalLabel" aria-hidden="true">
+<div id="PatentCoopTreaty2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PatentCoopTreaty2ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1301,7 +1315,7 @@
     </div>
 </div>
 <!-- Report Out - Application Filed (including CIP and Design) --> 
-<div id="appReportFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportfiledModalLabel" aria-hidden="true">
+<div id="appReportFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportfiledModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1327,7 +1341,7 @@
     </div>
 </div>
 <!-- Report Out - Original Letters Patent (Email) -->
-<div id="olpemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="olpemailModalLabel" aria-hidden="true">
+<div id="olpemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="olpemailModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1343,7 +1357,7 @@
     </div>
 </div>
 <!-- Letter - Send Formal Documents via Adobe Sign -->
-<div id="adobesign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="adobesignModalLabel" aria-hidden="true">
+<div id="adobesign" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="adobesignModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1393,7 +1407,7 @@
     </div>
 </div>
 <!-- Report Out - Filing Receipt Received -->
-<div id="filerectreportNw2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filerectreportNw2ModalLabel" aria-hidden="true">
+<div id="filerectreportNw2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="filerectreportNw2ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1428,7 +1442,7 @@
     </div>
 </div>
 <!-- Letter - Send Formal Documents -->
-<div id="LtrSendFmlDocNew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LtrSendFmlDocNewModalLabel" aria-hidden="true">
+<div id="LtrSendFmlDocNew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="LtrSendFmlDocNewModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1484,7 +1498,7 @@
 </div>
 
 <!-- PCT - 92bis Comm: Change in Rights of Ownership -->
-<div id="ownerchange" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ownerchangeModalLabel" aria-hidden="true">
+<div id="ownerchange" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ownerchangeModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1493,7 +1507,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="ownerchangeesign"> E-Sign Enable
+                    &emsp;&emsp;<input type="checkbox" id="ownerchangeesign" checked> E-Sign Enable
                 </div>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="ownerchangeapp"> Assignee needs to be added as an applicant
@@ -1518,7 +1532,7 @@
     </div>
 </div>
 <!-- PCT - Report out Search Report and Written Opinion -->
-<div id="PctSearchRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctSearchRepModalLabel" aria-hidden="true">
+<div id="PctSearchRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctSearchRepModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1553,7 +1567,7 @@
     </div>
 </div>
 <!-- Report Out - Advisory Action Received -->
-<div id="advisoryreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="advisoryreportModalLabel" aria-hidden="true">
+<div id="advisoryreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="advisoryreportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1573,7 +1587,7 @@
     </div>
 </div>
 <!-- Report Out - MP/CAP/Sequence Listing Actions -->
-<div id="mpcapactions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mpcapactionsModalLabel" aria-hidden="true">
+<div id="mpcapactions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mpcapactionsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1631,7 +1645,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="checkbox" id="invchangeselall"> Select All        <input type="checkbox" id="invchangeesign"> E-Signature Enable
+                      <input type="checkbox" id="invchangeselall"> Select All        <input type="checkbox" id="invchangeesign" checked> E-Signature Enable
                 </div>
                 <table class="table">
                     <thead>
@@ -1713,7 +1727,7 @@
     </div>
 </div>
 <!-- PCT - Report Out IPRP -->
-<div id="PCTRptOutIpRp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PCTRptOutIpRpModalLabel" aria-hidden="true">
+<div id="PCTRptOutIpRp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PCTRptOutIpRpModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1733,7 +1747,7 @@
     </div>
 </div>
 <!-- Report Out - Issue Fee -->
-<div id="rptissuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rptissuefeeModalLabel" aria-hidden="true">
+<div id="rptissuefee" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rptissuefeeModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1778,7 +1792,7 @@
     </div>
 </div>
 <!-- Report Out - Notice of Allowance -->
-<div id="RepNoticeofAllow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="repnoticeofallowModalLabel" aria-hidden="true">
+<div id="RepNoticeofAllow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="repnoticeofallowModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1816,7 +1830,7 @@
     </div>
 </div>
 <!-- Report Out - Recorded Assignment -->
-<div id="recordedassnreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportModalLabel" aria-hidden="true">
+<div id="recordedassnreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1835,7 +1849,7 @@
         $('#recordedassnreportyes').modal('show');
     }
 </script>
-<div id="recordedassnreportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportyesModalLabel" aria-hidden="true">
+<div id="recordedassnreportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="recordedassnreportyesModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1855,7 +1869,7 @@
     </div>
 </div>
 <!-- Letter - Send Provisional Assignment -->
-<div id="reportprvassnnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportprvassnnewModalLabel" aria-hidden="true">
+<div id="reportprvassnnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportprvassnnewModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1878,7 +1892,7 @@
     </div>
 </div>
 <!-- Report Out - Notice of Abandonment -->
-<div id="abandonReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="abandonReportModalLabel" aria-hidden="true">
+<div id="abandonReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="abandonReportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1905,7 +1919,7 @@
     </div>
 </div>
 <!-- Report Out - Issue Notification -->
-<div id="issuereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuereportModalLabel" aria-hidden="true">
+<div id="issuereport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="issuereportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1920,7 +1934,7 @@
     </div>
 </div>
 <!-- PCT - Response to Invitation to Correct Defects (PCT/RO/106) -->
-<div id="pctcorrect" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctcorrectModalLabel" aria-hidden="true">
+<div id="pctcorrect" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctcorrectModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -1931,7 +1945,7 @@
                 <div class="account">
                     &emsp;&emsp;Deposit Account:<input type="radio" id="pctcorrectdepacc" name="account" checked="checked">
                     &ensp;Check:<input type="radio" id="pctcorrectcheck" name="account">
-                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign"> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
+                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign" checked> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
                 </div>  
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
@@ -2004,7 +2018,7 @@
     });
 </script>
 <!-- PCT - Report Filing of Application -->
-<div class="modal fade" id="PCTRptFileOfApp" tabindex="-1" role="dialog" aria-labelledby="PCTRptFileOfAppModalLabel" aria-hidden="true">
+<div class="modal fade" id="PCTRptFileOfApp" tabindex="-1" role="dialog" aria-labelledby="PCTRptFileOfAppModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2071,7 +2085,7 @@
     </div>
 </div>
 <!-- Report Out - Non-Final Office Action Received -->
-<div id="nonfinalreportFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="nonfinalreportFpModalLabel" aria-hidden="true">
+<div id="nonfinalreportFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="nonfinalreportFpModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2091,7 +2105,7 @@
     </div>
 </div>
 <!-- PCT - Letter to send Assignment and POA -->
-<div id="PCTAsgnPOALetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PCTAsgnPOALetterModalLabel" aria-hidden="true">
+<div id="PCTAsgnPOALetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PCTAsgnPOALetterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2122,7 +2136,7 @@
     </div>
 </div>
 <!-- PTO Form - Update Application Data Sheet -->
-<div id="applicationdata_updnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_updnewModalLabel" aria-hidden="true">
+<div id="applicationdata_updnew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="applicationdata_updnewModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2163,7 +2177,7 @@
                         Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign"> E-Sign Enable
+                    &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign" checked> E-Sign Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -2179,7 +2193,7 @@
     }
 </style>
 <!-- PCT - Report out Invitation to Pay Additional Fees -->
-<div id="RptInvtPayFees" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RptInvtPayFeesModalLabel" aria-hidden="true">
+<div id="RptInvtPayFees" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RptInvtPayFeesModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2255,7 +2269,7 @@
     </div>
 </div>
 <!-- Pct - response to invitation to furnish sequence  FIX-->
-<div id="PctCommRe" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctCommReModalLabel" aria-hidden="true">
+<div id="PctCommRe" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PctCommReModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2311,7 +2325,7 @@
                         Fee enclosed (if any): <input type="text" id="PctCommRefee" size="10" placeholder = "0.00" value = "0.00">
                 </div>
                 <div>
-                    <br>    <input type="checkbox" id="PctCommReesign"> E-Signature Enable?
+                    <br>    <input type="checkbox" id="PctCommReesign" checked> E-Signature Enable?
                 </div>
                 <div>
                     <br><label for="PctCommRenames">    Select The PCT Signing Attorney: </label>
@@ -2333,7 +2347,7 @@
     </div>
 </div>
 <!-- Transmittal - General -->
-<div id="generalxmitCF" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="generalxmitCFModalLabel" aria-hidden="true">
+<div id="generalxmitCF" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="generalxmitCFModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2439,7 +2453,7 @@
                       <select id="generalxmitCFSAdrop">
                         <option value="select">Select Signing Attorney</option>
                     </select>
-                      <input type="checkbox" id="generalxmitCFesign"> E-Signature Enable
+                      <input type="checkbox" id="generalxmitCFesign" checked> E-Signature Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -2452,7 +2466,7 @@
     </div>
 </div>
 <!-- IDS - Communication New -->
-<div id="idsCommCfNew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="idsCommCfNewModalLabel" aria-hidden="true">
+<div id="idsCommCfNew" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="idsCommCfNewModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2529,7 +2543,7 @@
                     </select>
                 </div>
                 <div>
-                            &emsp;<input type="checkbox" id="idsCommCfNewesign"> E-Signature Enable
+                            &emsp;<input type="checkbox" id="idsCommCfNewesign" checked> E-Signature Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -2542,7 +2556,7 @@
     </div>
 </div>
 <!-- Transmittal - Patent Application (Utility) FINISH -->
-<div id="utilityapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="utilityappModalLabel" aria-hidden="true">
+<div id="utilityapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="utilityappModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2619,7 +2633,7 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none; padding: 0px; margin: 0;"></td>
-                            <td align="right" style="border: none; padding: 2px; margin: 0;">         <input type="checkbox" id="utilityappesign"> E-Signature Enable</td>
+                            <td align="right" style="border: none; padding: 2px; margin: 0;">         <input type="checkbox" id="utilityappesign" checked> E-Signature Enable</td>
                         </tr>
                     </table>                   
                 </div>
@@ -2645,7 +2659,7 @@
 </div>
 <!-- FIX -->
 <!-- IDS - search report memo -->
-<div id="idsmemo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="idsmemoModalLabel" aria-hidden="true">
+<div id="idsmemo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="idsmemoModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2698,7 +2712,7 @@
     </div>
 </div>
 <!-- Formal Document - Assignment (with or w/out Notary) -->
-<div id="assignment2016" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="assignment2016ModalLabel" aria-hidden="true">
+<div id="assignment2016" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="assignment2016ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2719,7 +2733,7 @@
                     <br>  <input type="checkbox" id="assignment2016use"> Use Assignee Acceptance Block
                 </div>
                 <div>
-                      <input type="checkbox" id="assignment2016esign"> E-Signature
+                      <input type="checkbox" id="assignment2016esign" checked> E-Signature
                 </div>
             </div>
             <div class="modal-footer">
@@ -2730,7 +2744,7 @@
     </div>
 </div>
 <!-- Letter - FF Draft OA Instructions to Associate -->
-<div id="DraftOAInstruct" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="DraftOAInstructModalLabel" aria-hidden="true">
+<div id="DraftOAInstruct" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="DraftOAInstructModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2760,7 +2774,7 @@
     </div>
 </div>
 <!-- FF Report Out - Office Actions Received -->
-<div id="ffOfficeActRcvd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOfficeActRcvdModalLabel" aria-hidden="true">
+<div id="ffOfficeActRcvd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOfficeActRcvdModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2796,7 +2810,7 @@
     </div>
 </div>
 <!-- Letter - FF order letter NEED TO FINISH -->
-<div id="mrgfforder" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mrgfforderModalLabel" aria-hidden="true">
+<div id="mrgfforder" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mrgfforderModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2857,7 +2871,7 @@
     </div>
 </div>
 <!-- Extention of time UI -->
-<div id="extTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="extTimeModalLabel" aria-hidden="true">
+<div id="extTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="extTimeModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2936,7 +2950,7 @@
                 </script>
                 
                 <div>
-                    <br>    <input type="checkbox" id="extTimeesign"> E-Signature
+                    <br>    <input type="checkbox" id="extTimeesign" checked> E-Signature
                 </div>
             </div>
             <div class="modal-footer">
@@ -2948,7 +2962,7 @@
     </div>
 </div>
 <!-- Transmittal - RCE -->
-<div id="rcexmit3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rcexmit3ModalLabel" aria-hidden="true">
+<div id="rcexmit3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="rcexmit3ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -2965,7 +2979,7 @@
                 <div>
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
-                            <td align="left" style="border: none; padding: 4px;" > <input type="checkbox" id="rcexmit3esign"> E-Signature      Due Date (if applicable) </td>
+                            <td align="left" style="border: none; padding: 4px;" > <input type="checkbox" id="rcexmit3esign" checked> E-Signature      Due Date (if applicable) </td>
                             <td align="right" style="border: none; padding: 4px;"><input type="date" id="rcexmit3duedte"></td>
                         </tr>
                         <tr style="border: none;">
@@ -3066,7 +3080,7 @@
     </div>
 </div>
 <!-- pct - generic header pctgeneric-->
-<div id="pctgeneric" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctgenericModalLabel" aria-hidden="true">
+<div id="pctgeneric" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctgenericModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3100,7 +3114,7 @@
                         <option value="Monique Perdok">Monique Perdok</option>
                         <option value="Suneel Arora">Suneel Arora</option>
                         <option value="Timothy Bianchi">Timothy Bianchi</option>
-                      </select>    <input type="checkbox" id="pctgenericesign"> E-Signature
+                      </select>    <input type="checkbox" id="pctgenericesign" checked> E-Signature
                 </div>
             </div>
             <div class="modal-footer">
@@ -3111,7 +3125,7 @@
     </div>
 </div>
 <!-- FF report out - associate confirms filing/filing receipt -->
-<div id="FFFilingReceipt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFFilingReceiptModalLabel" aria-hidden="true">
+<div id="FFFilingReceipt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFFilingReceiptModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3150,7 +3164,7 @@
     </div>
 </div>
 <!-- FF Report Out - SLW Report / Honu -->
-<div id="honureport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true">
+<div id="honureport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3170,7 +3184,7 @@
     </div>
 </div>
 <!-- FF Report Out - SLW Report / Honu YES -->
-<div id="honureportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true">
+<div id="honureportyes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="honureportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3199,7 +3213,7 @@
     </div>
 </div>
 <!-- Transmittal - Patent Application (Provisional) Not done  -->
-<div id="provisionalapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="provisionalappModalLabel" aria-hidden="true">
+<div id="provisionalapp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="provisionalappModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3235,7 +3249,7 @@
     </div>
 </div>
 <!-- Letter - Request for Instructions (FF/Conversion) -->
-<div id="ffinstructions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffinstructionsModalLabel" aria-hidden="true">
+<div id="ffinstructions" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffinstructionsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3267,7 +3281,7 @@
     </div>
 </div>
 <!-- POA - Combined Transmittal and PTO/AIA/82A -->
-<div id="poa82combined" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poa82combinedModalLabel" aria-hidden="true">
+<div id="poa82combined" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poa82combinedModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3276,7 +3290,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="checkbox" id="poa82combinedesign"> E-Signature Enable
+                      <input type="checkbox" id="poa82combinedesign" checked> E-Signature Enable
                                 <input type="radio" name="poa82combinedaccoptions" value="dep"> Deposit Account
                      <input type="radio" name="poa82combinedaccoptions" value="chk"> Check
                 </div>
@@ -3339,7 +3353,7 @@
     }
 </script>
 <!-- Additional Documents -->
-<div id="additionalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="additionalDocsModalLabel" aria-hidden="true">
+<div id="additionalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="additionalDocsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3423,7 +3437,7 @@
     }
 </script>
 <!-- Letter - FF Instructions to Pay Grant Fees -->
-<div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true">
+<div id="CommunicationLetter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommunicationLetterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3466,7 +3480,7 @@
     </div>
 </div>
 <!-- FF Report Out - Decision to Grant -->
-<div id="FFDecisiontoGrant_NEW" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFDecisiontoGrant_NEWModalLabel" aria-hidden="true">
+<div id="FFDecisiontoGrant_NEW" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFDecisiontoGrant_NEWModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3532,7 +3546,7 @@
     </div>
 </div>
 <!-- Letter - Request for Instructions (PCT National Stage) -->
-<div id="natlphase" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="natlphaseModalLabel" aria-hidden="true">
+<div id="natlphase" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="natlphaseModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3568,7 +3582,7 @@
     </div>
 </div>
 <!-- FF Report Out - Notice of Publication Received -->
-<div id="FFNoticePubRcvd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFNoticePubRcvdModalLabel" aria-hidden="true">
+<div id="FFNoticePubRcvd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FFNoticePubRcvdModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3606,7 +3620,7 @@
     </div>
 </div>
 <!-- FF Report Out - Notice of Allowance Received -->
-<div id="ffNoticeOfAllancRcvdFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAllancRcvdFpModalLabel" aria-hidden="true">
+<div id="ffNoticeOfAllancRcvdFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAllancRcvdFpModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3651,7 +3665,7 @@
     </div>
 </div>
 <!-- PTO Form - Statement Under 3.73(b) -->
-<div id="StatementUnder373b" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="StatementUnder373bModalLabel" aria-hidden="true">
+<div id="StatementUnder373b" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="StatementUnder373bModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3677,7 +3691,7 @@
                     </div>
                     <div>
                         <br><label for="StatementUnder373besign">&emsp;&emsp;E-Signature Enable </label>
-                        <input type="checkbox" id="StatementUnder373besign">
+                        <input type="checkbox" id="StatementUnder373besign" checked>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -3689,7 +3703,7 @@
     </div>
 </div>
 <!-- PTO Form - POA (PTO/AIA/82) - App. filed  on/or after Sept 16, 2012 -->
-<div id="PTOAIA82" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PTOAIA82ModalLabel" aria-hidden="true">
+<div id="PTOAIA82" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="PTOAIA82ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3718,7 +3732,7 @@
     </div>
 </div>
 <!-- Report Out - Decision on Appeal -->
-<div id="DecisionAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="DecisionAppealModalLabel" aria-hidden="true">
+<div id="DecisionAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="DecisionAppealModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3738,7 +3752,7 @@
     </div>
 </div>
 <!-- PCT - Request for Change in Agent -->
-<div id="pctchgagent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctchgagentModalLabel" aria-hidden="true">
+<div id="pctchgagent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctchgagentModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3764,7 +3778,7 @@
     </div>
 </div>
 <!-- FF Report Out - Letter to Send Formal Documents -->
-<div id="ffLtrSndFormalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffLtrSndFormalDocsModalLabel" aria-hidden="true">
+<div id="ffLtrSndFormalDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffLtrSndFormalDocsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3791,7 +3805,7 @@
     </div>
 </div>
 <!-- Header - Generic Header -->
-<div id="genericheader" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="genericheaderModalLabel" aria-hidden="true">
+<div id="genericheader" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="genericheaderModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3799,7 +3813,7 @@
                 <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
             </div>
             <div class="modal-body">
-                  <input type="checkbox" id="genericheaderesign"> E-Signature Enable
+                  <input type="checkbox" id="genericheaderesign" checked> E-Signature Enable
                 <br>  Document Name: 
                 <br>  <input type="text" id="genericheaderdocname" size="35">
                 <br><br>  Mail Stop: <input type="text" id="genericheadermail" size="25">
@@ -3817,7 +3831,7 @@
     </div>
 </div>
 <!-- FF Report Out - EP Approval of Text (Rule 71(3)) -->
-<div id="ffepApprovalofTxt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffepApprovalofTxtModalLabel" aria-hidden="true">
+<div id="ffepApprovalofTxt" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffepApprovalofTxtModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3844,7 +3858,7 @@
     </div>
 </div>
 <!-- Letter - Final Application to Inventors w/ formals -->
-<div id="FnlAppInvWfmls" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FnlAppInvWfmlsModalLabel" aria-hidden="true">
+<div id="FnlAppInvWfmls" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="FnlAppInvWfmlsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3879,7 +3893,7 @@
     </div>
 </div>
 <!-- Report Out - Miscellaneous Items Due -->
-<div id="miscitemsdue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="miscitemsdueModalLabel" aria-hidden="true">
+<div id="miscitemsdue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="miscitemsdueModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3906,7 +3920,7 @@
     </div>
 </div>
 <!-- Report Out - Corrected Filing Receipt -->
-<div id="correctedfrreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="correctedfrreportModalLabel" aria-hidden="true">
+<div id="correctedfrreport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="correctedfrreportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3930,7 +3944,7 @@
     }
 </script>
 <!-- IDS - 1449 Form-cited in patent #1 -->
-<div id="ids_citedparent_20122" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_20122ModalLabel" aria-hidden="true">
+<div id="ids_citedparent_20122" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_20122ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3945,7 +3959,7 @@
     </div>
 </div>
 <!-- IDS - 1449 Form-cited in patent #2 -->
-<div id="ids_citedparent_2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_2012ModalLabel" aria-hidden="true">
+<div id="ids_citedparent_2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ids_citedparent_2012ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3963,7 +3977,7 @@
     </div>
 </div>
 <!-- Letter - FF Send Items to Associate -->
-<div id="ffSndItmsToAssoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffSndItmsToAssocModalLabel" aria-hidden="true">
+<div id="ffSndItmsToAssoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffSndItmsToAssocModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3996,7 +4010,7 @@
     </div>
 </div>
 <!-- Formal Document - BSC Combined Assn/Dec -App filed on/after Sept. 16, 2012 Esign -->
-<div id="BSCCombinedAssnDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true">
+<div id="BSCCombinedAssnDec" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4012,7 +4026,7 @@
     </div>
 </div>
 <!-- Formal Document - BSC Combined Assn/Dec -App filed on/after Sept. 16, 2012 #2 -->
-<div id="BSCCombinedAssnDecesign2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true">
+<div id="BSCCombinedAssnDecesign2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="BSCCombinedAssnDecesignModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4033,7 +4047,7 @@
     }
 </script>
 <!-- MS Post Allowance Recommendation -->
-<div id="mspostallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mspostallowModalLabel" aria-hidden="true">
+<div id="mspostallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mspostallowModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4052,7 +4066,7 @@
     </div>
 </div>
 <!-- FF Report Out - Office Actions Received (AU or NZ) -->
-<div id="ffOfficeActRcvdAuNz" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOfficeActRcvdAuNzModalLabel" aria-hidden="true">
+<div id="ffOfficeActRcvdAuNz" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOfficeActRcvdAuNzModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4089,7 +4103,7 @@
     </div>
 </div>
 <!-- Micron Allowance Recomendaion - Foreign -->
-<div id="micnffallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="micnffallowModalLabel" aria-hidden="true">
+<div id="micnffallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="micnffallowModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4120,7 +4134,7 @@
     </div>
 </div>
 <!-- PTO Form - Certification and Request for Prioritized Examination (AIA/424) -->
-<div id="priorexam2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="priorexam2012ModalLabel" aria-hidden="true">
+<div id="priorexam2012" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="priorexam2012ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4139,7 +4153,7 @@
                     </tr>
                 </table>
                 <div>
-                <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select> <input type="checkbox" id="priorexam2012esign"> E-Signature Enable
+                <br>   Signing Attorney: <select id="priorexam2012SAdrop"></select> <input type="checkbox" id="priorexam2012esign" checked> E-Signature Enable
                 </div>
             </div>
             <br><div class="modal-footer">
@@ -4150,7 +4164,7 @@
     </div>
 </div>
 <!-- Header - Preliminary Amendment -->
-<div id="prelimamend" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="prelimamendModalLabel" aria-hidden="true">
+<div id="prelimamend" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="prelimamendModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4159,7 +4173,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="prelimamendesign"> E-Signature Enable
+                    &emsp;&emsp;<input type="checkbox" id="prelimamendesign" checked> E-Signature Enable
                 </div>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="prelimamendsupprelim"> Supplemental Preliminary Amendment
@@ -4188,7 +4202,7 @@
     }
 </script>
 <!-- FF Report Out - Original Letters Patent (OLP) -->
-<div id="ffOlp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOlpModalLabel" aria-hidden="true">
+<div id="ffOlp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffOlpModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4223,7 +4237,7 @@
     </div>
 </div>
 <!-- Header - Communication Regarding Filing of Priority Document -->
-<div id="CommFilingPriDoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommFilingPriDocModalLabel" aria-hidden="true">
+<div id="CommFilingPriDoc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="CommFilingPriDocModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4242,7 +4256,7 @@
                     </tr>
                 </table>
                 <div>
-                    <br>   <input type="checkbox" id="CommFilingPriDocesign"> E-Signature Enable
+                    <br>   <input type="checkbox" id="CommFilingPriDocesign" checked> E-Signature Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -4253,7 +4267,7 @@
     </div>
 </div>
 <!-- FF Report Out - Laid Open for Public Inspection -->
-<div id="ffapplaidopen" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffapplaidopenModalLabel" aria-hidden="true">
+<div id="ffapplaidopen" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffapplaidopenModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4300,7 +4314,7 @@
 </script>
 <!-- FINISH THIS. NOT MUCH LEFT -->
 <!-- FF report out - notice of acceptance (au/nz) -->
-<div id="ffNoticeOfAcceptAuNzFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAcceptAuNzFpModalLabel" aria-hidden="true">
+<div id="ffNoticeOfAcceptAuNzFp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffNoticeOfAcceptAuNzFpModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4371,7 +4385,7 @@
     });
 </script>
 <!-- Trademark - Report Notice of Publication -->
-<div id="TM_NoticeofPubRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_NoticeofPubRepModalLabel" aria-hidden="true">
+<div id="TM_NoticeofPubRep" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_NoticeofPubRepModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4386,7 +4400,7 @@
     </div>
 </div>
 <!-- Trademark - Report Office Action Received -->
-<div id="TM_OaReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_OaReportModalLabel" aria-hidden="true">
+<div id="TM_OaReport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="TM_OaReportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4401,7 +4415,7 @@
     </div>
 </div>
 <!-- Letter - Request for Instructions (CMG Follow-up Reminder: FF/Conversion) -->
-<div id="ffremind" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffremindModalLabel" aria-hidden="true">
+<div id="ffremind" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffremindModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4436,7 +4450,7 @@
     </div>
 </div>
 <!-- Email - Send Order Letter to Associate (New) -->
-<div id="sendorderletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendorderletterModalLabel" aria-hidden="true">
+<div id="sendorderletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendorderletterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4466,7 +4480,7 @@
     </div>
 </div>
 <!-- FF Report Out - Miscellaneous Items Due -->
-<div id="ffMiscItemsDue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffMiscItemsDueModalLabel" aria-hidden="true">
+<div id="ffMiscItemsDue" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffMiscItemsDueModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4497,7 +4511,7 @@
     </div>
 </div>
 <!-- FF report out - original letters patent (OLP) for EP -->
-<div id="epOLP" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="epOLPModalLabel" aria-hidden="true">
+<div id="epOLP" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="epOLPModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4540,7 +4554,7 @@
     </div>
 </div>
 <!-- PTO Form - Notice of Appeal (AIA/31) -->
-<div id="noticeofAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="noticeofAppealModalLabel" aria-hidden="true">
+<div id="noticeofAppeal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="noticeofAppealModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4565,7 +4579,7 @@
     </div>
 </div>
 <!-- PCT - Power of Attorney NEW -->
-<div id="pctpoa_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctpoa_newModalLabel" aria-hidden="true">
+<div id="pctpoa_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="pctpoa_newModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4612,7 +4626,7 @@
     </div>
 </div>
 <!-- Nike Action Required (HTML) -->
-<div id="nikeaction_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="nikeaction_newModalLabel" aria-hidden="true">
+<div id="nikeaction_new" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="nikeaction_newModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4639,7 +4653,7 @@
     </div>
 </div>
 <!-- FF Report out - EP Search Report and Opinion -->
-<div id="ffEPSrchRptandOpinion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffEPSrchRptandOpinionModalLabel" aria-hidden="true">
+<div id="ffEPSrchRptandOpinion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ffEPSrchRptandOpinionModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4678,7 +4692,7 @@
     </div>
 </div>
 <!-- Intel - Send Formal Document(s) -->
-<div id="intelformal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelformalModalLabel" aria-hidden="true">
+<div id="intelformal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelformalModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4696,7 +4710,7 @@
     </div>
 </div>
 <!-- Matter not found UI -->
-<div id="matterNotFound" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="matterNotFoundModalLabel" aria-hidden="true">
+<div id="matterNotFound" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="matterNotFoundModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4713,7 +4727,7 @@
     </div>
 </div>
 <!-- PTO Form - Express Abandonment (AIA/24, 24A, 24B) -->
-<div id="expressaban" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="expressabanModalLabel" aria-hidden="true">
+<div id="expressaban" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="expressabanModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4722,7 +4736,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                      <input type="checkbox" id="expressabanesign"> E-Sign Enable
+                      <input type="checkbox" id="expressabanesign" checked> E-Sign Enable
                 </div>
                 <div>
                     <br>  <input type="radio" name="expressabanrad" value="1"> Avoid Publication (AIA/24A)
@@ -4749,7 +4763,7 @@
     });
 </script>
 <!-- Letter - Send POA (Matter Specific) -->
-<div id="poaMatter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poaMatterModalLabel" aria-hidden="true">
+<div id="poaMatter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="poaMatterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4767,7 +4781,7 @@
     </div>
 </div>
 <!-- Intel EOU Questions to Inventors -->
-<div id="intelbasic" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelbasicModalLabel" aria-hidden="true">
+<div id="intelbasic" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelbasicModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4785,7 +4799,7 @@
     </div>
 </div>
 <!-- Header - Change of Entity Status -->
-<div id="entstatus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entstatusModalLabel" aria-hidden="true">
+<div id="entstatus" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="entstatusModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4803,7 +4817,7 @@
                 <br><br>   <select id="entstatusSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
-                <br><br>  <input type="checkbox" id="entstatusesign"> E-Signature Enable
+                <br><br>  <input type="checkbox" id="entstatusesign" checked> E-Signature Enable
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
@@ -4813,7 +4827,7 @@
     </div>
 </div>
 <!-- Intel - Report out Final Office Action -->
-<div id="intelfoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelfoaModalLabel" aria-hidden="true">
+<div id="intelfoa" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="intelfoaModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4831,7 +4845,7 @@
     </div>
 </div>
 <!-- IDS - QPIDS Form -->
-<div id="Qp_Ids" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Qp_IdsModalLabel" aria-hidden="true">
+<div id="Qp_Ids" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Qp_IdsModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4848,7 +4862,7 @@
                           <input type="radio" name="Qp_Idsrad" value="3"> 201+ cited cumulative references
                           <input type="radio" name="Qp_Idsrad" value="4"> None
                     </div>
-                <br><br>    <input type="checkbox" id="Qp_Idsesign"> E-Signature Enable
+                <br><br>    <input type="checkbox" id="Qp_Idsesign" checked> E-Signature Enable
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
@@ -4858,7 +4872,7 @@
     </div>
 </div>
 <!-- NOV - Email Template -->
-<div id="novemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="novemailModalLabel" aria-hidden="true">
+<div id="novemail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="novemailModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4881,7 +4895,7 @@
     </div>
 </div>
 <!-- PTO Form - Request for Deferral of Examination (PTO/SB/37) -->
-<div id="deferRequest" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deferRequestModalLabel" aria-hidden="true">
+<div id="deferRequest" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deferRequestModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4893,7 +4907,7 @@
                       Enter Number of Months for Deferral: <input type="text" id="deferRequestnummo" size="10">
                 </div>
                 <div>
-                    <br>  <input type="checkbox" id="deferRequestesign"> E-Signature Enable
+                    <br>  <input type="checkbox" id="deferRequestesign" checked> E-Signature Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -4904,7 +4918,7 @@
     </div>
 </div>
 <!-- Letter - Blank Letter -->
-<div id="blankletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blankletterModalLabel" aria-hidden="true">
+<div id="blankletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="blankletterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4924,7 +4938,7 @@
     }
 </script>
 <!-- Header - Amendment Under 1.312 -->
-<div id="amend37cfr" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="amend37cfrModalLabel" aria-hidden="true">
+<div id="amend37cfr" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="amend37cfrModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4939,7 +4953,7 @@
                     <br>  <select id="amend37cfrSAdrop">
                         <option>Select Signing Attorney</option>
                     </select>
-                       <input type="checkbox" id="amend37cfresign"> E-Signature Enable
+                       <input type="checkbox" id="amend37cfresign" checked> E-Signature Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -4950,7 +4964,7 @@
     </div>
 </div>
 <!-- DOCKETING: Bar Date Questionnaire -->
-<div id="bardateq" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="bardateqModalLabel" aria-hidden="true">
+<div id="bardateq" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="bardateqModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -4968,7 +4982,7 @@
     </div>
 </div>
 <!-- FF Report Out - Decision to Grant (EP) - Need Unitary Patent Instructions -->
-<div id="tm_unitaryGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_unitaryGrantModalLabel" aria-hidden="true">
+<div id="tm_unitaryGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_unitaryGrantModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5002,7 +5016,7 @@
     });
 </script>
 <!-- Header - Appeal Brief (Notice of Appeal filed after 1-22-2012) -->
-<div id="AppealBrief3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="AppealBrief3ModalLabel" aria-hidden="true">
+<div id="AppealBrief3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="AppealBrief3ModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5026,7 +5040,7 @@
                 </table>
                 <br>  List of the Claims being Appealed
                 <br>  <textarea rows="2" cols="60" id = "AppealBrief3cl"></textarea>
-                <br>  <input type="checkbox" id="AppealBrief3esign"> E-Signature Enable
+                <br>  <input type="checkbox" id="AppealBrief3esign" checked> E-Signature Enable
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
@@ -5035,7 +5049,7 @@
         </div>
     </div>
 </div>
-<div id="auditletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="auditletterModalLabel" aria-hidden="true">
+<div id="auditletter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="auditletterModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5067,7 +5081,7 @@
     </div>
 </div>
 <!-- FF Report Out - Notice of Non-Payment of Annuities -->
-<div id="annunonpay" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true">
+<div id="annunonpay" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5086,7 +5100,7 @@
     </div>
 </div>
 <!-- Activity Documents -->
-<div id="activityDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true">
+<div id="activityDocs" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="annunonpayModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5112,7 +5126,7 @@
     </div>
 </div>
 <!-- Trademark - US Rport Notice of Allowance ITU -->
-<div id="tm_noticeallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_noticeallowModalLabel" aria-hidden="true">
+<div id="tm_noticeallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="tm_noticeallowModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5135,7 +5149,7 @@
     </div>
 </div>
 <!-- FF Report Out - Decision to Grant (EP) - NEW -->
-<div id="EPDecisiontoGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="EPDecisiontoGrantModalLabel" aria-hidden="true">
+<div id="EPDecisiontoGrant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="EPDecisiontoGrantModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5164,7 +5178,7 @@
         toggleDisplay({ checkboxId: 'EPDecisiontoGrantdiv', targetId: 'EPDecisiontoGranthide' });
     });
 </script>
-<div id="appdataupdate" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="appdataupdateModalLabel" aria-hidden="true">
+<div id="appdataupdate" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="appdataupdateModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -5197,7 +5211,7 @@
                         Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="appdataupdateupdt" size="5" placeholder = '0'>
                 </div>
                 <div>
-                    &emsp;&emsp;<input type="checkbox" id="appdataupdateesign"> E-Sign Enable
+                    &emsp;&emsp;<input type="checkbox" id="appdataupdateesign" checked> E-Sign Enable
                 </div>
             </div>
             <div class="modal-footer">
@@ -5460,6 +5474,7 @@
                         const corpList = response.message.roles.split(';');
                         const corproleList = response.message.names.split(';');
                         const corproleidList = response.message.roleids.split(';');
+                        const corproleorderList = response.message.roleorders.split(';');
                         const tableBody = document.getElementById('inventor-list');
                         tableBody.innerHTML = '';
                         for(var i = 0; i < corpList.length; i++){
@@ -5512,7 +5527,7 @@
                                 if (checkbox.checked) {
                                     const row = checkbox.closest('tr');
                                     const column1Value = row.children[1].innerText;
-                                    selectedData.push(column1Value + ',' + corproleidList[index]);
+                                    selectedData.push(column1Value + ',' + corproleidList[index] + '/' + corproleorderList[index]);
                                 }
                             });
                             //alert(selectedData);
