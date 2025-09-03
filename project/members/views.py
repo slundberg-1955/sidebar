@@ -1178,3 +1178,26 @@ def download_doc(filename):
         return response
     except Exception as e:
         return HttpResponse(f"Error: {str(e)}", status=500)
+    
+def get_blob_document(container_name, file_name, storage_account_url):
+    start = time.time()
+    try:
+        # Set up managed identity credential
+        credential = ManagedIdentityCredential()
+        print(f"Credential setup: {time.time() - start:.2f}s")
+
+        # Create blob service client
+        blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=file_name)
+        print(f"Blob client setup: {time.time() - start:.2f}s")
+
+        # Download the blob content as bytes
+        stream = blob_client.download_blob()
+        document_bytes = stream.readall()
+        print(f"Download time: {time.time() - start:.2f}s")
+
+        return BytesIO(document_bytes)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None

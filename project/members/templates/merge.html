@@ -1419,7 +1419,7 @@
                     <textarea rows="4" cols="60" id = "filerectreportNw2err">We have noted that the "Insert Incorrect Information Here" is incorrect, and will file the necessary papers to correct this error in due course. </textarea>
                 </div>
                 <div class="filing">
-                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="filerectreportNw2options" value="1"> Official Filing Receipt (FRCT, FRCT-AE)
+                    &emsp;&emsp;<input type="radio" id="filerectreportNw2off" name="filerectreportNw2options" value="1" checked> Official Filing Receipt (FRCT, FRCT-AE)
                 </div>
                 <div class="filing">
                     &emsp;&emsp;<input type="radio" id="filerectreportNw2rep" name="filerectreportNw2options" value="2"> Replacement Filing Receipt (FRCT-4)
@@ -5440,8 +5440,8 @@
                             if (checkbox.checked) {
                                 const row = checkbox.closest('tr');
                                 const column1Value = row.children[1].innerText;
-                                const contentEditableFields = row.querySelectorAll('[contenteditable]');
-                                const rowData = [column1Value, ...Array.from(contentEditableFields).map(field => field.innerText)];
+                                const dateFields = row.querySelectorAll('input[type="date"]');
+                                const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
                                 selectedData.push(rowData);
                             }
                         });
@@ -5517,8 +5517,8 @@
                                 if (checkbox.checked) {
                                     const row = checkbox.closest('tr');
                                     const column1Value = row.children[1].innerText;
-                                    const contentEditableFields = row.querySelectorAll('[contenteditable]');
-                                    const rowData = [column1Value, ...Array.from(contentEditableFields).map(field => field.innerText)];
+                                    const dateFields = row.querySelectorAll('input[type="date"]');
+                                    const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
                                     selectedData.push(rowData);
                                 }
                             });

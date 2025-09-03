@@ -1559,13 +1559,13 @@ class filerectreportNw2:
         # Cant find where rectype is used
         activity = ''
         if mergeinfo[2] == '1':
-            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-AE') | Q(code='FRCT'), matterid = matter.matterid)
+            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-AE') | Q(code='FRCT'), matterid = matter_data.matterid)
             rectype = 'an Official Filing Receipt'
         if mergeinfo[2] == '2':
-            activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = 'FRCT-4')
+            activity = Activity.objects.using('FIP').filter(matterid = matter_data.matterid, code = 'FRCT-4')
             rectype = 'a Replacement Filing Receipt'
         if mergeinfo[2] == '3':
-            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-3') | Q(code='UFRR'), matterid = matter.matterid)
+            activity = Activity.objects.using('FIP').filter(Q(code='FRCT-3') | Q(code='UFRR'), matterid = matter_data.matterid)
             rectype = 'an Updated Filing Receipt'
 
         replace = {}

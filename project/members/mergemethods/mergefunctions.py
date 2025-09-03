@@ -411,14 +411,17 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34609', roleorderno = 1)
             profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            paraname = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+            if profile.mname == '':
+                paraname = profile.fname + ' ' + profile.lname
             info = {
-                'paraName' : profile.fname + ' ' + profile.lname,
-                'paraPhone' : contact.phone1,
+                'paraName' : paraname,
+                'paraPhone' : merge_fn.appendphone(contact.phone1),
                 'paraEmail' : contact.email,
-                'This.paraName' : profile.fname + ' ' + profile.lname,
-                'This.paraPhone' : contact.phone1,
+                'This.paraName' : paraname,
+                'This.paraPhone' : merge_fn.appendphone(contact.phone1),
                 'This.paraEmail' : contact.email,
-                'clientparaname' : profile.fname + ' ' + profile.lname,
+                'clientparaname' : paraname,
                 'clientparaemail' : contact.email
             }
         except:
@@ -461,13 +464,16 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34615', roleorderno = 1)
             profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+            waname = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+            if profile.mname == '':
+                waname = profile.fname + ' ' + profile.lname
             info = {
-                'WAName' : profile.fname + ' ' + profile.lname,
-                'WAattorney' : profile.fname + ' ' + profile.lname,
-                'WAPhone' : contact.phone1,
+                'WAName' : waname,
+                'WAattorney' : waname,
+                'WAPhone' : merge_fn.appendphone(contact.phone1),
                 'WAEmail' : contact.email,
-                'This.WAName' : profile.fname + ' ' + profile.lname,
-                'This.WAPhone' : contact.phone1,
+                'This.WAName' : waname,
+                'This.WAPhone' : merge_fn.appendphone(contact.phone1),
                 'This.WAEmail' : contact.email,
                 'WARegNo' : profile.registrationno
             }
@@ -822,9 +828,12 @@ class mergefunctions:
         return firstinventor
         
     def appendphone(self, number):
-        cleaned_number = ''.join(filter(str.isdigit, number))
-        formatted_number = f"({cleaned_number[:3]}){cleaned_number[3:6]}-{cleaned_number[6:]}"
-    
+        try:
+            cleaned_number = ''.join(filter(str.isdigit, number))
+            formatted_number = f"({cleaned_number[:3]}) {cleaned_number[3:6]}-{cleaned_number[6:]}"
+        except:
+            formatted_number = '()-'
+        
         return formatted_number
     
     def matterFill(self, matter):
