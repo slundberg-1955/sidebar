@@ -223,7 +223,7 @@ class recordation:
                     if (i - 4) % 2 == 0:
                         nameslist.append(mergeinfo[i])
                     else:
-                        dateslist.append(function_instance.formatDate2(mergeinfo[i]))
+                        dateslist.append(function_instance.formatDate(mergeinfo[i]))
             if ordernolist != []:
                 replace.update(function_instance.assigneefill(matter, ordernolist[0]))
             else:
@@ -268,7 +268,7 @@ class recordation:
                 if use_second_list2:
                     rolelist.append(mergeinfo[i + 1])
                 else:
-                    dateslist.append(function_instance.formatDate2(mergeinfo[i]))
+                    dateslist.append(function_instance.formatDate(mergeinfo[i]))
             
             seldate = ", ".join(dateslist)
             try:
@@ -323,8 +323,7 @@ class LateSubmissionOfDec:
         decsubx = ''
         decsubtxt = ''
         depx = ''
-        deptxt = ''
-        feeamt = ''
+        deptxt = '' 
         latepaid = ''
         if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
             decsubx = 'X'
@@ -369,7 +368,7 @@ class UpdateAppDataSheet:
             muText = ''
         
         dsX = 'X'
-        dsText = 'Communication Re: Update to Application Data Sgeet (1 Pg.).'
+        dsText = 'Communication Re: Update to Application Data Sheet (1 Pg.).'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -1929,22 +1928,22 @@ class exttimeCF:
         return replace
 
 # Transmittal - Communication Regarding Incorrect Filing Receipt
-# Only need dueDate
+# X
 class incorrectfilerect:
     def incorrectfilerect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter) 
         depnum = function_instance.depnumFill(matter_data)
+        duedate = function_instance.getfrct(matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'depAccount' : depnum,
-            'nickU' : '',
             'postcardX' :'',
             'postcardText' : '',
-            'dueDate' : '',
+            'dueDate' : duedate,
         })
         return replace
     

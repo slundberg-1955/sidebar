@@ -5397,7 +5397,7 @@
                         newRow.innerHTML = `
                             <td><input type="checkbox" name = "invchk" checked></td>
                             <td>${inventorList[i]}</td>
-                            <td contenteditable>//</td>
+                            <td><input type="date"></td>
                         `;
                         tableBody.appendChild(newRow);
                         const dateFields = newRow.querySelectorAll('[contenteditable]');
@@ -5482,7 +5482,7 @@
                             newRow.innerHTML = `
                                 <td><input type="checkbox" name = "corpchk1"></td>
                                 <td>${corpList[i]}</td>
-                                <td contenteditable>//</td>
+                                <td><input type="date"></td>
                             `;
                             tableBody.appendChild(newRow);
                             const dateFields = newRow.querySelectorAll('[contenteditable]');

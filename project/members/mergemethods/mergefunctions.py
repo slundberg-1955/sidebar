@@ -1104,3 +1104,30 @@ class mergefunctions:
     # Retainer Language
     def retainer(self, matter):
         pass
+    
+    def getfrct(self, matter):
+        results = []
+        try:
+            print('trying...')
+            query = f"""
+                SELECT smryonevalue
+                FROM activity WHERE code LIKE 'FRCT%' 
+                and smryonelabel like '%Mailed%' 
+                AND matterid IN
+                (SELECT matterid FROM matter WHERE hostmatterno like '{matter}%') 
+                ORDER BY smryonevalue DESC
+            """
+            
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                results = cursor.fetchall()
+                
+            print(results[0][0])
+            #frct = str(results[0]).replace('(', '').replace(')', '').replace("'", '').replace(',', '')
+            frct = results[0][0].strftime('%B %d, %Y')
+            print(frct)
+            
+        except:
+            frct = ''
+                    
+        return frct
