@@ -25,16 +25,10 @@ class appealfwd:
         if(artunitno == '' or artunitno == 'None'):
             artunitno = 'Unknown'
 
-        if(entitystatus == 0):
-            billamt = '944.00'
-        if(entitystatus == 2):
-            billamt = '2,360.00'
-        if(entitystatus == 1):
-            billamt = '472.00'
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'feeAmount' : billamt,
+            'feeAmount' : function_instance.getFee(114, matter),
             'depAccount' : function_instance.depnumFill(matter_data),
         })
         return replace
@@ -311,19 +305,12 @@ class LateSubmissionOfDec:
         # Fill Data
         matter_data = function_instance.matterFill(matter)
         depnum = function_instance.depnumFill(matter_data)
-        entitystatus = function_instance.entityfill(matter)
-
-        if(entitystatus == 0):
-            feeamt = '64.00'
-        if(entitystatus == 2):
-            feeamt = '160.00'
-        if(entitystatus == 1):
-            feeamt = '32.00'
 
         decsubx = ''
         decsubtxt = ''
         depx = ''
-        deptxt = '' 
+        deptxt = ''
+        feeamt = function_instance.getFee(5, matter)
         latepaid = ''
         if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
             decsubx = 'X'

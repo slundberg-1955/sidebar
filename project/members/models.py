@@ -632,3 +632,22 @@ class ClientSpec(models.Model):
     class Meta:
         managed = False
         db_table = 'client_spec'
+        
+class MergeFees(models.Model):
+    rule_id = models.TextField(primary_key=True)
+    merge_id = models.TextField(blank=True, null=True)
+    merge_method = models.TextField(blank=True, null=True)
+    fee = models.TextField(blank=True, null=True)
+    rule = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    large_old = models.TextField(blank=True, null=True)
+    small_old = models.TextField(blank=True, null=True)
+    micro_old = models.TextField(blank=True, null=True)
+    large_new = models.TextField(blank=True, null=True)
+    small_new = models.TextField(blank=True, null=True)
+    micro_new = models.TextField(blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'merge_fees'

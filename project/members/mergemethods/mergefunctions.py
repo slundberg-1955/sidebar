@@ -546,8 +546,8 @@ class mergefunctions:
         
         return first_name, middle_name, last_name
     
-    def extract_date(text):
-        date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
+    def extract_date2(self, text):
+        date_pattern = r'\b\d{1,2}/\d{1,2}/\d{2}\b'
 
         match = re.search(date_pattern, text)
         
@@ -1131,3 +1131,49 @@ class mergefunctions:
             frct = ''
                     
         return frct
+    
+    def getFee(self, fee, matter):
+        try:
+            FeeData = MergeFees.objects.using('SideBar').get(rule_id = fee)
+            function_instance = mergefunctions()
+            print(function_instance.extract_date2(FeeData.comments))
+            
+            entitystatus = function_instance.entityfill(matter)
+            if(entitystatus == 0):
+                size = 'small'
+            if(entitystatus == 2):
+                size = 'large'
+            if(entitystatus == 1):
+                size = 'micro'
+                
+            if size == 'large':
+                if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
+                    fee = FeeData.large_new
+                else:
+                    fee = FeeData.large_old
+                    
+            if size == 'small':
+                if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
+                    fee = FeeData.small_new
+                else:
+                    fee = FeeData.small_old
+                    
+            if size == 'micro':
+                if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
+                    fee = FeeData.micro_new
+                else:
+                    fee = FeeData.micro_old   
+        except:
+            fee = ''
+        
+        return fee
+            
+    
+    def is_date_before_today(self, date_str):
+        """Compares a date string to today's date."""
+        try:
+            date_obj = datetime.strptime(date_str, "%m/%d/%y")
+            today = datetime.today()
+            return date_obj <= today
+        except ValueError:
+            return False
