@@ -324,7 +324,7 @@ class LateSubmissionOfDec:
             latepaid = latepaid + 'Corresponding fees with regard to the late submission were paid previously, therefore applicants believe no additional fees are due at this time.'
         else:
             depx = 'X'
-            deptxt = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ feeamt +' to cover the Late Submission Surcharge. '
+            deptxt = 'Authorization to charge Deposit Account '+ depnum +' in the amount of '+ feeamt +' to cover the Late Submission Surcharge. '
 
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[3]))
@@ -3624,10 +3624,10 @@ class noticeofAppeal:
 
         microfee = ''
         smallfee = ''
-        if(entitystatus == 0):
-            smallfee = '362.00'
         if(entitystatus == 1):
-            microfee = '181.00'
+            smallfee = function_instance.getFee(110, matter)
+        if(entitystatus == 3):
+            microfee = function_instance.getFee(110, matter)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))

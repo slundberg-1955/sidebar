@@ -5,7 +5,7 @@ from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo, ClientSpec
-from ..models import Patent, Customernumbers, CustomerNos, Activity
+from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db import connections
@@ -1137,37 +1137,37 @@ class mergefunctions:
             FeeData = MergeFees.objects.using('SideBar').get(rule_id = fee)
             function_instance = mergefunctions()
             print(function_instance.extract_date2(FeeData.comments))
-            
+                
             entitystatus = function_instance.entityfill(matter)
-            if(entitystatus == 0):
+            if(entitystatus == 1 or entitystatus == 0):
                 size = 'small'
             if(entitystatus == 2):
                 size = 'large'
-            if(entitystatus == 1):
+            if(entitystatus == 3):
                 size = 'micro'
-                
+                    
             if size == 'large':
                 if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
                     fee = FeeData.large_new
                 else:
                     fee = FeeData.large_old
-                    
+                        
             if size == 'small':
                 if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
                     fee = FeeData.small_new
                 else:
                     fee = FeeData.small_old
-                    
+                        
             if size == 'micro':
                 if function_instance.is_date_before_today(function_instance.extract_date2(FeeData.comments)):
                     fee = FeeData.micro_new
                 else:
                     fee = FeeData.micro_old   
+            fee = fee + '.00'
         except:
             fee = ''
         
-        return fee
-            
+        return fee.replace(' ', '')
     
     def is_date_before_today(self, date_str):
         """Compares a date string to today's date."""
