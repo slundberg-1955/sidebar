@@ -5,11 +5,12 @@ from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo, ClientSpec
-from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees
+from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db import connections
 import os
+from django.db.models import Q
 
 import re
 
@@ -22,12 +23,16 @@ class mergefunctions:
         basicOut = {}
 
         if 'matter' in tables_list:
-            custcor = merge_fn.corrcustnumFill(matter_data)
+            custcor = merge_fn.corrcustnumFill(matter_data, 'corresp')
             confirm = matter_data.confirmationno
             if(confirm == ''):
                 confirm = 'Unknown'
             if(custcor == ''):
                 custcor = 'Unknown'
+                
+            mfee = merge_fn.corrcustnumFill(matter_data, 'maint')
+            if(mfee == ''):
+                mfee = 'Unknown'
                 
             try:
                 filedte = matter_data.fileddate.strftime("%B %d, %Y")
@@ -45,11 +50,8 @@ class mergefunctions:
                     if i == 2:
                         zero = '00'
                     client = zero + hostmatterno.split(".")[0] 
-                    print(client)
                     clientcode = ClientSpec.objects.using('SideBar').get(clientno=client)
-                    print(clientcode)
                     part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
-                    print(part.matterno, clientcode.format)
                     matterno = part.matterno
                     matternumber = eval(clientcode.format)
                     break
@@ -62,7 +64,7 @@ class mergefunctions:
                 'title' : matter_data.title,
                 'matterNo' : matternumber,
                 'custNoCorresp' : custcor,
-                'custNoMFee' : custcor,
+                'custNoMFee' : mfee,
                 'confirmNo' : confirm,
                 'examinerName' : merge_fn.examinerFill(matter_data),
                 'matterCountryName' : merge_fn.fullCountry(matter_data.country)
@@ -73,21 +75,30 @@ class mergefunctions:
                     basicOut.update({key: value})
 
         if 'patent' in tables_list:
-            patent_data = merge_fn.patentFill(matter_data)
             try:
-                issdate = (patent_data.issuedate).strftime('%B %d, %Y')
+                patent_data = merge_fn.patentFill(matter_data)
+                try:
+                    issdate = (patent_data.issuedate).strftime('%B %d, %Y')
+                except:
+                    issdate = ''
+                if patent_data.artunitno != '':
+                    artunit = patent_data.artunitno
+                else:
+                    artunit = 'Unknown'
+                basic = {
+                    'artUnit' : artunit,
+                    'patNo' : patent_data.patentno,
+                    'issueDate' : issdate,
+                    'countryPatentOffice' : merge_fn.patentCountry(matter_data.country)
+                }
             except:
-                issdate = ''
-            if patent_data.artunitno != '':
-                artunit = patent_data.artunitno
-            else:
-                artunit = 'Unknown'
-            basic = {
-                'artUnit' : artunit,
-                'patNo' : patent_data.patentno,
-                'issueDate' : issdate,
-                'countryPatentOffice' : merge_fn.patentCountry(matter_data.country)
-            }
+                basic = {
+                    'artUnit' : '',
+                    'patNo' : '',
+                    'issueDate' : '',
+                    'countryPatentOffice' : ''
+                }
+                
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -325,6 +336,19 @@ class mergefunctions:
             }
         return info
     
+    def applicantCount(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        
+        try:
+            applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
+            applicantlen = len(applicant)
+            
+        except:
+            applicantlen = 0
+        
+        return applicantlen
+    
     def correspondenceContactfill(self, matter):
         try:
             merge_fn = mergefunctions()
@@ -379,13 +403,19 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = roledata[0], roleorderno = int(roledata[1].replace(" ", "")))
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+            
+            street = contact.address1
+            if (contact.address2):
+                street = street + '\n' + contact.address2
+            if (contact.address3):
+                street = street + '\n' + contact.address3
 
             info = {
                 'assigneeCity' : contact.city,
                 'assigneeState' : contact.state,
                 'assigneeZip' : contact.zip,
                 'assigneeCountry' : contact.country,
-                'assigneeStreet' : contact.address1,
+                'assigneeStreet' : street,
                 'assigneeName' : profile.orgname,
                 'assignee' : profile.orgname,
             }
@@ -793,11 +823,15 @@ class mergefunctions:
         return tables_list
     
     def transform_serialnumber(self, s):
-        part1 = s[:2]
-        part2 = s[2:]
-        part2 = part2[:-3] + ',' + part2[-3:]
+        try:
+            part1 = s[:2]
+            part2 = s[2:]
+            part2 = part2[:-3] + ',' + part2[-3:]
 
-        result = part1 + '/' + part2
+            result = part1 + '/' + part2
+        except:
+            result = 'Unknown'
+            
         return result
     
     def esigncheck(self, esign):
@@ -861,30 +895,101 @@ class mergefunctions:
             return ''
     
     # cust correspondence no
-    def corrcustnumFill(self, data):
-        '''
-        part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34617')
-        # profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        try:
-            cust = Customernumbers.objects.using('FIP').get(opid = part.opid).correspondencecustno
-        except:
-            parts = Matterparticipant.objects.using('FIP').filter(matterid = data.matterid)
+    def corrcustnumFill(self, data, no):
+        merge_fn = mergefunctions()
+        hostmatterno = data.hostmatterno
+        custno = ''
+
+
+        for i in range(3):
+            prefix = '' if i == 0 else '0' * i
+            client = prefix + hostmatterno.split('.')[0]
+
+            try:
+                cust = CustNos.objects.using('SideBar').get(clientno=client)
+            except CustNos.DoesNotExist:
+                continue
+
+            # Try alternate first
+            if cust.alternate:
+                alt = cust.alternate.split(')')
+                if merge_fn.checkalternate(alt, data):
+                    try:
+                        if no == 'corresp':
+                            custno = cust.correspondencenoalt
+                        elif no == 'poa':
+                            custno = cust.powerofattorneynoalt
+                        elif no == 'maint':
+                            custno = cust.maintenancefeenoalt
+                        break
+                    except Exception as e:
+                        print(f"Error retrieving alternate custno: {e}")
+
+            # Try alternate2 next
+            if not custno and cust.alternate2:
+                alt2 = cust.alternate2.split(')')
+                if merge_fn.checkalternate(alt2, data):
+                    try:
+                        if no == 'corresp':
+                            custno = cust.correspondencenoalt2
+                        elif no == 'poa':
+                            custno = cust.powerofattorneynoalt2
+                        elif no == 'maint':
+                            custno = cust.maintenancefeenoalt2
+                        break
+                    except Exception as e:
+                        print(f"Error retrieving alternate2 custno: {e}")
+
+            # Fallback to standard number
+            if not custno:
+                try:
+                    if no == 'corresp':
+                        custno = cust.correspondenceno
+                    elif no == 'poa':
+                        custno = cust.powerofattorneyno
+                    elif no == 'maint':
+                        custno = cust.maintenancefeeno
+                    break
+                except Exception as e:
+                    custno = '21186'
+
+        if not custno:
+            custno = '21186'
+            
+        return custno
+
+    def checkalternate(self, alt, matter_data):
+        if alt[0] == '(OPID':
+            opids = alt[1].split('/')
+            print(opids)
+            parts = Matterparticipant.objects.using('FIP').filter(
+                Q(roleid='34610') | Q(roleid='56691'),
+                matterid=matter_data.matterid
+            )
+            for part in parts:
+                print(part.contactid)
+                if str(part.contactid) in opids:
+                    return True
+                    
+            return False
+                
+        if alt[0] == '(MID':
+            mids = alt[1].split('/')
+            for mid in mids:
+                if matter_data.hostmatterno.startswith(mid):
+                    return True
+            
+        if alt[0] == '(CORR':
+            parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34610')
             for part in parts:
                 try:
-                    cust = Customernumbers.objects.using('FIP').get(opid = part.contactid).correspondencecustno
-                    break
+                    print((alt[1]).capitalize())
+                    profile = Personprofile.objects.using('FIP').get(ppid = part.contactid, lname = (alt[1]).capitalize())
+                    return True
                 except:
-                    cust = 21186
                     pass
-        '''
-        matter = data.hostmatterno
-        matter = matter.split(".")
-        try:
-            cust = CustomerNos.objects.using('SideBar').get(clientno = matter[0]).correspno
-        except:
-            cust = 21186
-
-        return cust
+    
+        return False
     
     def contactinfoFill(self, data):
         return Contactinfo.objects.using('FIP').get(contactinfoid = data.contactinfoid)
@@ -1177,3 +1282,53 @@ class mergefunctions:
             return date_obj <= today
         except ValueError:
             return False
+        
+    def getPreviousPaidData(self, matter):
+        results = []
+        try:
+            print('trying...')
+            query = f"""
+                SELECT code, smryonelabel, smryonevalue 
+                FROM activity WHERE code IN ('NOWI', 'PWFI') 
+                AND matterid IN
+                (SELECT matterid FROM matter WHERE hostmatterno LIKE '{matter}%')
+            """
+            
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                results = cursor.fetchall()
+                
+            print(results[0][0])
+            data = results[0][0].strftime('%B %d, %Y')
+            print(data)
+            
+        except:
+            data = ''
+                    
+        return data
+        
+    def phoneFillSA(self, fullname):
+        # Split the full name into first and last name
+        fname, lname = fullname.strip().split(' ', 1)
+        
+        try:
+            profile = Personprofile.objects.using('FIP').filter(fname=fname, lname=lname)
+            
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile[0].workcontactinfoid)
+            info = contact.phone1
+        except:
+            info = ''
+            
+        return info
+    
+    def fullSAName(self, fullname):
+        # Split the full name into first and last name
+        fname, lname = fullname.strip().split(' ', 1)
+        
+        try:
+            profile = Personprofile.objects.using('FIP').filter(fname=fname, lname=lname)
+            info = fname + ' ' + profile[0].mname + ' ' + lname
+        except:
+            info = fullname
+            
+        return info

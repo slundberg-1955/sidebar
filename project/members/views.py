@@ -562,20 +562,24 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
 
 def get_attachments(attachments):
     attachment_objects = []
-    for file_path in attachments:
-        file_name = os.path.basename(file_path)
-        mime_type, _ = mimetypes.guess_type(file_path)
-        mime_type = mime_type or "application/octet-stream"
-        with open(file_path, "rb") as f:
-            content_bytes = f.read()
+    try:
+        for file_path in attachments:
+            file_name = os.path.basename(file_path)
+            mime_type, _ = mimetypes.guess_type(file_path)
+            mime_type = mime_type or "application/octet-stream"
+            with open(file_path, "rb") as f:
+                content_bytes = f.read()
 
-        attachment = FileAttachment(
-            odata_type="#microsoft.graph.fileAttachment",
-            name=file_name,
-            content_type=mime_type,
-            content_bytes=content_bytes
-        )
-        attachment_objects.append(attachment)
+            attachment = FileAttachment(
+                odata_type="#microsoft.graph.fileAttachment",
+                name=file_name,
+                content_type=mime_type,
+                content_bytes=content_bytes
+            )
+            attachment_objects.append(attachment)
+    except:
+        pass
+            
     return attachment_objects
 
 def testview(request):
@@ -595,7 +599,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
         doc1.add_page_break()
         composer = Composer(doc1)
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit3.docx'))
-        if mergeinfo[6] == 'true':
+        if mergeinfo[4] == 'true':
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit2.docx')) 
             doc3.add_page_break()
             composer.append(doc3)
@@ -930,9 +934,9 @@ def mergeDoc(matter , mergeinfo, request):
         issCC = ''
         issBCC = ''
         attachment = os.path.join(settings.BASE_DIR, 'documents', 'attachments', 'Notice of Allowance Review and Response.pdf')
-        Email(issbody, isssubject, issTO, issCC, issBCC , attachment)
+        Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
 
-        if mergefninfo[5] == 'true':
+        if mergefninfo[3] == 'true':
             stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
             stateofallow = stateofallow.replace('issuefee', 'stateofallow')
             mergeDoc(matter, stateofallow, '')

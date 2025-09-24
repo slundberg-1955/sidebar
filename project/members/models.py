@@ -651,3 +651,21 @@ class MergeFees(models.Model):
     class Meta:
         managed = False
         db_table = 'merge_fees'
+        
+class CustNos(models.Model):
+    clientno = models.TextField(primary_key=True)
+    correspondenceno = models.TextField(blank=True, null=True)
+    powerofattorneyno = models.TextField(blank=True, null=True)
+    maintenancefeeno = models.TextField(blank=True, null=True)
+    alternate = models.TextField(blank=True, null=True)
+    correspondencenoalt = models.TextField(blank=True, null=True)
+    powerofattorneynoalt = models.TextField(blank=True, null=True)
+    maintenancefeenoalt = models.TextField(blank=True, null=True)
+    alternate2 = models.TextField(blank=True, null=True)
+    correspondencenoalt2 = models.TextField(blank=True, null=True)
+    powerofattorneynoalt2 = models.TextField(blank=True, null=True)
+    maintenancefeenoalt2 = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cust_nos'

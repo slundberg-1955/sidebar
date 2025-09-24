@@ -50,12 +50,25 @@ class pclaims:
 # Transmittal - Issue Fee
 class issuefee:
     def issuefee(self, matter, mergeinfo, keys):
+        print(mergeinfo)
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        reqpat = mergeinfo[2]
-        numfact = mergeinfo[3]
-        drawnum = mergeinfo[4]
-        prevpaiddate = mergeinfo[7]
+        reqpat = mergeinfo[0]
+        numfact = mergeinfo[1]
+        drawnum = mergeinfo[2]
+        prevpaiddate = mergeinfo[5]
+        stateofall = mergeinfo[3]
+        firstfeeamt = '0'
+        increasetxt = ''
+        prevx = ''
+        prevtxt = ''
+        commentstxt = ''
+        commentsx = ''
+        feetxt = ''
+        feeX = ''
+        depnum = function_instance.depnumFill(matter_data)
+        
+        withdraw = function_instance.getPreviousPaidData(matter)
         
         dateIssueFee = ''
         try:
@@ -75,11 +88,12 @@ class issuefee:
             noarDate = ''
 
         if reqpat == 'true':
+            patfee = function_instance.getFee(85, matter)
             adjtxt = 'X'
             adjfee = 'X'
             adjfact = 'X'
             patadjtxt =  '         Application for Patent Term Adjustment Under 37 CFR 1.705(b) (1 pg.).'
-            patadjfee =  '         Check in the amount of' + '12' + 'to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
+            patadjfee =  '         Check in the amount of ' + patfee + ' to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).'
             patadjfact = '         Statement of Facts Under 37 CFR 1.705(b)(2) in Support of Application for Patent Term Adjustment (' + numfact + ' pgs.).'
         
         else:
@@ -98,50 +112,45 @@ class issuefee:
             drawtxt = ''
 
         # if withfiled == 'true':
+        
+        if stateofall == 'true':
+            commentstxt = 'Response to Examiner\'s Reasons for Allowance'
+            commentsx = 'X'
             
-
         # if feeincrease:
-        entitystatus = function_instance.entityfill(matter)
         description = matter_data.mattertypedescription
         if "DESIGN" in description:
-            if entitystatus == 2:
-                designfee = 740
-            if entitystatus == 1:
-                designfee = 185
-            else:
-                designfee = 370
-                # ( - firstfeeamount)
-            feeincrease = designfee
+            designfee = function_instance.getFee(82, matter)
+            feeincrease = designfee - firstfeeamt
         else:
             if "PLANT" in description:
-                if entitystatus == 2:
-                    # ( - firstfeeamount)
-                    feeincrease = 840
-                    # ( - firstfeeamount)
-                if entitystatus == 1:
-                    # ( - firstfeeamount)
-                    designfee = 210
-                else:# ( - firstfeeamount)
-                    designfee = 420
+                feeincrease = function_instance.getFee(83, matter)
+                feeincrease = feeincrease - firstfeeamt
 
         wdrwtxt = ''
-        if mergeinfo[8] == 'true' and mergeinfo[9] != '':
-            wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on .  Applicant received a decision, dated '+ mergeinfo[9] +', granting the petition to withdraw.'
+        if mergeinfo[6] == 'true' and mergeinfo[7] != '':
+            wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on .  Applicant received a decision, dated '+ function_instance.formatDate(mergeinfo[7]) +', granting the petition to withdraw.'
         
-        if mergeinfo[11] == 'true':
-            increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of  to cover the issue fee increase.'
+        if mergeinfo[9] == 'true':
+            fee = ''
+            increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of '+ fee + ' to cover the issue fee increase.'
             
-        depnum = function_instance.depnumFill(matter_data)
+        if mergeinfo[4] == 'true':
+            prevx = 'X'
+            prevtxt = '         Request to Apply Previously Paid Issue Fee (1 pg.)'
+            feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+''+' to cover the issue fee increase.'
+            feeX = 'X'
+        
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[12]))
+        replace.update(function_instance.esigncheck(mergeinfo[11]))
         replace.update({
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'nickU' : '',
             'dateIssueFee': function_instance.formatDate(prevpaiddate),
             'withDrawText' : wdrwtxt,
             'withdrawCopyText' : '',
-            #'increaseText' : '',
+            'increaseText' : increasetxt,
             'dateNOAR' : noarDate,
             'depAccount' : depnum,
             'drawingX' : drawingX,
@@ -152,14 +161,12 @@ class issuefee:
             'patentTermAdjText' : patadjtxt,
             'patentTermAdjFee' : patadjfee,
             'patentTermAdjFacts' : patadjfact,
-            #'feeTextX' : '',
-            #'FeeText' : '',
-            'pubFeeX' : 'X',
-            'pubFeeText' : '    Check in the amount of $210.00 to cover the fee for Application for Patent Term Adjustment under 37 CFR 1.18(e).',
-            #'previousX' : '',
-            #'applyPreviousText' : '',
-            #'commentX' : '',
-            #'commentText' : '',
+            'feeTextX' : feeX,
+            'FeeText' : feetxt,
+            'previousX' : prevx,
+            'applyPreviousText' : prevtxt,
+            'commentX' : commentsx,
+            'commentText' : commentstxt,
             'dueDate' : function_instance.formatDate(dateIssueFee),
         })
         return replace
@@ -2726,11 +2733,18 @@ class genericheader:
 class allowedclaims:
      def allowedclaims(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        try:
+            patent = function_instance.patentFill(matter_data)
+            alldte = (patent.alloweddate).strftime('%B %d, %Y')
+        except:
+            alldte = ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
-
+            'allowedDate' : alldte
         })
         return replace
     
@@ -3012,6 +3026,16 @@ class prelimamend:
         amendtxt = 'PRELIMINARY AMENDMENT'
         if mergeinfo[1] == 'true':
             amendtxt = 'SUPPLEMENTAL PRELIMINARY AMENDMENT'
+            
+        appcount = function_instance.applicantCount(matter)
+        if int(appcount) > 1:
+            applicant = 'Applicants'
+            submit = 'submit'
+            posapp = 'Applicants\''
+        else:
+            applicant = 'Applicant'
+            submit = 'submits'
+            posapp = 'Applicant\'s'
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -3020,9 +3044,21 @@ class prelimamend:
             'amendmentText' : amendtxt,
             'mailStopText' : mergeinfo[2],
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'preperApplicant' : 'Applicant',
-            'submitText' : 'submits'
+            'properApplicant' : applicant, 
+            'properPossessiveApplicant' : posapp,
+            'submitText' : submit
         })
+        if mergeinfo[3] != 'Select Signing Attorney' and mergeinfo[3] != '':
+            saname = function_instance.fullSAName(mergeinfo[3])
+            replace.update({
+                'SAName' : saname,
+            })
+            saphone = function_instance.phoneFillSA(mergeinfo[3])
+            if saphone != '':
+                replace.update({
+                    'SAPhone' : saphone
+                })
+                
         return replace
 
 # FF Report Out - Original Letters Patent (OLP)
