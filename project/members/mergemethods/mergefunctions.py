@@ -177,30 +177,42 @@ class mergefunctions:
                     basicOut.update({key: value})
 
         if 'fa' in tables_list:
-            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56690', roleorderno = 1)
-            profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
             try:
-                personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-                farecipient = personprofile.lname
-            except:
-                farecipient = ''
-            if 'GB' in contact.country:
-                country = 'United Kingdom'
-            if contact.country == 'US':
-                country = 'United States'
+                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56690', roleorderno = 1)
+                profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+                contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
+                try:
+                    personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+                    farecipient = personprofile.lname
+                except:
+                    farecipient = ''
+                if 'GB' in contact.country:
+                    country = 'United Kingdom'
+                if contact.country == 'US':
+                    country = 'United States'
 
-            addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
-            basic = {
-                'faOrgName' : profile.orgname,
-                'faWorkAddr' : addr,
-                'faCSZ' : '',
-                'faAssignee' : profile.orgname,
-                'associateName' : profile.orgname,
-                'recipientEmail' : contact.email,
-                'faclientRefNo' : part.matterno,
-                'faRecipient' : farecipient
-            }
+                addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
+                basic = {
+                    'faOrgName' : profile.orgname,
+                    'faWorkAddr' : addr,
+                    'faCSZ' : '',
+                    'faAssignee' : profile.orgname,
+                    'associateName' : profile.orgname,
+                    'recipientEmail' : contact.email,
+                    'faclientRefNo' : part.matterno,
+                    'faRecipient' : farecipient
+                }
+            except:
+                basic = {
+                    'faOrgName' : '',
+                    'faWorkAddr' : '',
+                    'faCSZ' : '',
+                    'faAssignee' : '',
+                    'associateName' : '',
+                    'recipientEmail' : '',
+                    'faclientRefNo' : '',
+                    'faRecipient' : ''
+                }
             for key, value in basic.items():
                 if key in keys:
                     basicOut.update({key: value})
@@ -263,11 +275,17 @@ class mergefunctions:
 
             if assigneelen == 1:
                 count = 'Assignee: '
+                
+            street = contact.address1
+            if (contact.address2):
+                street = street + '\n' + contact.address2
+            if (contact.address3):
+                street = street + '\n' + contact.address3
 
             info = {
                 'assigneeCnt' : count,
                 'assigneeName' : profile.orgname,
-                'assigneeStreet' : contact.address1,
+                'assigneeStreet' : street,
                 'assigneeCity' : contact.city,
                 'assigneeState' : contact.state,
                 'assigneeZip' : contact.zip,
@@ -726,7 +744,7 @@ class mergefunctions:
         basicOut = {}
 
         if 'matter' in tables_list:
-            custcor = merge_fn.corrcustnumFill(matter_data)
+            custcor = merge_fn.corrcustnumFill(matter_data, 'corresp')
             confirm = matter_data.confirmationno
             if(confirm == ''):
                 confirm = 'Unknown'
@@ -899,7 +917,6 @@ class mergefunctions:
         merge_fn = mergefunctions()
         hostmatterno = data.hostmatterno
         custno = ''
-
 
         for i in range(3):
             prefix = '' if i == 0 else '0' * i
@@ -1166,7 +1183,7 @@ class mergefunctions:
             info = {
                 'ffparaName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
                 'ffparaEmail' : contact.email,
-                'ffparaPhone' : contact.phone1
+                'ffparaPhone' : merge_fn.appendphone(contact.phone1)
             }
         except:
             info = {
@@ -1324,11 +1341,24 @@ class mergefunctions:
     def fullSAName(self, fullname):
         # Split the full name into first and last name
         fname, lname = fullname.strip().split(' ', 1)
-        
+        info = fullname
+        regno = ''
         try:
             profile = Personprofile.objects.using('FIP').filter(fname=fname, lname=lname)
             info = fname + ' ' + profile[0].mname + ' ' + lname
+            regno = profile[0].registrationno
         except:
-            info = fullname
-            
-        return info
+            pass
+    
+        return info, regno
+    
+    def feeAddition(self, amount1: str, amount2: str):
+        # Remove dollar signs and convert to float
+        value1 = float(amount1.replace('$', '').strip())
+        value2 = float(amount2.replace('$', '').strip())
+        
+        # Add the values
+        total = value1 - value2
+        
+        # Format the result as a dollar string
+        return f"${total:.2f}"

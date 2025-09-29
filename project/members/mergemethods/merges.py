@@ -3049,9 +3049,10 @@ class prelimamend:
             'submitText' : submit
         })
         if mergeinfo[3] != 'Select Signing Attorney' and mergeinfo[3] != '':
-            saname = function_instance.fullSAName(mergeinfo[3])
+            saname, regno = function_instance.fullSAName(mergeinfo[3])
             replace.update({
                 'SAName' : saname,
+                'SARegNo' : regno
             })
             saphone = function_instance.phoneFillSA(mergeinfo[3])
             if saphone != '':
