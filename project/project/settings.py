@@ -10,23 +10,41 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
+# --------------- AZURE ---------------
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
+SECURE_SSL_REDIRECT = \
+    os.getenv('SECURE_SSL_REDIRECT', '0').lower() in ['true', 't', '1']
+if SECURE_SSL_REDIRECT:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+
+# --------------- LOCAL ---------------
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ukaam=kjp((te10znbi1tb-#cuhb(0nb+9u6$js8qa4b#-nh^g'
-
+#SECRET_KEY = ''
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
+#ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = ['*']
-
+# MICROSOFT_AUTH = {
+#     "CLIENT_ID": os.getenv('MICROSOFT_PROVIDER_CLIENT_ID'),
+#     "CLIENT_SECRET": os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET'),
+#     "TENANT_ID": os.getenv('TENANT_ID'),
+#     "AUTHORITY": f"https://login.microsoftonline.com/{os.getenv('TENANT_ID')}",
+#     "REDIRECT_URI": 'https://sidebar-cloud.slwip.com/',
+#     "SCOPE": ["User.Read", "Mail.ReadWrite", "Mail.Send"],
+# }
 
 # Application definition
 
@@ -39,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'members',
     'bootstrap5',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +68,30 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+#STORAGES = {
+#    "default": {
+#        "BACKEND": "storages.backends.azure_storage.AzureStorage",
+#        "OPTIONS": {
+#        },
+#    },
+#}
+
+# ----- Azure Storage settings -----
+DEFAULT_FILE_STORAGE = 'project.azure_storage.AzureMediaStorage'
+#STATICFILES_STORAGE = 'project.azure_storage.AzureStaticStorage'
+
+# AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+# AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+# AZURE_CUSTOM_DOMAIN = f'{AZURE_ACCOUNT_NAME}.blob.core.windows.net'
+
+#STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+#MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 ROOT_URLCONF = 'project.urls'
 
@@ -75,25 +117,47 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {},
+    'default': {
+         'NAME': 'SideBar_data',
+         'ENGINE': 'django.db.backends.sqlite3',
+         'USER': '',
+         'PASSWORD': '',
+    },
     'FIP': {
         'ENGINE': 'mssql',
-        'NAME': 'FIP_SLWK',
-        'USER': 'SLWKUSER',
-        'PASSWORD': 'slwkuser',
-        'HOST': 'SLWFILEDB.SLWIP.COM',
-        'OPTIONS': {'driver': "ODBC Driver 17 for SQL Server", 
+        'NAME': os.environ.get('DBNAME'),
+        'HOST': os.environ.get('DBHOST'),
+        'USER': os.environ.get('DBUSER'),
+        'PASSWORD': os.environ.get('DBPASS'),
+        'OPTIONS': {
+            'driver': 'ODBC Driver 17 for SQL Server',
+            #"extra_params": 'Encrypt=yes;TrustServerCertificate=yes;Connection Timeout=30;',
         },
     } ,
     'SideBar': {
         'NAME': 'SideBar_data',
         'ENGINE': 'django.db.backends.sqlite3',
         'USER': '',
-        'PASSWORD': ''
+        'PASSWORD': '',
     },
 }
 
+# TEST ---- django-outlook-email-backend
+#OUTLOOK_CREDENTIALS = {
+#    'OUTLOOK_CLIENT_ID': 'your-client-id',
+#    'OUTLOOK_CLIENT_SECRET': 'your-client-secret',
+#    'OUTLOOK_TENANT_ID': 'your-tenant-id',
+#}
+#EMAIL_BACKEND = 'django_outlook_email.django_outlook_email_backend.OutlookEmailBackend'
+
+# TEST ---- msal for email merges
+#CLIENT_ID = os.getenv('MICROSOFT_PROVIDER_CLIENT_ID')
+#CLIENT_SECRET = os.getenv('MICROSOFT_PROVIDER_AUTHENTICATION_SECRET')
+#TENANT_ID = os.getenv('TENANT_ID')
+#AUTHORITY = f'https://login.microsoftonline.com/faf1d7d5-3374-4da3-9836-b7765bc44ef9'
+#REDIRECT_URI = f'http://localhost:8000/callback'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -129,7 +193,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

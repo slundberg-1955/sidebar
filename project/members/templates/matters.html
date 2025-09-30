@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>Merges Page</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .countainter{
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+        }
+        .search-container{
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .sidebar{
+            background-color: #333;
+            color: #b8b8b8;
+            padding: 1px 10px;
+            text-align: left;
+            margin-bottom: 20px;
+            height: 110px;
+        }
+        .sidebar-tabs li{
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .sidebar-tabs li a{
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+        }
+        .sidebar-tabs li a:hover{
+            background-color:#fff;
+            color: #333;
+        }
+        table{
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td{
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th{
+            background-color: #f2f2f2;
+        }
+        .column2{
+            width: 100%;
+        }
+        .merge-button{
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class = "sidebar">
+        <h1>SideBar</h1>
+        <ul class = "sidebar-tabs">
+            <li><a href = "#">Matters</a></li>
+            <li><a href = "#">FIP Reports</a></li>
+            <li><a href = "#">Merges</a></li>
+            <li><a href = "#">ToolBox</a></li>
+        </ul>
+    </div>
+    <div>
+          <select id="matterdrop">
+            <option value="Matter">Matter #</option>
+            <option value="CLient">Client #</option>
+            <option value="Serial">Serial #</option>
+            <option value="Patent">Patent #</option>
+            <option value="CLientName">Client Name</option>
+          </select>
+          <input type="text" id="findmatter" size="10">
+    </div>
+    <div>
+        <br>  <b>Matter #: </b><input type="text" id="matternum" size="10">
+          <b>Client: </b><input type="text" id="clientnum" size="40">
+        <br><br>  <b>Title: </b><textarea rows="1" cols="75" id="mattertitle"></textarea>
+    </div>
+    <div>
+        <table style="border-collapse: collapse; border: none;">
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Matter Type: </b><input type="text" id="mattertype" size="10"></td>
+                <td align="center"style="border: none;"><b>Status: </b><input type="text" id="matterstatus" size="10"></td>
+                <td align="left"style="border: none;"><b>Custom Status: </b><input type="text" id="mattercstatus" size="10"></td>
+            </tr>
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Serial #: </b><input type="text" id="matteserial" size="10"></td>
+                <td align="center"style="border: none;"><b>Filing Date: </b><input type="text" id="matterfdate" size="10"></td>
+                <td align="left"style="border: none;"><b>Client Ref: </b><input type="text" id="matterclientr" size="10"></td>
+            </tr>
+            <tr style="border: none;">
+                <td align="right"style="border: none;">  <b>Patent #: </b><input type="text" id="matterpat" size="10"></td>
+                <td align="center"style="border: none;"> <b>Issue Date: </b><input type="text" id="matterpat" size="10"></td>
+                <td align="left"style="border: none;"></td>
+            </tr>
+        </table>
+    </div>
+    <div>
+          Special Instructions
+    </div>
+</body>
+</html>
