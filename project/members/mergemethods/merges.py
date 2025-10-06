@@ -603,9 +603,6 @@ class corrappln:
             AbsX = ''
             SeqX = ''
             FrmlX = ''
-            
-            madx = ''
-            madpg = ''
 
             SubPg = ''
             AbsPg = ''
@@ -618,29 +615,25 @@ class corrappln:
             doclist = ''
             docs = []
 
-            if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
+            if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
                 SubX = 'X'
-                SubPg = 'Substitute Specification (' + mergeinfo[2] + ' pg.).'
+                SubPg = 'Substitute Specification (' + mergeinfo[1] + ' pg.).'
                 docs.append('a Substitute Specification')
 
-            if mergeinfo[3] != '' and int(mergeinfo[3]) > 0:
+            if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
                 AbsX = 'X'
-                AbsPg = 'Abstract (' + mergeinfo[3] + ' pg.).'
+                AbsPg = 'Abstract (' + mergeinfo[2] + ' pg.).'
                 docs.append('a Substitute Abstract')
 
-            if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
+            if mergeinfo[3] != '' and int(mergeinfo[3]) > 0:
                 SeqX = 'X'
-                SeqPg = 'Sequence Listing (' + mergeinfo[4] + ' pg.).'
+                SeqPg = 'Sequence Listing (' + mergeinfo[3] + ' pg.).'
                 docs.append('a Sequence Listing')
 
-            if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
+            if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
                 FrmlX = 'X'
-                FrmlPg = 'Formal Drawings (' + mergeinfo[5] + ' pg.).'
+                FrmlPg = 'Formal Drawings (' + mergeinfo[4] + ' pg.).'
                 docs.append('Formal Drawings')
-                
-            if mergeinfo[6] != '' and int(mergeinfo[6]) > 0:
-                madx = 'X'
-                madpg = 'Marked-up Application Data Sheet (' + mergeinfo[6] + ' pgs.)'
 
             if len(docs) == 4:
                 doclist = 'A Substitute Specification, a Substitute Abstract, a Sequence Listing, and Formal Drawings are attached.'
@@ -656,13 +649,17 @@ class corrappln:
                     doclist += ', and ' + docs[-1]
                     doclist += ' are attached.'
 
-            if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
+            if mergeinfo[0] != '':
                 extx = 'X'
                 extpg = 'Petition for Extension of Time (1 pg.).'
-                if mergeinfo[0] == 'true':
-                    depx = 'X'
-                    deppg = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ '' +' to cover the Extension of Time Fee.'
+                depx = 'X'
+                deppg = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ '' +' to cover the Extension of Time Fee.'
 
+            try:
+                fdoclist = doclist[0].upper() + doclist[1:]
+            except:
+                fdoclist = ''
+                
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update(function_instance.esigncheck(mergeinfo[6]))
@@ -676,17 +673,13 @@ class corrappln:
                 'AbstractPg' : AbsPg,
                 'SeqPg' : SeqPg,
                 'FormalPg' : FrmlPg,
-                'docList' : doclist[0].upper() + doclist[1:],
-                'nickU' : '',
+                'docList' : fdoclist,
                 'dueDate' : '',
 
                 'extX' : extx,
                 'extPg' : extpg,
                 'depX' : depx,
                 'depPg' : deppg,
-                
-                'MadX' : madx,
-                'DataPg' : madpg
             })
             return replace
 
@@ -694,7 +687,6 @@ class corrappln:
 class missingpartsNw:
     def missingpartsNw(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
-            esign_out, esigndate_out = function_instance.esigncheck(mergeinfo[0])
             combined = int(mergeinfo[6])
             decpages = int(mergeinfo[8])
             poapages = int(mergeinfo[7])
@@ -722,6 +714,7 @@ class missingpartsNw:
 
             replace = {}
             # replace.update(function_instance.assigneefill(keys, matter))
+            replace.update(function_instance.esigncheck(mergeinfo[0]))
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update({
 
@@ -1872,7 +1865,9 @@ class DraftOAInstruct:
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.ffparafill(matter))
+        replace.update(function_instance.matterCountryName(matter))
         replace.update(function_instance.countryType(matter))
+        replace.update(function_instance.assigneefill(matter, 1))
         replace.update({
             'corrDate' : function_instance.formatDate(mergeinfo[0]),
             'cdueDate' : function_instance.formatDate(mergeinfo[1])
@@ -1887,15 +1882,15 @@ class exttimeCF:
         depnum = function_instance.depnumFill(matter_data)
 
         try:
-            datemail = function_instance.formatDate(mergeinfo[9])
+            datemail = function_instance.formatDate(mergeinfo[10])
         except:
             datemail = ''
         try:
-            duedate = function_instance.formatDate(mergeinfo[10])
+            duedate = function_instance.formatDate(mergeinfo[11])
         except:
             duedate = ''
         try:
-            newdate = function_instance.newDate(mergeinfo[11], mergeinfo[10])
+            newdate = function_instance.newDate(mergeinfo[12], mergeinfo[11])
         except:
             newdate = ''
             
@@ -1907,7 +1902,7 @@ class exttimeCF:
         replace.update({
             'extLength' : mergeinfo[12].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
-            'feeAmount' : mergeinfo[1],
+            'feeAmount' : mergeinfo[0],
             'enclosed' : '',
             'depAccount' : depnum,
             'extLengthL' : mergeinfo[12].lower(),

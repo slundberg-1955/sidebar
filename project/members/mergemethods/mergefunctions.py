@@ -186,17 +186,20 @@ class mergefunctions:
                     farecipient = personprofile.lname
                 except:
                     farecipient = ''
+
+                country = contact.country
                 if 'GB' in contact.country:
                     country = 'United Kingdom'
                 if contact.country == 'US':
                     country = 'United States'
+                if contact.country.strip() == 'CN':
+                    country = 'China'
 
                 addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
                 basic = {
                     'faOrgName' : profile.orgname,
                     'faWorkAddr' : addr,
                     'faCSZ' : '',
-                    'faAssignee' : profile.orgname,
                     'associateName' : profile.orgname,
                     'recipientEmail' : contact.email,
                     'faclientRefNo' : part.matterno,
@@ -207,7 +210,6 @@ class mergefunctions:
                     'faOrgName' : '',
                     'faWorkAddr' : '',
                     'faCSZ' : '',
-                    'faAssignee' : '',
                     'associateName' : '',
                     'recipientEmail' : '',
                     'faclientRefNo' : '',
@@ -266,7 +268,8 @@ class mergefunctions:
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
         try:
-            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
+            parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
+            part = parts[0]
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
 
@@ -275,17 +278,11 @@ class mergefunctions:
 
             if assigneelen == 1:
                 count = 'Assignee: '
-                
-            street = contact.address1
-            if (contact.address2):
-                street = street + '\n' + contact.address2
-            if (contact.address3):
-                street = street + '\n' + contact.address3
 
             info = {
                 'assigneeCnt' : count,
                 'assigneeName' : profile.orgname,
-                'assigneeStreet' : street,
+                'assigneeStreet' : contact.address1,
                 'assigneeCity' : contact.city,
                 'assigneeState' : contact.state,
                 'assigneeZip' : contact.zip,
@@ -294,7 +291,8 @@ class mergefunctions:
                 'assigneeStreet2' : contact.address2,
                 'assignee' : profile.orgname,
                 'assigneeAddress' : str(contact.address1) + ', ' + str(contact.city) + ', ' + str(contact.state) + ', ' + str(contact.zip),
-                'assigneeStateInc' : str(profile.incstate) + ', ' + merge_fn.fullCountry(str(profile.inccountry))
+                'assigneeStateInc' : str(profile.incstate) + ', ' + merge_fn.fullCountry(str(profile.inccountry)),
+                'faAssignee' : profile.orgname
             }
         except:
             info = {
@@ -309,8 +307,10 @@ class mergefunctions:
                 'assigneeStreet2' : '',
                 'assignee' : '',
                 'assigneeAddress' : '',
-                'assigneeStateInc' : ''
+                'assigneeStateInc' : '',
+                'faAssignee' : ''
             }
+            
         return info
     
     # Applicant information fill. Update roleid  56691
@@ -1180,8 +1180,14 @@ class mergefunctions:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '58125', roleorderno = 1)
             profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+
+            if profile.mname != '':
+                ffname = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+            else:
+                ffname = profile.fname + ' ' + profile.lname
+
             info = {
-                'ffparaName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
+                'ffparaName' : ffname,
                 'ffparaEmail' : contact.email,
                 'ffparaPhone' : merge_fn.appendphone(contact.phone1)
             }
@@ -1193,12 +1199,46 @@ class mergefunctions:
             }
         return info
     
+    def matterCountryName(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        countryname = ''
+        try:
+            countryname = matter_data.countryname
+
+        except:
+            pass
+        
+        info = {
+            'matterCountryName' : countryname,
+        }
+        return info
+
     def countryType(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
+        countrytype = ''
+        try:
+            countrytype = matter_data.countryname
+            if (matter_data.country).strip() == 'US':
+                countrytype = 'American'
+            if (matter_data.country).strip() == 'CN':
+                countrytype = 'Chinese'
+            if (matter_data.country).strip() == 'GB':
+                countrytype = 'United Kingdom'
+            if (matter_data.country).strip() == 'EP':
+                countrytype = 'European'
+            if (matter_data.country).strip() == 'US':
+                countrytype = 'American'
+            if (matter_data.country).strip() == 'KR':
+                countrytype = 'Korean'
+            if (matter_data.country).strip() == 'AU':
+                countrytype = 'Australian'
+            if (matter_data.country).strip() == 'CA':
+                countrytype = 'Canadian'
 
-        if matter_data.countryname == 'United States of America':
-            countrytype = 'American'
+        except:
+            pass
         
         info = {
             'countryType' : countrytype

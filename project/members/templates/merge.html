@@ -132,6 +132,9 @@
         #PctCommRe .modal-dialog{
             max-width: 750px;
         }
+        #corrappln .modal-dialog{
+            max-width: 580px;
+        }
         #applicationdata_updnew .modal-dialog{
             max-width: 690px;
         }
@@ -1001,12 +1004,10 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="corrapplndepacc">  Deposit Account</label>
-                    <input type="checkbox" id="corrapplndepacc">
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Extention of Time:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0" size="5"> Amount</td>
+                            <td align="left"style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0.00" size="5"> Amount</td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Substitute Specifications:</td>
@@ -1039,8 +1040,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplndepacc.checked, corrapplnext.value, 
-                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnesign.checked, corrapplnenclosures.checked, corrapplnmad.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplnext.value, 
+                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnmad.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
             </div>
             <script>
                 function submitbtncorrappln(...args){
@@ -1131,8 +1132,6 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    &emsp;&emsp;Deposit Account: <input type="radio" id="misingpartsNwdepacc" name="options" value="depacc">
-                    &ensp;Check: <input type="radio" id="misingpartsNwcheck" name="options" value="check">
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Total Filing/Search/Exam Fee Amount (if sending):</td>
@@ -1197,7 +1196,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(misingpartsNwefile.checked, misingpartsNwpaperfile.checked, misingpartsNwdepacc.checked, misingpartsNwcheck.checked, missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, misingpartsNwesign.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, misingpartsNwesign.value)">Continue</button>
             </div>
         </div>
     </div>

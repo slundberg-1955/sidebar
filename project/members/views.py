@@ -857,7 +857,7 @@ def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
     return input_path
 
 # New separate function for merging documents
-def mergeDoc(matter , mergeinfo, request):
+def mergeDoc(matter, mergeinfo, request):
     merge_fn = mergefunctions()
     mergeinfo_list = mergeinfo.split(",") 
     module_name = ".mergemethods.merges"
@@ -898,7 +898,7 @@ def mergeDoc(matter , mergeinfo, request):
             mergeDoc(matter, pctext, '')
 
     if mergeinfo_list[1] == 'corrappln':
-        if mergefninfo[1] != '' and int(mergefninfo[1]) > 0:
+        if mergefninfo[0] != '':
             extime = mergeinfo.replace('corrappln', 'exttimeCF')
             extime = extime.replace('communications', 'transmittal')
             mergeDoc(matter, extime, '')
@@ -1004,8 +1004,11 @@ def mergeDoc(matter , mergeinfo, request):
             response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
             #quoted_filename = quote(file_name)
             response['Content-Disposition'] = f'attachment; filename={file_name}'
-            response.set_cookie('downloadComplete', 'true')
+            print('merge name:' + mergeinfo_list[1])
+            if mergeinfo_list[1] != 'exttimeCF':
+                response.set_cookie('downloadComplete', 'true')
 
+            print('I\'m about to return a document')
             return response
         except Exception as e:
             return HttpResponse(f"Error: {str(e)}", status=500)
