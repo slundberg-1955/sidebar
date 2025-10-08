@@ -85,9 +85,12 @@ class mergefunctions:
                     artunit = patent_data.artunitno
                 else:
                     artunit = 'Unknown'
+
+                patno = merge_fn.transform_patnumber(patent_data.patentno)
+
                 basic = {
                     'artUnit' : artunit,
-                    'patNo' : patent_data.patentno,
+                    'patNo' : patno,
                     'issueDate' : issdate,
                     'countryPatentOffice' : merge_fn.patentCountry(matter_data.country)
                 }
@@ -292,7 +295,6 @@ class mergefunctions:
                 'assignee' : profile.orgname,
                 'assigneeAddress' : str(contact.address1) + ', ' + str(contact.city) + ', ' + str(contact.state) + ', ' + str(contact.zip),
                 'assigneeStateInc' : str(profile.incstate) + ', ' + merge_fn.fullCountry(str(profile.inccountry)),
-                'faAssignee' : profile.orgname
             }
         except:
             info = {
@@ -308,7 +310,6 @@ class mergefunctions:
                 'assignee' : '',
                 'assigneeAddress' : '',
                 'assigneeStateInc' : '',
-                'faAssignee' : ''
             }
             
         return info
@@ -650,6 +651,34 @@ class mergefunctions:
         }
         return info
         
+
+    def faAssigneefill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        try:
+            parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
+
+            faassignee = ''
+            for part in parts:
+                profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+                if faassignee != '':
+                    faassignee = faassignee + ', ' + profile.orgname
+                    apptxt = 'Applicants'
+                else:
+                    faassignee = profile.orgname
+                    apptxt = 'Applicant'
+
+            info = {
+                'faAssignee' : faassignee,
+                'applicantTxt' : apptxt
+            }
+        except:
+            info = {
+                'faAssignee' : '',
+                'applicantTxt' : 'Applicant'
+            }
+            
+        return info
     
     def inventorInfo(self, matter, inv):
         merge_fn = mergefunctions()
@@ -847,6 +876,18 @@ class mergefunctions:
             part2 = part2[:-3] + ',' + part2[-3:]
 
             result = part1 + '/' + part2
+        except:
+            result = 'Unknown'
+            
+        return result
+    
+    def transform_patnumber(self, s):
+        try:
+            part1 = s[:2]
+            part2 = s[2:]
+            part2 = part2[:-3] + ',' + part2[-3:]
+
+            result = part1 + ',' + part2
         except:
             result = 'Unknown'
             

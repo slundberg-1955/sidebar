@@ -1867,7 +1867,7 @@ class DraftOAInstruct:
         replace.update(function_instance.ffparafill(matter))
         replace.update(function_instance.matterCountryName(matter))
         replace.update(function_instance.countryType(matter))
-        replace.update(function_instance.assigneefill(matter, 1))
+        replace.update(function_instance.faAssigneefill(matter))
         replace.update({
             'corrDate' : function_instance.formatDate(mergeinfo[0]),
             'cdueDate' : function_instance.formatDate(mergeinfo[1])

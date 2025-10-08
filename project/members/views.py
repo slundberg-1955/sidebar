@@ -20,6 +20,10 @@ from urllib.parse import quote
 import mimetypes
 from io import BytesIO
 
+import io
+import zipfile
+
+
 from concurrent.futures import ThreadPoolExecutor
 from .models import Matter
 from .models import Rvwmatterinventors
@@ -1000,16 +1004,54 @@ def mergeDoc(matter, mergeinfo, request):
             stream = blob_client.download_blob()
             data = stream.readall()
 
-            # Return the file as a download
-            response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-            #quoted_filename = quote(file_name)
-            response['Content-Disposition'] = f'attachment; filename={file_name}'
+            # # Return the file as a download
+            # response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+            # #quoted_filename = quote(file_name)
+            # response['Content-Disposition'] = f'attachment; filename={file_name}'
+            # return response
+            
             print('merge name:' + mergeinfo_list[1])
-            if mergeinfo_list[1] != 'exttimeCF':
-                response.set_cookie('downloadComplete', 'true')
 
-            print('I\'m about to return a document')
+            multidoc = False
+            if mergeinfo_list[1] == 'exttimeCf' or mergeinfo_list[1] == 'corrappln':
+                multidoc = True
+
+            # Check if this is the first document
+            if 'first_doc' not in request.session:
+                if multidoc == False:
+                    # Return the first document as a download (optional)
+                    response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    response['Content-Disposition'] = f'attachment; filename={file_name}'
+                    response.set_cookie('downloadComplete', 'true')
+                    print("First document saved in session. Returning it.")
+                    return response
+
+                else:
+                    # Multi-document — wait for second
+                    # Save first document in session
+                    request.session['first_doc'] = {
+                        'file_name': file_name,
+                        'data': data.hex()
+                    }
+                    print("First document saved. Waiting for second.")
+                    return HttpResponse(status=204)
+
+            # Second document received — zip and return both
+            first_doc = request.session.pop('first_doc')
+            first_data = bytes.fromhex(first_doc['data'])
+
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                zip_file.writestr(first_doc['file_name'], first_data)
+                zip_file.writestr(file_name, data)
+
+            zip_buffer.seek(0)
+            response = HttpResponse(zip_buffer.read(), content_type="application/zip")
+            response['Content-Disposition'] = 'attachment; filename=documents.zip'
+            response.set_cookie('downloadComplete', 'true')
+            print("Returning zipped documents.")
             return response
+
         except Exception as e:
             return HttpResponse(f"Error: {str(e)}", status=500)
         
