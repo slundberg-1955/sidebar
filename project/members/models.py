@@ -669,3 +669,23 @@ class CustNos(models.Model):
     class Meta:
         managed = False
         db_table = 'cust_nos'
+
+class FvContact4(models.Model):
+    orgid = models.IntegerField(db_column='orgId')  # Field name made lowercase.
+    level = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')
+    parenttype = models.CharField(db_column='parentType', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
+    actualtype = models.IntegerField(db_column='actualType')  # Field name made lowercase.
+    recordid = models.IntegerField(primary_key=True, db_column='recordId')  # Field name made lowercase.
+    contact_notes = models.TextField(db_column='CONTACT_NOTES', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    retainer = models.TextField(db_column='RETAINER', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    pct_signor = models.BooleanField(db_column='PCT_SIGNOR', blank=True, null=True)  # Field name made lowercase.
+    ids_specialist_assigned = models.TextField(db_column='IDS_SPECIALIST_ASSIGNED', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    backup = models.TextField(db_column='BACKUP', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    patent_agent = models.BooleanField(db_column='PATENT_AGENT', blank=True, null=True)  # Field name made lowercase.
+    language_assistance = models.TextField(db_column='LANGUAGE_ASSISTANCE', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+    is_notary = models.BooleanField(db_column='IS_NOTARY', blank=True, null=True)  # Field name made lowercase.
+    practice_area = models.TextField(db_column='PRACTICE_AREA', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'FV_CONTACT_4'

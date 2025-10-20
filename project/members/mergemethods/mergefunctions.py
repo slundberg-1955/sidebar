@@ -59,7 +59,7 @@ class mergefunctions:
                     matternumber = matter_data.hostmatterno
 
             basic = {
-                'serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
+                'serialNo' : matter_data.fmtserialno,
                 'filedDate' : filedte,
                 'title' : matter_data.title,
                 'matterNo' : matternumber,
@@ -190,13 +190,7 @@ class mergefunctions:
                 except:
                     farecipient = ''
 
-                country = contact.country
-                if 'GB' in contact.country:
-                    country = 'United Kingdom'
-                if contact.country == 'US':
-                    country = 'United States'
-                if contact.country.strip() == 'CN':
-                    country = 'China'
+                country = matter_data.countryname
 
                 addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
                 basic = {
@@ -566,6 +560,8 @@ class mergefunctions:
             return 'Germany'
         elif 'KR' in country:
             return 'Korea'
+        elif 'IN' in country:
+            return 'India'
         else:
             return country
         
@@ -616,12 +612,20 @@ class mergefunctions:
             except:
                 pass
         contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
+        # if contact.address1 != '':
+        #     homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
+        # elif contact.city != '':
+        #     homeaddr = contact.city + ', ' + contact.state + ' ' + contact.zip
+        # else:
+        #     homeaddr = contact.state + ' ' + contact.zip
+
+        homeaddr = ''
         if contact.address1 != '':
-            homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
-        elif contact.city != '':
-            homeaddr = contact.city + ', ' + contact.state + ' ' + contact.zip
-        else:
-            homeaddr = contact.state + ' ' + contact.zip
+            homeaddr = contact.address1
+        if contact.address2 != '':
+            homeaddr = homeaddr + '\n' + contact.address2
+        if contact.city != '':
+            homeaddr = homeaddr + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip + '\n' 
 
         info = {
             'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
@@ -785,7 +789,7 @@ class mergefunctions:
             except:
                 filedte = ''
             basic = {
-                'This.serialNo' : merge_fn.transform_serialnumber(matter_data.serialnumber),
+                'This.serialNo' : matter_data.fmtserialno,
                 'This.filedDate' : filedte,
                 'This.title' : matter_data.title,
                 'This.matterNo' : matter_data.hostmatterno,
@@ -1277,6 +1281,8 @@ class mergefunctions:
                 countrytype = 'Australian'
             if (matter_data.country).strip() == 'CA':
                 countrytype = 'Canadian'
+            if (matter_data.country).strip() == 'JP':
+                countrytype = 'Japanese'
 
         except:
             pass
@@ -1427,6 +1433,8 @@ class mergefunctions:
         try:
             profile = Personprofile.objects.using('FIP').filter(fname=fname, lname=lname)
             info = fname + ' ' + profile[0].mname + ' ' + lname
+            if profile[0].mname == '' or profile[0].mname == None:
+                info = fname + ' ' + lname
             regno = profile[0].registrationno
         except:
             pass
@@ -1443,3 +1451,14 @@ class mergefunctions:
         
         # Format the result as a dollar string
         return f"${total:.2f}"
+    
+    def entityName(self, entitystatus):
+        size = ''
+        if(entitystatus == 1 or entitystatus == 0):
+            size = 'small'
+        if(entitystatus == 2):
+            size = 'large'
+        if(entitystatus == 3):
+            size = 'micro'
+
+        return size

@@ -30,7 +30,7 @@ from .models import Rvwmatterinventors
 from .models import MergeCategory
 from .models import MergeRole
 from .models import MergeDef
-from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity, Relatedmatter
+from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity, Relatedmatter, FvContact4
 from docx import Document
 from typing import Any, List
 import re
@@ -323,6 +323,22 @@ def addPA(request):
             PAout = PAout + country
 
         return JsonResponse({'message': f'{PAout}'})
+    
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+    
+def addPCTSA(request):
+    if request.method == 'POST':
+        PCTout = ''
+        FVDatas = FvContact4.objects.using('FIP').filter(pct_signor = '1')
+        PCTout = []
+
+        for FVData in FVDatas:
+            profile = Personprofile.objects.using('FIP').get(ppid = FVData.recordid)
+            full_name = profile.fname + ' ' + profile.lname
+            PCTout.append(full_name)
+
+        return JsonResponse({'message': PCTout})
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
@@ -895,30 +911,6 @@ def mergeDoc(matter, mergeinfo, request):
     
     input_path = pathChanger(input_path, mergeinfo_list, mergefninfo, matter)
 
-    if mergeinfo_list[1] == 'pctcorrect':
-        if mergefninfo[5] == 'true':
-            pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
-            pctext = pctext.replace('pctcorrect', 'pctextention')
-            mergeDoc(matter, pctext, '')
-
-    if mergeinfo_list[1] == 'corrappln':
-        if mergefninfo[0] != '':
-            extime = mergeinfo.replace('corrappln', 'exttimeCF')
-            extime = extime.replace('communications', 'transmittal')
-            mergeDoc(matter, extime, '')
-    
-    if mergeinfo_list[1] == 'expressaban':
-        if mergefninfo[1] == '1':
-            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanAvoidPub.docx')
-            aban2 = aban2.replace('expressaban', 'expressaban2')
-        if mergefninfo[1] == '2':
-            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanRefund.docx')
-            aban2 = aban2.replace('expressaban', 'expressaban2')
-        if mergefninfo[1] == '3':
-            aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'Express_Abandonment.docx')
-            aban2 = aban2.replace('expressaban', 'expressaban2')
-        mergeDoc(matter, aban2, '')
-
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
     # combine doc
@@ -939,11 +931,6 @@ def mergeDoc(matter, mergeinfo, request):
         issBCC = ''
         attachment = os.path.join(settings.BASE_DIR, 'documents', 'attachments', 'Notice of Allowance Review and Response.pdf')
         Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
-
-        if mergefninfo[3] == 'true':
-            stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
-            stateofallow = stateofallow.replace('issuefee', 'stateofallow')
-            mergeDoc(matter, stateofallow, '')
             
     if mergeinfo_list[1] == 'assignment2016':
         if mergefninfo[0] == '1':
@@ -958,29 +945,13 @@ def mergeDoc(matter, mergeinfo, request):
 
     # doc merges
     if contacts == "FALSE":
-        # ----- Local -----
-        #load_dotenv()
-        # out = False
-        # count = 0
-        # while out is False:
-        #     try:
-        #         WordMerger(input_path, replace, output_path)
-        #         # ----- Local -----
-        #         os.startfile(output_path)
-        #         out = True
-        #     except:
-        #         count = count + 1
-        #         output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document' + str(count) + '.docx')
-        
         WordMerger(input_path, replace, output_path)
         # ----- Azure Storage -----
         file_name = os.path.basename(output_path)
         file_name = file_name.split('.')
-        file_name[0] += ('-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        #file_name[0] += ('-' + mergeinfo_list[1] + '-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        file_name[0] += ('-' + mergeinfo_list[1] + '-' + matter)
         file_name = file_name[0] + '.' + file_name[1]
-        
-        # ----- Azure Storage w/ Naming -----
-        # file_name = ''
         
         storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
         container_name = 'media'
@@ -1003,60 +974,68 @@ def mergeDoc(matter, mergeinfo, request):
             # Download the blob content
             stream = blob_client.download_blob()
             data = stream.readall()
-
-            # # Return the file as a download
-            # response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-            # #quoted_filename = quote(file_name)
-            # response['Content-Disposition'] = f'attachment; filename={file_name}'
-            # return response
             
             print('merge name:' + mergeinfo_list[1])
 
-            multidoc = False
-            if mergeinfo_list[1] == 'exttimeCf' or mergeinfo_list[1] == 'corrappln':
-                multidoc = True
+            doc_type = mergeinfo_list[1]
+            multidoc = (
+                (doc_type == 'corrappln' and mergefninfo[0] != '') or
+                (doc_type == 'pctcorrect' and mergefninfo[5] == 'true') or
+                (doc_type == 'expressaban' and (mergefninfo[1] == '1' or mergefninfo[1] == '2' or mergefninfo[1] == '3')) or
+                (doc_type == 'issuefee' and mergefninfo[3] == 'true')
+            )
 
-            # Check if this is the first document
-            if 'first_doc' not in request.session:
-                if multidoc == False:
-                    # Return the first document as a download (optional)
-                    response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                    response['Content-Disposition'] = f'attachment; filename={file_name}'
-                    response.set_cookie('downloadComplete', 'true')
-                    print("First document saved in session. Returning it.")
-                    return response
+            # Check if this is multi-doc
+            if not multidoc:
+                # Return the first document as a download (optional)
+                response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                response['Content-Disposition'] = f'attachment; filename={file_name}'
+                response.set_cookie('downloadComplete', 'true')
+                print("First document saved in session. Returning it.")
+                return response
 
-                else:
-                    # Multi-document — wait for second
-                    # Save first document in session
-                    request.session['first_doc'] = {
-                        'file_name': file_name,
-                        'data': data.hex()
-                    }
-                    print("First document saved. Waiting for second.")
-                    return HttpResponse(status=204)
+            if multidoc:
+                if mergeinfo_list[1] == 'corrappln':
+                    extime = mergeinfo.replace('corrappln', 'exttimeCF')
+                    extime = extime.replace('communications', 'transmittal')
+                    data2, file_name2 = mergemultidoc(matter, extime)
 
-            # Second document received — zip and return both
-            first_doc = request.session.pop('first_doc')
-            first_data = bytes.fromhex(first_doc['data'])
+                if mergeinfo_list[1] == 'pctcorrect':
+                    pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
+                    pctext = pctext.replace('pctcorrect', 'pctextention')
+                    data2, file_name2 = mergemultidoc(matter, pctext)
 
-            zip_buffer = io.BytesIO()
-            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
-                zip_file.writestr(first_doc['file_name'], first_data)
-                zip_file.writestr(file_name, data)
+                if mergeinfo_list[1] == 'expressaban':
+                    if mergefninfo[1] == '1':
+                        aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanAvoidPub.docx')
+                        aban2 = aban2.replace('expressaban', 'expressaban2')
+                    if mergefninfo[1] == '2':
+                        aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'ExpAbanRefund.docx')
+                        aban2 = aban2.replace('expressaban', 'expressaban2')
+                    if mergefninfo[1] == '3':
+                        aban2 = mergeinfo.replace('ExpressAbanAdd.docx', 'Express_Abandonment.docx')
+                        aban2 = aban2.replace('expressaban', 'expressaban2')
+                    data2, file_name2 = mergemultidoc(matter, aban2)
 
-            zip_buffer.seek(0)
-            response = HttpResponse(zip_buffer.read(), content_type="application/zip")
-            response['Content-Disposition'] = 'attachment; filename=documents.zip'
-            response.set_cookie('downloadComplete', 'true')
-            print("Returning zipped documents.")
-            return response
+                if mergeinfo_list[1] == 'issuefee':
+                    stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
+                    stateofallow = stateofallow.replace('issuefee', 'stateofallow')
+                    data2, file_name2 = mergemultidoc(matter, stateofallow)
+
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                    zip_file.writestr(file_name, data)
+                    zip_file.writestr(file_name2, data2)
+
+                zip_buffer.seek(0)
+                response = HttpResponse(zip_buffer.read(), content_type="application/zip")
+                response['Content-Disposition'] = 'attachment; filename=' + mergeinfo_list[1] + '-' + 'documents.zip'
+                response.set_cookie('downloadComplete', 'true')
+                print("Returning zipped documents.")
+                return response
 
         except Exception as e:
             return HttpResponse(f"Error: {str(e)}", status=500)
-        
-        # Web open
-        #webbrowser.open(blob_url)
 
     # outlook merges
     if contacts == "TRUE":
@@ -1092,6 +1071,75 @@ def mergeDoc(matter, mergeinfo, request):
         contact = Email(body, subject, tolist, cclist, bcclist, attachpaths, request)
         
         return JsonResponse({'url': f'{contact}'})
+
+def mergemultidoc(matter, mergeinfo):
+    merge_fn = mergefunctions()
+    mergeinfo_list = mergeinfo.split(",") 
+    module_name = ".mergemethods.merges"
+    class_name = mergeinfo_list[1]
+    module = importlib.import_module(module_name, package='members')
+    curMerge = getattr(module, class_name)
+    merge_instance = curMerge()
+
+    docpath = mergeinfo_list[0].split('/')
+    
+    input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
+    input_path = merge_fn.find_case_insensitive_path(input_path)
+
+    replace = {}
+    mergefninfo = mergeinfo.split(",")
+    mergefninfo.pop(0)
+    mergefninfo.pop(0)
+    mergefninfo.pop(0)
+    
+    contacts = mergeinfo_list[2]
+    # Pop emails in merge data
+    if contacts == 'TRUE' and mergeinfo_list[1] != 'reportprvassnnew':
+        mergefninfo.pop(0)
+        mergefninfo.pop(0)
+        mergefninfo.pop(0)
+
+    # without multiple docs
+    doc = Document(input_path)
+    keys = docx_get_keys2(doc)
+
+    replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
+
+    if contacts == "FALSE":
+        WordMerger(input_path, replace, output_path)
+        # ----- Azure Storage -----
+        file_name = os.path.basename(output_path)
+        file_name = file_name.split('.')
+        file_name[0] += ('-' + mergeinfo_list[1] + '-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        file_name = file_name[0] + '.' + file_name[1]
+        
+        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+        container_name = 'media'
+        start = time.time()
+        try:
+            credential = ManagedIdentityCredential()
+            print(f"Credential setup: {time.time() - start:.2f}s")
+
+            blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=file_name)
+            print(f"Blob client setup: {time.time() - start:.2f}s")
+
+            with open(output_path, 'rb') as data:
+                blob_client.upload_blob(data, overwrite=True)
+            print(f"Upload time: {time.time() - start:.2f}s")
+        
+            # Authenticate using managed identity
+            blob_client = BlobClient(storage_account_url, container_name, file_name, credential=credential)
+
+            # Download the blob content
+            stream = blob_client.download_blob()
+            data = stream.readall()
+
+            return data, file_name
+
+        except Exception as e:
+            return HttpResponse(f"Error: {str(e)}", status=500)
 
 def check_email(email):
     pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'

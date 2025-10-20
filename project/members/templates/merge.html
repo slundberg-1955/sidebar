@@ -1673,7 +1673,8 @@
                                     `;
                                     tableBody.appendChild(newRow);
                                 }
-                                $('#invchange').modal('show');
+                                //$('#invchange').modal('show');
+                                fillPCTSA('invchange');
                                 if (mergemethod == 'aiashortdecl' || mergemethod == 'msassn' || mergemethod == 'cornellassnnew'){
                                     document.getElementById("invchangeSAdrop").style.display = "none";
                                 }
@@ -1692,7 +1693,7 @@
                                         }
                                     });
                                     if (mergemethod == 'invchange')
-                                        submitbtnmerge(document.getElementById('invchangeesign').checked, document.getElementById('invchangeSAdrop').value ,invsel);
+                                        submitbtnmerge(document.getElementById('invchangeesign').checked, document.getElementById('invchangePCTSAdrop').value ,invsel);
                                     else
                                         submitbtnmerge(document.getElementById('invchangeesign').checked ,invsel);
                                 };
@@ -1704,13 +1705,7 @@
                     }
                 </script>
                 <div>
-                      <select id="invchangeSAdrop">
-                        <option value="Bradley Scheer">Bradley Scheer</option>
-                        <option value="David Black">David Black</option>
-                        <option value="Marvin Beekman">Marvin Beekman</option>
-                        <option value="Monique Perdok">Monique Perdok</option>
-                        <option value="Suneel Arora">Suneel Arora</option>
-                        <option value="Timothy Bianchi">Timothy Bianchi</option>
+                      <select id="invchangePCTSAdrop">
                     </select>
                 </div>
             </div>
@@ -5351,6 +5346,8 @@
                             //submitForm();
                         }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus' || mergemethod =='auditletter' || mergemethod == 'Qp_Ids' || mergemethod == 'amend37cfr'){
                             fillSA(mergemethod);
+                        //}else if (mergemethod == ''){
+                        //    fillPCTSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');
                         //}else if (mergemethod == 'incorrectfilerect'){
@@ -5766,6 +5763,42 @@
                 success: function(response) {
                     const sattList = response.message;
                     var sel = document.getElementById(mergemethod + 'SAdrop');
+                    
+                    // Clear existing options
+                    sel.innerHTML = '';
+
+                    // Add the default option
+                    var defaultOpt = document.createElement('option');
+                    defaultOpt.innerHTML = 'Select Signing Attorney';
+                    defaultOpt.value = '';
+                    sel.appendChild(defaultOpt);
+
+                    // Add the options from the response
+                    for (var i = 0; i < sattList.length; i++) {
+                        var opt = document.createElement('option');
+                        opt.innerHTML = sattList[i];
+                        opt.value = sattList[i];
+                        sel.appendChild(opt);
+                    }
+                    $('#' + mergemethod).modal('show');
+                },
+                error: function(error) {
+                    alert('no');
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function fillPCTSA(mergemethod) {
+            $.ajax({
+                type: 'POST',
+                url: 'merge_PCTSA/',
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const sattList = response.message;
+                    var sel = document.getElementById(mergemethod + 'PCTSAdrop');
                     
                     // Clear existing options
                     sel.innerHTML = '';

@@ -687,10 +687,12 @@ class corrappln:
 class missingpartsNw:
     def missingpartsNw(self, matter, mergeinfo, keys):
             function_instance = mergefunctions.mergefunctions()
-            combined = int(mergeinfo[6])
-            decpages = int(mergeinfo[8])
-            poapages = int(mergeinfo[7])
-            appdatasheetpg = int(mergeinfo[9])
+            matter_data = function_instance.matterFill(matter)
+            combined = int(mergeinfo[2])
+            decpages = int(mergeinfo[4])
+            poapages = int(mergeinfo[3])
+            appdatasheetpg = int(mergeinfo[5])
+            entity = function_instance.entityName(function_instance.entityfill(matter))
             submittext = ''
             if combined > 0:
                 submittext = 'the Signed Combined Declaration and Power of Attorney, and '
@@ -710,14 +712,49 @@ class missingpartsNw:
                 markupComments = '[add update comments here]. '
                 markupCopyA = ''
                 markupCopyB = ''
+
+            sfee = ''
+            surcharge = 'Authorization to charge Deposit Account 19-0743 in the amount of '+ sfee +' to cover the '+ entity +' Entity Surcharge.'
                 
+            extX = ''
+            extTxt = ''
+            extFeeX = ''
+            extFeeTxt = ''
+            if mergeinfo[1] != '0.00':
+                extX = 'X   '
+                extTxt = 'Petition for Extension of Time(1 pg.).'
+                extFeeX = 'X    '
+                extFeeTxt = 'Authorization to charge Deposit Account 19-0743 in the amount of $'+ mergeinfo[1] +' to cover the Extension of Time Fee'
 
             replace = {}
             # replace.update(function_instance.assigneefill(keys, matter))
-            replace.update(function_instance.esigncheck(mergeinfo[0]))
             replace.update(function_instance.mergebasic(keys, matter))
+            replace.update(function_instance.esigncheck(mergeinfo[13]))
             replace.update({
+                'frctDate' : function_instance.formatDate(mergeinfo[8]),
+                'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+                'docList' : '',
+                'depAccount' : function_instance.depnumFill(matter_data),
+                'submitText' : submittext,
+                'enclosedText' : '',
+                'amountText' : '',
+                'checkDepositText' : '',
+                'feeIncludedText' : '',
+                'entitySize' : entity,
 
+                'surchargeText' : surcharge,
+                #'filingFeeX' : '',
+                #'filingFeeText' : '',
+                'extensionX' : extX,
+                'extensionText' : extTxt,
+                'extensionFeeX' : extFeeX,
+                'extensionFeeText' : extFeeTxt,
+                #'combinedX' : '',
+                #'combinedText' : '',
+                #'declarationX' : '',
+                #'declarationText' : '',
+                #'poaX' : '',
+                #'poaText' : '',
             })
             return replace
     
@@ -2077,12 +2114,20 @@ class invchange:
         
         invtxt = ''
         hastxt = 'has'
-        if len(inventlist) == 2:
-            invtxt = inventlist[0] + ' and ' + inventlist[1]
-        elif len(inventlist) > 2:
-            invtxt = ', '.join(inventlist[:-1]) + ', and ' + inventlist[-1]
-        elif len(inventlist) == 1:
-            invtxt = inventlist[0]
+        formatted_inventlist = []
+        for inventor in inventlist:
+            parts = inventor.strip().split()
+            if parts:
+                parts[-1] = parts[-1].upper()  # Capitalize last name
+                formatted_inventlist.append(' '.join(parts))
+
+        # Format inventor text
+        if len(formatted_inventlist) == 2:
+            invtxt = formatted_inventlist[0] + ' and ' + formatted_inventlist[1]
+        elif len(formatted_inventlist) > 2:
+            invtxt = ', '.join(formatted_inventlist[:-1]) + ', and ' + formatted_inventlist[-1]
+        elif len(formatted_inventlist) == 1:
+            invtxt = formatted_inventlist[0]
             
         if len(inventlist) > 1:
             hastxt = 'have'
@@ -2098,6 +2143,18 @@ class invchange:
             'SAPhone' : '',
             'SARegNo' : '',
         })
+        if mergeinfo[1] != 'Select Signing Attorney' and mergeinfo[1] != '':
+            saname, regno = function_instance.fullSAName(mergeinfo[1])
+            replace.update({
+                'SAName' : saname,
+                'SARegNo' : regno
+            })
+            saphone = function_instance.phoneFillSA(mergeinfo[1])
+            if saphone != '':
+                replace.update({
+                    'SAPhone' : saphone
+                })
+                
         return replace       
 
 # Report Out - Application Filed (Provisional)
@@ -3417,11 +3474,11 @@ class reqtermadj:
         matter_data = function_instance.matterFill(matter)
         
         try:
-            activity = function_instance.getactivityid(matter_data, 'PPTA2')
+            activity = function_instance.getactivityid(matter_data, 'RRPD')
             pptadte = (activity.smryonevalue).strftime('%B %d, %Y')
 
         except:
-            pptadte = 'NO PPTA2 Activity'
+            pptadte = 'NO RRPD Activity'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
