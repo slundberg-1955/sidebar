@@ -329,17 +329,18 @@ def addPA(request):
     
 def addPCTSA(request):
     if request.method == 'POST':
-        PCTout = ''
-        FVDatas = FvContact4.objects.using('FIP').filter(pct_signor = '1')
-        PCTout = []
+        FVDatas = FvContact4.objects.using('FIP').filter(pct_signor='1')
+        PCTout = set()
 
         for FVData in FVDatas:
-            profile = Personprofile.objects.using('FIP').get(ppid = FVData.recordid)
-            full_name = profile.fname + ' ' + profile.lname
-            PCTout.append(full_name)
+            try:
+                profile = Personprofile.objects.using('FIP').get(ppid=FVData.recordid, disableaccess=False)
+                full_name = profile.fname + ' ' + profile.lname
+                PCTout.add(full_name)
+            except:
+                pass
 
-        return JsonResponse({'message': PCTout})
-    
+        return JsonResponse({'message': list(PCTout)})
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
@@ -626,6 +627,49 @@ def combinedoc(path, method, mergeinfo, matter, email):
             composer.append(doc2) 
         else:  
             composer.append(doc2)
+
+    if method == 'missingpartsNw':
+        doc1.add_page_break()
+        composer = Composer(doc1)
+
+        try:
+            enddoc_index = mergeinfo.index('ENDDOC')
+        except ValueError:
+            enddoc_index = None
+
+        try:
+            endfee_index = mergeinfo.index('ENDFEE')
+        except ValueError:
+            endfee_index = None
+
+        # Determine the later of the two indices
+        if enddoc_index is not None and endfee_index is not None:
+            split_index = max(enddoc_index, endfee_index)
+            mergeinfo = mergeinfo[split_index + 1:]
+        elif enddoc_index is not None:
+            mergeinfo = mergeinfo[enddoc_index + 1:]
+        elif endfee_index is not None:
+            mergeinfo = mergeinfo[endfee_index + 1:]
+        else:
+            mergeinfo = mergeinfo
+
+        minfo7 = int(mergeinfo[9]) if mergeinfo[9] else 0
+        if int(minfo7) > 0:
+            doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit2.docx'))
+            doc2.add_page_break()
+            composer.append(doc2)
+
+        minfo11 = int(mergeinfo[11]) if mergeinfo[11] else 0
+        minfo12 = int(mergeinfo[12]) if mergeinfo[12] else 0
+        minfo13 = int(mergeinfo[13]) if mergeinfo[13] else 0
+        minfo14 = int(mergeinfo[14]) if mergeinfo[14] else 0
+        if minfo11 > 0 or minfo12 > 0 or minfo13 > 0 or minfo14 > 0:
+            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit3.docx'))
+            doc3.add_page_break()
+            composer.append(doc3)
+
+        doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit4.docx'))
+        composer.append(doc4)
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
         doc1.add_page_break()
@@ -938,7 +982,7 @@ def mergeDoc(matter, mergeinfo, request):
         if mergefninfo[0] == '2':
             input_path = input_path.replace('2012_2', '2012_att')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
@@ -978,11 +1022,43 @@ def mergeDoc(matter, mergeinfo, request):
             print('merge name:' + mergeinfo_list[1])
 
             doc_type = mergeinfo_list[1]
+            if doc_type == 'corrappln':
+                try:
+                    index = mergefninfo.index('ENDDOC')
+                    second_array = mergefninfo[index + 1:]
+                except ValueError:
+                    # 'ENDDOCS' not found
+                    second_array = mergefninfo
+                mergefninfo = second_array
+
+            if doc_type == 'missingpartsNw':
+                try:
+                    enddoc_index = mergefninfo.index('ENDDOC')
+                except ValueError:
+                    enddoc_index = None
+
+                try:
+                    endfee_index = mergefninfo.index('ENDFEE')
+                except ValueError:
+                    endfee_index = None
+
+                # Determine the later of the two indices
+                if enddoc_index is not None and endfee_index is not None:
+                    split_index = max(enddoc_index, endfee_index)
+                    mergefninfo = mergefninfo[split_index + 1:]
+                elif enddoc_index is not None:
+                    mergefninfo = mergefninfo[enddoc_index + 1:]
+                elif endfee_index is not None:
+                    mergefninfo = mergefninfo[endfee_index + 1:]
+                else:
+                    mergefninfo = mergefninfo  # No change
+
             multidoc = (
                 (doc_type == 'corrappln' and mergefninfo[0] != '') or
                 (doc_type == 'pctcorrect' and mergefninfo[5] == 'true') or
                 (doc_type == 'expressaban' and (mergefninfo[1] == '1' or mergefninfo[1] == '2' or mergefninfo[1] == '3')) or
-                (doc_type == 'issuefee' and mergefninfo[3] == 'true')
+                (doc_type == 'issuefee' and mergefninfo[3] == 'true') or
+                (doc_type == 'missingpartsNw' and mergefninfo[1] != '')
             )
 
             # Check if this is multi-doc
@@ -996,8 +1072,49 @@ def mergeDoc(matter, mergeinfo, request):
 
             if multidoc:
                 if mergeinfo_list[1] == 'corrappln':
+                    try:
+                        extmergeinfo = mergeinfo.split(',')
+                        index = extmergeinfo.index('ENDDOC')
+                        second_array = ','.join(extmergeinfo[:3] + extmergeinfo[index + 1:])
+                    except ValueError:
+                        # 'ENDDOCS' not found
+                        second_array = mergeinfo
+                    mergeinfo = second_array
+
                     extime = mergeinfo.replace('corrappln', 'exttimeCF')
                     extime = extime.replace('communications', 'transmittal')
+                    extime = extime.split(',')
+                    extime = ','.join(extime[:3] + [mergefninfo[0]] + extime[10:])
+                    data2, file_name2 = mergemultidoc(matter, extime)
+
+                if mergeinfo_list[1] == 'missingpartsNw':
+                    extmergeinfo = mergeinfo.split(',')
+                    try:
+                        enddoc_index = extmergeinfo.index('ENDDOC')
+                    except ValueError:
+                        enddoc_index = None
+
+                    try:
+                        endfee_index = extmergeinfo.index('ENDFEE')
+                    except ValueError:
+                        endfee_index = None
+
+                    # Determine the later of the two indices
+                    if enddoc_index is not None and endfee_index is not None:
+                        split_index = max(enddoc_index, endfee_index)
+                        mergeinfo = ','.join(extmergeinfo[:3] + extmergeinfo[split_index + 1:])
+                    elif enddoc_index is not None:
+                        mergeinfo = ','.join(extmergeinfo[:3] + extmergeinfo[enddoc_index + 1:])
+                    elif endfee_index is not None:
+                        mergeinfo = ','.join(extmergeinfo[:3] + extmergeinfo[endfee_index + 1:])
+                    else:
+                        pass
+
+                    extime = mergeinfo.replace('missingpartsxmit', 'exttimeCF')
+                    extime = extime.replace('missingpartsNw', 'exttimeCF')
+                    extime = extime.replace('communications', 'transmittal')
+                    extime = extime.split(',')
+                    extime = ','.join(extime[:3] + [mergefninfo[1]] + extime[19:])
                     data2, file_name2 = mergemultidoc(matter, extime)
 
                 if mergeinfo_list[1] == 'pctcorrect':
@@ -1029,7 +1146,7 @@ def mergeDoc(matter, mergeinfo, request):
 
                 zip_buffer.seek(0)
                 response = HttpResponse(zip_buffer.read(), content_type="application/zip")
-                response['Content-Disposition'] = 'attachment; filename=' + mergeinfo_list[1] + '-' + 'documents.zip'
+                response['Content-Disposition'] = 'attachment; filename=' + mergeinfo_list[1] + '-' + matter + '-documents.zip'
                 response.set_cookie('downloadComplete', 'true')
                 print("Returning zipped documents.")
                 return response
@@ -1111,7 +1228,8 @@ def mergemultidoc(matter, mergeinfo):
         # ----- Azure Storage -----
         file_name = os.path.basename(output_path)
         file_name = file_name.split('.')
-        file_name[0] += ('-' + mergeinfo_list[1] + '-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        #file_name[0] += ('-' + mergeinfo_list[1] + '-' + ''.join(random.choices(string.ascii_letters, k=6)))
+        file_name[0] += ('-' + mergeinfo_list[1] + '-' + matter)
         file_name = file_name[0] + '.' + file_name[1]
         
         storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"

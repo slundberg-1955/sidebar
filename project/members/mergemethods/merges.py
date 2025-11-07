@@ -595,104 +595,199 @@ class ownerchange:
 # Need due date and fee
 class corrappln:
     def corrappln(self,matter, mergeinfo, keys):
+            try:
+                index = mergeinfo.index('ENDDOC')
+                first_array = mergeinfo[:index]
+                second_array = mergeinfo[index + 1:]
+            except ValueError:
+                # 'ENDDOCS' not found
+                first_array = []
+                second_array = mergeinfo
+            
+            mergeinfo = second_array
+            addocs = first_array
+            print('Here')
+            print(addocs)
+            addoctxt = ""
+            if addocs:
+                for i in range(0, len(addocs), 2):
+                    doc_name = addocs[i]
+                    page_count = addocs[i + 1] if i + 1 < len(addocs) else 'unknown'
+                    addoctxt += f"X         {doc_name} ({page_count} pgs)\n"
+
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
             depnum = function_instance.depnumFill(matter_data)
-
-            SubX = ''
-            AbsX = ''
-            SeqX = ''
-            FrmlX = ''
-
-            SubPg = ''
-            AbsPg = ''
-            SeqPg = ''
-            FrmlPg = ''
-            depx = ''
-            deppg = ''
-            extx = ''
-            extpg = ''
             doclist = ''
             docs = []
 
+            try:
+                activity = function_instance.getactivityid(matter_data, 'CAPR-2')
+                if activity == '':
+                    activity = function_instance.getactivityid(matter_data, 'CAPR-NAR')
+
+                duedte = (Task.objects.using('FIP').get(activityid = activity.activityid).nextdateval).strftime("%B %d, %Y")
+
+            except:
+                duedte = ''
+
+            SubX = ''
+            SubTxt = ''
             if mergeinfo[1] != '' and int(mergeinfo[1]) > 0:
                 SubX = 'X'
-                SubPg = 'Substitute Specification (' + mergeinfo[1] + ' pg.).'
+                SubTxt = '         Substitute Specification (' + mergeinfo[1] + ' pg.).'
                 docs.append('a Substitute Specification')
 
+            AbsX = ''
+            AbsTxt = ''
             if mergeinfo[2] != '' and int(mergeinfo[2]) > 0:
                 AbsX = 'X'
-                AbsPg = 'Abstract (' + mergeinfo[2] + ' pg.).'
+                AbsTxt = '         Abstract (' + mergeinfo[2] + ' pg.).'
                 docs.append('a Substitute Abstract')
 
+            SeqX = ''
+            SeqTxt = ''
             if mergeinfo[3] != '' and int(mergeinfo[3]) > 0:
                 SeqX = 'X'
-                SeqPg = 'Sequence Listing (' + mergeinfo[3] + ' pg.).'
+                SeqTxt = '         Sequence Listing (' + mergeinfo[3] + ' pg.).'
                 docs.append('a Sequence Listing')
 
+            FrmlX = ''
+            FrmlTxt = ''
             if mergeinfo[4] != '' and int(mergeinfo[4]) > 0:
                 FrmlX = 'X'
-                FrmlPg = 'Formal Drawings (' + mergeinfo[4] + ' pg.).'
+                FrmlTxt = '         Formal Drawings (' + mergeinfo[4] + ' pg.).'
                 docs.append('Formal Drawings')
+
+            extX = ''
+            extTxt = ''
+            depx = ''
+            depTxt = ''
+            if mergeinfo[0] != '':
+                extX = 'X'
+                extTxt = '         Petition for Extension of Time (1 pg.).'
+                depx = 'X'
+                depTxt = '         Authorization to charge Deposit Account ' + depnum + ' in the amount of $' + mergeinfo[0] + ' to cover the Extension of Time Fee.'
 
             if len(docs) == 4:
                 doclist = 'A Substitute Specification, a Substitute Abstract, a Sequence Listing, and Formal Drawings are attached.'
             elif len(docs) == 2:
-                doclist = ' and '.join(docs)
-                doclist += ' are attached.'
+                doclist = ' and '.join(docs) + ' are attached.'
             elif len(docs) == 1:
                 doclist = docs[0]
-                doclist += ' is attached.'
+                # Use 'are' if the single item is 'Formal Drawings', otherwise 'is'
+                if doclist == 'Formal Drawings':
+                    doclist += ' are attached.'
+                else:
+                    doclist += ' is attached.'
             else:
                 doclist = ', '.join(docs[:-1])
-                if len(docs) > 1:
-                    doclist += ', and ' + docs[-1]
-                    doclist += ' are attached.'
-
-            if mergeinfo[0] != '':
-                extx = 'X'
-                extpg = 'Petition for Extension of Time (1 pg.).'
-                depx = 'X'
-                deppg = 'Authorization to charge Deposit Account '+ depnum +' in the amount of $'+ '' +' to cover the Extension of Time Fee.'
+                doclist += ', and ' + docs[-1]
+                doclist += ' are attached.'
 
             try:
                 fdoclist = doclist[0].upper() + doclist[1:]
             except:
                 fdoclist = ''
+
+            # Collect all entries like in missingpartsnw
+            corrappln_entries = [
+                (SubX, SubTxt),
+                (AbsX, AbsTxt),
+                (SeqX, SeqTxt),
+                (FrmlX, FrmlTxt),
+                (extX, extTxt),
+                (depx, depTxt)
+            ]
+
+            doc_lines = []
+            for x, txt in corrappln_entries:
+                if x != '':
+                    line = f"{x}{txt}"
+                    doc_lines.append(line)
+
+            if addoctxt:
+                attachList = '\n'.join(doc_lines) + '\n' + addoctxt
+            else:
+                attachList = '\n'.join(doc_lines)
                 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update(function_instance.esigncheck(mergeinfo[6]))
             replace.update({
                 'depAccount' : depnum,
-                'SubX' : SubX,
-                'AbsX' : AbsX,
-                'SeqX' : SeqX,
-                'FrmlX' : FrmlX,
-                'SubstitutePg' : SubPg,
-                'AbstractPg' : AbsPg,
-                'SeqPg' : SeqPg,
-                'FormalPg' : FrmlPg,
                 'docList' : fdoclist,
-                'dueDate' : '',
-
-                'extX' : extx,
-                'extPg' : extpg,
-                'depX' : depx,
-                'depPg' : deppg,
+                'dueDate' : duedte,
+                'attachList' : attachList,
             })
             return replace
 
 # Transmittal - Missing Parts Response
+# Add additional documents
 class missingpartsNw:
     def missingpartsNw(self, matter, mergeinfo, keys):
+            try:
+                enddoc_index = mergeinfo.index('ENDDOC')
+            except ValueError:
+                enddoc_index = -1
+
+            try:
+                endfee_index = mergeinfo.index('ENDFEE')
+            except ValueError:
+                endfee_index = -1
+
+            endfee_array = []
+            enddoc_array = []
+
+            if enddoc_index != -1 and endfee_index != -1:
+                if enddoc_index < endfee_index:
+                    # ENDDOC comes first
+                    enddoc_array = mergeinfo[:enddoc_index]
+                    endfee_array = mergeinfo[enddoc_index + 1:endfee_index]
+                    mergeinfo = mergeinfo[endfee_index + 1:]
+                else:
+                    # ENDFEE comes first
+                    endfee_array = mergeinfo[:endfee_index]
+                    enddoc_array = mergeinfo[endfee_index + 1:enddoc_index]
+                    mergeinfo = mergeinfo[enddoc_index + 1:]
+            elif enddoc_index != -1:
+                enddoc_array = mergeinfo[:enddoc_index]
+                mergeinfo = mergeinfo[enddoc_index + 1:]
+            elif endfee_index != -1:
+                endfee_array = mergeinfo[:endfee_index]
+                mergeinfo = mergeinfo[endfee_index + 1:]
+
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
-            combined = int(mergeinfo[2])
-            decpages = int(mergeinfo[4])
-            poapages = int(mergeinfo[3])
-            appdatasheetpg = int(mergeinfo[5])
+            combined = int(mergeinfo[4]) if mergeinfo[4] else 0
+            decpages = int(mergeinfo[6]) if mergeinfo[6] else 0
+            poapages = int(mergeinfo[5]) if mergeinfo[5] else 0
             entity = function_instance.entityName(function_instance.entityfill(matter))
+            depacc = function_instance.depnumFill(matter_data)
+            amtfee = function_instance.getFee(6, matter)
+            deptxt = 'authorization to charge Deposit Account ' + depacc
+            doc_items = []
+
+            addocs = enddoc_array
+            addoctxt = ""
+            if addocs:
+                for i in range(0, len(addocs), 2):
+                    doc_name = addocs[i]
+                    page_count = addocs[i + 1] if i + 1 < len(addocs) else 'unknown'
+                    addoctxt += f"X         {doc_name} ({page_count} pgs)"
+                    if i + 2 < len(addocs):  # Only add newline if not the last pair
+                        addoctxt += "\n"
+
+            addfees = endfee_array
+            addfeestxt = ""
+            if addfees:
+                for i in range(0, len(addocs), 2):
+                    fee_name = addfees[i]
+                    fee_amt = addfees[i + 1] if i + 1 < len(addfees) else 'unknown'
+                    addfeestxt += f"X         Authorization to charge Deposit Account {depacc} in the amount of ${fee_amt} to cover the {fee_name}"
+                    if i + 2 < len(addfees):  # Only add newline if not the last pair
+                        addfeestxt += "\n"
+
             submittext = ''
             if combined > 0:
                 submittext = 'the Signed Combined Declaration and Power of Attorney, and '
@@ -704,57 +799,200 @@ class missingpartsNw:
                 if poapages > 0:
                     submittext = 'the Signed Power of Attorney, and '
 
-            if appdatasheetpg > 0:
-                markupComments = '[add update comments here]. '
-                markupCopyA = ''
-                markupCopyB = ''
-            else:
-                markupComments = '[add update comments here]. '
-                markupCopyA = ''
-                markupCopyB = ''
+            surcharge = 'Authorization to charge Deposit Account '+ depacc +' in the amount of '+ amtfee +' to cover the '+ entity +' Entity Surcharge.'
 
-            sfee = ''
-            surcharge = 'Authorization to charge Deposit Account 19-0743 in the amount of '+ sfee +' to cover the '+ entity +' Entity Surcharge.'
-                
+            totfeeX = ''
+            totfeeTxt = ''
+            feeincluded = ''
+            if mergeinfo[0] != '':
+                totfeeX = 'X'
+                totfeeTxt = '         Authorization to charge Deposit Account '+ depacc +' in the amount of $'+mergeinfo[0]+' to cover the \tBasic Filing, Search, and Exam Fees and any Additional Claims Fee.'
+                feeincluded = ', and authorization to charge Deposit Account '+ depacc +' in the amount of $'+mergeinfo[0]+' to cover the Large Entity Basic Filing, Search, and Exam Fees and any Additional Claims Fee'
+
             extX = ''
             extTxt = ''
             extFeeX = ''
             extFeeTxt = ''
-            if mergeinfo[1] != '0.00':
-                extX = 'X   '
-                extTxt = 'Petition for Extension of Time(1 pg.).'
-                extFeeX = 'X    '
-                extFeeTxt = 'Authorization to charge Deposit Account 19-0743 in the amount of $'+ mergeinfo[1] +' to cover the Extension of Time Fee'
+            if mergeinfo[1] != '':
+                extX = 'X'
+                extTxt = '         Petition for Extension of Time(1 pg.).'
+                extFeeX = 'X'
+                extFeeTxt = '         Authorization to charge Deposit Account 19-0743 in the amount of $'+ mergeinfo[1] +' to cover the \tExtension of Time Fee'
+
+            combinedtxt = ''
+            combinedX = ''
+            decX = ''
+            dectxt = ''
+            poaX = ''
+            poatxt = ''
+            minfo4 = int(mergeinfo[4]) if mergeinfo[4] else 0
+            if minfo4 > 0:
+                combinedtxt = '         Signed Combined Declaration and Power of Attorney ('+ mergeinfo[4] +' pgs.).'
+                combinedX = 'X'
+            minfo5 = int(mergeinfo[5]) if mergeinfo[5] else 0
+            if minfo5 > 0:
+                decX = 'X'
+                dectxt = '         Signed Declatation ('+ mergeinfo[5] +'pgs.)'
+            minfo6 = int(mergeinfo[6]) if mergeinfo[6] else 0
+            if minfo6 > 0:
+                poaX = 'X'
+                poatxt = '         Signed Power of Attorney ('+ mergeinfo[6] +'pgs.)'
+
+            appdsX = ''
+            appdstxt = ''
+            markupComments = '[add update comments here]. '
+            markupCopyA = ''
+            markupCopyB = ''
+            filedte = ''
+            minfo7 = int(mergeinfo[7]) if mergeinfo[7] else 0
+            if minfo7 > 0:
+                appdsX = 'X'
+                appdstxt = '         Marked-up Application Data Sheet ('+ mergeinfo[7] +' pgs.)'
+
+                markupCopyA = 'We also submit a Marked-up copy of the Application Data sheet filed '+filedte+', which shows an update to the '
+                markupCopyB = 'It is respectfully requested that the USPTO update their records accordingly and provide confirmation of the above request.  '
+
+            filingrecX = ''
+            filingrecTxt = ''
+            fcopyX = ''
+            fcopyTxt = ''
+            minfo9 = int(mergeinfo[9]) if mergeinfo[9] else 0
+            if minfo9 > 0:
+                filingrecX = 'X'
+                filingrecTxt = '         Communication Re:  Incorrect Filing Receipt ('+ mergeinfo[9] +' pgs.).'
+                fcopyX = 'X'
+                fcopyTxt = '         Copy of Filing Receipt (2 pgs.).'
+
+            corrpapX = ''
+            corrpapTxt = ''
+            minfo11 = int(mergeinfo[11]) if mergeinfo[11] else 0
+            minfo12 = int(mergeinfo[12]) if mergeinfo[12] else 0
+            minfo13 = int(mergeinfo[13]) if mergeinfo[13] else 0
+            minfo14 = int(mergeinfo[14]) if mergeinfo[14] else 0    
+            if minfo11 > 0 or minfo12 > 0 or minfo13 > 0 or minfo14 > 0:
+                corrpapX = 'X'
+                corrpapTxt = '         Communication Re:  Corrected Application Papers (1 pg.).'
+
+            specX = ''
+            specTxt = ''
+            if minfo11 > 0:
+                specX = 'X'
+                specTxt = '         Substitute Specification ('+ mergeinfo[11] +' pgs.).'
+                doc_items.append('a Substitute Specification')
+
+            abstX = ''
+            abstTxt = ''
+            if minfo12 > 0:
+                abstX = 'X'
+                abstTxt = '         Abstract ('+ mergeinfo[12] +' pgs.).'
+                doc_items.append('a Substitute Abstract')
+
+            seqX = ''
+            seqTxt = ''
+            if minfo13 > 0:
+                seqX = 'X'
+                seqTxt = '         Sequence Listing ('+ mergeinfo[13] +' pgs.).'
+                doc_items.append('a Sequence Listing')
+
+            drawX = ''
+            drawTxt = ''
+            if minfo14 > 0:
+                drawX = 'X'
+                drawTxt = '         Formal Drawings ('+ mergeinfo[14] +' pgs.).'
+                doc_items.append('Formal Drawings')
+
+            if len(doc_items) == 0:
+                docList = ''
+            elif len(doc_items) == 1:
+                docList = f"{doc_items[0]} is "
+            else:
+                docList = ', '.join(doc_items[:-1]) + f", and {doc_items[-1]} are"
+
+            pamdX = ''
+            pamdTxt = ''
+            minfo8 = int(mergeinfo[8]) if mergeinfo[8] else 0
+            if minfo8 > 0:
+                pamdX = 'X'
+                pamdTxt = '         Preliminary Amendment ('+ mergeinfo[8] +' pgs.).'
+
+            nonX = ''
+            nonTxt = ''
+            if mergeinfo[2] != '':
+                nonX = 'X'
+                nonTxt = '         Authorization to charge Deposit Account '+ depacc +' in the amount of $'+ mergeinfo[2] +' to cover the \tNon-DOCX Filing Fee.'
+
+            ebdX = ''
+            ebdTxt = ''
+            if mergeinfo[3] != '':
+                ebdX = 'X'
+                ebdTxt = '         Authorization to charge Deposit Account '+ depacc +' in the amount of $'+ mergeinfo[3] +' to cover the \tBenefit Claim Fee.'
+            
+            doc_entries = [
+                (totfeeX, totfeeTxt),
+                (extX, extTxt),
+                (extFeeX, extFeeTxt),
+                (combinedX, combinedtxt),
+                (decX, dectxt),
+                (poaX, poatxt),
+                (appdsX, appdstxt),
+                (filingrecX, filingrecTxt),
+                (fcopyX, fcopyTxt),
+                (corrpapX, corrpapTxt),
+                (specX, specTxt),
+                (abstX, abstTxt),
+                (seqX, seqTxt),
+                (drawX, drawTxt),
+                (pamdX, pamdTxt),
+                (nonX, nonTxt),
+                (ebdX, ebdTxt)
+            ]
+
+            doc_lines = []
+            for x, txt in doc_entries:
+                if x != '':
+                    line = f"{x}{txt}"
+                    doc_lines.append(line)
+
+            if addoctxt and addfeestxt:
+                attachList = '\n'.join(doc_lines) + '\n' + addoctxt + '\n' + addfeestxt
+            elif addoctxt:
+                attachList = '\n'.join(doc_lines) + '\n' + addoctxt
+            elif addfeestxt:
+                attachList = '\n'.join(doc_lines) + '\n' + addfeestxt
+            else:
+                attachList = '\n'.join(doc_lines)
+
+            #replace['docList'] = docList
+            try:
+                activity = function_instance.getactivityid(matter_data, 'MPTR')
+                duedte = (Task.objects.using('FIP').get(activityid = activity.activityid).nextdateval).strftime("%B %d, %Y")
+
+            except:
+                duedte = ''
+
 
             replace = {}
             # replace.update(function_instance.assigneefill(keys, matter))
             replace.update(function_instance.mergebasic(keys, matter))
-            replace.update(function_instance.esigncheck(mergeinfo[13]))
+            replace.update(function_instance.esigncheck(mergeinfo[15]))
             replace.update({
                 'frctDate' : function_instance.formatDate(mergeinfo[8]),
                 'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-                'docList' : '',
+                'docList' : docList,
                 'depAccount' : function_instance.depnumFill(matter_data),
                 'submitText' : submittext,
-                'enclosedText' : '',
-                'amountText' : '',
-                'checkDepositText' : '',
-                'feeIncludedText' : '',
+                'enclosedText' : '(see enclosed copy)',
+                'amountText' : amtfee,
+                'checkDepositText' : deptxt,
+                'feeIncludedText' : feeincluded,
                 'entitySize' : entity,
+                'attachList' : attachList,
+                'markupCopyA' : markupCopyA,
+                'markupCopyB' : markupCopyB,
+                'markupComments' : markupComments,
+                'dueDate' : duedte,
 
                 'surchargeText' : surcharge,
-                #'filingFeeX' : '',
-                #'filingFeeText' : '',
-                'extensionX' : extX,
-                'extensionText' : extTxt,
-                'extensionFeeX' : extFeeX,
-                'extensionFeeText' : extFeeTxt,
-                #'combinedX' : '',
-                #'combinedText' : '',
-                #'declarationX' : '',
-                #'declarationText' : '',
-                #'poaX' : '',
-                #'poaText' : '',
             })
             return replace
     
@@ -1919,15 +2157,15 @@ class exttimeCF:
         depnum = function_instance.depnumFill(matter_data)
 
         try:
-            datemail = function_instance.formatDate(mergeinfo[10])
+            datemail = function_instance.formatDate(mergeinfo[3])
         except:
             datemail = ''
         try:
-            duedate = function_instance.formatDate(mergeinfo[11])
+            duedate = function_instance.formatDate(mergeinfo[4])
         except:
             duedate = ''
         try:
-            newdate = function_instance.newDate(mergeinfo[12], mergeinfo[11])
+            newdate = function_instance.newDate(mergeinfo[5], mergeinfo[4])
         except:
             newdate = ''
             
@@ -1935,16 +2173,16 @@ class exttimeCF:
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[17]))
+        replace.update(function_instance.esigncheck(mergeinfo[10]))
         replace.update({
-            'extLength' : mergeinfo[12].upper(),
+            'extLength' : mergeinfo[5].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
             'feeAmount' : mergeinfo[0],
             'enclosed' : '',
             'depAccount' : depnum,
-            'extLengthL' : mergeinfo[12].lower(),
-            'mailstopText' : mergeinfo[8],
-            'extResponse' : mergeinfo[9],
+            'extLengthL' : mergeinfo[5].lower(),
+            'mailstopText' : mergeinfo[1],
+            'extResponse' : mergeinfo[2],
             'dateMailed' : datemail,
             'dueDate' : duedate,
             'newDate' : newdate,
@@ -3475,10 +3713,10 @@ class reqtermadj:
         
         try:
             activity = function_instance.getactivityid(matter_data, 'RRPD')
-            pptadte = (activity.smryonevalue).strftime('%B %d, %Y')
+            rrpddte = (Task.objects.using('FIP').get(activityid = activity.activityid).nextdateval).strftime("%B %d, %Y")
 
         except:
-            pptadte = 'NO RRPD Activity'
+            rrpddte = 'NO RRPD Activity'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -3489,7 +3727,7 @@ class reqtermadj:
             'currentMo' : datetime.now().strftime("%B"),
             'currentYr' : datetime.now().year,
             'certificateText' : 'filed using the USPTO\'s electronic filing system EFS-Web, and is ',
-            'dueDate' : pptadte
+            'dueDate' : rrpddte
         })
         return replace
 

@@ -192,7 +192,12 @@ class mergefunctions:
 
                 country = matter_data.countryname
 
-                addr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n' + country
+                addr = contact.address1 + '\n'
+                if contact.address2 != '':
+                    addr = addr + contact.address2 + '\n'
+                
+                addr = addr + contact.city + ', ' + contact.zip + '\n' + country
+
                 basic = {
                     'faOrgName' : profile.orgname,
                     'faWorkAddr' : addr,
@@ -603,35 +608,44 @@ class mergefunctions:
     
     def inventorInfoName(self, matter, name):
         merge_fn = mergefunctions()
-        first, middle, last = merge_fn.split_name(name)
-        matter_data = merge_fn.matterFill(matter)
-        parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
-        for part in parts:
-            try:
-                profile = Personprofile.objects.using('FIP').get(ppid = part.contactid, fname = first, lname = last)
-            except:
-                pass
-        contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
-        # if contact.address1 != '':
-        #     homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
-        # elif contact.city != '':
-        #     homeaddr = contact.city + ', ' + contact.state + ' ' + contact.zip
-        # else:
-        #     homeaddr = contact.state + ' ' + contact.zip
+        try:
+            first, middle, last = merge_fn.split_name(name)
+            matter_data = merge_fn.matterFill(matter)
+            parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
+            for part in parts:
+                try:
+                    profile = Personprofile.objects.using('FIP').get(ppid = part.contactid, fname = first, lname = last)
+                except:
+                    pass
+                
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
+            # if contact.address1 != '':
+            #     homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
+            # elif contact.city != '':
+            #     homeaddr = contact.city + ', ' + contact.state + ' ' + contact.zip
+            # else:
+            #     homeaddr = contact.state + ' ' + contact.zip
 
-        homeaddr = ''
-        if contact.address1 != '':
-            homeaddr = contact.address1
-        if contact.address2 != '':
-            homeaddr = homeaddr + '\n' + contact.address2
-        if contact.city != '':
-            homeaddr = homeaddr + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip + '\n' 
+            homeaddr = ''
+            if contact.address1 != '':
+                homeaddr = contact.address1
+            if contact.address2 != '':
+                homeaddr = homeaddr + '\n' + contact.address2
+            if contact.city != '':
+                homeaddr = homeaddr + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip + '\n' 
+            info = {
+                'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
+                'inventorHomeAddress' : homeaddr,
+                'inventorHomeCountry' : merge_fn.fullCountry(contact.country),
+            }
 
-        info = {
-            'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
-            'inventorHomeAddress' : homeaddr,
-            'inventorHomeCountry' : merge_fn.fullCountry(contact.country),
-        }
+        except:
+            info = {
+                'inventorName' : '',
+                'inventorHomeAddress' : '',
+                'inventorHomeCountry' : '',
+            }
+
         return info
     
     def inventorInfoBSC(self, matter, inv):
@@ -1097,8 +1111,11 @@ class mergefunctions:
         return profile
     
     def getactivityid(self, matter, type):
-        activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = type)
-        return activity[0]
+        try:
+            activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = type)
+            return activity[0]
+        except:
+            return ''
     
     def extract_date(self, text):
         # Regular expression pattern to match dates in MM/DD/YYYY format
@@ -1133,7 +1150,7 @@ class mergefunctions:
             return 'pgs'
 
     def newDate(self, n, date):
-        date_obj = datetime.strptime(date, '%m/%d/%Y')
+        date_obj = datetime.strptime(date, '%Y-%m-%d')
         
         if n == 'One-Month':
             new_date = date_obj + relativedelta(months=1)

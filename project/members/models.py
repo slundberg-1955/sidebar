@@ -409,7 +409,7 @@ class Relatedmatter(models.Model):
         db_table = 'relatedmatter'
         
 class Task(models.Model):
-    taskid = models.IntegerField(db_column='taskId')  # Field name made lowercase.
+    taskid = models.IntegerField(db_column='taskId', primary_key = True)  # Field name made lowercase.
     activityid = models.IntegerField(db_column='activityId', blank=True, null=True)  # Field name made lowercase.
     name = models.CharField(max_length=100, db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)
     notes = models.TextField(db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)

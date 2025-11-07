@@ -324,6 +324,9 @@
         #additionalDocs .modal-dialog{
             max-width: 570px;
         }
+        #additionalFees .modal-dialog{
+            max-width: 570px;
+        }
         #Qp_Ids .modal-dialog{
             max-width: 350px;
         }
@@ -488,6 +491,13 @@
                 {% endfor %}
             </table>
         </form>
+    <script>
+        document.getElementById('mergeform').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+            event.preventDefault();
+            }
+        });
+    </script>
     
     <!-- Redirect to Azure Storage Link -->
     <script>
@@ -1035,13 +1045,13 @@
                     <br>  Esign Enable: <input type="checkbox" id="corrapplnesign" checked>
                 </div>
                 <div>
-                    <br>  With Enclosures: <input type="checkbox" id="corrapplnenclosures">
+                    <br>  <button type="button" class="btn btn-primary" onclick="adddocsadd()">Additional Documents</button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplnext.value, 
-                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnmad.value, corrapplnesign.checked, corrapplnenclosures.checked)">Continue</button>
+                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnmad.value, corrapplnesign.checked)">Continue</button>
             </div>
             <script>
                 function submitbtncorrappln(...args){
@@ -1135,35 +1145,46 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Total Filing/Search/Exam Fee Amount (if sending):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Extention Fee Amount (if applicable):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Combined Declaration & Power of Attorney Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpowpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="right"style="border: none;">  Non-DOCX Fee:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwndocx" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right"style="border: none;">  EBD Fee Over 6 or 9 years:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwebd" name="updatepagect" placeholder="0.00" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
+                            <td align="right" style="border: none;">  Combined Declaration & Power of Attorney Pages:</td>
+                            <td align="left" style="border: none;">
+                                <input type="text" id="missingpartsNwdecpowpg" name="updatepagect" placeholder="0" size="5"
+                                    oninput="toggleInput('missingpartsNwdecpowpg', 'missingpartsNwpowpg'); toggleInput('missingpartsNwdecpowpg', 'missingpartsNwdecpg');">
+                            </td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Power of Attorney Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Declaration Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0.00" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Preliminary Amendment:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Comm re: Incorrect Filing Receipt Pages (if sending):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
@@ -1174,30 +1195,48 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Substitute Specification Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Abstract Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Sequence Listing Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right"style="border: none;">  Formal Drawings Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5" value = "0"></td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                     </table>
                 </div>
                 <div>
-                    <br>  Esign Enable: <input type="checkbox" id="misingpartsNwesign" checked>
+                    <br>  Esign Enable: <input type="checkbox" id="missingpartsNwesign" checked>
+                </div>
+                <div>
+                    <br>  <button type="button" class="btn btn-primary" onclick="addfeesadd()">Additional Fees</button>  <button type="button" class="btn btn-primary" onclick="adddocsadd()">Additional Documents</button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, misingpartsNwesign.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmissingpartsNw(missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwndocx.value, missingpartsNwebd.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, missingpartsNwesign.checked)">Continue</button>
             </div>
+            <script>
+                function submitbtnmissingpartsNw(...args){
+                    const merged_data = args.join(',');
+                    //alert(merged_data);
+                    document.getElementById('mergedata').value += merged_data;
+                    let value = document.getElementById('missingpartsNwextfee').value;
+                    if(value && Number(value) > 0){
+                        document.getElementById('mergedata').value += ','
+                        $('#extTime').modal('show');
+                    }
+                    else{
+                        submitbtnmerge();
+                    }
+                }
+            </script>
         </div>
     </div>
 </div>
@@ -1509,13 +1548,7 @@
                 </div>
                 <div>
                     <br><label for="ownerchangenames">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</label>
-                    <select id="ownerchangenames" style="width: 150px;">
-                      <option value="Bradley Scheer">Bradley Scheer</option>
-                      <option value="David Black">David Black</option>
-                      <option value="Marvin Beekman">Marvin Beekman</option>
-                      <option value="Monique Perdok">Monique Perdok</option>
-                      <option value="Suneel Arora">Suneel Arora</option>
-                      <option value="Timothy Bianchi">Timothy Bianchi</option>
+                    <select id="ownerchangePCTSAdrop">
                     </select>
                   </div>
             </div>
@@ -2873,11 +2906,11 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Mail Stop (if applicable): </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimemstop" size="5"></td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimemstop" size="40"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  Action being Extended: </td>
-                            <td align="right" style="border: none;"><input type="text" id="extTimeactext" size="5"></td>
+                            <td align="right" style="border: none;"><input type="text" id="extTimeactext" size="40"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="left" style="border: none;">  USPTO Mailing Date: </td>
@@ -3422,7 +3455,96 @@
         //alert(filteredArgs);
         if (filteredArgs.length > 0) {
             const merged_data = filteredArgs.join(',');
-            document.getElementById('mergedata').value += merged_data;
+            document.getElementById('mergedata').value += merged_data + ',' + 'ENDDOC' + ',';
+        }                         
+    }
+</script>
+<script>
+    function addfeesadd(){
+        $('#additionalFees').modal('show');
+    }
+</script>
+<!-- Additional Documents -->
+<div id="additionalFees" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="additionalFeesModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Additional Fees</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> </td>
+                        <td align="center" style="border: none; padding: 4px;">Fee</td>
+                        <td align="right" style="border: none; padding: 4px;">Fee Amt</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 1</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees1"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg1"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 2</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees2"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg2"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 3</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees3"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg3"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 4</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees4"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg4"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 5</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees5"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg5"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 6</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees6"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg6"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 7</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees7"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg7"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 8</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees8"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg8"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 9</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees9"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg9"></textarea></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="left" style="border: none; padding: 4px;"> 10</td>
+                        <td align="center" style="border: none; padding: 4px;"><textarea rows="1" cols="50" id = "additionalFees10"></textarea></td>
+                        <td align="right" style="border: none; padding: 4px;"><textarea rows="1" cols="6" id = "additionalFeespg10"></textarea></td>
+                    </tr>
+                </table> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnfees(additionalFees1.value, additionalFeespg1.value, additionalFees2.value, additionalFeespg2.value, additionalFees3.value, additionalFeespg3.value, additionalFees4.value, additionalFeespg4.value, additionalFees5.value, additionalFeespg5.value, additionalFees6.value, additionalFeespg6.value, additionalFees7.value, additionalFeespg7.value, additionalFees8.value, additionalFeespg8.value, additionalFees9.value, additionalFeespg9.value, additionalFees10.value, additionalFeespg10.value)">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function submitbtnfees(...args){
+        const filteredArgs = args.filter(arg => arg !== '' && arg !== 0);
+        //alert(filteredArgs);
+        if (filteredArgs.length > 0) {
+            const merged_data = filteredArgs.join(',');
+            document.getElementById('mergedata').value += merged_data + ',' + 'ENDFEE' + ',';
         }                         
     }
 </script>
@@ -5332,7 +5454,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "ownerchange", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -5346,8 +5468,8 @@
                             //submitForm();
                         }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus' || mergemethod =='auditletter' || mergemethod == 'Qp_Ids' || mergemethod == 'amend37cfr'){
                             fillSA(mergemethod);
-                        //}else if (mergemethod == ''){
-                        //    fillPCTSA(mergemethod);
+                        }else if (mergemethod == 'ownerchange'){
+                            fillPCTSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');
                         //}else if (mergemethod == 'incorrectfilerect'){
