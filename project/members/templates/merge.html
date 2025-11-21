@@ -162,7 +162,7 @@
         #LateSubmissionOfDec .modal-dialog{
             max-width: 700px;
         }
-        #extTime .modal-dialog{
+        #exttimeCF .modal-dialog{
             max-width: 800px;
         }
         #rcexmit3 .modal-dialog{
@@ -1061,7 +1061,7 @@
                     let value = document.getElementById('corrapplnext').value;
                     if(value && Number(value) > 0){
                         document.getElementById('mergedata').value += ','
-                        $('#extTime').modal('show');
+                        $('#exttimeCF').modal('show');
                     }
                     else{
                         submitbtnmerge();
@@ -1230,7 +1230,7 @@
                     let value = document.getElementById('missingpartsNwextfee').value;
                     if(value && Number(value) > 0){
                         document.getElementById('mergedata').value += ','
-                        $('#extTime').modal('show');
+                        $('#exttimeCF').modal('show');
                     }
                     else{
                         submitbtnmerge();
@@ -1966,9 +1966,7 @@
             </div>
             <div class="modal-body">
                 <div class="account">
-                    &emsp;&emsp;Deposit Account:<input type="radio" id="pctcorrectdepacc" name="account" checked="checked">
-                    &ensp;Check:<input type="radio" id="pctcorrectcheck" name="account">
-                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign" checked> E-Sign Enable &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Select Signing Attorney
+                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign"> E-Sign Enable                        Select Signing Attorney
                 </div>  
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
@@ -2026,7 +2024,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectdepacc.checked, pctcorrectcheck.checked, pctcorrectesign.checked, 
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectesign.checked, 
                 pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, pctcorrectmonthext.value, 
                 pctcorrectannexa.checked, pctcorrecttxtarea.value, pctcorrectannexb.checked, 
                 pctcorrectdescpg.value, pctcorrectclaimpg.value, pctcorrectabspg.value, 
@@ -2894,7 +2892,7 @@
     </div>
 </div>
 <!-- Extention of time UI -->
-<div id="extTime" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="extTimeModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="exttimeCF" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exttimeCFModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -3092,7 +3090,7 @@
                     //alert(merged_data);
                     document.getElementById('mergedata').value += merged_data;
                     if(document.getElementById('rcexmit3petext').checked){
-                        $('#extTime').modal('show');
+                        $('#exttimeCF').modal('show');
                     }
                     else{
                         submitbtnmerge();
@@ -5454,7 +5452,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {

@@ -5,7 +5,7 @@ from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo, ClientSpec
-from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos
+from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos, FvMatter4
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db import connections
@@ -67,7 +67,7 @@ class mergefunctions:
                 'custNoMFee' : mfee,
                 'confirmNo' : confirm,
                 'examinerName' : merge_fn.examinerFill(matter_data),
-                'matterCountryName' : merge_fn.fullCountry(matter_data.country)
+                'matterCountryName' : matter_data.countryname
             }
             basic.update(merge_fn.mergebasicEmail(keys, matter))
             for key, value in basic.items():
@@ -191,12 +191,16 @@ class mergefunctions:
                     farecipient = ''
 
                 country = matter_data.countryname
+                if country == 'European Patent Office':
+                    country = 'United Kingdom'
 
                 addr = contact.address1 + '\n'
                 if contact.address2 != '':
                     addr = addr + contact.address2 + '\n'
+                if contact.address3 != '':
+                    addr = addr + contact.address3 + '\n'
                 
-                addr = addr + contact.city + ', ' + contact.zip + '\n' + country
+                addr = addr + contact.city + ', ' + contact.state + ' ' + contact.zip + '\n' + country
 
                 basic = {
                     'faOrgName' : profile.orgname,
@@ -567,6 +571,12 @@ class mergefunctions:
             return 'Korea'
         elif 'IN' in country:
             return 'India'
+        elif 'CN' in country:
+            return 'China'
+        elif 'BR' in country:
+            return 'Brazil'
+        elif 'EP' in country:
+            return 'European Patent Office'
         else:
             return country
         
@@ -959,9 +969,15 @@ class mergefunctions:
     def examinerFill(self, data):
         try:
             examiner_data = Rvwmatterpersonnel.objects.using('FIP').get(matterid = data.matterid, rolename = "Examiner")
-            examiner = examiner_data.personname   
+            examiner = examiner_data.personname
         except:
             examiner = 'Unknown'
+
+        if examiner == 'Unknown':
+            try:
+                examiner = FvMatter4.objects.using('FIP').get(recordid = data.matterid).examiner
+            except:
+                pass
 
         return examiner
 

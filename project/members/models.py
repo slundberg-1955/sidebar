@@ -516,7 +516,7 @@ class FvMatter4(models.Model):
     level = models.CharField(max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')
     parenttype = models.CharField(db_column='parentType', max_length=20, db_collation='SQL_Latin1_General_CP1_CI_AS')  # Field name made lowercase.
     actualtype = models.IntegerField(db_column='actualType')  # Field name made lowercase.
-    recordid = models.IntegerField(db_column='recordId')  # Field name made lowercase.
+    recordid = models.IntegerField(db_column='recordId', primary_key = True)  # Field name made lowercase.
     actual_filing_date = models.DateTimeField(db_column='ACTUAL_FILING_DATE', blank=True, null=True)  # Field name made lowercase.
     adverse_party = models.TextField(db_column='ADVERSE_PARTY', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.
     adverse_party_2 = models.TextField(db_column='ADVERSE_PARTY_2', db_collation='SQL_Latin1_General_CP1_CI_AS', blank=True, null=True)  # Field name made lowercase.

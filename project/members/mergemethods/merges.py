@@ -781,7 +781,7 @@ class missingpartsNw:
             addfees = endfee_array
             addfeestxt = ""
             if addfees:
-                for i in range(0, len(addocs), 2):
+                for i in range(0, len(addfees), 2):
                     fee_name = addfees[i]
                     fee_amt = addfees[i + 1] if i + 1 < len(addfees) else 'unknown'
                     addfeestxt += f"X         Authorization to charge Deposit Account {depacc} in the amount of ${fee_amt} to cover the {fee_name}"
@@ -792,11 +792,11 @@ class missingpartsNw:
             if combined > 0:
                 submittext = 'the Signed Combined Declaration and Power of Attorney, and '
             else:
-                if decpages > 0 and poapages > 0:
+                if (decpages > 0 and poapages > 0):
                     submittext = 'the Signed Declaration and Signed Power of Attorney, and '
-                if decpages > 0:
+                elif decpages > 0:
                     submittext = 'the Signed Declaration, and '
-                if poapages > 0:
+                elif poapages > 0:
                     submittext = 'the Signed Power of Attorney, and '
 
             surcharge = 'Authorization to charge Deposit Account '+ depacc +' in the amount of '+ amtfee +' to cover the '+ entity +' Entity Surcharge.'
@@ -832,25 +832,32 @@ class missingpartsNw:
             minfo5 = int(mergeinfo[5]) if mergeinfo[5] else 0
             if minfo5 > 0:
                 decX = 'X'
-                dectxt = '         Signed Declatation ('+ mergeinfo[5] +'pgs.)'
+                dectxt = '         Signed Power of Attorney ('+ mergeinfo[5] +'pgs.)'
             minfo6 = int(mergeinfo[6]) if mergeinfo[6] else 0
             if minfo6 > 0:
                 poaX = 'X'
-                poatxt = '         Signed Power of Attorney ('+ mergeinfo[6] +'pgs.)'
+                poatxt = '         Signed Declaration ('+ mergeinfo[6] +'pgs.)'
 
             appdsX = ''
             appdstxt = ''
-            markupComments = '[add update comments here]. '
+            markupComments = ''
             markupCopyA = ''
             markupCopyB = ''
             filedte = ''
+            try:
+                activity = function_instance.getactivityid(matter_data, 'ADSF')
+                filedte = (Task.objects.using('FIP').get(activityid = activity.activityid).nextdateval).strftime("%B %d, %Y")
+
+            except:
+                filedte = (matter_data.fileddate).strftime('%B %d, %Y')
             minfo7 = int(mergeinfo[7]) if mergeinfo[7] else 0
             if minfo7 > 0:
                 appdsX = 'X'
                 appdstxt = '         Marked-up Application Data Sheet ('+ mergeinfo[7] +' pgs.)'
 
-                markupCopyA = 'We also submit a Marked-up copy of the Application Data sheet filed '+filedte+', which shows an update to the '
+                markupCopyA = 'We also submit a Marked-up copy of the Application Data sheet filed '+ filedte +', which shows an update to the '
                 markupCopyB = 'It is respectfully requested that the USPTO update their records accordingly and provide confirmation of the above request.  '
+                markupComments = '[add update comments here]. '
 
             filingrecX = ''
             filingrecTxt = ''
@@ -904,7 +911,10 @@ class missingpartsNw:
             if len(doc_items) == 0:
                 docList = ''
             elif len(doc_items) == 1:
-                docList = f"{doc_items[0]} is "
+                if doc_items[0] != 'Formal Drawings':
+                    docList = f"{doc_items[0]} is"
+                else:
+                    docList = f"{doc_items[0]} are"
             else:
                 docList = ', '.join(doc_items[:-1]) + f", and {doc_items[-1]} are"
 
@@ -981,7 +991,7 @@ class missingpartsNw:
                 'docList' : docList,
                 'depAccount' : function_instance.depnumFill(matter_data),
                 'submitText' : submittext,
-                'enclosedText' : '(see enclosed copy)',
+                'enclosedText' : '',
                 'amountText' : amtfee,
                 'checkDepositText' : deptxt,
                 'feeIncludedText' : feeincluded,
@@ -1315,39 +1325,52 @@ class pctcorrect:
     def pctcorrect(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
-        depacc = mergeinfo[0]
-        check = mergeinfo[1]
-        annexA = mergeinfo[7]
-        annexAtxt = mergeinfo[8]
-        annexB = mergeinfo[9]
-        descpg = mergeinfo[10]
-        claimpg = mergeinfo[11]
-        abspg = mergeinfo[12]
-        annexC = mergeinfo[13]
-        formalpg = mergeinfo[14]
+        annexA = mergeinfo[5]
+        annexAtxt = mergeinfo[6]
+        annexB = mergeinfo[7]
+        descpg = mergeinfo[8]
+        claimpg = mergeinfo[9]
+        abspg = mergeinfo[10]
+        annexC = mergeinfo[11]
+        formalpg = mergeinfo[12]
 
         if annexA == 'true':
             Atxt = annexAtxt + 'which is believed to be in compliance with Annex A of the Invitation.'
+            anAtxt = annexAtxt + ' ( pg)'
+            anAX = 'X'
         else:
             Atxt = ''
 
         if annexB == 'true':
             Btxt = 'Replacement description pages ' + descpg + ', replacement claims pages ' + claimpg + ' and replacement abstract pages ' + abspg + ' which are believed to be in compliance with Annex B1 of the Invitation.'
+            if descpg > 0:
+                Bdesctxt = 'Description Replacement Pages (  pgs)'
+                BdescX = 'X'
+            if claimpg > 0:
+                Bclaimtxt = 'Claim Replacement Pages (  pgs)'
+                BclaimX = 'X'
+            if abspg > 0:
+                Babstxt = 'Abstract Replacement Page (1 pg)'
+                BabsX = 'X'
         else:
             Btxt = ''
 
         if annexC == 'true':
             Ctxt = 'Formal drawing sheets (' + formalpg + ') which are all believed to be in compliance with Annex C1 of the Invitation.'
+            Cfmlpgtxt = 'Formal Drawings (  pgs.)'
+            CfmlpgX = 'X'
         else:
             Ctxt = ''
 
-        label = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: MS PCT, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of '+ str(datetime.now().strftime("%B")) +', '+ str(datetime.now().year) +'.'
+        if mergeinfo[5] == 'true':
+            exttxt = 'Extenstion of Time (1 pg)'
+            extx = 'X'
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'mailDate' : function_instance.formatDate(mergeinfo[3]),
+            'mailDate' : function_instance.formatDate(mergeinfo[1]),
             # add phone number at end
             'cAnnexAText' : Atxt,
             'cAnnexBText' : Btxt,
@@ -1356,9 +1379,6 @@ class pctcorrect:
             'encloseText' : 'enclose',
             'depAccount' : function_instance.depnumFill(matter_data),
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'userName' : '',
-            'certificateForPaperFilingExpressMail' : '',
-            'certificateForEmailPaperFilingStandard' : label,
         })
         return replace
 
@@ -1377,20 +1397,20 @@ class applicationdata_new2:
         })
         return replace
     
-class pctextention:
-    def pctextention(self, matter, mergeinfo, keys):
+class pctextension:
+    def pctextension(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
 
         annexes = []
 
-        if mergeinfo[7] == 'true':
+        if mergeinfo[5] == 'true':
             annexes.append('Annex A')
 
-        if mergeinfo[9] == 'true':
+        if mergeinfo[7] == 'true':
             annexes.append('Annex B')
 
-        if mergeinfo[13] == 'true':
+        if mergeinfo[11] == 'true':
             annexes.append('Annex C')
 
         if len(annexes) == 2:
@@ -1400,23 +1420,19 @@ class pctextention:
         else:
             annexTxt = ''.join(annexes)
 
-        label = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: MS PCT, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of '+ str(datetime.now().strftime("%B")) +', '+ str(datetime.now().year) +'.'
-
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[2]))
+        replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-            'extensionLenTextHdr' : function_instance.number_to_words(int(mergeinfo[6])),
+            'extensionLenTextHdr' : function_instance.number_to_words(int(mergeinfo[4])),
             'mailDate' : mergeinfo[3],
             'properApplicant' : 'Applicant',
-            'extensionLenText' : function_instance.number_to_words(int(mergeinfo[6])).lower(),
+            'extensionLenText' : function_instance.number_to_words(int(mergeinfo[4])).lower(),
             'requestText' : 'requests',
             'annexSelectText' : annexTxt,
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
             'requestDueDate' : '',
-            'SAName' : mergeinfo[4],
-            'certificateForPaperFilingExpressMail' : '',
-            'certificateForEmailPaperFilingStandard' : label,
+            'SAName' : mergeinfo[2],
         })
         return replace
 
@@ -2157,6 +2173,23 @@ class exttimeCF:
         depnum = function_instance.depnumFill(matter_data)
 
         try:
+            ext = mergeinfo[10]
+        except:
+            fee = ''
+            if mergeinfo[4] == 'One-Month':
+                fee = function_instance.getFee(27, matter)
+            if mergeinfo[4] == 'Two-Month':
+                fee = function_instance.getFee(30, matter)
+            if mergeinfo[4] == 'Three-Month':
+                fee = function_instance.getFee(33, matter)
+            if mergeinfo[4] == 'Four-Month':
+                fee = function_instance.getFee(36, matter)
+            if mergeinfo[4] == 'Five-Month':
+                fee = function_instance.getFee(39, matter)
+            
+            mergeinfo.insert(0, fee)
+
+        try:
             datemail = function_instance.formatDate(mergeinfo[3])
         except:
             datemail = ''
@@ -2171,12 +2204,16 @@ class exttimeCF:
             
         cert = 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is being filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to: test, Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on {{Dte_es_:signer2:date}}.'
 
+        pettxt = ''
+        if mergeinfo[6] == 'true':
+            pettxt = '\n            A petition for a one-month extension of time was previously filed on '+ function_instance.formatDate(mergeinfo[7]) +', accompanied by the fee for that petition of $'+ mergeinfo[8] +'.  As a result, the incremental fee for this petition is $' + mergeinfo[9]
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[10]))
         replace.update({
             'extLength' : mergeinfo[5].upper(),
-            'depCheckText' : 'Please charge Deposit Account No. '+ depnum +' ',
+            'depCheckText' : 'Please charge Deposit Account No. '+ depnum,
             'feeAmount' : mergeinfo[0],
             'enclosed' : '',
             'depAccount' : depnum,
@@ -2186,7 +2223,7 @@ class exttimeCF:
             'dateMailed' : datemail,
             'dueDate' : duedate,
             'newDate' : newdate,
-            'petitionText' : '',
+            'petitionText' : pettxt,
             'certificateCF' : cert
         })
         return replace
@@ -3188,7 +3225,7 @@ class ffSndItmsToAssoc:
                 docnames += '\t' + str(count) + '. ' + doc + '\n'
                 
         if mergeinfo[5]:
-            duedate = 'by the ' + function_instance.formatDate(mergeinfo[5]) + ' deadline'
+            duedate = 'by the ' + function_instance.formatDate(mergeinfo[5])
         else:
             duedate = 'at your earliest convenience'
                 
@@ -3196,12 +3233,12 @@ class ffSndItmsToAssoc:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.cmgfill(matter))
         replace.update(function_instance.ffparafill(matter))
+        replace.update(function_instance.faAssigneefill(matter))
         replace.update({
             'documentName' : docnames,
             'cdeadLine' : 'Kindly see to the prompt filing of the enclosed document(s) ',
             'dueDate' : duedate,
             'faRecipientTitle' : '',
-            
         })
         return replace
 

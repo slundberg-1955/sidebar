@@ -1118,8 +1118,8 @@ def mergeDoc(matter, mergeinfo, request):
                     data2, file_name2 = mergemultidoc(matter, extime)
 
                 if mergeinfo_list[1] == 'pctcorrect':
-                    pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtention')
-                    pctext = pctext.replace('pctcorrect', 'pctextention')
+                    pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtension')
+                    pctext = pctext.replace('pctcorrect', 'pctextension')
                     data2, file_name2 = mergemultidoc(matter, pctext)
 
                 if mergeinfo_list[1] == 'expressaban':
