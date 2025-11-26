@@ -1966,18 +1966,12 @@
             </div>
             <div class="modal-body">
                 <div class="account">
-                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign"> E-Sign Enable                        Select Signing Attorney
+                    &emsp;&emsp;<input type="checkbox" id="pctcorrectesign" checked> E-Sign Enable                        Select Signing Attorney
                 </div>  
                 <div>
                     <label for="pctcorrectmail">&emsp;&emsp;Mailing Date of Invitation to Correct Defects:&ensp;</label>
                     <input type="date" id="pctcorrectmail">&emsp;
-                    <select id="pctcorrectSAdrop">
-                        <option value="Bradley Scheer">Bradley Scheer</option>
-                        <option value="David Black">David Black</option>
-                        <option value="Marvin Beekman">Marvin Beekman</option>
-                        <option value="Monique Perdok">Monique Perdok</option>
-                        <option value="Suneel Arora">Suneel Arora</option>
-                        <option value="Timothy Bianchi">Timothy Bianchi</option>
+                    <select id="pctcorrectPCTSAdrop">
                       </select>
                 </div>
                 <div>
@@ -2025,7 +2019,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(pctcorrectesign.checked, 
-                pctcorrectmail.value, pctcorrectSAdrop.value, pctcorrectmailext.checked, pctcorrectmonthext.value, 
+                pctcorrectmail.value, pctcorrectPCTSAdrop.value, pctcorrectmailext.checked, pctcorrectmonthext.value, 
                 pctcorrectannexa.checked, pctcorrecttxtarea.value, pctcorrectannexb.checked, 
                 pctcorrectdescpg.value, pctcorrectclaimpg.value, pctcorrectabspg.value, 
                 pctcorrectannexc.checked, pctcorrectformalpg.value)">Continue</button>
@@ -5452,7 +5446,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "pctcorrect", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -5466,7 +5460,7 @@
                             //submitForm();
                         }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus' || mergemethod =='auditletter' || mergemethod == 'Qp_Ids' || mergemethod == 'amend37cfr'){
                             fillSA(mergemethod);
-                        }else if (mergemethod == 'ownerchange'){
+                        }else if (mergemethod == 'ownerchange' || mergemethod == 'pctcorrect'){
                             fillPCTSA(mergemethod);
                         }else if (mergemethod == 'UpdateAppDataSheet'){
                             $('#UpdateAppDataSheet').modal('show');

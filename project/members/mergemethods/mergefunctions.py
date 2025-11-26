@@ -1277,6 +1277,32 @@ class mergefunctions:
             }
         return info
     
+    def ffWAfill(self, matter):
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '58125', roleorderno = 1)
+            profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
+
+            if profile.mname != '':
+                ffname = profile.fname + ' ' + profile.mname + ' ' + profile.lname
+            else:
+                ffname = profile.fname + ' ' + profile.lname
+
+            info = {
+                'ffWAName' : ffname,
+                'ffWAEmail' : contact.email,
+                'ffWAPhone' : merge_fn.appendphone(contact.phone1)
+            }
+        except:
+            info = {
+                'ffWAName' : '',
+                'ffWAEmail' : '',
+                'ffWAPhone' : ''
+            }
+        return info
+    
     def matterCountryName(self, matter):
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)

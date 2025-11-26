@@ -606,8 +606,6 @@ class corrappln:
             
             mergeinfo = second_array
             addocs = first_array
-            print('Here')
-            print(addocs)
             addoctxt = ""
             if addocs:
                 for i in range(0, len(addocs), 2):
@@ -690,7 +688,7 @@ class corrappln:
             except:
                 fdoclist = ''
 
-            # Collect all entries like in missingpartsnw
+            # Collect all entries
             corrappln_entries = [
                 (SubX, SubTxt),
                 (AbsX, AbsTxt),
@@ -1335,51 +1333,144 @@ class pctcorrect:
         formalpg = mergeinfo[12]
 
         if annexA == 'true':
-            Atxt = annexAtxt + 'which is believed to be in compliance with Annex A of the Invitation.'
-            anAtxt = annexAtxt + ' ( pg)'
+            Atxt = annexAtxt + ' which is believed to be in compliance with Annex A of the Invitation.'
+            anAtxt = annexAtxt + ' ( pg.)'
             anAX = 'X'
         else:
             Atxt = ''
+            anAtxt = ''
+            anAX = ''
 
         if annexB == 'true':
-            Btxt = 'Replacement description pages ' + descpg + ', replacement claims pages ' + claimpg + ' and replacement abstract pages ' + abspg + ' which are believed to be in compliance with Annex B1 of the Invitation.'
-            if descpg > 0:
-                Bdesctxt = 'Description Replacement Pages (  pgs)'
+            Btxt_parts = []
+
+            if descpg != '' and int(descpg) > 0:
+                Btxt_parts.append(f"replacement description pages {descpg}")
+                dpg = 'pg'
+                if int(descpg) > 1:
+                    dpg = 'pgs'
+                Bdesctxt = 'Description Replacement Pages ('+ descpg + ' ' + dpg + '.)'
                 BdescX = 'X'
-            if claimpg > 0:
-                Bclaimtxt = 'Claim Replacement Pages (  pgs)'
+            else:
+                Bdesctxt = ''
+                BdescX = ''
+
+            if claimpg != '' and int(claimpg) > 0:
+                Btxt_parts.append(f"replacement claims pages {claimpg}")
+                cpg = 'pg'
+                if int(claimpg) > 1:
+                    cpg = 'pgs'
+                Bclaimtxt = 'Claim Replacement Pages ('+ claimpg + ' ' + cpg + '.)'
                 BclaimX = 'X'
-            if abspg > 0:
-                Babstxt = 'Abstract Replacement Page (1 pg)'
+            else:
+                Bclaimtxt = ''
+                BclaimX = ''
+            if abspg != '' and int(abspg) > 0:
+                Btxt_parts.append(f"replacement abstract pages {abspg}")
+                apg = 'pg'
+                if int(abspg) > 1:
+                    apg = 'pgs'
+                Babstxt = 'Abstract Replacement Page ('+ abspg + ' ' + apg + '.)'
                 BabsX = 'X'
+            else:
+                Babstxt = ''
+                BabsX = ''
+
+            if Btxt_parts:
+                if len(Btxt_parts) == 1:
+                    Btxt = Btxt_parts[0]
+                elif len(Btxt_parts) == 2:
+                    Btxt = " and ".join(Btxt_parts)
+                else:
+                    Btxt = ", ".join(Btxt_parts[:-1]) + " and " + Btxt_parts[-1]
+
+                Btxt += " which are believed to be in compliance with Annex B1 of the Invitation."
+            else:
+                Btxt = ""
+
         else:
             Btxt = ''
+            Bdesctxt = ''
+            BdescX = ''
+            Bclaimtxt = ''
+            BclaimX = ''
+            Babstxt = ''
+            BabsX = ''
 
         if annexC == 'true':
             Ctxt = 'Formal drawing sheets (' + formalpg + ') which are all believed to be in compliance with Annex C1 of the Invitation.'
-            Cfmlpgtxt = 'Formal Drawings (  pgs.)'
+            anCpg = 'pg'
+            if int(formalpg) > 1:
+                anCpg = 'pgs'
+            Cfmlpgtxt = 'Formal Drawings (' + formalpg + ' ' + anCpg + '.)'
             CfmlpgX = 'X'
         else:
             Ctxt = ''
+            Cfmlpgtxt = ''
+            CfmlpgX = ''
 
-        if mergeinfo[5] == 'true':
-            exttxt = 'Extenstion of Time (1 pg)'
+        if mergeinfo[3] == 'true':
+            exttxt = 'Extenstion of Time (1 pg.)'
             extx = 'X'
+        else:
+            exttxt = ''
+            extx = ''   
+
+        # Collect all entries
+        pctcorr_entries = [
+            (anAX,anAtxt),
+            (BdescX, Bdesctxt),
+            (BclaimX, Bclaimtxt),
+            (BabsX, Babstxt),
+            (CfmlpgX, Cfmlpgtxt),
+            (extx, exttxt)
+        ]
+
+        doc_lines = []
+        for x, txt in pctcorr_entries:
+            if x != '':
+                line = f"{x}     {txt}"
+                doc_lines.append(line)
+
+        attachList = '\n'.join(doc_lines)
+
+        pctannex_ent = [Atxt, Btxt.capitalize(), Ctxt]
+        annextxt = []
+        for annex in pctannex_ent:
+            if annex != '':
+                annextxt.append(annex)
+        
+        anxtext = '\n            '.join(annextxt)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'mailDate' : function_instance.formatDate(mergeinfo[1]),
-            # add phone number at end
-            'cAnnexAText' : Atxt,
-            'cAnnexBText' : Btxt,
-            'cAnnexCText' : Ctxt,
+            'cAnnexText' : anxtext,
+            # 'cAnnexAText' : Atxt,
+            # 'cAnnexBText' : Btxt,
+            # 'cAnnexCText' : Ctxt,
             'properApplicant' : 'Applicant',
             'encloseText' : 'enclose',
             'depAccount' : function_instance.depnumFill(matter_data),
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'doclines' : attachList,
+            'SAName' : mergeinfo[2],
+            'SAPhone' : '',
+            'SARegNo' : ''
         })
+        if mergeinfo[2] != 'Select Signing Attorney' and mergeinfo[2] != '':
+            saname, regno = function_instance.fullSAName(mergeinfo[2])
+            replace.update({
+                'SAName' : saname,
+                'SARegNo' : regno
+            })
+            saphone = function_instance.phoneFillSA(mergeinfo[2])
+            if saphone != '':
+                replace.update({
+                    'SAPhone' : saphone
+                })
         return replace
 
 # PTO Form - Application Data Sheet - On/after Sept 16, 2012
@@ -1425,13 +1516,13 @@ class pctextension:
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'extensionLenTextHdr' : function_instance.number_to_words(int(mergeinfo[4])),
-            'mailDate' : mergeinfo[3],
+            'mailDate' : function_instance.formatDate(mergeinfo[1]),
             'properApplicant' : 'Applicant',
             'extensionLenText' : function_instance.number_to_words(int(mergeinfo[4])).lower(),
             'requestText' : 'requests',
             'annexSelectText' : annexTxt,
             'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
-            'requestDueDate' : '',
+            'requestDueDate' : (datetime.strptime(mergeinfo[1], '%Y-%m-%d') + relativedelta(months=(int(mergeinfo[4])))).strftime('%B %d, %Y'),
             'SAName' : mergeinfo[2],
         })
         return replace
@@ -2188,6 +2279,8 @@ class exttimeCF:
                 fee = function_instance.getFee(39, matter)
             
             mergeinfo.insert(0, fee)
+        
+        feeamt = mergeinfo[0]
 
         try:
             datemail = function_instance.formatDate(mergeinfo[3])
@@ -2207,6 +2300,7 @@ class exttimeCF:
         pettxt = ''
         if mergeinfo[6] == 'true':
             pettxt = '\n            A petition for a one-month extension of time was previously filed on '+ function_instance.formatDate(mergeinfo[7]) +', accompanied by the fee for that petition of $'+ mergeinfo[8] +'.  As a result, the incremental fee for this petition is $' + mergeinfo[9]
+            feeamt = mergeinfo[9]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
@@ -2214,7 +2308,7 @@ class exttimeCF:
         replace.update({
             'extLength' : mergeinfo[5].upper(),
             'depCheckText' : 'Please charge Deposit Account No. '+ depnum,
-            'feeAmount' : mergeinfo[0],
+            'feeAmount' : feeamt,
             'enclosed' : '',
             'depAccount' : depnum,
             'extLengthL' : mergeinfo[5].lower(),
@@ -3214,6 +3308,8 @@ class ids_citedparent_2012:
 class ffSndItmsToAssoc:
     def ffSndItmsToAssoc(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
+
+        cdead = 'Kindly see to the prompt filing of the enclosed document(s) '
         
         docs = [mergeinfo[0], mergeinfo[1], mergeinfo[2], mergeinfo[3], mergeinfo[4]]
         
@@ -3225,20 +3321,25 @@ class ffSndItmsToAssoc:
                 docnames += '\t' + str(count) + '. ' + doc + '\n'
                 
         if mergeinfo[5]:
-            duedate = 'by the ' + function_instance.formatDate(mergeinfo[5])
+            duedate = function_instance.formatDate(mergeinfo[5])
+            cdead = cdead + 'by the '
+            deadtxt = ' deadline'
         else:
-            duedate = 'at your earliest convenience'
+            cdead = cdead + 'at your earliest convenience'
+            duedate = ''
+            deadtxt = ''
                 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.cmgfill(matter))
+        replace.update(function_instance.ffcmgFill(matter))
         replace.update(function_instance.ffparafill(matter))
         replace.update(function_instance.faAssigneefill(matter))
         replace.update({
             'documentName' : docnames,
-            'cdeadLine' : 'Kindly see to the prompt filing of the enclosed document(s) ',
+            'cdeadLine' : cdead,
             'dueDate' : duedate,
             'faRecipientTitle' : '',
+            'deadlinetxt' : deadtxt
         })
         return replace
 

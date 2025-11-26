@@ -1055,7 +1055,7 @@ def mergeDoc(matter, mergeinfo, request):
 
             multidoc = (
                 (doc_type == 'corrappln' and mergefninfo[0] != '') or
-                (doc_type == 'pctcorrect' and mergefninfo[5] == 'true') or
+                (doc_type == 'pctcorrect' and mergefninfo[3] == 'true') or
                 (doc_type == 'expressaban' and (mergefninfo[1] == '1' or mergefninfo[1] == '2' or mergefninfo[1] == '3')) or
                 (doc_type == 'issuefee' and mergefninfo[3] == 'true') or
                 (doc_type == 'missingpartsNw' and mergefninfo[1] != '')
