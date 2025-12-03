@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset = "UTF-8">
+    <title>Merge Templates - SideBar Cloud</title>
+    <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            margin: 0 auto;
+            padding: 0;
+        }
+        .countainter{
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+        }
+        .search-container{
+            margin-bottom: 10px;
+            margin-left: 10px;
+        }
+        .sidebar{
+            background-color: #33373A;
+            color: #b8b8b8;
+            padding: 1px 10px;
+            text-align: left;
+            margin-bottom: 20px;
+            height: 110px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .sidebar-tabs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 15px;
+            margin-left: 15px;
+            margin-top: 5px;
+        }
+
+        .sidebar-tabs li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #fff;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+
+        .sidebar-tabs li a:hover {
+            background-color: #fff;
+            color: #33373A;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        table{
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td{
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th{
+            background-color: #f2f2f2;
+        }
+        .column2{
+            width: 100%;
+        }
+        .merge-button{
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <style>
+        .header-image {
+            float: right;
+            width: 95px;
+            height: 95px;
+            margin-right: 10px; /* Adjust the right margin */
+            margin-top: 5px; /* Adjust the top margin */
+        }
+        .logo-image {
+            float: left;
+            width: auto;
+            height: 60px;
+            margin-left: 10px; /* Adjust the right margin */
+            margin-top: 5px; /* Adjust the top margin */
+        }
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="left-column">
+            <img src="{% static 'images/sidebar_logo4.PNG' %}" alt="SideBar Image" class="logo-image">
+            <ul class="sidebar-tabs">
+                <li><a href="{% url 'matters' %}">Matters</a></li>
+                <li><a href="{% url 'fip_reports' %}">FIP Reports</a></li>
+                <li><a href="{% url 'merges' %}">Merges</a></li>
+                <li><a href="{% url 'toolbox' %}">ToolBox</a></li>
+                <li><a href="{% url 'edit_template' %}">Edit Merge Templates</a></li>
+            </ul>
+        </div>
+        <img src="{% static 'images/SLW_logobackdrop.PNG' %}" alt="SLW Image" class="header-image">
+    </div>
+
+    <div class = "container">
+        <div class = "search-container">
+            <input type = "text" id = "mergeSearchInput" placeholder = "Merge Search" onkeyup = "searchMerges()">
+        </div>
+        <form id = "mergeform" action = "{% url 'members' %}" method = "post">
+            {% csrf_token %}
+            <table id = "mergeTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class = "column2">Merge Name</th>
+                    </tr>
+                </thead>
+                {% load catroleedit %}
+                {% for MergeDef in mergedict %}
+                <tbody>
+                    <tr data-category="{{ MergeDef.merge_category_id|categoryparser }}" data-role="{{ MergeDef.merge_role_id|roleparser }}">
+                        <td>               
+                            <button
+                            id="button_{{ MergeDef.mergeid }}"
+                            name="button_key"
+                            type="button"
+                            class="btn btn-primary"
+                            data-mergeid="{{ MergeDef.mergeid }}"
+                            onclick = "getTemplate('{{ MergeDef.mergeid }}','{{ MergeDef.mergepath }}', '{{ MergeDef.mergemethod }}')">
+                            Edit
+                        </button>
+                        </td>
+                        <td>{{ MergeDef.mergename }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </form>
+    <script>
+        function getTemplate(mergeid, mergepath, mergemethod){
+            $('#edittemp').modal('show');
+        }
+
+        document.getElementById('mergeform').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+            event.preventDefault();
+            }
+        });
+
+        function searchMerges(){
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("mergeSearchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("mergeTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++){
+                td = tr[i].getElementsByTagName("td")[1];
+                if(td){
+                    txtValue = td.textContent || td.innerText;
+                    if(txtValue.toUpperCase().indexOf(filter) > -1){
+                        tr[i].style.display = "";
+                    } else{
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            fetch("{% url 'upload_edited_file' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('File uploaded successfully!');
+                } else {
+                    alert('Upload failed!');
+                }
+            });
+        });
+    </script>
+
+    <div id="edittemp" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edittempModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Upload document</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                     <form id = "uploadform" action="/upload_template" method="post">
+                        <input type="file" name="document" accept=".doc,.docx" required>
+                        <button type="submit" class="btn btn-primary">Continue</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--     <h2>Upload Word Document</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="document" accept=".doc,.docx" required>
+        <button type="submit">Upload</button>
+    </form> -->
+
+</body>
+</html>

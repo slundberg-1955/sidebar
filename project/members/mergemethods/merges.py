@@ -830,11 +830,11 @@ class missingpartsNw:
             minfo5 = int(mergeinfo[5]) if mergeinfo[5] else 0
             if minfo5 > 0:
                 decX = 'X'
-                dectxt = '         Signed Power of Attorney ('+ mergeinfo[5] +'pgs.)'
+                dectxt = '         Signed Power of Attorney ('+ mergeinfo[5] +' pgs.)'
             minfo6 = int(mergeinfo[6]) if mergeinfo[6] else 0
             if minfo6 > 0:
                 poaX = 'X'
-                poatxt = '         Signed Declaration ('+ mergeinfo[6] +'pgs.)'
+                poatxt = '         Signed Declaration ('+ mergeinfo[6] +' pgs.)'
 
             appdsX = ''
             appdstxt = ''
@@ -1434,7 +1434,7 @@ class pctcorrect:
 
         attachList = '\n'.join(doc_lines)
 
-        pctannex_ent = [Atxt, Btxt.capitalize(), Ctxt]
+        pctannex_ent = [Atxt, Btxt[0].upper() + Btxt[1:], Ctxt]
         annextxt = []
         for annex in pctannex_ent:
             if annex != '':

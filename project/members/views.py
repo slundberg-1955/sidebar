@@ -34,7 +34,7 @@ from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactin
 from docx import Document
 from typing import Any, List
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from .mergemethods.mergefunctions import mergefunctions
 import json
@@ -64,7 +64,7 @@ from msal import ConfidentialClientApplication
 from azure.core.credentials import AccessToken
 
 from azure.identity import DefaultAzureCredential, ManagedIdentityCredential, ClientSecretCredential
-from azure.storage.blob import BlobClient, BlobServiceClient
+from azure.storage.blob import BlobClient, BlobServiceClient, generate_blob_sas, BlobSasPermissions
 
 import urllib.parse
 
@@ -100,10 +100,14 @@ def matters(request):
     return render(request, 'matters.html')
 
 def fip_reports(request):
-    return render(request, 'fip_reports.html')
+    return render(request, 'fipreports.html')
 
 def merges(request):
-    return render(request, 'merges.html')
+    mergedict = MergeDef.objects.using('SideBar').filter(operational="TRUE").order_by('mergename')
+    roles = MergeRole.objects.using('SideBar').all()
+    categories = MergeCategory.objects.using('SideBar').all()
+ 
+    return render(request, 'merge.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
 
 def toolbox(request):
     return render(request, 'toolbox.html')
@@ -619,9 +623,11 @@ def combinedoc(path, method, mergeinfo, matter, email):
     if method == 'issuefee':
         doc1.add_page_break()
         composer = Composer(doc1)
-        doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit3.docx'))
+        #doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit3.docx'))
+        doc2 = get_template_docx('communications', 'issuefeexmit3.docx')
         if mergeinfo[4] == 'true':
-            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit2.docx')) 
+            #doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit2.docx'))
+            doc3 = get_template_docx('communications', 'issuefeexmit2.docx')
             doc3.add_page_break()
             composer.append(doc3)
             composer.append(doc2) 
@@ -655,7 +661,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
 
         minfo7 = int(mergeinfo[9]) if mergeinfo[9] else 0
         if int(minfo7) > 0:
-            doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit2.docx'))
+            #doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit2.docx'))
+            doc2 = Document_compose(get_template_docx('communications', 'MissingPartsXmit2.docx'))
             doc2.add_page_break()
             composer.append(doc2)
 
@@ -664,11 +671,13 @@ def combinedoc(path, method, mergeinfo, matter, email):
         minfo13 = int(mergeinfo[13]) if mergeinfo[13] else 0
         minfo14 = int(mergeinfo[14]) if mergeinfo[14] else 0
         if minfo11 > 0 or minfo12 > 0 or minfo13 > 0 or minfo14 > 0:
-            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit3.docx'))
+            #doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit3.docx'))
+            doc3 = Document_compose(get_template_docx('communications', 'MissingPartsXmit3.docx'))
             doc3.add_page_break()
             composer.append(doc3)
 
-        doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit4.docx'))
+        #doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit4.docx'))
+        doc4 = Document_compose(get_template_docx('communications', 'MissingPartsXmit4.docx'))
         composer.append(doc4)
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
@@ -778,15 +787,18 @@ def combinedoc(path, method, mergeinfo, matter, email):
     if method == 'invchange':
         doc1.add_page_break()
         merge_fn = mergefunctions()
-        doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange.docx')) 
-        docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_end.docx')) 
+        #doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange.docx')) 
+        #docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_end.docx')) 
+        doc2 = get_template_docx('communications', 'inventorchange.docx')
+        docend = get_template_docx('communications', 'inventorchange_end.docx')
         composer = Composer(doc2)
         invlist = mergeinfo[2:]
         invlist = invlist[:-1]
         for inv in invlist:
             replace = {}
             replace.update(merge_fn.inventorInfoName(matter, inv))
-            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_multi.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx'))
+            #WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_multi.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx'))
+            get_template_docx('communications', 'inventorchange_multi.docx')
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx')) 
             composer.append(doc3)
         
@@ -932,9 +944,10 @@ def mergeDoc(matter, mergeinfo, request):
 
     docpath = mergeinfo_list[0].split('/')
     
-    input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    #input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    input_path = get_template_docx(docpath[0], docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
-    input_path = merge_fn.find_case_insensitive_path(input_path)
+    #input_path = merge_fn.find_case_insensitive_path(input_path)
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -953,7 +966,7 @@ def mergeDoc(matter, mergeinfo, request):
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
     
-    input_path = pathChanger(input_path, mergeinfo_list, mergefninfo, matter)
+    #input_path = pathChanger(input_path, mergeinfo_list, mergefninfo, matter)
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
@@ -982,7 +995,7 @@ def mergeDoc(matter, mergeinfo, request):
         if mergefninfo[0] == '2':
             input_path = input_path.replace('2012_2', '2012_att')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
@@ -1200,9 +1213,10 @@ def mergemultidoc(matter, mergeinfo):
 
     docpath = mergeinfo_list[0].split('/')
     
-    input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    #input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    input_path = get_template_docx(docpath[0], docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
-    input_path = merge_fn.find_case_insensitive_path(input_path)
+    #input_path = merge_fn.find_case_insensitive_path(input_path)
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -1396,6 +1410,8 @@ def download_doc(filename):
     
 def get_blob_document(container_name, file_name, storage_account_url):
     start = time.time()
+    if storage_account_url == '':
+        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
     try:
         # Set up managed identity credential
         credential = ManagedIdentityCredential()
@@ -1416,3 +1432,56 @@ def get_blob_document(container_name, file_name, storage_account_url):
     except Exception as e:
         print(f"Error: {e}")
         return None
+
+def get_template_docx(*path_parts):
+    blob_path = "/".join(path_parts)
+    print('Azure storage: ' + blob_path)
+    return get_blob_document('templates', blob_path, '')
+
+def edit_template(request):
+    mergedict = MergeDef.objects.using('SideBar').filter(operational="TRUE").order_by('mergename')
+    roles = MergeRole.objects.using('SideBar').all()
+    categories = MergeCategory.objects.using('SideBar').all()
+
+    return render(request, 'edittemplate.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
+
+def download_template(request):
+    storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+    container_name = 'media'
+    start = time.time()
+    try:
+        credential = ManagedIdentityCredential()
+
+        # Authenticate using managed identity
+        blob_client = BlobClient(storage_account_url, container_name, file_name, credential=credential)
+
+        # Download the blob content
+        stream = blob_client.download_blob()
+        data = stream.readall()
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}", status=500)
+
+    response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    response['Content-Disposition'] = f'attachment; filename={file_name}'
+    response.set_cookie('downloadComplete', 'true')
+    print("First document saved in session. Returning it.")
+    return response
+
+def upload_template(request):
+    if request.method == 'POST' and request.FILES.get('document'):
+
+        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+        container_name = 'media'
+        start = time.time()
+        file = request.FILES['document']
+        
+        credential = ManagedIdentityCredential()
+        print(f"Credential setup: {time.time() - start:.2f}s")
+
+        blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=file.name)
+        print(f"Blob client setup: {time.time() - start:.2f}s")
+
+        blob_client.upload_blob(file, overwrite=True)
+
+        return JsonResponse({"message": "File uploaded successfully!", "file_name": file.name})

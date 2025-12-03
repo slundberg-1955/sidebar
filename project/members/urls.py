@@ -23,6 +23,10 @@ urlpatterns = [
     path('merge_assignee/', addassignee, name = 'merge_assignee'),
     path('merge_PCTSA/', addPCTSA, name = 'merge_PCTSA'),
 
+    path('edit_template/', views.edit_template, name='edit_template'),
+    path('download_template/', views.download_template, name='download_template'),
+    path('upload_template/', views.upload_template, name='upload_template'),
+
     path('fip-reports/', fip_reports, name='fip_reports'),
     path('merges/', merges, name='merges'),
     path('toolbox/', toolbox, name='toolbox'),

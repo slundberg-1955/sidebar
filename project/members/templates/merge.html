@@ -431,10 +431,11 @@
         <div class="left-column">
             <img src="{% static 'images/sidebar_logo4.PNG' %}" alt="SideBar Image" class="logo-image">
             <ul class="sidebar-tabs">
-                <li><a href="#">Matters</a></li>
-                <li><a href="#">FIP Reports</a></li>
-                <li><a href="#">Merges</a></li>
-                <li><a href="#">ToolBox</a></li>
+                <li><a href="{% url 'matters' %}">Matters</a></li>
+                <li><a href="{% url 'fip_reports' %}">FIP Reports</a></li>
+                <li><a href="{% url 'merges' %}">Merges</a></li>
+                <li><a href="{% url 'toolbox' %}">ToolBox</a></li>
+                <li><a href="{% url 'edit_template' %}">Edit Merge Templates</a></li>
             </ul>
         </div>
         <img src="{% static 'images/SLW_logobackdrop.PNG' %}" alt="SLW Image" class="header-image">
