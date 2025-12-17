@@ -64,8 +64,10 @@ class issuefee:
         prevtxt = ''
         commentstxt = ''
         commentsx = ''
-        feetxt = ''
-        feeX = ''
+        fee = function_instance.getFee(81, matter)
+        entity = function_instance.entityName(function_instance.entityfill(matter))
+        feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+ fee +' to cover the '+ entity.capitalize() +' Entity Issue Fee Payment.'
+        feeX = 'X'
         depnum = function_instance.depnumFill(matter_data)
         
         withdraw = function_instance.getPreviousPaidData(matter)
@@ -73,6 +75,7 @@ class issuefee:
         dateIssueFee = ''
         try:
             feeactivity = function_instance.getactivityid(matter_data, 'IFEE')
+            dateIssueFee = feeactivity.smryonevalue.strftime("%B %d, %Y")
             paid = True
         except:
             paid = False
@@ -82,7 +85,7 @@ class issuefee:
                 dateIssueFee = feeactivity.smryonevalue.strftime("%B %d, %Y")
 
         try:
-            feeactivity = function_instance.getactivityid(matter_data, 'NOAR')
+            feeactivity = function_instance.getactivityidLast(matter_data, 'NOAR')
             noarDate = feeactivity.smryonevalue.strftime("%B %d, %Y")
         except:
             noarDate = ''
@@ -114,7 +117,7 @@ class issuefee:
         # if withfiled == 'true':
         
         if stateofall == 'true':
-            commentstxt = 'Response to Examiner\'s Reasons for Allowance'
+            commentstxt = '         Response to Examiner\'s Reasons for Allowance (1 page).'
             commentsx = 'X'
             
         # if feeincrease:
@@ -128,24 +131,53 @@ class issuefee:
                 feeincrease = feeincrease - firstfeeamt
 
         wdrwtxt = ''
-        if mergeinfo[6] == 'true' and mergeinfo[7] != '':
-            wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on .  Applicant received a decision, dated '+ function_instance.formatDate(mergeinfo[7]) +', granting the petition to withdraw.'
-        
-        if mergeinfo[9] == 'true':
-            fee = ''
+        if mergeinfo[6] == 'true':
+            wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on '+ function_instance.formatDate(mergeinfo[8]) +'.  Applicant received a decision, dated '+ function_instance.formatDate(mergeinfo[9]) +', granting the petition to withdraw.'
+        else:
+            wdrwtxt = 'The USPTO sent a Notice of Withdrawal from Issue on ' + function_instance.formatDate(mergeinfo[7])
+
+        if mergeinfo[10] == 'true':
+            try:
+                fee = function_instance.feeAddition(function_instance.getFee(81, matter), mergeinfo[11])
+            except:
+                fee = function_instance.getFee(81, matter)
             increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of '+ fee + ' to cover the issue fee increase.'
+            feetxt = '         Authorization to charge Deposit ' + depnum + ' in the amount of ' + fee + ' to cover the issue fee increase.'
             
         if mergeinfo[4] == 'true':
             prevx = 'X'
             prevtxt = '         Request to Apply Previously Paid Issue Fee (1 pg.)'
-            feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+''+' to cover the issue fee increase.'
-            feeX = 'X'
+
+        ifeex = 'X'
+        ifeetxt = '         Issue Fee Transmittal (Form PTOL-85).'
+        commx = 'X'
+        commtxt = '         Communication Re: Fee Address (1 page).'
+
+        doc_entries = [
+            (feeX, feetxt),
+            (ifeex, ifeetxt),
+            (prevx, prevtxt),
+            (commx, commtxt),
+            (adjtxt, patadjtxt),
+            (adjfee, patadjfee),
+            (adjfact, patadjfact),
+            (drawingX, drawtxt),
+            (commentsx, commentstxt),
+        ]
+
+        doc_lines = []
+        for x, txt in doc_entries:
+            if x != '' and txt != '':
+                line = f"{x}{txt}"
+                doc_lines.append(line)
+        
+        attachList = '\n'.join(doc_lines)
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[11]))
+        replace.update(function_instance.esigncheck(mergeinfo[12]))
         replace.update({
-            'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
+            'upperFirmName' : 'SCHWEGMAN LUNDBERG & WOESSNER, P.A.',
             'nickU' : '',
             'dateIssueFee': function_instance.formatDate(prevpaiddate),
             'withDrawText' : wdrwtxt,
@@ -161,13 +193,12 @@ class issuefee:
             'patentTermAdjText' : patadjtxt,
             'patentTermAdjFee' : patadjfee,
             'patentTermAdjFacts' : patadjfact,
-            'feeTextX' : feeX,
-            'FeeText' : feetxt,
-            'previousX' : prevx,
-            'applyPreviousText' : prevtxt,
             'commentX' : commentsx,
             'commentText' : commentstxt,
             'dueDate' : function_instance.formatDate(dateIssueFee),
+
+            'docList' : attachList,
+            'custNoCorresp' : function_instance.corrcustnumFill(matter_data, 'corresp')
         })
         return replace
     
@@ -511,7 +542,7 @@ class stateofallow:
             replace.update(function_instance.esigncheck(mergeinfo[12]))
             replace.update({
                 'depAccount' : depnum,
-                'allowType' : 'Notice of Allowability',
+                'allowType' : 'Notice of Allowance',
                 'dateNALL' : date.today().strftime("%B %d, %Y"),
             })
             return replace
@@ -2299,8 +2330,8 @@ class exttimeCF:
 
         pettxt = ''
         if mergeinfo[6] == 'true':
-            pettxt = '\n            A petition for a one-month extension of time was previously filed on '+ function_instance.formatDate(mergeinfo[7]) +', accompanied by the fee for that petition of $'+ mergeinfo[8] +'.  As a result, the incremental fee for this petition is $' + mergeinfo[9]
-            feeamt = mergeinfo[9]
+            pettxt = '\n            A petition for a one-month extension of time was previously filed on '+ function_instance.formatDate(mergeinfo[7]) +', accompanied by the fee for that petition of $'+ mergeinfo[8] +'.  As a result, the incremental fee for this petition is $' + mergeinfo[9] + '.'
+            feeamt = '$' + mergeinfo[9]
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))

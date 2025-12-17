@@ -1133,6 +1133,13 @@ class mergefunctions:
         except:
             return ''
     
+    def getactivityidLast(self, matter, type):
+        try:
+            activity = Activity.objects.using('FIP').filter(matterid = matter.matterid, code = type)
+            return activity.last()
+        except:
+            return ''
+    
     def extract_date(self, text):
         # Regular expression pattern to match dates in MM/DD/YYYY format
         date_pattern = r'\b\d{2}/\d{2}/\d{4}\b'
@@ -1502,6 +1509,9 @@ class mergefunctions:
     
     def feeAddition(self, amount1: str, amount2: str):
         # Remove dollar signs and convert to float
+        amount1 = amount1.replace(',', '')
+        amount2 = amount2.replace(',', '')
+
         value1 = float(amount1.replace('$', '').strip())
         value2 = float(amount2.replace('$', '').strip())
         

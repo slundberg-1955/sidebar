@@ -905,6 +905,104 @@
                         }
                     });
                 }
+                function fillissuefeeUI(mergemethod) {
+                    const inputData = document.getElementById("matterInput").value;
+                    $.ajax({
+                        type: 'POST',
+                        url: 'merge_issfee/',
+                        data: {matterno: JSON.stringify(inputData)},
+                        headers: {
+                            'X-CSRFTOKEN': csrftoken,
+                        },
+                        success: function(response) {
+                            const dissfee = response.message.dissfee;
+                            const withdraw = response.message.withdraw;
+                            const withdrawM = response.message.withdrawM;
+                            //alert(dissfee + ' : ' + withdraw + ' : ' + withdrawM);
+                            // Add the options from the response
+                            // issue fee date
+                            if(dissfee != ''){
+                                if (/^\d{4}-\d{2}-\d{2}$/.test(dissfee)) {
+                                    document.getElementById("issuefeeisspaidhide").value = dissfee
+                                } else {
+                                    // If it's a full datetime: convert to local calendar date string (YYYY-MM-DD)
+                                    const d = new Date(dissfee); // parses ISO reliably
+                                    d.setDate(d.getDate() + 1);
+                                    const yyyy = d.getFullYear();
+                                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                    const dd = String(d.getDate()).padStart(2, '0');
+                                    document.getElementById('issuefeeisspaidhide').value = `${yyyy}-${mm}-${dd}`;
+                                }
+
+                                const isscheckbox2 = document.getElementById('issuefeeisspaid');
+                                const isspagect2 = document.getElementById('issuefeeisspaidhide');
+                                const isspagect3 = document.getElementById('issuefeepagewithhide');
+                                const isspagect5 = document.getElementById('issuefeepagewithhidedate');
+                                const isspagect4 = document.getElementById('issuefeeamountinc');
+
+                                isspagect2.style.display = 'block';
+                                isspagect3.style.display = 'block';
+                                isspagect4.style.display = 'block';
+                                isspagect5.style.display = 'block';
+
+                                //document.getElementById("issuefeeisspaidhide").value = dissfee
+                                document.getElementById("issuefeeisspaid").checked = true;
+                            }
+                            // withdraw date
+                            if (withdraw != ''){
+                                if (/^\d{4}-\d{2}-\d{2}$/.test(withdraw)) {
+                                    document.getElementById("issuefeepetw").value = withdraw
+                                } else {
+                                    // If it's a full datetime: convert to local calendar date string (YYYY-MM-DD)
+                                    const d = new Date(withdraw); // parses ISO reliably
+                                    d.setDate(d.getDate() + 1);
+                                    const yyyy = d.getFullYear();
+                                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                    const dd = String(d.getDate()).padStart(2, '0');
+                                    document.getElementById('issuefeepetw').value = `${yyyy}-${mm}-${dd}`;
+                                }
+
+                                const issdate1 = document.getElementById('issuefeedtepetgra');
+                                const issdate2 = document.getElementById('issuefeepagewithhidedate');
+                                issdate1.style.display = 'block';
+                                issdate2.style.display = 'none';
+                                //document.getElementById("issuefeepetw").value = withdraw
+                                document.getElementById("issuefeewithfil").checked = true;
+                            }
+
+                            if (withdrawM != ''){
+                                if (/^\d{4}-\d{2}-\d{2}$/.test(withdrawM)) {
+                                    document.getElementById("issuefeemail").value = withdrawM
+                                } else {
+                                    // If it's a full datetime: convert to local calendar date string (YYYY-MM-DD)
+                                    const d = new Date(withdrawM); // parses ISO reliably
+                                    d.setDate(d.getDate() + 1);
+                                    const yyyy = d.getFullYear();
+                                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                                    const dd = String(d.getDate()).padStart(2, '0');
+                                    document.getElementById('issuefeemail').value = `${yyyy}-${mm}-${dd}`;
+                                }
+                                const isscheckbox2 = document.getElementById('issuefeeisspaid');
+                                const isspagect2 = document.getElementById('issuefeeisspaidhide');
+                                const isspagect3 = document.getElementById('issuefeepagewithhide');
+                                const isspagect5 = document.getElementById('issuefeepagewithhidedate');
+                                const isspagect4 = document.getElementById('issuefeeamountinc');
+
+                                isspagect2.style.display = 'block';
+                                isspagect3.style.display = 'block';
+                                isspagect4.style.display = 'block';
+                                isspagect5.style.display = 'block';
+
+                                document.getElementById("issuefeeisspaid").checked = true;
+                            }
+                            $('#issuefee').modal('show');
+                        },
+                        error: function(error) {
+                            alert('no');
+                            console.error('Error:', error);
+                        }
+                    });
+                }
             </script>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
@@ -937,6 +1035,9 @@
       });
     });
 </script>
+<!-- State of Allow -->
+
+
 <!-- PTO Form - Statement Under 3.73(c) - App filed on/or after Sept 16, 2012 -->
 <div id="Statement373c" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="statement373cModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
@@ -5447,7 +5548,7 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "issuefee", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
 
                         // Check conditions
                         if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
@@ -5469,6 +5570,8 @@
                         //    $('#filingEsign').modal('show');
                         }else if (mergemethod == 'invchange' || mergemethod == 'aiashortdecl' || mergemethod == 'msassn' || mergemethod == 'cornellassnnew'){
                             fillInventorChange(mergemethod);
+                        }else if (mergemethod == 'issuefee'){
+                            fillissuefeeUI(mergemethod);
                         }else {
                             submitbtnmerge('NA');
                         }

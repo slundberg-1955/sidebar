@@ -22,6 +22,7 @@ urlpatterns = [
     path('merge_activity_docs/', get_doc_names, name = 'merge_activity_docs'),
     path('merge_assignee/', addassignee, name = 'merge_assignee'),
     path('merge_PCTSA/', addPCTSA, name = 'merge_PCTSA'),
+    path('merge_issfee/', views.fillissuefee, name='merge_issfee'),
 
     path('edit_template/', views.edit_template, name='edit_template'),
     path('download_template/', views.download_template, name='download_template'),

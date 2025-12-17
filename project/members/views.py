@@ -34,7 +34,7 @@ from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactin
 from docx import Document
 from typing import Any, List
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 from .mergemethods.mergefunctions import mergefunctions
 import json
@@ -348,6 +348,41 @@ def addPCTSA(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
+def fillissuefee(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        matter = Matter.objects.using('FIP').get(hostmatterno = data)
+        merge_fn = mergefunctions()
+
+        # previously paid
+        # Only in past
+        try:
+            feeactivity = merge_fn.getactivityid(matter, 'IFEE')
+            dateIssueFee = feeactivity.smryonevalue.isoformat()
+            if feeactivity.smryonevalue.date() > date.today():
+                dateIssueFee = ''
+        except:
+            dateIssueFee = ''
+
+        # withdraw filed
+        try:
+            feeactivity = merge_fn.getactivityid(matter, 'PWFI')
+            dateWithdraw = feeactivity.smryonevalue.isoformat()
+        except:
+            dateWithdraw = ''
+
+        # withdraw mailed
+        try:
+            feeactivity = merge_fn.getactivityid(matter, 'NOWI')
+            dateWithdrawMail = feeactivity.smryonevalue.isoformat()
+        except:
+            dateWithdrawMail = ''
+
+        return JsonResponse({'message': {'dissfee': dateIssueFee, 'withdraw': dateWithdraw, 'withdrawM': dateWithdrawMail}})
+    else:
+        return JsonResponse({'message': {'dissfee': '', 'withdraw': ''}})
+    
 def addRelatedMatter(request):
     merge_fn = mergefunctions()
     if request.method == 'POST':
@@ -624,10 +659,10 @@ def combinedoc(path, method, mergeinfo, matter, email):
         doc1.add_page_break()
         composer = Composer(doc1)
         #doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit3.docx'))
-        doc2 = get_template_docx('communications', 'issuefeexmit3.docx')
+        doc2 = Document_compose(get_template_docx('communications', 'issuefeexmit3.docx'))
         if mergeinfo[4] == 'true':
             #doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'issuefeexmit2.docx'))
-            doc3 = get_template_docx('communications', 'issuefeexmit2.docx')
+            doc3 = Document_compose(get_template_docx('communications', 'issuefeexmit2.docx'))
             doc3.add_page_break()
             composer.append(doc3)
             composer.append(doc2) 
@@ -789,16 +824,16 @@ def combinedoc(path, method, mergeinfo, matter, email):
         merge_fn = mergefunctions()
         #doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange.docx')) 
         #docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_end.docx')) 
-        doc2 = get_template_docx('communications', 'inventorchange.docx')
-        docend = get_template_docx('communications', 'inventorchange_end.docx')
+        doc2 = Document_compose(get_template_docx('communications', 'inventorchange.docx'))
+        docend = Document_compose(get_template_docx('communications', 'inventorchange_end.docx'))
         composer = Composer(doc2)
         invlist = mergeinfo[2:]
         invlist = invlist[:-1]
         for inv in invlist:
             replace = {}
             replace.update(merge_fn.inventorInfoName(matter, inv))
-            #WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_multi.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx'))
-            get_template_docx('communications', 'inventorchange_multi.docx')
+            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'inventorchange_multi.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx'))
+            #get_template_docx('communications', 'inventorchange_multi.docx')
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'inventorchangeMultipleout.docx')) 
             composer.append(doc3)
         
@@ -945,7 +980,7 @@ def mergeDoc(matter, mergeinfo, request):
     docpath = mergeinfo_list[0].split('/')
     
     #input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
-    input_path = get_template_docx(docpath[0], docpath[1])
+    input_path = get_template_docx(docpath[0].lower(), docpath[1])
     output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
     #input_path = merge_fn.find_case_insensitive_path(input_path)
 
@@ -987,7 +1022,7 @@ def mergeDoc(matter, mergeinfo, request):
         issCC = ''
         issBCC = ''
         attachment = os.path.join(settings.BASE_DIR, 'documents', 'attachments', 'Notice of Allowance Review and Response.pdf')
-        Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
+        #Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
             
     if mergeinfo_list[1] == 'assignment2016':
         if mergefninfo[0] == '1':
