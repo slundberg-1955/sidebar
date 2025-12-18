@@ -64,11 +64,11 @@ class issuefee:
         prevtxt = ''
         commentstxt = ''
         commentsx = ''
+        depnum = function_instance.depnumFill(matter_data)
         fee = function_instance.getFee(81, matter)
         entity = function_instance.entityName(function_instance.entityfill(matter))
         feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+ fee +' to cover the '+ entity.capitalize() +' Entity Issue Fee Payment.'
         feeX = 'X'
-        depnum = function_instance.depnumFill(matter_data)
         
         withdraw = function_instance.getPreviousPaidData(matter)
         
@@ -709,10 +709,12 @@ class corrappln:
                     doclist += ' are attached.'
                 else:
                     doclist += ' is attached.'
-            else:
+            elif len(docs) == 3:
                 doclist = ', '.join(docs[:-1])
                 doclist += ', and ' + docs[-1]
                 doclist += ' are attached.'
+            else:
+                doclist = ''
 
             try:
                 fdoclist = doclist[0].upper() + doclist[1:]
@@ -739,6 +741,11 @@ class corrappln:
                 attachList = '\n'.join(doc_lines) + '\n' + addoctxt
             else:
                 attachList = '\n'.join(doc_lines)
+
+            if mergeinfo[7] == 'true':
+                mailstop = 'Mail Stop Issue Fee'
+            else:
+                mailstop = 'Mail Stop Missing Parts'
                 
             replace = {}
             replace.update(function_instance.mergebasic(keys, matter))
@@ -748,6 +755,7 @@ class corrappln:
                 'docList' : fdoclist,
                 'dueDate' : duedte,
                 'attachList' : attachList,
+                'mailStopText' : mailstop
             })
             return replace
 

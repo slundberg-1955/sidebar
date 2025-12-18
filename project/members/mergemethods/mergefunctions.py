@@ -1112,13 +1112,16 @@ class mergefunctions:
         return phonenum
     
     def depnumFill(self, data):
-        part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34617')
-        profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
-        depnum = profile.ptodepositacct
-        if(depnum == ''):
-            part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34616')
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34617')
             profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
             depnum = profile.ptodepositacct
+            if(depnum == ''):
+                part = Matterparticipant.objects.using('FIP').get(matterid = data.matterid, roleid = '34616')
+                profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
+                depnum = profile.ptodepositacct
+        except:
+            return ''
         return depnum
     
     def orginfoFill(self, data):

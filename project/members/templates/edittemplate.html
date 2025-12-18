@@ -161,8 +161,79 @@
             </table>
         </form>
     <script>
+        var currentMergePath = '';
+        var currentMergeId = '';
+        var originalFilePath = '';  // Store the processed file path for upload
+
+        // Function to get CSRF token from cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
         function getTemplate(mergeid, mergepath, mergemethod){
+            currentMergePath = mergepath;
+            currentMergeId = mergeid;
+            originalFilePath = '';  // Reset original file path
+            // Reset the modal state
+            document.getElementById('downloadSection').style.display = 'block';
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('downloadStatus').textContent = '';
+            document.getElementById('uploadStatus').textContent = '';
+            document.getElementById('uploadform').reset();
             $('#edittemp').modal('show');
+        }
+
+        function downloadTemplate() {
+            if (!currentMergePath) {
+                alert('Error: No template path available');
+                return;
+            }
+            
+            // Convert mergepath to the format expected by download_template
+            // mergepath is like "communications/filename.docx" or "formaldocuments/filename.docx"
+            // Following the same logic as mergeDoc: split by '/', lowercase folder, keep filename
+            var pathParts = currentMergePath.split('/');
+            if (pathParts.length !== 2) {
+                alert('Error: Invalid merge path format');
+                return;
+            }
+            var folder = pathParts[0].toLowerCase();  // Lowercase the folder name
+            var filename = pathParts[1];  // Keep filename as-is (case sensitive)
+            var filePath = folder + '/' + filename;
+            
+            // Store the processed file path for upload
+            originalFilePath = filePath;
+            
+            // Show download status
+            document.getElementById('downloadStatus').textContent = 'Downloading...';
+            document.getElementById('downloadStatus').style.color = 'blue';
+            
+            // Create download link
+            var downloadUrl = "{% url 'download_template' %}?file_name=" + encodeURIComponent(filePath);
+            var link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = '';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // After download, show upload section
+            setTimeout(function() {
+                document.getElementById('downloadStatus').textContent = 'Download complete! Please edit the document and upload it below.';
+                document.getElementById('downloadStatus').style.color = 'green';
+                document.getElementById('uploadSection').style.display = 'block';
+            }, 1000);
         }
 
         document.getElementById('mergeform').addEventListener('keydown', function(event) {
@@ -190,23 +261,79 @@
             }
         }
 
-
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            let formData = new FormData(this);
-            fetch("{% url 'upload_edited_file' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: formData
-            }).then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('File uploaded successfully!');
-                } else {
-                    alert('Upload failed!');
+        // Handle upload form submission using event delegation
+        // This ensures it works even if the form is dynamically created
+        // Use jQuery ready to ensure DOM is loaded
+        $(document).ready(function() {
+            $(document).on('submit', '#uploadform', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Form submit intercepted');
+                
+                if (!originalFilePath) {
+                    alert('Error: No original file path available. Please download the template first.');
+                    return false;
                 }
+                
+                let formData = new FormData(this);
+                // Add the original file path so we can upload to the same location
+                formData.append('original_file_path', originalFilePath);
+                
+                // Get CSRF token from cookie or form
+                const csrftoken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                if (!csrftoken) {
+                    alert('Error: CSRF token not found');
+                    return false;
+                }
+                
+                document.getElementById('uploadStatus').textContent = 'Uploading...';
+                document.getElementById('uploadStatus').style.color = 'blue';
+                
+                console.log('Sending upload request to:', "{% url 'upload_template' %}");
+                
+                fetch("{% url 'upload_template' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: formData
+                }).then(response => {
+                    console.log('Response status:', response.status);
+                    // Check if response is ok and is JSON
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok: ' + response.status);
+                    }
+                    // Try to parse as JSON, but handle non-JSON responses
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error('Server returned non-JSON response: ' + text);
+                        });
+                    }
+                })
+                .then(data => {
+                    console.log('Upload response:', data);
+                    if (data.message && data.message.includes('successfully')) {
+                        document.getElementById('uploadStatus').textContent = 'File uploaded successfully!';
+                        document.getElementById('uploadStatus').style.color = 'green';
+                        // Optionally close modal after successful upload
+                        setTimeout(function() {
+                            $('#edittemp').modal('hide');
+                        }, 2000);
+                    } else {
+                        document.getElementById('uploadStatus').textContent = 'Upload failed: ' + (data.message || 'Unknown error');
+                        document.getElementById('uploadStatus').style.color = 'red';
+                    }
+                }).catch(error => {
+                    console.error('Upload error:', error);
+                    document.getElementById('uploadStatus').textContent = 'Upload failed: ' + error.message;
+                    document.getElementById('uploadStatus').style.color = 'red';
+                });
+                
+                return false;
             });
         });
     </script>
@@ -215,18 +342,34 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Upload document</h4>
+                    <h4 class="modal-title">Edit Template</h4>
                     <button type="button" class="close" data-dismiss="modal">×</button>
                 </div>
                 <div class="modal-body">
-                     <form id = "uploadform" action="/upload_template" method="post">
-                        <input type="file" name="document" accept=".doc,.docx" required>
-                        <button type="submit" class="btn btn-primary">Continue</button>
-                    </form>
+                    <!-- Download Section -->
+                    <div id="downloadSection">
+                        <h5>Step 1: Download Template</h5>
+                        <p>Click the button below to download the template document. Edit it on your local machine, then upload it back.</p>
+                        <button type="button" class="btn btn-primary" onclick="downloadTemplate()">Download Template</button>
+                        <p id="downloadStatus" style="margin-top: 10px; font-weight: bold;"></p>
+                    </div>
+                    
+                    <!-- Upload Section -->
+                    <div id="uploadSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                        <h5>Step 2: Upload Edited Document</h5>
+                        <p>After editing the document on your local machine, upload it here.</p>
+                        <form id="uploadform" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="file" name="document" accept=".doc,.docx" required class="form-control-file">
+                            </div>
+                            <button type="submit" class="btn btn-success">Upload Edited Document</button>
+                        </form>
+                        <p id="uploadStatus" style="margin-top: 10px; font-weight: bold;"></p>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="">Continue</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

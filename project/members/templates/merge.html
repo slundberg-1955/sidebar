@@ -1145,6 +1145,7 @@
                 </div>
                 <div>
                     <br>  Esign Enable: <input type="checkbox" id="corrapplnesign" checked>
+                                 After Allowance: <input type="checkbox" id="corrapplnallow">
                 </div>
                 <div>
                     <br>  <button type="button" class="btn btn-primary" onclick="adddocsadd()">Additional Documents</button>
@@ -1153,7 +1154,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtncorrappln(corrapplnext.value, 
-                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnmad.value, corrapplnesign.checked)">Continue</button>
+                corrapplnsub.value, corrapplnabs.value, corrapplnseq.value, corrapplnfor.value, corrapplnmad.value, corrapplnesign.checked, corrapplnallow.checked)">Continue</button>
             </div>
             <script>
                 function submitbtncorrappln(...args){

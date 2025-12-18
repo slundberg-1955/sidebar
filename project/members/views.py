@@ -1481,42 +1481,63 @@ def edit_template(request):
     return render(request, 'edittemplate.html', {'mergedict': mergedict, 'roles': roles, 'categories': categories})
 
 def download_template(request):
-    storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
-    container_name = 'media'
-    start = time.time()
-    try:
-        credential = ManagedIdentityCredential()
+    if request.method == 'GET':
+        file_name = request.GET.get('file_name', '')
+        if not file_name:
+            return HttpResponse("Error: file_name parameter is required", status=400)
+        
+        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+        container_name = 'templates'  # Templates are stored in 'templates' container
+        start = time.time()
+        try:
+            credential = ManagedIdentityCredential()
 
-        # Authenticate using managed identity
-        blob_client = BlobClient(storage_account_url, container_name, file_name, credential=credential)
+            # Authenticate using managed identity
+            blob_client = BlobClient(storage_account_url, container_name, file_name, credential=credential)
 
-        # Download the blob content
-        stream = blob_client.download_blob()
-        data = stream.readall()
-    except Exception as e:
-        return HttpResponse(f"Error: {str(e)}", status=500)
+            # Download the blob content
+            stream = blob_client.download_blob()
+            data = stream.readall()
+        except Exception as e:
+            return HttpResponse(f"Error: {str(e)}", status=500)
 
-    response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    response['Content-Disposition'] = f'attachment; filename={file_name}'
-    response.set_cookie('downloadComplete', 'true')
-    print("First document saved in session. Returning it.")
-    return response
+        # Extract just the filename for the download
+        download_filename = os.path.basename(file_name)
+        response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        response['Content-Disposition'] = f'attachment; filename={download_filename}'
+        response.set_cookie('downloadComplete', 'true')
+        print("Template downloaded. Returning it.")
+        return response
+    else:
+        return HttpResponse("Error: GET method required", status=405)
 
 def upload_template(request):
     if request.method == 'POST' and request.FILES.get('document'):
+        try:
+            # Get the original file path from POST data (where it was downloaded from)
+            original_file_path = request.POST.get('original_file_path', '')
+            if not original_file_path:
+                return JsonResponse({"message": "Error: original_file_path parameter is required"}, status=400)
+            
+            storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
+            container_name = 'templates'  # Upload edited templates back to templates container
+            start = time.time()
+            file = request.FILES['document']
+            
+            credential = ManagedIdentityCredential()
+            print(f"Credential setup: {time.time() - start:.2f}s")
 
-        storage_account_url = f"https://{os.getenv('AZURE_ACCOUNT_NAME')}.blob.core.windows.net"
-        container_name = 'media'
-        start = time.time()
-        file = request.FILES['document']
-        
-        credential = ManagedIdentityCredential()
-        print(f"Credential setup: {time.time() - start:.2f}s")
+            blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
+            # Use the original file path to upload back to the same location
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=original_file_path)
+            print(f"Blob client setup: {time.time() - start:.2f}s")
 
-        blob_service_client = BlobServiceClient(account_url=storage_account_url, credential=credential)
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=file.name)
-        print(f"Blob client setup: {time.time() - start:.2f}s")
+            blob_client.upload_blob(file, overwrite=True)
+            print(f"Upload time: {time.time() - start:.2f}s")
+            print(f"File uploaded to: {container_name}/{original_file_path}")
 
-        blob_client.upload_blob(file, overwrite=True)
-
-        return JsonResponse({"message": "File uploaded successfully!", "file_name": file.name})
+            return JsonResponse({"message": "File uploaded successfully!", "file_name": original_file_path})
+        except Exception as e:
+            return JsonResponse({"message": f"Error uploading file: {str(e)}"}, status=500)
+    else:
+        return JsonResponse({"message": "No file provided or invalid request method"}, status=400)
