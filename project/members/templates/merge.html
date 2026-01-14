@@ -534,18 +534,71 @@
                 });
             }
             if (contacts == 'FALSE'){
-                $('#mergeToast').toast({ autohide: false });
-                $('#mergeToast').toast('show');
-                // setTimeout(() => {
-                //     $('#mergeToast').toast('hide');
-                // }, 6000); 
+                // Check if this is issuefee - needs special handling for both document and email
+                const mergeInfo = document.getElementById('mergedata').value;
+                const mergeMethod = mergeInfo.split(',')[1]; // mergemethod is the second element
                 
-                waitForDownloadCookie('downloadComplete', () => {
-                    $('#mergeToast').toast('hide');
-                    refreshmerge();
-                });
+                if (mergeMethod === 'issuefee' || mergeMethod === 'ownerchange') {
+                    // Use AJAX for issuefee to handle both document and email
+                    $('#mergeToast').toast({ autohide: false });
+                    $('#mergeToast').toast('show');
+                    const form = document.getElementById("mergeform");
+                    const formData = new FormData(form);
+                    $.ajax({
+                        type: 'POST',
+                        url: form.action,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
+                        success: function(response) {
+                            if (response.document_data && response.email_url) {
+                                // Special handling for issuefee - both document and email
+                                // Decode base64 document data
+                                const binaryString = atob(response.document_data);
+                                const bytes = new Uint8Array(binaryString.length);
+                                for (let i = 0; i < binaryString.length; i++) {
+                                    bytes[i] = binaryString.charCodeAt(i);
+                                }
+                                const blob = new Blob([bytes], { type: response.document_type });
+                                
+                                // Create download link and trigger download
+                                const url = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.download = response.document_filename;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(url);
+                                
+                                // Open email in new tab
+                                window.open(response.email_url, '_blank');
+                                $('#mergeToast').toast('hide');
+                                refreshmerge();
+                            }
+                        },
+                        error: function(error) {
+                            alert('An error occurred: ' + error.statusText);
+                            console.error('Error:', error);
+                            $('#mergeToast').toast('hide');
+                            refreshmerge();
+                        }
+                    });
+                } else {
+                    // Normal form submission for other merges
+                    $('#mergeToast').toast({ autohide: false });
+                    $('#mergeToast').toast('show');
+                    
+                    waitForDownloadCookie('downloadComplete', () => {
+                        $('#mergeToast').toast('hide');
+                        refreshmerge();
+                    });
 
-                document.getElementById('mergeform').submit();
+                    document.getElementById('mergeform').submit();
+                }
             }
         }
     
@@ -1006,11 +1059,30 @@
             </script>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnmerge(issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeepetw.value, issuefeewithgr.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="issuefeesubmit" onclick="submitbtnissfee(issuefeerequestpat.checked, issuefeepagefacts.value, issuefeepagedraw.value, issuefeemrgexam.checked, issuefeeisspaid.checked, issuefeeisspaidhide.value, issuefeewithfil.checked, issuefeemail.value, issuefeepetw.value, issuefeewithgr.value, issuefeeamtinc.checked, issuefeeamtfrst.value, issuefeeesign.checked)">Continue</button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function submitbtnissfee(requestpat, pagefacts, pagedraw, mrgexam, isspaid, isspaidhide, withfil, email, petw, withgr, amtinc, amtfrst, esign){
+        // Add all issuefee data to mergedata (comma delimited)
+        const merged_data = [requestpat, pagefacts, pagedraw, mrgexam, isspaid, isspaidhide, withfil, email, petw, withgr, amtinc, amtfrst, esign].join(',');
+        document.getElementById('mergedata').value += merged_data;
+        
+        // Check if "Merge Response to Examiner's Reasons for Allowance" is checked
+        if (mrgexam) {
+            // Show the stateofallow modal (first popup)
+            // When stateofallow2's Continue button is clicked, it will call submitbtnmerge
+            // which will add the NOAR date to the end of mergedata and submit the form
+            // NOTE: The NOAR date will be at array position 13 (0-indexed) when the data is split by comma
+            $('#stateofallow').modal('show');
+        } else {
+            // If not checked, submit merge normally
+            submitbtnmerge();
+        }
+    }
+</script>
 <!--Does not work-->
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
@@ -1058,7 +1130,7 @@
                     &emsp;&emsp;List Other: <input type="text" id="statement373clistoth" size="15">
                 </div>
                 <div class="form-group">
-                    <br>&emsp;&emsp;Signing Attorney: <select id="statement373cSAdrop"></select>
+                    <br>&emsp;&emsp;Signing Attorney: <select id="Statement373cSAdrop"></select>
                 </div>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="statement373crecordchk"> There is a recordation occuring concurrently with this filing, or a recordation already occured
@@ -1070,7 +1142,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(statement373crecordchk.checked, statement373cesign.checked, radioFill('statement373crad'), statement373clistoth.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(statement373crecordchk.checked, statement373cesign.checked, radioFill('statement373crad'), statement373clistoth.value, Statement373cSAdrop.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -1650,14 +1722,14 @@
                     &emsp;&emsp;<input type="checkbox" id="ownerchangeapp"> Assignee needs to be added as an applicant
                 </div>
                 <div>
-                    <br><label for="ownerchangenames">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</label>
+                    <br><label for="ownerchangePCTSAdrop">&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;</label>
                     <select id="ownerchangePCTSAdrop">
                     </select>
                   </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ownerchangeesign.checked, ownerchangeapp.checked, ownerchangenames.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(ownerchangeesign.checked, ownerchangeapp.checked, ownerchangePCTSAdrop.value)">Continue</button>
             </div>
         </div>
     </div>
@@ -1812,7 +1884,7 @@
                                 //$('#invchange').modal('show');
                                 fillPCTSA('invchange');
                                 if (mergemethod == 'aiashortdecl' || mergemethod == 'msassn' || mergemethod == 'cornellassnnew'){
-                                    document.getElementById("invchangeSAdrop").style.display = "none";
+                                    document.getElementById("invchangePCTSAdrop").style.display = "none";
                                 }
                                 document.getElementById('invchangeselall').addEventListener('change', function() {
                                     const checkboxes = document.querySelectorAll('input[name="invchangechk"]');
@@ -3931,9 +4003,10 @@
                     <br>  <input type="radio" id="PTOAIA82prop" name="PTOAIA82rad" value="4"> Person Who Otherwise Shows Sufficient Proprietary Interest
                 </div><br>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('StatementUnder373brad'), StatementUnder373bSAdrop.value, StatementUnder373besign, StatementUnder373blistoth.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PTOAIA82genpoa.checked, radioFill('PTOAIA82rad'))">Continue</button>
             </div>
         </div>
     </div>
@@ -5428,6 +5501,100 @@
         </div>
     </div>
 </div>
+    <!-- state of allow -->
+    <div id="stateofallow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Enable Esign?</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+                </div>
+                <div class="modal-footer">
+                    <!-- Pass the button element to the onclick function -->
+                    <button type="button" class="btn btn-default" onclick="stateofallow('FALSE')" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" onclick="stateofallow('TRUE')" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div id="stateofallow2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="esignModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Enter/Confirm Date</h4>
+                    <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+                </div>
+                <div class="modal-body">
+                <div>
+                        NOAR - <span id="stateofallowdteText"></span>
+                </div>
+                <div>
+                        <input type="date" id="stateofallowdte">
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(stateofallowdte.value)">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function stateofallow(esignValue){
+            const inputData = document.getElementById("matterInput").value;
+            $.ajax({
+                type: 'POST',
+                url: 'merge_stateofallow/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const noardate = response.message.noardate;
+                    const dateInput = document.getElementById('stateofallowdte');
+                    const dateText = document.getElementById('stateofallowdteText');
+
+                    document.getElementById('mergedata').value += esignValue + ',';
+                    
+                    // Fill the date field and text if NOAR date exists
+                    if(noardate != ''){
+                        let dateObj;
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(noardate)) {
+                            dateInput.value = noardate;
+                            dateObj = new Date(noardate + 'T00:00:00');
+                        } else {
+                            // If it's a full datetime: convert to local calendar date string (YYYY-MM-DD)
+                            dateObj = new Date(noardate); // parses ISO reliably
+                            dateObj.setDate(dateObj.getDate() + 1);
+                            const yyyy = dateObj.getFullYear();
+                            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const dd = String(dateObj.getDate()).padStart(2, '0');
+                            dateInput.value = `${yyyy}-${mm}-${dd}`;
+                        }
+                        // Format date as readable text (e.g., "January 15, 2024")
+                        const monthNames = ["January", "February", "March", "April", "May", "June",
+                                          "July", "August", "September", "October", "November", "December"];
+                        const formattedDate = monthNames[dateObj.getMonth()] + ' ' + 
+                                            dateObj.getDate() + ', ' + 
+                                            dateObj.getFullYear();
+                        dateText.textContent = formattedDate;
+                    } else {
+                        // Clear the date field and text if no NOAR date
+                        dateInput.value = '';
+                        dateText.textContent = '';
+                    }
+                    
+                    // Show the second popup
+                    $('#stateofallow2').modal('show');
+                },
+                error: function(error) {
+                    console.error('Error:', error);
+                    // Still show the popup even if there's an error
+                    $('#stateofallow2').modal('show');
+                }
+            });
+        }
+    </script>
 {% csrf_token %}
 <script>
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -5549,16 +5716,16 @@
 
                         // Esign popUp
                         const esignMethods = ["incorrectfilerect", "corrinventorship", "corrapplicant", "pctdeclaration2", "clientagree_sp", "incorrectrecd", "reqtermadj", "poatransmit", "zimmerdec", "internetauth", "purdueassn", "nonpubrequest"];
-                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF"];
+                        const otherMethods = ["pclaims", "LateSubmissionOfDec", "corrappln", "applicationdata_new2", "missingpartsNw", "pctgeneric", "PctCommRe", "DraftOAInstruct", "mrgfforder", "provisionalapp", "PTOAIA82", "ids_citedparent_2012", "ffSndItmsToAssoc", "BSCCombinedAssnDec", "micnffallow", "mspostallow", "noticeofAppeal", "applicationdata_updnew", "PatentCoopTreaty2", "utilityapp", "assignment2016", "pctchgagent", "pctpoa_new", "expressaban", "AppealBrief3", "nonpubrequest", "deferRequest", "blankletter", "appdataupdate", "exttimeCF", "stateofallow"];
 
                         // Check conditions
-                        if (esign === "TRUE" || esignMethods.includes(mergemethod)) {
+                        if (esign === "TRUE" || esignMethods.includes(mergemethod)){
                             $('#esign').modal('show');
-                        } else if (otherMethods.includes(mergemethod)) {
+                        } else if (otherMethods.includes(mergemethod)){
                             $('#' + mergemethod).modal('show');
-                        }else if (mergemethod == 'recordation' || mergemethod == 'nsnotarialcert'){ 
+                        }else if (mergemethod == 'recordation' || mergemethod == 'nsnotarialcert'){
                             fillInventor(mergemethod);
-                        }else if (contacts == 'TRUE'){ 
+                        }else if (contacts == 'TRUE'){
                             fillRecipients(mergemethod);
                             //submitForm();
                         }else if (mergemethod == 'Statement373c' || mergemethod == 'generalxmitCF' || mergemethod == 'idsCommCfNew' || mergemethod == 'rcexmit3' || mergemethod == 'poa82combined' || mergemethod == 'StatementUnder373b' || mergemethod == 'genericheader' || mergemethod == 'priorexam2012' || mergemethod == 'prelimamend' || mergemethod == 'CommFilingPriDoc' || mergemethod == 'entstatus' || mergemethod =='auditletter' || mergemethod == 'Qp_Ids' || mergemethod == 'amend37cfr'){
@@ -5584,7 +5751,9 @@
             });
         }
         
+        let currentMergemethod = '';
         function fillInventor(mergemethod) {
+            currentMergemethod = mergemethod;
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
                 type: 'POST',
@@ -5603,13 +5772,36 @@
                     tableBody.innerHTML = '';
                     corpBody.innerHTML = '';
                     corpHeader.innerHTML = '';
+                    
+                    // Hide date column header if mergemethod is nsnotarialcert
+                    const inventorTable = tableBody.closest('table');
+                    const headerRow = inventorTable ? inventorTable.querySelector('thead tr') : null;
+                    if (mergemethod == 'nsnotarialcert' && headerRow) {
+                        const dateHeaderCell = headerRow.querySelector('th:nth-child(3)');
+                        if (dateHeaderCell) {
+                            dateHeaderCell.style.display = 'none';
+                        }
+                    } else if (headerRow) {
+                        const dateHeaderCell = headerRow.querySelector('th:nth-child(3)');
+                        if (dateHeaderCell) {
+                            dateHeaderCell.style.display = '';
+                        }
+                    }
+                    
                     for(var i = 0; i < inventorList.length; i++){
                         const newRow = document.createElement('tr');
-                        newRow.innerHTML = `
-                            <td><input type="checkbox" name = "invchk" checked></td>
-                            <td>${inventorList[i]}</td>
-                            <td><input type="date"></td>
-                        `;
+                        if (mergemethod == 'nsnotarialcert') {
+                            newRow.innerHTML = `
+                                <td><input type="checkbox" name = "invchk" checked></td>
+                                <td>${inventorList[i]}</td>
+                            `;
+                        } else {
+                            newRow.innerHTML = `
+                                <td><input type="checkbox" name = "invchk" checked></td>
+                                <td>${inventorList[i]}</td>
+                                <td><input type="date"></td>
+                            `;
+                        }
                         tableBody.appendChild(newRow);
                         const dateFields = newRow.querySelectorAll('[contenteditable]');
                     }
@@ -5651,9 +5843,14 @@
                             if (checkbox.checked) {
                                 const row = checkbox.closest('tr');
                                 const column1Value = row.children[1].innerText;
-                                const dateFields = row.querySelectorAll('input[type="date"]');
-                                const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
-                                selectedData.push(rowData);
+                                if (mergemethod == 'nsnotarialcert') {
+                                    const rowData = [column1Value];
+                                    selectedData.push(rowData);
+                                } else {
+                                    const dateFields = row.querySelectorAll('input[type="date"]');
+                                    const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
+                                    selectedData.push(rowData);
+                                }
                             }
                         });
                         submitbtnrecoinv('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
@@ -5670,7 +5867,7 @@
         let isClicked = false;
         button.addEventListener('click', () => {
             if (isClicked) {
-                fillInventor();
+                fillInventor(currentMergemethod);
             } else {
                 const inputData = document.getElementById('matterInput').value;
                 //alert(inputData);
@@ -5688,13 +5885,36 @@
                         const corproleorderList = response.message.roleorders.split(';');
                         const tableBody = document.getElementById('inventor-list');
                         tableBody.innerHTML = '';
+                        
+                        // Hide date column header if mergemethod is nsnotarialcert
+                        const inventorTable = tableBody.closest('table');
+                        const headerRow = inventorTable ? inventorTable.querySelector('thead tr') : null;
+                        if (currentMergemethod == 'nsnotarialcert' && headerRow) {
+                            const dateHeaderCell = headerRow.querySelector('th:nth-child(3)');
+                            if (dateHeaderCell) {
+                                dateHeaderCell.style.display = 'none';
+                            }
+                        } else if (headerRow) {
+                            const dateHeaderCell = headerRow.querySelector('th:nth-child(3)');
+                            if (dateHeaderCell) {
+                                dateHeaderCell.style.display = '';
+                            }
+                        }
+                        
                         for(var i = 0; i < corpList.length; i++){
                             const newRow = document.createElement('tr');
-                            newRow.innerHTML = `
-                                <td><input type="checkbox" name = "corpchk1"></td>
-                                <td>${corpList[i]}</td>
-                                <td><input type="date"></td>
-                            `;
+                            if (currentMergemethod == 'nsnotarialcert') {
+                                newRow.innerHTML = `
+                                    <td><input type="checkbox" name = "corpchk1"></td>
+                                    <td>${corpList[i]}</td>
+                                `;
+                            } else {
+                                newRow.innerHTML = `
+                                    <td><input type="checkbox" name = "corpchk1"></td>
+                                    <td>${corpList[i]}</td>
+                                    <td><input type="date"></td>
+                                `;
+                            }
                             tableBody.appendChild(newRow);
                             const dateFields = newRow.querySelectorAll('[contenteditable]');
                         }
@@ -5728,9 +5948,14 @@
                                 if (checkbox.checked) {
                                     const row = checkbox.closest('tr');
                                     const column1Value = row.children[1].innerText;
-                                    const dateFields = row.querySelectorAll('input[type="date"]');
-                                    const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
-                                    selectedData.push(rowData);
+                                    if (currentMergemethod == 'nsnotarialcert') {
+                                        const rowData = [column1Value];
+                                        selectedData.push(rowData);
+                                    } else {
+                                        const dateFields = row.querySelectorAll('input[type="date"]');
+                                        const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
+                                        selectedData.push(rowData);
+                                    }
                                 }
                             });
                             selectedData.push("STARTNXT");

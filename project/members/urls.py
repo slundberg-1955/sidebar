@@ -23,6 +23,7 @@ urlpatterns = [
     path('merge_assignee/', addassignee, name = 'merge_assignee'),
     path('merge_PCTSA/', addPCTSA, name = 'merge_PCTSA'),
     path('merge_issfee/', views.fillissuefee, name='merge_issfee'),
+    path('merge_stateofallow/', views.fillstateofallow, name='merge_stateofallow'),
 
     path('edit_template/', views.edit_template, name='edit_template'),
     path('download_template/', views.download_template, name='download_template'),

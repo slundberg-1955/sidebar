@@ -298,6 +298,24 @@ def addSA(request):
     
     else:
         return JsonResponse({'error': 'Invalid request method'})
+
+def fillstateofallow(request):
+    if request.method == 'POST':
+        data = request.POST.get('matterno')
+        data = data.replace('"', "")
+        matter = Matter.objects.using('FIP').get(hostmatterno = data)
+        merge_fn = mergefunctions()
+
+        # Get NOAR date
+        try:
+            noaractivity = merge_fn.getactivityid(matter, 'NOAR')
+            dateNOAR = noaractivity.smryonevalue.isoformat()
+        except:
+            dateNOAR = ''
+
+        return JsonResponse({'message': {'noardate': dateNOAR}})
+    else:
+        return JsonResponse({'message': {'noardate': ''}})
     
 def addPA(request):
     merge_fn = mergefunctions()
@@ -585,10 +603,18 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
         for email in bcclist if check_email(email)
     ]
 
+    # Check if body contains HTML tags
+    has_html = bool(re.search(r'<[^>]+>', body))
+    body_type = BodyType.HTML if has_html else BodyType.Text
+    
+    # Convert newlines to <br> tags if using HTML format
+    if body_type == BodyType.HTML:
+        body = body.replace('\n', '<br>')
+
     request_body = Message(
         subject=subject,
         body=ItemBody(
-            content_type=BodyType.Text,
+            content_type=body_type,
             content=body,
         ),
         
@@ -596,13 +622,30 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
         cc_recipients=cc_recipients,
         bcc_recipients=bcc_recipients,
         
-        attachments=get_attachments(attachments)
+        #attachments=get_attachments(attachments)
     )
 
     async def create_draft():
         user_email = request.headers.get('X-MS-CLIENT-PRINCIPAL-NAME')
+        # Create draft message first (without attachments)
         draft_message = await client.users.by_user_id(user_email).messages.post(request_body)
         #draft_message = await client.me.messages.post(request_body)
+        
+        # Add attachments after creating the draft
+        attachment_objects = get_attachments(attachments)
+        print(f"Attempting to add {len(attachment_objects)} attachment(s) to draft message {draft_message.id}")
+        if attachment_objects:
+            for attachment in attachment_objects:
+                try:
+                    await client.users.by_user_id(user_email).messages.by_message_id(draft_message.id).attachments.post(attachment)
+                    print(f"Successfully added attachment: {attachment.name}")
+                except Exception as e:
+                    print(f"Error adding attachment {attachment.name}: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+        else:
+            print("No attachments to add (attachment_objects is empty)")
+        
         return draft_message
 
     def run_async_function():
@@ -622,24 +665,63 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
 
 def get_attachments(attachments):
     attachment_objects = []
+    if not attachments:
+        print("get_attachments: No attachments provided")
+        return attachment_objects
+
+    if isinstance(attachments, str):
+        attachments = [attachments]
+    
+    print(f"get_attachments: Processing {len(attachments)} attachment(s)")
     try:
         for file_path in attachments:
-            file_name = os.path.basename(file_path)
-            mime_type, _ = mimetypes.guess_type(file_path)
-            mime_type = mime_type or "application/octet-stream"
-            with open(file_path, "rb") as f:
-                content_bytes = f.read()
-
-            attachment = FileAttachment(
-                odata_type="#microsoft.graph.fileAttachment",
-                name=file_name,
-                content_type=mime_type,
-                content_bytes=content_bytes
-            )
-            attachment_objects.append(attachment)
-    except:
-        pass
+            if not file_path:
+                print("get_attachments: Skipping empty file path")
+                continue
             
+            print(f"get_attachments: Processing attachment: {file_path}")
+                
+            # Check if file exists
+            if not os.path.exists(file_path):
+                print(f"Warning: Attachment file does not exist: {file_path}")
+                continue
+            
+            if not os.path.isfile(file_path):
+                print(f"Warning: Attachment path is not a file: {file_path}")
+                continue
+            
+            try:
+                file_name = os.path.basename(file_path)
+                mime_type, _ = mimetypes.guess_type(file_path)
+                mime_type = mime_type or "application/octet-stream"
+                
+                print(f"get_attachments: Reading file {file_name} (type: {mime_type})")
+                with open(file_path, "rb") as f:
+                    content_bytes = f.read()
+                
+                print(f"get_attachments: File size: {len(content_bytes)} bytes")
+                
+                # Microsoft Graph FileAttachment expects content_bytes as raw bytes
+                # The SDK will handle base64 encoding internally when sending to the API
+                attachment = FileAttachment(
+                    odata_type="#microsoft.graph.fileAttachment",
+                    name=file_name,
+                    content_type=mime_type,
+                    content_bytes=content_bytes
+                )
+                attachment_objects.append(attachment)
+                print(f"Successfully prepared attachment: {file_name}")
+            except Exception as e:
+                print(f"Error processing attachment {file_path}: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                continue
+    except Exception as e:
+        print(f"Error in get_attachments: {str(e)}")
+        import traceback
+        traceback.print_exc()
+    
+    print(f"get_attachments: Returning {len(attachment_objects)} attachment object(s)")
     return attachment_objects
 
 def testview(request):
@@ -964,7 +1046,15 @@ def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
         matter_data = merge_fn.matterFill(matter)
         if matter_data.country == 'CN' or matter_data.country == 'KR':
             input_path = input_path.replace('ffOLP', 'FFOLP_PTA')
-            
+
+    if mergeinfo_list[1] == 'blankletter':
+        if mergefninfo[0] == 'TRUE':
+            input_path = input_path.replace('BlankLetterContact.docx', 'BlankLetterAssociate.docx')
+
+    if mergeinfo_list[1] == 'ownerchange':
+        if mergefninfo[1] == 'FALSE' or mergefninfo[1] == 'false':
+            input_path = input_path.replace('ownershipchange_fax.docx', 'ownershipchange_inv.docx')
+
     return input_path
 
 # New separate function for merging documents
@@ -978,11 +1068,6 @@ def mergeDoc(matter, mergeinfo, request):
     merge_instance = curMerge()
 
     docpath = mergeinfo_list[0].split('/')
-    
-    #input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
-    input_path = get_template_docx(docpath[0].lower(), docpath[1])
-    output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
-    #input_path = merge_fn.find_case_insensitive_path(input_path)
 
     replace = {}
     mergefninfo = mergeinfo.split(",")
@@ -992,16 +1077,24 @@ def mergeDoc(matter, mergeinfo, request):
     
     contacts = mergeinfo_list[2]
     # Pop emails in merge data
-    if contacts == 'TRUE' and mergeinfo_list[1] != 'reportprvassnnew':
+    if contacts == 'TRUE' and mergeinfo_list[1] != 'reportprvassnnew' and mergeinfo_list[1] != 'blankletter':
         mergefninfo.pop(0)
         mergefninfo.pop(0)
         mergefninfo.pop(0)
 
+    if mergeinfo_list[1] == 'blankletter':
+        mergefninfo.append(request.headers.get('X-MS-CLIENT-PRINCIPAL-NAME'))
+
+    docpath[1] = pathChanger(docpath[1], mergeinfo_list, mergefninfo, matter)
+
+    #input_path = os.path.join(settings.BASE_DIR, 'documents', docpath[0], docpath[1])
+    input_path = get_template_docx(docpath[0].lower(), docpath[1])
+    output_path = os.path.join(settings.BASE_DIR, 'documents', 'merged', 'Document.docx')
+    #input_path = merge_fn.find_case_insensitive_path(input_path)
+
     # without multiple docs
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
-    
-    #input_path = pathChanger(input_path, mergeinfo_list, mergefninfo, matter)
 
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
 
@@ -1012,6 +1105,7 @@ def mergeDoc(matter, mergeinfo, request):
         doc = Document(input_path)
 
     # with multiple docs
+    issuefee_email_url = None
     if mergeinfo_list[1] == 'issuefee':
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
@@ -1022,7 +1116,8 @@ def mergeDoc(matter, mergeinfo, request):
         issCC = ''
         issBCC = ''
         attachment = os.path.join(settings.BASE_DIR, 'documents', 'attachments', 'Notice of Allowance Review and Response.pdf')
-        #Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
+        #attachment = get_template_docx('attachments', 'Notice of Allowance Review and Response.pdf')
+        issuefee_email_url = Email(issbody, isssubject, issTO, issCC, issBCC , attachment, request)
             
     if mergeinfo_list[1] == 'assignment2016':
         if mergefninfo[0] == '1':
@@ -1038,6 +1133,22 @@ def mergeDoc(matter, mergeinfo, request):
     # doc merges
     if contacts == "FALSE":
         WordMerger(input_path, replace, output_path)
+
+        ownerchange_email_url = None
+        if mergeinfo_list[1] == 'ownerchange':
+            ownsubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
+            email_template_doc = get_template_docx('attachments', 'ownerchangeEmail.docx')
+            email_template_doc.seek(0)
+            owndoc = Document(email_template_doc)
+            # Extract body text from all paragraphs
+            ownbody = '\n'.join([p.text for p in owndoc.paragraphs])
+
+            ownTO = ''
+            ownCC = ''
+            ownBCC = ''
+            attachment = output_path
+            ownerchange_email_url = Email(ownbody, ownsubject, ownTO, ownCC, ownBCC , attachment, request)
+
         # ----- Azure Storage -----
         file_name = os.path.basename(output_path)
         file_name = file_name.split('.')
@@ -1111,6 +1222,23 @@ def mergeDoc(matter, mergeinfo, request):
 
             # Check if this is multi-doc
             if not multidoc:
+                # Special handling for issuefee - return both document and email URL
+                if doc_type == 'issuefee' and issuefee_email_url is not None:
+                    data_base64 = base64.b64encode(data).decode('utf-8')
+                    return JsonResponse({
+                        'document_data': data_base64,
+                        'document_filename': file_name,
+                        'email_url': issuefee_email_url,
+                        'document_type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    })
+                if doc_type == 'ownerchange' and ownerchange_email_url is not None:
+                    data_base64 = base64.b64encode(data).decode('utf-8')
+                    return JsonResponse({
+                        'document_data': data_base64,
+                        'document_filename': file_name,
+                        'email_url': ownerchange_email_url,
+                        'document_type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    })
                 # Return the first document as a download (optional)
                 response = HttpResponse(data, content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
                 response['Content-Disposition'] = f'attachment; filename={file_name}'
@@ -1193,7 +1321,20 @@ def mergeDoc(matter, mergeinfo, request):
                     zip_file.writestr(file_name2, data2)
 
                 zip_buffer.seek(0)
-                response = HttpResponse(zip_buffer.read(), content_type="application/zip")
+                zip_data = zip_buffer.read()
+                
+                # Special handling for issuefee - return both zip and email URL
+                if mergeinfo_list[1] == 'issuefee' and issuefee_email_url is not None:
+                    zip_data_base64 = base64.b64encode(zip_data).decode('utf-8')
+                    zip_filename = mergeinfo_list[1] + '-' + matter + '-documents.zip'
+                    return JsonResponse({
+                        'document_data': zip_data_base64,
+                        'document_filename': zip_filename,
+                        'email_url': issuefee_email_url,
+                        'document_type': 'application/zip'
+                    })
+                
+                response = HttpResponse(zip_data, content_type="application/zip")
                 response['Content-Disposition'] = 'attachment; filename=' + mergeinfo_list[1] + '-' + matter + '-documents.zip'
                 response.set_cookie('downloadComplete', 'true')
                 print("Returning zipped documents.")

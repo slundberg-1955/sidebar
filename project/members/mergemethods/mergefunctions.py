@@ -185,8 +185,8 @@ class mergefunctions:
                 profile = Orgprofile.objects.using('FIP').get(opid = part.contactid)
                 contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.contactinfoid)
                 try:
-                    personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
-                    farecipient = personprofile.lname
+                    #personprofile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
+                    farecipient = profile.contactname
                 except:
                     farecipient = ''
 
@@ -208,6 +208,8 @@ class mergefunctions:
                     'faCSZ' : '',
                     'associateName' : profile.orgname,
                     'recipientEmail' : contact.email,
+                    'recipientPhone' : contact.phone1,
+                    'recipientFax' : contact.fax,
                     'faclientRefNo' : part.matterno,
                     'faRecipient' : farecipient
                 }
@@ -330,6 +332,10 @@ class mergefunctions:
             applicant = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
             applicantlen = len(applicant)
 
+            appstreet = contact.address1
+            if contact.address2 != '':
+                appstreet = appstreet + '/n' + contact.address2
+
             if applicantlen == 1:
                 count = 'Applicant: '
 
@@ -341,6 +347,7 @@ class mergefunctions:
                 'applicantCountry' : contact.country,
                 'applicantStreet1' : contact.address1,
                 'applicantStreet2' : contact.address2,
+                'applicantStreet' : appstreet,
                 'applicant' : profile.orgname,
                 'applicantName' : profile.orgname,
             }
@@ -400,6 +407,162 @@ class mergefunctions:
             'copyContact' : copyContact
         }
         return info
+
+    def getNameFromEmail(self, email):
+        """
+        Look up a contact's name from their email address.
+        Returns person's full name or organization name, or empty string if not found.
+        """
+        if not email or not email.strip():
+            return ''
+        
+        email = email.strip()
+        try:
+            # Try to find Contactinfo by email
+            contact = Contactinfo.objects.using('FIP').filter(email=email).first()
+            if contact:
+                # Try to find Personprofile by workcontactinfoid
+                try:
+                    person = Personprofile.objects.using('FIP').filter(workcontactinfoid=contact.contactinfoid).first()
+                    if person:
+                        return (person.fname + ' ' + person.lname).strip()
+                except:
+                    pass
+                
+                # Try to find Personprofile by homecontactinfoid
+                try:
+                    person = Personprofile.objects.using('FIP').filter(homecontactinfoid=contact.contactinfoid).first()
+                    if person:
+                        return (person.fname + ' ' + person.lname).strip()
+                except:
+                    pass
+                
+                # Try to find Personprofile by mailcontactinfoid
+                try:
+                    person = Personprofile.objects.using('FIP').filter(mailcontactinfoid=contact.contactinfoid).first()
+                    if person:
+                        return (person.fname + ' ' + person.lname).strip()
+                except:
+                    pass
+                
+                # Try to find Orgprofile by contactinfoid
+                try:
+                    org = Orgprofile.objects.using('FIP').filter(contactinfoid=contact.contactinfoid).first()
+                    if org and org.orgname:
+                        return org.orgname.strip()
+                except:
+                    pass
+        except:
+            pass
+        
+        return ''
+    
+    def workAddressFill(self, matter, roleid='34610'):
+        """
+        Get work address for a contact based on roleid.
+        Default roleid is 34610 (correspondence contact).
+        Returns formatted multi-line address string.
+        """
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        work_addr = ''
+        try:
+            part = Matterparticipant.objects.using('FIP').get(matterid=matter_data.matterid, roleid=roleid, roleorderno=1)
+            profile = Personprofile.objects.using('FIP').get(ppid=part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid=profile.workcontactinfoid)
+            
+            addr_parts = []
+            if contact.address1:
+                addr_parts.append(contact.address1)
+            if contact.address2:
+                addr_parts.append(contact.address2)
+            if contact.address3:
+                addr_parts.append(contact.address3)
+            
+            city_state_zip = ''
+            if contact.city:
+                city_state_zip = contact.city
+            if contact.state:
+                city_state_zip = city_state_zip + ', ' + contact.state if city_state_zip else contact.state
+            if contact.zip:
+                city_state_zip = city_state_zip + ' ' + contact.zip if city_state_zip else contact.zip
+            if city_state_zip:
+                addr_parts.append(city_state_zip)
+            
+            work_addr = '\n'.join(addr_parts) if addr_parts else ''
+        except:
+            work_addr = ''
+        
+        return work_addr
+
+    def foreignAssociateFill(self, matter):
+        """
+        Get foreign associate data for recipient, recipientTitle, orgName, and workAddr.
+        Returns a dictionary with these fields filled from FA data.
+        """
+        merge_fn = mergefunctions()
+        matter_data = merge_fn.matterFill(matter)
+        
+        result = {
+            'recipient': '',
+            'recipientTitle': '',
+            'orgName': '',
+            'workAddr': ''
+        }
+        
+        try:
+            # Get foreign associate participant (roleid = '56690')
+            part = Matterparticipant.objects.using('FIP').get(matterid=matter_data.matterid, roleid='56690', roleorderno=1)
+            profile = Orgprofile.objects.using('FIP').get(opid=part.contactid)
+            contact = Contactinfo.objects.using('FIP').get(contactinfoid=profile.contactinfoid)
+            
+            # Set orgName
+            result['orgName'] = profile.orgname if profile.orgname else ''
+            
+            try:
+                personprofile = Personprofile.objects.using('FIP').get(ppid=part.contactid)
+                result['recipientTitle'] = personprofile.title.strip()
+            except:
+            #     # If no person profile, use org name as recipient
+                result['recipientTitle'] = ''
+
+            try:
+                result['recipient'] = profile.contactname
+            except:
+                result['recipient'] = ''
+            
+            # Build work address
+            country = matter_data.countryname
+            if country == 'European Patent Office':
+                country = 'United Kingdom'
+            
+            addr_parts = []
+            if contact.address1:
+                addr_parts.append(contact.address1)
+            if contact.address2:
+                addr_parts.append(contact.address2)
+            if contact.address3:
+                addr_parts.append(contact.address3)
+            
+            city_state_zip = ''
+            if contact.city:
+                city_state_zip = contact.city
+            if contact.state:
+                city_state_zip = city_state_zip + ', ' + contact.state if city_state_zip else contact.state
+            if contact.zip:
+                city_state_zip = city_state_zip + ' ' + contact.zip if city_state_zip else contact.zip
+            if city_state_zip:
+                addr_parts.append(city_state_zip)
+            if country:
+                addr_parts.append(country)
+            
+            result['workAddr'] = '\n'.join(addr_parts)
+            
+        except Exception as e:
+            # If any error occurs, return empty values
+            pass
+        
+        return result
 
     def ffcmgFill(self, matter):
         merge_fn = mergefunctions()
@@ -617,17 +780,17 @@ class mergefunctions:
             return None
     
     def inventorInfoName(self, matter, name):
-        merge_fn = mergefunctions()
         try:
+            merge_fn = mergefunctions()
             first, middle, last = merge_fn.split_name(name)
             matter_data = merge_fn.matterFill(matter)
             parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
             for part in parts:
                 try:
+                    #print(first, last)
                     profile = Personprofile.objects.using('FIP').get(ppid = part.contactid, fname = first, lname = last)
                 except:
                     pass
-                
             contact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.homecontactinfoid)
             # if contact.address1 != '':
             #     homeaddr = contact.address1 + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip
@@ -636,6 +799,8 @@ class mergefunctions:
             # else:
             #     homeaddr = contact.state + ' ' + contact.zip
 
+            #homeaddr = contact.address1 + '\n' + contact.address2 + '\n' + contact.city + ', ' + contact.zip + '\n'
+
             homeaddr = ''
             if contact.address1 != '':
                 homeaddr = contact.address1
@@ -643,17 +808,17 @@ class mergefunctions:
                 homeaddr = homeaddr + '\n' + contact.address2
             if contact.city != '':
                 homeaddr = homeaddr + '\n' + contact.city + ', ' + contact.state + ' ' + contact.zip + '\n' 
+
             info = {
                 'inventorName' : profile.lname.upper() + ', ' + profile.fname + ' ' + profile.mname,
                 'inventorHomeAddress' : homeaddr,
                 'inventorHomeCountry' : merge_fn.fullCountry(contact.country),
             }
-
         except:
             info = {
                 'inventorName' : '',
                 'inventorHomeAddress' : '',
-                'inventorHomeCountry' : '',
+                'inventorHomeCountry' : ''
             }
 
         return info
@@ -978,6 +1143,9 @@ class mergefunctions:
                 examiner = FvMatter4.objects.using('FIP').get(recordid = data.matterid).examiner
             except:
                 pass
+        
+        if examiner == 'None' or examiner == None:
+            examiner = 'Unknown'
 
         return examiner
 

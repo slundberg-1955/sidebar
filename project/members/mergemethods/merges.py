@@ -1,9 +1,10 @@
 import webbrowser
 from ..mergemethods import mergefunctions
-from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task, FvMatter4, Trademark
+from ..models import Activity, Task, Rvwactivitydateattribute, Relatedmatter, Docketentry, Task, FvMatter4, Trademark, Matterparticipant, Matter, Contactinfo
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
+from django.db import connections
 
 # Transmittal - Communication Appeal Forwarding Fee
 class appealfwd:
@@ -67,8 +68,8 @@ class issuefee:
         depnum = function_instance.depnumFill(matter_data)
         fee = function_instance.getFee(81, matter)
         entity = function_instance.entityName(function_instance.entityfill(matter))
-        feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+ fee +' to cover the '+ entity.capitalize() +' Entity Issue Fee Payment.'
-        feeX = 'X'
+        feetxt = ''
+        feeX = ''
         
         withdraw = function_instance.getPreviousPaidData(matter)
         
@@ -135,6 +136,12 @@ class issuefee:
             wdrwtxt = 'A petition under 37 CFR 1.313(c)(2) to withdraw the above-identified application from issue after payment of the issue fee was subsequently filed on '+ function_instance.formatDate(mergeinfo[8]) +'.  Applicant received a decision, dated '+ function_instance.formatDate(mergeinfo[9]) +', granting the petition to withdraw.'
         else:
             wdrwtxt = 'The USPTO sent a Notice of Withdrawal from Issue on ' + function_instance.formatDate(mergeinfo[7])
+    
+        if mergeinfo[4] == 'true':
+            prevx = 'X'
+            prevtxt = '         Request to Apply Previously Paid Issue Fee (1 pg.)'
+            feetxt = '         Authorization to charge Deposit '+ depnum +' in the amount of '+ fee +' to cover the '+ entity.capitalize() +' Entity Issue Fee Payment.'
+            feeX = 'X'
 
         if mergeinfo[10] == 'true':
             try:
@@ -143,11 +150,8 @@ class issuefee:
                 fee = function_instance.getFee(81, matter)
             increasetxt = 'The present issue fee has increased from the previously-paid issue fee.  Transmitted herewith is authorization to charge Deposit Account '+ depnum +' in the amount of '+ fee + ' to cover the issue fee increase.'
             feetxt = '         Authorization to charge Deposit ' + depnum + ' in the amount of ' + fee + ' to cover the issue fee increase.'
+            feeX = ''
             
-        if mergeinfo[4] == 'true':
-            prevx = 'X'
-            prevtxt = '         Request to Apply Previously Paid Issue Fee (1 pg.)'
-
         ifeex = 'X'
         ifeetxt = '         Issue Fee Transmittal (Form PTOL-85).'
         commx = 'X'
@@ -206,21 +210,195 @@ class issuefee:
 class Statement373c:
     def Statement373c(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-
-        recoccur = mergeinfo[0]
-
-        if mergeinfo[2] == 'oth':
-            org = mergeinfo[3]
-        else:
-            if mergeinfo[2]:
-                org = mergeinfo[2]
+        matter_data = function_instance.matterFill(matter)
         
+        # Parse mergeinfo
+        # mergeinfo[0] = recordation checkbox (True/False)
+        # mergeinfo[1] = esign checkbox (True/False)
+        # mergeinfo[2] = orgType radio value (Corporation, Partnership, University, Government Agency, or "oth")
+        # mergeinfo[3] = "other" text if mergeinfo[2] == "oth"
+        recordation = mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False
+        esign = mergeinfo[1] == 'true' if len(mergeinfo) > 1 else True
+        orgType = mergeinfo[2] if len(mergeinfo) > 2 else 'Corporation'
+        otherType = mergeinfo[3] if len(mergeinfo) > 3 else ''
+        
+        # Handle orgType - if "oth", use the otherType text, otherwise use the radio value
+        if orgType == 'oth' and otherType:
+            cAssigneeType = otherType
+        else:
+            cAssigneeType = orgType
+        
+        # Pad orgType to 70 characters
+        orgTypeLength = len(cAssigneeType)
+        addToT = max(0, 70 - orgTypeLength)
+        orgTypePadded = cAssigneeType + ' ' * addToT
+        
+        # Get assignee and applicant counts
+        assignees = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='34606')
+        applicants = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='56691')
+        inventors = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='34608')
+        
+        assigneeCount = len(assignees)
+        applicantCount = len(applicants)
+        inventorCount = len(inventors)
+        
+        lMultiples = (applicantCount > 1) or (assigneeCount > 1)
+        
+        # Initialize replace dictionary
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[1]))
-        replace.update({
-            'orgType' : org,
-        })
+        replace.update(function_instance.esigncheck(esign))
+        replace['orgType'] = orgTypePadded
+        
+        # Handle assignee/applicant logic
+        if not lMultiples:
+            # Single assignee
+            if assigneeCount > 0:
+                assignee_data = function_instance.assigneefill(matter, 1)
+                assigneeName = assignee_data.get('assignee', '')
+                assigneeLength = len(assigneeName)
+                addToA = max(0, 55 - assigneeLength)
+                replace['assignee'] = assigneeName + ' ' * addToA
+            else:
+                replace['assignee'] = '____________' * 5  # Placeholder if no assignee
+            
+            # Single applicant or inventor
+            if applicantCount > 0:
+                applicant_data = function_instance.applicantfill(matter, 1)
+                replace['appOrInvent'] = applicant_data.get('applicantName', '')
+            elif inventorCount > 0:
+                inventor_data = function_instance.inventorFill(matter_data)
+                replace['appOrInvent'] = inventor_data.inventor
+            else:
+                replace['appOrInvent'] = ''
+        else:
+            # Multiple assignees/applicants - for now, use first one
+            # In full implementation, this would need UI to select which ones
+            if assigneeCount > 0:
+                assignee_data = function_instance.assigneefill(matter, 1)
+                assigneeName = assignee_data.get('assignee', '')
+                assigneeLength = len(assigneeName)
+                addToA = max(0, 55 - assigneeLength)
+                replace['assignee'] = assigneeName + ' ' * addToA
+            else:
+                replace['assignee'] = '____________' * 5
+            
+            if applicantCount > 0:
+                applicant_data = function_instance.applicantfill(matter, 1)
+                replace['appOrInvent'] = applicant_data.get('applicantName', '')
+            elif inventorCount > 0:
+                inventor_data = function_instance.inventorFill(matter_data)
+                replace['appOrInvent'] = inventor_data.inventor
+            else:
+                replace['appOrInvent'] = ''
+        
+        # Query assignment data (reel/frame numbers)
+        # Check if this is a US1 matter or need to find US1 matter
+        nUs1Matter = 0
+        queryMatterId = matter_data.matterid
+        
+        # Check if matter type is CON or DIV to determine if we need US1 matter
+        matterTypeDesc = ''
+        try:
+            matterTypeDesc = matter_data.mattertypedescription or ''
+        except:
+            pass
+        
+        if 'CON' in matterTypeDesc.upper() or 'DIV' in matterTypeDesc.upper():
+            # Need to find US1 matter
+            familyNo = matter_data.hostmatterno.split('.')[0] if '.' in matter_data.hostmatterno else matter_data.hostmatterno
+            familyNo = familyNo + 'US1'
+            
+            try:
+                origMatter = Matter.objects.using('FIP').get(hostmatterno=familyNo)
+                queryMatterId = origMatter.matterid
+            except:
+                # Could not locate US1 matter - will use current matter
+                queryMatterId = matter_data.matterid
+        
+        # Query assignments - get reel and frame numbers from activity attributes
+        # This queries activity with name 'Assignment Recorded' and gets attributes
+        # query = f"""
+        #     SELECT 
+        #         CAST(av1.attributevalue AS VARCHAR(50)) AS reelno,
+        #         CAST(av2.attributevalue AS VARCHAR(50)) AS startframe,
+        #         CAST(av3.attributevalue AS VARCHAR(50)) AS endframe
+        #     FROM activity a
+        #     LEFT JOIN activityattribute av1 ON a.activityid = av1.activityid 
+        #         AND av1.attributename = 'Reel Number'
+        #     LEFT JOIN activityattribute av2 ON a.activityid = av2.activityid 
+        #         AND av2.attributename = 'Start Frame'
+        #     LEFT JOIN activityattribute av3 ON a.activityid = av3.activityid 
+        #         AND av3.attributename = 'End Frame'
+        #     WHERE a.matterid = {queryMatterId}
+        #         AND a.name = 'Assignment Recorded'
+        #     ORDER BY a.activityid
+        # """
+        
+        # assignments = []
+        # try:
+        #     with connections['FIP'].cursor() as cursor:
+        #         cursor.execute(query)
+        #         assignments = cursor.fetchall()
+        # except Exception as e:
+        #     print(f"Error querying assignments: {e}")
+        #     pass
+        
+        # # Handle reel/frame numbers
+        # if len(assignments) == 0:
+        #     # No assignments - use placeholders
+        #     replace['reelNo'] = '____________'
+        #     replace['frameNo'] = '____________'
+        #     for r in range(1, 7):
+        #         replace[f'reel{r}'] = '____________'
+        #         replace[f'frame{r}'] = '____________'
+        # elif len(assignments) == 1:
+        #     # Single assignment
+        #     reel, startframe, endframe = assignments[0]
+        #     cReel = str(reel).strip() if reel and str(reel).strip() else '____________'
+        #     if startframe and endframe and str(startframe).strip() and str(endframe).strip():
+        #         cFrame = f"{str(startframe).strip()} - {str(endframe).strip()}"
+        #     else:
+        #         cFrame = '____________'
+        #     replace['reelNo'] = cReel
+        #     replace['frameNo'] = cFrame
+        #     for r in range(1, 7):
+        #         replace[f'reel{r}'] = '____________'
+        #         replace[f'frame{r}'] = '____________'
+        # else:
+        #     # Multiple assignments
+        #     replace['reelNo'] = ''
+        #     replace['frameNo'] = ''
+        #     for r in range(1, 7):
+        #         if r <= len(assignments):
+        #             reel, startframe, endframe = assignments[r-1]
+        #             cReel = str(reel).strip() if reel and str(reel).strip() else '____________'
+        #             if startframe and endframe and str(startframe).strip() and str(endframe).strip():
+        #                 cFrame = f"{str(startframe).strip()} - {str(endframe).strip()}"
+        #             else:
+        #                 cFrame = '____________'
+        #             replace[f'reel{r}'] = cReel
+        #             replace[f'frame{r}'] = cFrame
+        #         else:
+        #             replace[f'reel{r}'] = '____________'
+        #             replace[f'frame{r}'] = '____________'
+        
+        # Note: Content controls for recordation and single/multiple assignments
+        # would need to be handled in the Word document processing, not in the merge tags
+        # These are handled via Word Content Controls which are set programmatically
+        
+        if mergeinfo[4] != 'Select Signing Attorney' and mergeinfo[4] != '':
+            saname, regno = function_instance.fullSAName(mergeinfo[4])
+            replace.update({
+                'SAName' : saname,
+                'SARegNo' : regno
+            })
+            saphone = function_instance.phoneFillSA(mergeinfo[4])
+            if saphone != '':
+                replace.update({
+                    'SAPhone' : saphone
+                })
+
         return replace
     
 # Formal Document - Assignment Recordation Cover Sheet
@@ -536,14 +714,22 @@ class stateofallow:
             function_instance = mergefunctions.mergefunctions()
             matter_data = function_instance.matterFill(matter)
 
+            if len(mergeinfo) > 2:
+                esign = mergeinfo[12]
+                datenall = function_instance.formatDate(mergeinfo[13])
+            else:
+                esign = mergeinfo[0]
+                datenall = function_instance.formatDate(mergeinfo[1])
+
             replace = {}
             depnum = function_instance.depnumFill(matter_data)
             replace.update(function_instance.mergebasic(keys, matter))
-            replace.update(function_instance.esigncheck(mergeinfo[12]))
+            replace.update(function_instance.esigncheck(esign))
             replace.update({
                 'depAccount' : depnum,
                 'allowType' : 'Notice of Allowance',
-                'dateNALL' : date.today().strftime("%B %d, %Y"),
+                'dateNALL' : datenall,
+                'headerText' : 'Response to Examiner\'s Reasons for Allowance'
             })
             return replace
     
@@ -611,16 +797,100 @@ class appReportFp:
 # PCT - 92bis Comm: Change in Rights of Ownership
 class ownerchange:
     def ownerchange(self, matter, mergeinfo, keys):
-            function_instance = mergefunctions.mergefunctions()
-
-            replace = {}
-            replace.update(function_instance.mergebasic(keys, matter))
-            replace.update(function_instance.applicantfill(matter, 1))
-            replace.update(function_instance.esigncheck(mergeinfo[0]))  
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        # Parse mergeinfo
+        # mergeinfo[0] = esign (true/false)
+        # mergeinfo[1] = lAdd (true/false - checkbox for "Assignee needs to be added as an applicant")
+        # mergeinfo[2] = nSigningId (PCT SA email address)
+        esign = mergeinfo[0] if len(mergeinfo) > 0 else 'false'
+        lAdd = mergeinfo[1] == 'true' if len(mergeinfo) > 1 else False
+        nSigningId = mergeinfo[2] if len(mergeinfo) > 2 else ''
+        
+        # nAfter is not in the modal, default to 0
+        # 0 = "Applicant for all designated States, except the U.S." / "Applicant for the United States only, and Inventor for all designated States"
+        # 1 = "Applicant for all designated States" / "Inventor for all designated States"
+        nAfter = 0
+        
+        # Initialize replace dictionary
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        
+        # Set applicantText and inventorText based on nAfter
+        if nAfter == 1:
+            replace['applicantText'] = '"Applicant for all designated States"'
+            replace['inventorText'] = '"Inventor for all designated States"'
+        else:
+            replace['applicantText'] = '"Applicant for all designated States, except the U.S."'
+            replace['inventorText'] = '"Applicant for the United States only, and Inventor for all designated States"'
+        
+        # Set additionText based on lAdd
+        if lAdd:
+            replace['additionText'] = 'AND ADDITION OF AN APPLICANT '
+            replace['additionTextLower'] = 'and addition of an applicant '
+        else:
+            replace['additionText'] = ''
+            replace['additionTextLower'] = ''
+        
+        # Get applicant data
+        try:
+            applicant_data = function_instance.applicantfill(matter, 1)
+            replace.update(applicant_data)
+            
+            # Handle applicantCountry - need country name, not code
+            country_code = applicant_data.get('applicantCountry', '')
+            if country_code:
+                replace['applicantCountry'] = function_instance.fullCountry(country_code)
+            else:
+                replace['applicantCountry'] = ''
+            
+            # Handle applicantState - uppercase
+            applicant_state = applicant_data.get('applicantState', '')
+            if applicant_state:
+                replace['applicantState'] = applicant_state.upper()
+            else:
+                replace['applicantState'] = ''
+            
+            # Handle applicantStreet2 - may be blank, if so set to empty string
+            applicant_street2 = applicant_data.get('applicantStreet2', '')
+            if applicant_street2:
+                replace['applicantStreet2'] = applicant_street2.strip()
+            else:
+                replace['applicantStreet2'] = ''
+        except Exception as e:
+            # If no applicant found, set all applicant fields to empty
+            print(f"Error getting applicant data for ownerchange: {e}")
+            replace['applicantName'] = ''
+            replace['applicantStreet1'] = ''
+            replace['applicantStreet2'] = ''
+            replace['applicantCity'] = ''
+            replace['applicantState'] = ''
+            replace['applicantZip'] = ''
+            replace['applicantCountry'] = ''
+        
+        # Handle e-signature
+        replace.update(function_instance.esigncheck(esign))
+        replace.update(function_instance.assigneefill(matter, 1))
+        
+        # Ensure all keys from template are in replace dictionary
+        for key in keys:
+            if key not in replace:
+                replace[key] = ''
+        
+        if mergeinfo[2] != 'Select Signing Attorney' and mergeinfo[2] != '':
+            saname, regno = function_instance.fullSAName(mergeinfo[2])
             replace.update({
-                'applicantName' : mergeinfo[2]
+                'SAName' : saname,
+                'SARegNo' : regno
             })
-            return replace
+            saphone = function_instance.phoneFillSA(mergeinfo[2])
+            if saphone != '':
+                replace.update({
+                    'SAPhone' : saphone
+                })
+        
+        return replace
     
 # Transmittal - Communication Regarding Corrected Application Papers
 # Need due date and fee
@@ -2386,14 +2656,19 @@ class incorrectfilerect:
 class corrinventorship:
     def corrinventorship(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter) 
+        matter_data = function_instance.matterFill(matter)
+
+        SA_data = function_instance.rvwmatterpersonnelFill(matter_data)
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
             'depAccount' : function_instance.depnumFill(matter_data),
+            'SARegNo' : SA_data.registrationno
         })
+        if replace['examinerName'] == 'None' or replace['examinerName'] == None:
+            replace['examinerName'] = 'Unknown'
         return replace
 
 # PTO Form - Correction of Applicant  (AIA/41)
@@ -3570,14 +3845,32 @@ class incorrectrecd:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
-        try:
-            assnact = Activity.objects.using('FIP').filter(matterid = matter.matterid, code__icontains = 'ASSN')[0]
-            assndate = ''
-            if 'Mailed' in assnact.smryonelabel:
-                assndate = assnact.smryonevalue.strftime("%B %d, %Y")
-        except:
-            assndate = ''
-        
+        codes_to_try = ["ASSN-7", "ASSN-2", "ASSN-11"]
+        assndate = ''  # default if none found
+
+        for code in codes_to_try:
+            # Get the first matching activity for this code (avoids IndexError from [0])
+            assnact = (
+                Activity.objects.using('FIP')
+                .filter(matterid=matter_data.matterid, code=code)
+                .first()
+            )
+            if not assnact:
+                continue
+
+            # Ensure smryonevalue exists and is a date/datetime
+            value = getattr(assnact, 'smryonevalue', None)
+            if not value:
+                continue
+
+            # Format date safely whether it's a date or datetime
+            try:
+                assndate = value.strftime("%B %d, %Y")
+                break  # exit on the first one that has a date
+            except (AttributeError, TypeError, ValueError):
+                # If smryonevalue isn't a date-like object, skip to next code
+                continue
+
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
@@ -4298,7 +4591,7 @@ class aiashortdecl:
         replace.update(function_instance.mergebasic(keys, matter))
         replace.update(function_instance.esigncheck(mergeinfo[0]))
         replace.update({
-
+            'inventorName' : mergeinfo[1]
         })
         return replace
 
@@ -4523,17 +4816,8 @@ class nsnotarialcert:
             
         if mergeinfo[0] == '2':
             selinv = mergeinfo[4]
-            name = mergeinfo[7].split(": ", 1)[0]
-            if name == 'Applicant':
-                roleid = '56691'
-            if name == 'Assignee':
-                roleid = '34606'
-            if name == 'Client':
-                roleid = '34617'
-            if name == 'Previous Client/Matter Number':
-                roleid = '93476'
-            if name == 'Licensee':
-                roleid = '34607'
+            roleid = mergeinfo[8]
+            
             try:
                 replace.update(function_instance.recordationRoleFill(matter, roleid))
             except:
@@ -4782,22 +5066,157 @@ class blankletter:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
-        try:
-            sal = mergeinfo[0]
-        except:
+        # Structure:
+        # If popup answered "Yes" (for Foreign Associate): mergeinfo[0] = 'TRUE', no other entries
+        # If popup answered "No": mergeinfo[0] = to (email addresses separated by ;), mergeinfo[1] = cc, mergeinfo[2] = bcc
+        # Assignee is NOT passed, always use assigneefill function
+        
+        # Helper function to extract email address from string (handles "Name <email>" or just "email")
+        def extract_email_address(email_str):
+            if not email_str:
+                return ''
+            email_str = email_str.strip()
+            # Handle "Name <email>" format
+            if '<' in email_str and '>' in email_str:
+                return email_str.split('<')[1].split('>')[0].strip()
+            # If just email address
+            return email_str
+        
+        # Helper function to get name from email string (uses mergefunctions.getNameFromEmail)
+        def extract_name_from_email(email_str):
+            if not email_str:
+                return ''
+            # Handle multiple emails separated by semicolon - take first one
+            first_email = email_str.split(';')[0].strip()
+            # Extract email address
+            email_addr = extract_email_address(first_email)
+            if email_addr:
+                return function_instance.getNameFromEmail(email_addr)
+            return ''
+        
+        # Helper function to extract names from email list for cc/bcc
+        def extract_names_from_emails(email_str):
+            if not email_str:
+                return []
+            names = []
+            emails = [e.strip() for e in email_str.split(';') if e.strip()]
+            for email in emails:
+                email_addr = extract_email_address(email)
+                if email_addr:
+                    name = function_instance.getNameFromEmail(email_addr)
+                    if name:
+                        names.append(name)
+            return names
+        
+        # Check if mergeinfo[0] is 'TRUE' (foreign associate case)
+        is_foreign_associate = mergeinfo[0] == 'TRUE' or mergeinfo[0] == 'true'
+        
+        if is_foreign_associate:
+            # Foreign associate case - no email info, just 'TRUE' flag
+            to_list = ''
+            cc_list = ''
+            bcc_list = ''
             sal = ''
+            recipient_title = ''
+            cc_names_list = []
+            userEmail = mergeinfo[1]
+            user_name = extract_names_from_emails(mergeinfo[1])[0]
+            try:
+                userPhone = Contactinfo.objects.using('FIP').filter(email = mergeinfo[1])
+                userPhone = userPhone[0].phone1
+            except:
+                userPhone = ''
+
+        else:
+            # Not foreign associate - email info is at positions 0-2
+            to_list = mergeinfo[0] if len(mergeinfo) > 0 else ''
+            cc_list = mergeinfo[1] if len(mergeinfo) > 1 else ''
+            bcc_list = mergeinfo[2] if len(mergeinfo) > 2 else ''
+            
+            # Extract name from 'to' field for salutation
+            sal = extract_name_from_email(to_list)
+            recipient_title = ''
+            
+            # Extract names from cc and bcc for ccTag/ccName
+            cc_names_list = extract_names_from_emails(cc_list)
+            bcc_names_list = extract_names_from_emails(bcc_list)
+            # Combine cc and bcc names
+            all_cc_names = cc_names_list + bcc_names_list
+            cc_names_list = all_cc_names
+
+            userEmail = mergeinfo[4]
+            user_name = extract_names_from_emails(mergeinfo[4])[0]
+            try:
+                userPhone = Contactinfo.objects.using('FIP').filter(email = mergeinfo[4])
+                userPhone = userPhone[0].phone1
+            except:
+                userPhone = ''
+        
+        # Always get assignee from assigneefill function (not passed in mergeinfo)
+        try:
+            assignee_data = function_instance.assigneefill(matter, 1)
+            assignee_value = assignee_data.get('assignee', '')
+        except:
+            assignee_value = ''
+        
+        # Format assignee - if empty, leave empty (tag will be removed), otherwise 'Applicant: ' + assignee
+        if assignee_value and assignee_value.strip():
+            assignee_text = 'Applicant:  ' + assignee_value.strip()
+        else:
+            assignee_text = ''
         
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+        
+        # Get correspondence contact for userName
+        # try:
+        #     correspondence_contact_data = function_instance.correspondenceContactfill(matter)
+        #     user_name = correspondence_contact_data.get('correspondenceContact', '')
+        # except:
+        #     user_name = ''
+
+        # If foreign associate is selected, use FA data for recipient, recipientTitle, orgName, and workAddr
+        if is_foreign_associate:
+            fa_data = function_instance.foreignAssociateFill(matter)
+            recipient = fa_data.get('recipient', '')
+            recipient_title = fa_data.get('recipientTitle', '')
+            org_name = fa_data.get('orgName', '')
+            work_addr = fa_data.get('workAddr', '')
+        else:
+            # Normal case - use correspondence contact work address for workAddr
+            work_addr = function_instance.workAddressFill(matter, '34610')
+            org_name = ''  # orgName not used in normal case
+        
+        
+        # Set ccTag and ccName based on cc/bcc names from email fields
+        if cc_names_list:
+            cc_tag = 'Cc:'
+            cc_name = ', '.join(cc_names_list)  # Join multiple names with comma
+        else:
+            # Fallback to copy contact if no cc/bcc names
+            try:
+                copy_contact_data = function_instance.copyContactfill(matter)
+                cc_name = copy_contact_data.get('copyContact', '')
+                cc_tag = 'Cc:' if cc_name else ''
+            except:
+                cc_name = ''
+                cc_tag = ''
+        
         replace.update({
             'salutation' : sal,
-            'userName' : '',
+            'userName' : user_name,
             'CSZ' : '',
-            'workAddr' : '',
-            'recipientTitle' : '',
-            'ccTag' : '',
-            'ccName' : ''
+            'workAddr' : work_addr,
+            'recipientTitle' : recipient_title.strip() if recipient_title else '',
+            'assignee' : assignee_text,
+            'ccTag' : cc_tag,
+            'ccName' : cc_name,
+            'userSlwEmail' : userEmail,
+            'userPhone' : userPhone,
+            'orgName' : org_name,
+            'recipient' : recipient if is_foreign_associate else '',
         })
+        
         return replace
 
 # Header - Amendment Under 1.312
@@ -5056,4 +5475,96 @@ class appdataupdate:
         replace.update({
 
         })
+        return replace
+
+# Formal Document - PTO Form POA (PTO/AIA/82)
+class PTOAIA82:
+    def PTOAIA82(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+        
+        # Parse mergeinfo
+        # mergeinfo[0] = General POA checkbox (True/False)
+        # mergeinfo[1] = Applicant Type (1=Inventor, 2=Legal Rep, 3=Assignee, 4=Proprietary Interest)
+        # E-signature is handled separately via esigncheck
+        nGeneral = mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False
+        nApplicantType = int(mergeinfo[1]) if len(mergeinfo) > 1 and mergeinfo[1].isdigit() else 3
+        
+        # Initialize replace dictionary
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        
+        # Get reference number (same as matterNo from mergebasic)
+        refno = replace.get('matterNo', '')
+        
+        # Handle general mode - blank out some fields
+        if nGeneral:
+            replace['matterNo'] = ''
+            replace['serialNo'] = ''
+            replace['filedDate'] = ''
+        
+        # Handle different applicant types
+        if nApplicantType == 1:
+            # Inventor(s)
+            inventors = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='34608')
+            nForms = len(inventors) if inventors else 1
+            
+            if nForms > 0:
+                # For first inventor, fill the tags
+                inventor_data = function_instance.inventorInfo(matter, 1)
+                replace['inventorName'] = inventor_data.get('inventorName', '')
+                replace['numberForms'] = str(nForms)
+                replace['applicant'] = ''  # Not used for inventor type
+            else:
+                replace['inventorName'] = ''
+                replace['numberForms'] = '1'
+                replace['applicant'] = ''
+        
+        elif nApplicantType == 3:
+            # Assignee or Person to Whom the Inventor is Under Obligation to Assign
+            applicants = Matterparticipant.objects.using('FIP').filter(matterid=matter_data.matterid, roleid='56691')
+            nForms = len(applicants) if applicants else 1
+            
+            if nForms == 0:
+                # No applicants - use assignee orgname
+                try:
+                    assignee_data = function_instance.assigneefill(matter, 1)
+                    orgname = assignee_data.get('assigneeName', '')
+                except:
+                    orgname = ''
+                replace['inventorName'] = ''
+                replace['numberForms'] = '1'
+                replace['applicant'] = orgname
+            else:
+                # Has applicants - for first applicant
+                applicant_data = function_instance.applicantfill(matter, 1)
+                replace['inventorName'] = ''
+                replace['numberForms'] = str(nForms)
+                replace['applicant'] = applicant_data.get('applicantName', '')
+        
+        elif nApplicantType in [2, 4]:
+            # Legal Representative (2) or Person Who Otherwise Shows Sufficient Proprietary Interest (4)
+            replace['inventorName'] = ''
+            replace['numberForms'] = '1'
+            replace['applicant'] = ''  # Blank for these types
+        
+        # Add reference number (RefNo tag)
+        replace['RefNo'] = refno if refno else ''
+        
+        # Initialize signature fields (will be set by esigncheck if e-signature is enabled)
+        # These are handled separately in the merge process
+        if 'signatureName' not in replace:
+            replace['signatureName'] = ''
+        if 'signatureDate' not in replace:
+            replace['signatureDate'] = ''
+        
+        # Note: E-signature (signatureName, signatureDate) is handled via esigncheck
+        # which is typically called separately in the merge process
+        
+        # Note: Customer number (custnopoa) and shapes (applicant name, customer number text boxes)
+        # would need to be handled in Word document processing in views.py, not in merge tags
+        # These are handled via Word Shapes and FormFields which are set programmatically
+        # Also, multiple forms (multiple inventors/applicants) would need to be handled
+        # in views.py combinedoc function to insert additional pages
+        
         return replace
