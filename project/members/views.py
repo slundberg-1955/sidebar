@@ -602,14 +602,21 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
         Recipient(email_address=EmailAddress(address=email))
         for email in bcclist if check_email(email)
     ]
-
     # Check if body contains HTML tags
     has_html = bool(re.search(r'<[^>]+>', body))
-    body_type = BodyType.HTML if has_html else BodyType.Text
+    body_type = BodyType.Html if has_html else BodyType.Text
     
-    # Convert newlines to <br> tags if using HTML format
-    if body_type == BodyType.HTML:
+    # Clean up HTML formatting - remove newlines between HTML tags (whitespace doesn't affect rendered HTML)
+    if body_type == BodyType.Html:
+        # Remove newlines that are between HTML tags (formatting newlines in HTML source)
+        # This preserves intentional <br> tags but removes source code formatting newlines
+        body = re.sub(r'>\s*\n\s*<', '><', body)
+        # Remove leading/trailing whitespace and newlines
+        body = body.strip()
+    else:
+        # For plain text, convert newlines to <br> tags for HTML email
         body = body.replace('\n', '<br>')
+        body_type = BodyType.Html  # Switch to HTML since we added <br> tags
 
     request_body = Message(
         subject=subject,
@@ -1112,7 +1119,10 @@ def mergeDoc(matter, mergeinfo, request):
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
         issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: " + replace.get('dueDate') + "\n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
-        issTO = ''
+        WAdata = merge_fn.WAfill('', matter)
+        issTO = WAdata['WAEmail']
+        if issTO == 'NO WORKING ATTORNEY EMAIL':
+            issTO = ''
         issCC = ''
         issBCC = ''
         attachment = os.path.join(settings.BASE_DIR, 'documents', 'attachments', 'Notice of Allowance Review and Response.pdf')

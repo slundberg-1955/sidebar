@@ -1068,7 +1068,7 @@
     function submitbtnissfee(requestpat, pagefacts, pagedraw, mrgexam, isspaid, isspaidhide, withfil, email, petw, withgr, amtinc, amtfrst, esign){
         // Add all issuefee data to mergedata (comma delimited)
         const merged_data = [requestpat, pagefacts, pagedraw, mrgexam, isspaid, isspaidhide, withfil, email, petw, withgr, amtinc, amtfrst, esign].join(',');
-        document.getElementById('mergedata').value += merged_data;
+        document.getElementById('mergedata').value += merged_data + ',';
         
         // Check if "Merge Response to Examiner's Reasons for Allowance" is checked
         if (mrgexam) {
@@ -5792,7 +5792,7 @@
                         const newRow = document.createElement('tr');
                         if (mergemethod == 'nsnotarialcert') {
                             newRow.innerHTML = `
-                                <td><input type="checkbox" name = "invchk" checked></td>
+                                <td><input type="checkbox" name = "invchk" ${i === 0 ? 'checked' : ''}></td>
                                 <td>${inventorList[i]}</td>
                             `;
                         } else {
@@ -5810,50 +5810,63 @@
                         document.getElementById("recordationhide").style.display = "none";
                     }
 
-                    const inventorselname = [];
-                    const inventorselassign = [];
-                    const inventorseldec = [];
-                    const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
-                    checkboxesinv.forEach((checkbox, index) => {
-                    checkbox.addEventListener('change', () => {
-                        if (checkbox.checked) {
-                            inventorselname.push(inventorList[index]);
+                    if (mergemethod != 'nsnotarialcert') {
+                        const inventorselname = [];
+                        const inventorselassign = [];
+                        const inventorseldec = [];
+                        const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
+                        checkboxesinv.forEach((checkbox, index) => {
+                            checkbox.addEventListener('change', () => {
+                                if (checkbox.checked) {
+                                    inventorselname.push(inventorList[index]);
 
-                            const parentRow = checkbox.closest('tr');
-                            const editableFields = parentRow.querySelectorAll('td[contenteditable]');
-                            editableFields.forEach((field, fieldIndex) => {
-                            field.addEventListener('input', () => {
-                                if (fieldIndex === 0) {
-                                    inventorselassign[index] = field.innerText;
-                                } else if (fieldIndex === 1) {
-                                    inventorseldec[index] = field.innerText;
+                                    const parentRow = checkbox.closest('tr');
+                                    const editableFields = parentRow.querySelectorAll('td[contenteditable]');
+                                    editableFields.forEach((field, fieldIndex) => {
+                                        field.addEventListener('input', () => {
+                                            if (fieldIndex === 0) {
+                                                inventorselassign[index] = field.innerText;
+                                            } else if (fieldIndex === 1) {
+                                                inventorseldec[index] = field.innerText;
+                                            }
+                                        });
+                                    });
+                                    inventorselassign.push(editableFields[0].innerText);
+                                    inventorseldec.push(editableFields[1].innerText);
                                 }
                             });
                         });
-                            inventorselassign.push(editableFields[0].innerText);
-                            inventorseldec.push(editableFields[1].innerText);
-                        }
-                    });
-                });
+                    }
 
                     document.getElementById("recordationsub").onclick = function() {
-                        const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
                         const selectedData = [];
-                        checkboxesinv.forEach((checkbox, index) => {
-                            if (checkbox.checked) {
-                                const row = checkbox.closest('tr');
-                                const column1Value = row.children[1].innerText;
-                                if (mergemethod == 'nsnotarialcert') {
+                        if (mergemethod == 'nsnotarialcert') {
+                            // Handle checkboxes for nsnotarialcert - support multiple inventor selections
+                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
+                            checkboxesinv.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    const row = checkbox.closest('tr');
+                                    const column1Value = row.children[1].innerText;
                                     const rowData = [column1Value];
                                     selectedData.push(rowData);
-                                } else {
+                                }
+                            });
+                            // For nsnotarialcert, call submitbtnmerge directly like corp-to-corp does
+                            submitbtnmerge('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
+                        } else {
+                            // Handle checkboxes for other merge methods
+                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
+                            checkboxesinv.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    const row = checkbox.closest('tr');
+                                    const column1Value = row.children[1].innerText;
                                     const dateFields = row.querySelectorAll('input[type="date"]');
                                     const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
                                     selectedData.push(rowData);
                                 }
-                            }
-                        });
-                        submitbtnrecoinv('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
+                            });
+                            submitbtnrecoinv('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
+                        }
                     };
                     
                 },
@@ -5905,7 +5918,7 @@
                             const newRow = document.createElement('tr');
                             if (currentMergemethod == 'nsnotarialcert') {
                                 newRow.innerHTML = `
-                                    <td><input type="checkbox" name = "corpchk1"></td>
+                                    <td><input type="radio" name = "corpradio1" value="${i}" ${i === 0 ? 'checked' : ''}></td>
                                     <td>${corpList[i]}</td>
                                 `;
                             } else {
@@ -5930,10 +5943,17 @@
                         corpBody.innerHTML = '';
                         for(var i = 0; i < corpList.length; i++){
                             const newRow = document.createElement('tr');
+                            if (currentMergemethod == 'nsnotarialcert') {
+                                newRow.innerHTML = `
+                                    <td><input type="radio" name="corpradio2" value="${i}" ${i === 0 ? 'checked' : ''}></td>
+                                    <td>${corpList[i]}</td>
+                                `;
+                            } else {
                                 newRow.innerHTML = `
                                     <td><input type="checkbox" name="corpchk2"></td>
                                     <td>${corpList[i]}</td>
                                 `;
+                            }
                             corpBody.appendChild(newRow);
                             const dateFields = newRow.querySelectorAll('[contenteditable]');
                         }
@@ -5941,31 +5961,48 @@
                         $('#recordation').modal('show');
                         
                         document.getElementById("recordationsub").onclick = function() {
-                            const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"]');
-                            const checkboxesinv2 = document.querySelectorAll('input[type="checkbox"][name="corpchk2"]');
                             const selectedData = [];
-                            checkboxesinv.forEach((checkbox, index) => {
-                                if (checkbox.checked) {
-                                    const row = checkbox.closest('tr');
+                            if (currentMergemethod == 'nsnotarialcert') {
+                                // Handle radio buttons for nsnotarialcert - first table
+                                const selectedRadio1 = document.querySelector('input[type="radio"][name="corpradio1"]:checked');
+                                if (selectedRadio1) {
+                                    const index = parseInt(selectedRadio1.value);
+                                    const row = selectedRadio1.closest('tr');
                                     const column1Value = row.children[1].innerText;
-                                    if (currentMergemethod == 'nsnotarialcert') {
-                                        const rowData = [column1Value];
-                                        selectedData.push(rowData);
-                                    } else {
+                                    const rowData = [column1Value];
+                                    selectedData.push(rowData);
+                                }
+                                selectedData.push("STARTNXT");
+                                // Handle radio buttons for nsnotarialcert - second table
+                                const selectedRadio2 = document.querySelector('input[type="radio"][name="corpradio2"]:checked');
+                                if (selectedRadio2) {
+                                    const index = parseInt(selectedRadio2.value);
+                                    const row = selectedRadio2.closest('tr');
+                                    const column1Value = row.children[1].innerText;
+                                    selectedData.push(column1Value + ',' + corproleidList[index] + '/' + corproleorderList[index]);
+                                }
+                            } else {
+                                // Handle checkboxes for other merge methods
+                                const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="corpchk1"]');
+                                checkboxesinv.forEach((checkbox, index) => {
+                                    if (checkbox.checked) {
+                                        const row = checkbox.closest('tr');
+                                        const column1Value = row.children[1].innerText;
                                         const dateFields = row.querySelectorAll('input[type="date"]');
                                         const rowData = [column1Value, ...Array.from(dateFields).map(field => field.value)];
                                         selectedData.push(rowData);
                                     }
-                                }
-                            });
-                            selectedData.push("STARTNXT");
-                            checkboxesinv2.forEach((checkbox, index) => {
-                                if (checkbox.checked) {
-                                    const row = checkbox.closest('tr');
-                                    const column1Value = row.children[1].innerText;
-                                    selectedData.push(column1Value + ',' + corproleidList[index] + '/' + corproleorderList[index]);
-                                }
-                            });
+                                });
+                                selectedData.push("STARTNXT");
+                                const checkboxesinv2 = document.querySelectorAll('input[type="checkbox"][name="corpchk2"]');
+                                checkboxesinv2.forEach((checkbox, index) => {
+                                    if (checkbox.checked) {
+                                        const row = checkbox.closest('tr');
+                                        const column1Value = row.children[1].innerText;
+                                        selectedData.push(column1Value + ',' + corproleidList[index] + '/' + corproleorderList[index]);
+                                    }
+                                });
+                            }
                             //alert(selectedData);
                             submitbtnmerge('2', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                         };

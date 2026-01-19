@@ -715,8 +715,8 @@ class stateofallow:
             matter_data = function_instance.matterFill(matter)
 
             if len(mergeinfo) > 2:
-                esign = mergeinfo[12]
-                datenall = function_instance.formatDate(mergeinfo[13])
+                esign = mergeinfo[13]
+                datenall = function_instance.formatDate(mergeinfo[14])
             else:
                 esign = mergeinfo[0]
                 datenall = function_instance.formatDate(mergeinfo[1])
@@ -4811,12 +4811,14 @@ class nsnotarialcert:
         replace.update(function_instance.mergebasic(keys, matter))
         
         if mergeinfo[0] == '1':
+            show = 'documents show'
             replace.update(function_instance.assigneefill(matter, 1))
-            selinv = mergeinfo[4]
+            selinv = ', '.join(map(str, mergeinfo[4:]))
             
         if mergeinfo[0] == '2':
+            show = 'document shows'
             selinv = mergeinfo[4]
-            roleid = mergeinfo[8]
+            roleid = mergeinfo[7]
             
             try:
                 replace.update(function_instance.recordationRoleFill(matter, roleid))
@@ -4825,7 +4827,8 @@ class nsnotarialcert:
         
         replace.update(function_instance.ffcmgFill(matter))
         replace.update({
-            'inventorList' : selinv
+            'inventorList' : selinv,
+            'shows' : show
         })
         return replace
     

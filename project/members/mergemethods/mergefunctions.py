@@ -117,10 +117,10 @@ class mergefunctions:
             
             basic = {
                 'inventorEtal' : inventoretal,
-                'firstInventor' : inventor_data.inventor,
+                'firstInventor' : inventoretal.replace(' et al.', ''),
                 'inventorList': invlist,
                 'inventorNameList': invlist, 
-                'inventorName' : inventor_data.inventor,                                                
+                'inventorName' : inventoretal.replace(' et al.', ''),                                                
             }
             for key, value in basic.items():
                 if key in keys:
