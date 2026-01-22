@@ -4817,7 +4817,7 @@ class nsnotarialcert:
             
         if mergeinfo[0] == '2':
             show = 'document shows'
-            selinv = mergeinfo[4]
+            selinv = mergeinfo[4].split(':', 1)[1]
             roleid = mergeinfo[7]
             
             try:

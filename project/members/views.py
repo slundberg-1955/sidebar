@@ -588,6 +588,14 @@ def create_draft(body, subject, tolist, cclist, bcclist, attachments, request):
     scopes = ['https://graph.microsoft.com/.default']
 
     client = GraphServiceClient(credentials=credentials, scopes=scopes)
+
+    # Convert strings to lists if needed (similar to get_attachments)
+    if isinstance(tolist, str):
+        tolist = [tolist] if tolist else []
+    if isinstance(cclist, str):
+        cclist = [cclist] if cclist else []
+    if isinstance(bcclist, str):
+        bcclist = [bcclist] if bcclist else []
     
     to_recipients = [
         Recipient(email_address=EmailAddress(address=email))
@@ -1118,7 +1126,27 @@ def mergeDoc(matter, mergeinfo, request):
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
         isssubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
-        issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: " + replace.get('dueDate') + "\n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
+        #issbody = "SIGNING ATTORNEY CHECKLIST FOR ISSUE FEE PAYMENT FILING \n\nIssue Fee due: " + replace.get('dueDate') + "\n\nAction Requested: Review and Signature of Issue Fee Transmittal Documents\n\nInstructions to Signing Attorney: Prior to signature of this document, please consider the attached Attorney Checklist."
+        issemail_template_doc = get_template_docx('attachments', 'issuefeeEmail.docx')
+        issemail_template_doc.seek(0)
+        
+        # Get duedate tag using the new function
+        duedate_replace = merge_fn.getDuedateTag(matter)
+        
+        # Save template to temp file first
+        temp_template_path = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'issuefeeEmail_template.docx')
+        os.makedirs(os.path.dirname(temp_template_path), exist_ok=True)
+        with open(temp_template_path, 'wb') as f:
+            f.write(issemail_template_doc.read())
+        
+        # Fill the issuefeeEmail.docx with duedate
+        filled_email_path = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'issuefeeEmail_filled.docx')
+        WordMerger(temp_template_path, duedate_replace, filled_email_path)
+        
+        # Extract body text from the filled document
+        filled_doc = Document(filled_email_path)
+        issbody = '\n'.join([p.text for p in filled_doc.paragraphs])
+        
         WAdata = merge_fn.WAfill('', matter)
         issTO = WAdata['WAEmail']
         if issTO == 'NO WORKING ATTORNEY EMAIL':
@@ -1146,7 +1174,9 @@ def mergeDoc(matter, mergeinfo, request):
 
         ownerchange_email_url = None
         if mergeinfo_list[1] == 'ownerchange':
-            ownsubject = matter + ', Action Requested:  Review and signature of Issue Fee Transmittal'
+            twowk = (datetime.today() + timedelta(weeks=2)).strftime("%m/%d/%Y")
+            matter_data = merge_fn.matterFill(matter)
+            ownsubject = merge_fn.clientMatterNo(matter_data) + ', Action Requested:  Review and signature of Communication Re:  92bis - Please return for filing by ' + twowk
             email_template_doc = get_template_docx('attachments', 'ownerchangeEmail.docx')
             email_template_doc.seek(0)
             owndoc = Document(email_template_doc)

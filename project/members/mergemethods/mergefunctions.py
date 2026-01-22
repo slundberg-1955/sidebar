@@ -39,24 +39,7 @@ class mergefunctions:
             except:
                 filedte = ''
                 
-            for i in range(3):
-                try:
-                    hostmatterno = matter_data.hostmatterno
-                    print(hostmatterno)
-                    if i == 0:
-                        zero = ''
-                    if i == 1:
-                        zero = '0'
-                    if i == 2:
-                        zero = '00'
-                    client = zero + hostmatterno.split(".")[0] 
-                    clientcode = ClientSpec.objects.using('SideBar').get(clientno=client)
-                    part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
-                    matterno = part.matterno
-                    matternumber = eval(clientcode.format)
-                    break
-                except:
-                    matternumber = matter_data.hostmatterno
+            matternumber = merge_fn.clientMatterNo(matter_data)
 
             basic = {
                 'serialNo' : matter_data.fmtserialno,
@@ -1702,3 +1685,38 @@ class mergefunctions:
             size = 'micro'
 
         return size
+    
+    def clientMatterNo(self, matter_data):
+        for i in range(3):
+            try:
+                hostmatterno = matter_data.hostmatterno
+                print(hostmatterno)
+                if i == 0:
+                    zero = ''
+                if i == 1:
+                    zero = '0'
+                if i == 2:
+                    zero = '00'
+                client = zero + hostmatterno.split(".")[0] 
+                clientcode = ClientSpec.objects.using('SideBar').get(clientno=client)
+                part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34617', roleorderno = 1)
+                matterno = part.matterno
+                matternumber = eval(clientcode.format)
+                break
+            except:
+                matternumber = matter_data.hostmatterno
+
+        return matternumber
+    
+    def getDuedateTag(self, matter):
+
+        matter_data = self.matterFill(matter)
+        dateIssueFee = ''
+        try:
+            feeactivity = self.getactivityid(matter_data, 'IFEE')
+            if feeactivity and feeactivity.smryonevalue:
+                dateIssueFee = feeactivity.smryonevalue.strftime("%B %d, %Y")
+        except:
+            pass
+        
+        return {'dueDate': dateIssueFee}
