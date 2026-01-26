@@ -1183,7 +1183,7 @@ def mergeDoc(matter, mergeinfo, request):
             # Extract body text from all paragraphs
             ownbody = '\n'.join([p.text for p in owndoc.paragraphs])
 
-            ownTO = ''
+            ownTO = merge_fn.SAEmailFill(mergefninfo[2])
             ownCC = ''
             ownBCC = ''
             attachment = output_path

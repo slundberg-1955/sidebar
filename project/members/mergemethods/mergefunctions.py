@@ -1720,3 +1720,16 @@ class mergefunctions:
             pass
         
         return {'dueDate': dateIssueFee}
+    
+    def SAEmailFill(self, name):
+        # Split the full name into first and last name
+        fname, lname = name.strip().split(' ', 1)
+
+        try:
+            profile = Personprofile.objects.using('FIP').filter(fname=fname, lname=lname)
+            contact = Contactinfo.objects.using('FIP').filter(contactinfoid=profile[0].workcontactinfoid)
+            info = contact[0].email
+        except:
+            info = ''
+    
+        return info

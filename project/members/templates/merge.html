@@ -7,78 +7,228 @@
     <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
     <style>
         body{
-            font-family: Arial, sans-serif;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
             padding: 0;
+            background-color: #f5f7fa;
+            color: #2c3e50;
         }
         .countainter{
-            max-width: 800px;
-            margin: 20px;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
         .search-container{
-            margin-bottom: 10px;
-            margin-left: 10px;
+            margin-bottom: 20px;
+            margin-left: 0;
+            padding: 15px 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-container input[type="text"],
+        .search-container select {
+            padding: 10px 14px;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+        .search-container input[type="text"]:focus,
+        .search-container select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+        .search-container label {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 14px;
+            margin: 0;
         }
         .sidebar{
-            background-color: #33373A;
-            color: #b8b8b8;
-            padding: 1px 10px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            padding: 15px 25px;
             text-align: left;
-            margin-bottom: 20px;
-            height: 110px;
+            margin-bottom: 30px;
+            min-height: 90px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .sidebar-tabs {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
-            gap: 15px;
-            margin-left: 15px;
-            margin-top: 5px;
+            gap: 8px;
+            margin-left: 20px;
+            margin-top: 0;
+            align-items: center;
+        }
+
+        .sidebar-tabs li {
+            margin: 0;
         }
 
         .sidebar-tabs li a {
-            color: #fff;
+            color: #ffffff;
             text-decoration: none;
-            padding: 5px 10px;
-            border: 1px solid #fff;
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             font-weight: 500;
+            font-size: 14px;
             transition: all 0.3s ease;
-            background-color: transparent;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            white-space: nowrap;
         }
 
         .sidebar-tabs li a:hover {
-            background-color: #fff;
-            color: #33373A;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
         }
 
         table{
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
         th, td{
-            border: 1px solid #dddddd;
+            border-bottom: 1px solid #e1e8ed;
             text-align: left;
-            padding: 8px;
+            padding: 16px 20px;
         }
         th{
-            background-color: #f2f2f2;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
         }
         .column2{
             width: 100%;
         }
         .merge-button{
-            padding: 5px 10px;
+            padding: 8px 16px;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2a5f8f 100%);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
+            transform: translateY(-1px);
+        }
+        #matterInput {
+            width: 180px;
+            max-width: 180px;
+            padding: 12px 16px;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+        #matterInput:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+        #matterInput:disabled {
+            background-color: #f5f7fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        .matter-option-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 15px;
+        }
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .radio-group label {
+            font-weight: 500;
+            color: #34495e;
+            font-size: 14px;
+            margin: 0;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        #viewListBtn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: none;
+        }
+        #viewListBtn:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2a5f8f 100%);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
+            transform: translateY(-1px);
+        }
+        #multipleMattersModal .modal-dialog {
+            max-width: 600px;
+        }
+        #matterListTable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        #matterListTable tbody tr:hover {
+            background-color: #f8f9fa;
         }
     </style>
 
@@ -364,20 +514,21 @@
             float: right;
             width: 95px;
             height: 95px;
-            margin-right: 10px; /* Adjust the right margin */
-            margin-top: 5px; /* Adjust the top margin */
+            margin-right: 10px;
+            margin-top: 5px;
         }
         .logo-image {
             float: left;
             width: auto;
             height: 60px;
-            margin-left: 10px; /* Adjust the right margin */
-            margin-top: 5px; /* Adjust the top margin */
+            margin-left: 10px;
+            margin-top: 5px;
         }
         .left-column {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
         }
 
     </style>
@@ -433,7 +584,7 @@
             <ul class="sidebar-tabs">
                 <li><a href="{% url 'matters' %}">Matters</a></li>
                 <li><a href="{% url 'fip_reports' %}">FIP Reports</a></li>
-                <li><a href="{% url 'merges' %}">Merges</a></li>
+                <li><a href="{% url 'members' %}">Merges</a></li>
                 <li><a href="{% url 'toolbox' %}">ToolBox</a></li>
                 <li><a href="{% url 'edit_template' %}">Edit Merge Templates</a></li>
             </ul>
@@ -462,7 +613,23 @@
         <form id = "mergeform" action = "{% url 'members' %}" method = "post">
             {% csrf_token %}
             <div class = "search-container">
-                <input type = "text" name = "matterInput" placeholder = "Matter #" id = "matterInput">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type = "text" name = "matterInput" placeholder = "Matter #" id = "matterInput">
+                        <div class="matter-option-group">
+                            <div class="radio-group">
+                                <input type="radio" id="oneMatter" name="matterOption" value="one" checked>
+                                <label for="oneMatter">One Matter</label>
+                                <input type="radio" id="multipleMatters" name="matterOption" value="multiple">
+                                <label for="multipleMatters">Multiple Matters</label>
+                            </div>
+                            <button type="button" id="viewListBtn" onclick="showMultipleMattersModal()">View List</button>
+                        </div>
+                    </div>
+                    <div id="matterHint" style="font-size: 12px; color: #6c757d; margin-left: 0;">
+                        (Matter # Examples-NO leading 0's: 303.600US1 2043.204.US1)
+                    </div>
+                </div>
             </div>
             <table id = "mergeTable">
                 <thead>
@@ -6586,6 +6753,209 @@
                 }
             });
         }
-</script>
+
+        // Multiple Matters functionality
+        let multipleMattersList = JSON.parse(localStorage.getItem('multipleMattersList') || '[]');
+
+        // Handle radio button changes
+        document.querySelectorAll('input[name="matterOption"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const matterInput = document.getElementById('matterInput');
+                const viewListBtn = document.getElementById('viewListBtn');
+                
+                const matterHint = document.getElementById('matterHint');
+                if (this.value === 'multiple') {
+                    matterInput.disabled = true;
+                    matterInput.value = 'Merging Multiple Matters';
+                    viewListBtn.style.display = 'inline-block';
+                    matterHint.style.display = 'none';
+                } else {
+                    matterInput.disabled = false;
+                    matterInput.value = '';
+                    matterInput.placeholder = 'Matter #';
+                    viewListBtn.style.display = 'none';
+                    matterHint.style.display = 'block';
+                }
+            });
+        });
+
+        function showMultipleMattersModal() {
+            updateMatterListTable();
+            $('#multipleMattersModal').modal('show');
+        }
+
+        function updateMatterListTable() {
+            const tbody = document.querySelector('#matterListTable tbody');
+            tbody.innerHTML = '';
+            
+            if (multipleMattersList.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="2" style="text-align: center; color: #6c757d;">No matters added yet</td>';
+                tbody.appendChild(row);
+            } else {
+                multipleMattersList.forEach((matter, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>
+                            <input type="checkbox" class="matter-checkbox" data-index="${index}" ${matter.selected ? 'checked' : ''}>
+                        </td>
+                        <td>${matter.number}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="removeMatter(${index})">Remove</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+            
+            // Update select all checkbox
+            const selectAllCheckbox = document.getElementById('selectAllMatters');
+            const allChecked = multipleMattersList.length > 0 && multipleMattersList.every(m => m.selected);
+            selectAllCheckbox.checked = allChecked;
+        }
+
+        function addMatterToList() {
+            const matterInput = document.getElementById('addMatterInput');
+            const matterNumber = matterInput.value.trim();
+            
+            if (!matterNumber) {
+                alert('Please enter a matter number');
+                return;
+            }
+            
+            // Check if already exists
+            if (multipleMattersList.some(m => m.number === matterNumber)) {
+                alert('This matter number is already in the list');
+                return;
+            }
+            
+            multipleMattersList.push({
+                number: matterNumber,
+                selected: true
+            });
+            
+            saveMatterList();
+            matterInput.value = '';
+            updateMatterListTable();
+        }
+
+        function removeMatter(index) {
+            multipleMattersList.splice(index, 1);
+            saveMatterList();
+            updateMatterListTable();
+        }
+
+        function saveMatterList() {
+            localStorage.setItem('multipleMattersList', JSON.stringify(multipleMattersList));
+        }
+
+        function clearMatterList() {
+            if (confirm('Are you sure you want to clear all matters from the list?')) {
+                multipleMattersList = [];
+                saveMatterList();
+                updateMatterListTable();
+            }
+        }
+
+        // Select All functionality
+        document.getElementById('selectAllMatters').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.matter-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+                const index = parseInt(checkbox.getAttribute('data-index'));
+                multipleMattersList[index].selected = this.checked;
+            });
+            saveMatterList();
+        });
+
+        // Handle individual checkbox changes
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('matter-checkbox')) {
+                const index = parseInt(e.target.getAttribute('data-index'));
+                multipleMattersList[index].selected = e.target.checked;
+                saveMatterList();
+                
+                // Update select all checkbox
+                const allChecked = multipleMattersList.every(m => m.selected);
+                document.getElementById('selectAllMatters').checked = allChecked;
+            }
+        });
+
+        // Allow Enter key to add matter
+        document.getElementById('addMatterInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addMatterToList();
+            }
+        });
+
+        // Clear list when merge is completed (on page refresh after merge)
+        // This will be handled by the form submission
+        
+        // Function to clear matter list after successful merge
+        function clearMatterListAfterMerge() {
+            multipleMattersList = [];
+            saveMatterList();
+            // Reset to one matter mode
+            document.getElementById('oneMatter').checked = true;
+            document.getElementById('matterInput').disabled = false;
+            document.getElementById('matterInput').value = '';
+            document.getElementById('matterInput').placeholder = 'Matter #';
+            document.getElementById('viewListBtn').style.display = 'none';
+        }
+        
+        // Clear list on page load if coming from a successful merge
+        // (You can add a URL parameter or session flag to detect this)
+        window.addEventListener('load', function() {
+            // Check if we should clear the list (e.g., from URL parameter)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('mergeComplete') === 'true') {
+                clearMatterListAfterMerge();
+            }
+        });
+    </script>
+
+    <!-- Multiple Matters Modal -->
+    <div id="multipleMattersModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="multipleMattersModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Matters Selected for Merging</h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 15px;">
+                        <input type="checkbox" id="selectAllMatters">
+                        <label for="selectAllMatters" style="margin-left: 5px; font-weight: 600;">Select All</label>
+                    </div>
+                    <div id="matterListTable" style="max-height: 400px; overflow-y: auto; margin-bottom: 15px;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;"></th>
+                                    <th>Matter #</th>
+                                    <th style="width: 100px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="border-top: 1px solid #e1e8ed; padding-top: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <label for="addMatterInput" style="margin: 0; font-weight: 600;">Matter #:</label>
+                            <input type="text" id="addMatterInput" placeholder="Enter matter number" style="flex: 1; padding: 8px 12px; border: 1px solid #e1e8ed; border-radius: 6px;">
+                            <button type="button" class="btn btn-primary" onclick="addMatterToList()">Add to List</button>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary" onclick="clearMatterList()">Clear List</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

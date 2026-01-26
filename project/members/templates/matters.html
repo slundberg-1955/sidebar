@@ -1,121 +1,636 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang = "en">
 <head>
     <meta charset = "UTF-8">
-    <title>Merges Page</title>
+    <title>Matters - SideBar Cloud</title>
+    <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
     <style>
         body{
-            font-family: Arial, sans-serif;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
             padding: 0;
-        }
-        .countainter{
-            max-width: 800px;
-            margin: 20px;
-            padding: 20px;
-        }
-        .search-container{
-            margin-bottom: 10px;
-            margin-left: 10px;
+            background-color: #f5f7fa;
+            color: #2c3e50;
         }
         .sidebar{
-            background-color: #333;
-            color: #b8b8b8;
-            padding: 1px 10px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            padding: 15px 25px;
             text-align: left;
-            margin-bottom: 20px;
-            height: 110px;
+            margin-bottom: 30px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
-        .sidebar-tabs li{
-            display: inline-block;
-            margin-right: 10px;
+        .sidebar-tabs {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 8px;
+            margin-left: 20px;
+            margin-top: 0;
+            align-items: center;
         }
-        .sidebar-tabs li a{
-            color: #fff;
+
+        .sidebar-tabs li {
+            margin: 0;
+        }
+
+        .sidebar-tabs li a {
+            color: #ffffff;
             text-decoration: none;
-            padding: 5px 10px;
-            border: 1px solid #fff;
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .sidebar-tabs li a:hover {
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        .header-image {
+            float: right;
+            width: 95px;
+            height: 95px;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        .logo-image {
+            float: left;
+            width: auto;
+            height: 60px;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+        .left-column {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .content-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 8px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            margin-bottom: 4px;
+        }
+
+        .content-container input[type="text"],
+        .content-container input[type="date"],
+        .content-container select,
+        .content-container textarea {
+            padding: 4px 8px;
+            border: 1px solid #e1e8ed;
             border-radius: 5px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+            font-family: inherit;
         }
-        .sidebar-tabs li a:hover{
-            background-color:#fff;
-            color: #333;
+
+        .content-container input[type="text"]:focus,
+        .content-container input[type="date"]:focus,
+        .content-container select:focus,
+        .content-container textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
-        table{
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        .content-container label {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 13px;
+            margin-right: 8px;
+            white-space: nowrap;
         }
-        th, td{
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
+
+        .form-row {
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        th{
-            background-color: #f2f2f2;
+
+        .form-row:last-child {
+            margin-bottom: 0;
         }
-        .column2{
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 12px;
+        }
+
+        .form-group label {
+            margin-right: 4px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select {
+            min-width: 120px;
+            max-width: 200px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+        }
+
+        .textarea-group {
+            margin-bottom: 5px;
+        }
+
+        .textarea-group label {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .textarea-group textarea {
             width: 100%;
+            min-height: 60px;
+            resize: vertical;
         }
-        .merge-button{
-            padding: 5px 10px;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            padding: 4px 10px !important;
+            border: none !important;
+            border-radius: 5px !important;
+            font-weight: 500 !important;
+            font-size: 12px !important;
             cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.4 !important;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #484f54 100%);
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #4a90e2;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        table td {
+            border: none;
+            padding: 2px 8px;
+            vertical-align: middle;
+        }
+
+        table td input[type="text"],
+        table td input[type="date"] {
+            width: 100%;
+            max-width: 150px;
+        }
+
+        table tr {
+            margin: 0;
         }
     </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-    <div class = "sidebar">
-        <h1>SideBar</h1>
-        <ul class = "sidebar-tabs">
-            <li><a href = "#">Matters</a></li>
-            <li><a href = "#">FIP Reports</a></li>
-            <li><a href = "#">Merges</a></li>
-            <li><a href = "#">ToolBox</a></li>
-        </ul>
+    <div class="sidebar">
+        <div class="left-column">
+            <img src="{% static 'images/sidebar_logo4.PNG' %}" alt="SideBar Image" class="logo-image">
+            <ul class="sidebar-tabs">
+                <li><a href="{% url 'matters' %}">Matters</a></li>
+                <li><a href="{% url 'fip_reports' %}">FIP Reports</a></li>
+                <li><a href="{% url 'members' %}">Merges</a></li>
+                <li><a href="{% url 'toolbox' %}">ToolBox</a></li>
+                <li><a href="{% url 'edit_template' %}">Edit Merge Templates</a></li>
+            </ul>
+        </div>
+        <img src="{% static 'images/SLW_logobackdrop.PNG' %}" alt="SLW Image" class="header-image">
     </div>
-    <div>
-          <select id="matterdrop">
-            <option value="Matter">Matter #</option>
-            <option value="CLient">Client #</option>
-            <option value="Serial">Serial #</option>
-            <option value="Patent">Patent #</option>
-            <option value="CLientName">Client Name</option>
-          </select>
-          <input type="text" id="findmatter" size="10">
-    </div>
-    <div>
-        <br>  <b>Matter #: </b><input type="text" id="matternum" size="10">
-          <b>Client: </b><input type="text" id="clientnum" size="40">
-        <br><br>  <b>Title: </b><textarea rows="1" cols="75" id="mattertitle"></textarea>
-    </div>
-    <div>
-        <table style="border-collapse: collapse; border: none;">
-            <tr style="border: none;">
-                <td align="right"style="border: none;">  <b>Matter Type: </b><input type="text" id="mattertype" size="10"></td>
-                <td align="center"style="border: none;"><b>Status: </b><input type="text" id="matterstatus" size="10"></td>
-                <td align="left"style="border: none;"><b>Custom Status: </b><input type="text" id="mattercstatus" size="10"></td>
-            </tr>
-            <tr style="border: none;">
-                <td align="right"style="border: none;">  <b>Serial #: </b><input type="text" id="matteserial" size="10"></td>
-                <td align="center"style="border: none;"><b>Filing Date: </b><input type="text" id="matterfdate" size="10"></td>
-                <td align="left"style="border: none;"><b>Client Ref: </b><input type="text" id="matterclientr" size="10"></td>
-            </tr>
-            <tr style="border: none;">
-                <td align="right"style="border: none;">  <b>Patent #: </b><input type="text" id="matterpat" size="10"></td>
-                <td align="center"style="border: none;"> <b>Issue Date: </b><input type="text" id="matterpat" size="10"></td>
-                <td align="left"style="border: none;"></td>
-            </tr>
-        </table>
-    </div>
-    <div>
-          Special Instructions
+
+    <div class="container">
+        <!-- Search Section -->
+        <div class="content-container">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="matterdrop">Matter #:</label>
+                    <select id="matterdrop">
+                        <option value="Matter">Matter #</option>
+                        <option value="Client">Client #</option>
+                        <option value="Serial">Serial #</option>
+                        <option value="Patent">Patent #</option>
+                        <option value="ClientName">Client Name</option>
+                    </select>
+                </div>
+                <input type="text" id="findmatter" placeholder="Enter search term" style="min-width: 150px;">
+            </div>
+        </div>
+
+        <!-- Matter Identification Section -->
+        <div class="content-container">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="matternum">Matter #:</label>
+                    <input type="text" id="matternum">
+                </div>
+                <div class="form-group">
+                    <label for="clientnum">Client:</label>
+                    <input type="text" id="clientnum" style="min-width: 200px;">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="mattertitle">Title:</label>
+                    <input type="text" id="mattertitle" style="flex: 1; min-width: 400px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <table>
+                <tr>
+                    <td align="right">
+                        <div class="form-group">
+                            <label for="mattertype">Matter Type:</label>
+                            <input type="text" id="mattertype">
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div class="form-group">
+                            <label for="matterstatus">Status:</label>
+                            <input type="text" id="matterstatus">
+                        </div>
+                    </td>
+                    <td align="left">
+                        <div class="form-group">
+                            <label for="mattercstatus">Custom Status:</label>
+                            <input type="text" id="mattercstatus">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <div class="form-group">
+                            <label for="matteserial">Serial #:</label>
+                            <input type="text" id="matteserial">
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div class="form-group">
+                            <label for="matterfdate">Filing Date:</label>
+                            <input type="date" id="matterfdate">
+                        </div>
+                    </td>
+                    <td align="left">
+                        <div class="form-group">
+                            <label for="matterclientr">Client Ref:</label>
+                            <input type="text" id="matterclientr">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <div class="form-group">
+                            <label for="matterpat">Patent #:</label>
+                            <input type="text" id="matterpat">
+                        </div>
+                    </td>
+                    <td align="center">
+                        <div class="form-group">
+                            <label for="matterissuedate">Issue Date:</label>
+                            <input type="date" id="matterissuedate">
+                        </div>
+                    </td>
+                    <td align="left"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content-container">
+            <div class="section-title">Special Instructions</div>
+        </div>
+
+        <!-- Personnel and Contacts Section -->
+        <div class="content-container">
+            <div class="button-group">
+                <button type="button" class="btn btn-secondary">Activities</button>
+                <button type="button" class="btn btn-secondary">Documents</button>
+            </div>
+            <div class="form-grid-2">
+                <div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="workingattorney">Working Attorney:</label>
+                            <input type="text" id="workingattorney" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="signingattorney">Signing Attorney:</label>
+                            <input type="text" id="signingattorney" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="billingattorney">Billing Attorney:</label>
+                            <input type="text" id="billingattorney" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="qaofficer">QA Officer:</label>
+                            <input type="text" id="qaofficer" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="paralegal">Paralegal:</label>
+                            <input type="text" id="paralegal" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="cmg">CMG:</label>
+                            <input type="text" id="cmg" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="ffparalegal">FF Paralegal:</label>
+                            <input type="text" id="ffparalegal" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="ffcmg">FF CMG:</label>
+                            <input type="text" id="ffcmg" style="flex: 1;">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="corrcontact">Correspondence Contact:</label>
+                            <input type="text" id="corrcontact" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="copycontact">Copy Contact:</label>
+                            <input type="text" id="copycontact" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="filecontact">File Contact:</label>
+                            <input type="text" id="filecontact" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="assignee">Assignee:</label>
+                            <input type="text" id="assignee" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="fipbillingtotal">FIP Billing Total:</label>
+                            <input type="text" id="fipbillingtotal" value="$0.00" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="fipuntransferredtotal">FIP Untransferred Total:</label>
+                            <input type="text" id="fipuntransferredtotal" value="$0.00" style="flex: 1;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status, Notes, and Payments Section -->
+        <div class="content-container">
+            <div class="form-grid-3">
+                <div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="class">Class:</label>
+                            <input type="text" id="class">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="status2">Status:</label>
+                            <input type="text" id="status2">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="checkbox-group">
+                        <div>
+                            <input type="checkbox" id="doubtful">
+                            <label for="doubtful">Doubtful</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="retaineronly">
+                            <label for="retaineronly">Retainer Only</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="ebillclient">
+                            <label for="ebillclient">Ebill Client</label>
+                        </div>
+                    </div>
+                    <div class="button-group" style="flex-direction: column; align-items: flex-start;">
+                        <button type="button" class="btn btn-secondary">Upload Document</button>
+                        <button type="button" class="btn btn-secondary">View Documents</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="button-group" style="flex-direction: column; align-items: flex-start;">
+                        <button type="button" class="btn btn-secondary">Collection Reports 📅</button>
+                        <button type="button" class="btn btn-secondary">Follow Up - Screen</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-grid-2" style="margin-top: 5px;">
+                <div class="textarea-group">
+                    <label for="specialnotes">Special Notes:</label>
+                    <textarea id="specialnotes"></textarea>
+                </div>
+                <div class="textarea-group">
+                    <label for="collectionnotes">Collection Notes:</label>
+                    <textarea id="collectionnotes"></textarea>
+                </div>
+            </div>
+            <div class="form-grid-4" style="margin-top: 5px;">
+                <div class="form-group">
+                    <label for="paymentdate">Payment Date:</label>
+                    <input type="date" id="paymentdate">
+                </div>
+                <div class="form-group">
+                    <label for="paymentamount">Payment Amount:</label>
+                    <input type="text" id="paymentamount" value="$0.00">
+                </div>
+                <div class="form-group">
+                    <label for="followupdate">Follow Up Date:</label>
+                    <input type="date" id="followupdate">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="retainerexception">
+                    <label for="retainerexception">Retainer Exception List</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Billing Contact Section -->
+        <div class="content-container">
+            <div class="form-grid-2">
+                <div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="billingcontact">Billing Contact:</label>
+                            <input type="text" id="billingcontact" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="textarea-group">
+                        <label for="billingaddress">Billing Address:</label>
+                        <textarea id="billingaddress"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="emailaddress">Email Address:</label>
+                            <input type="text" id="emailaddress" style="flex: 1;">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="phone">Phone:</label>
+                            <input type="text" id="phone" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="phone2">Phone 2:</label>
+                            <input type="text" id="phone2" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="fax">Fax #:</label>
+                            <input type="text" id="fax" style="flex: 1;">
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="mailreturn">
+                        <label for="mailreturn">Mail Return</label>
+                    </div>
+                    <div class="button-group" style="flex-direction: column; align-items: flex-start; margin-top: 5px;">
+                        <button type="button" class="btn btn-secondary">Cash Rec Import</button>
+                        <button type="button" class="btn btn-secondary">Reconciliation</button>
+                        <button type="button" class="btn btn-danger">Commit Values</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

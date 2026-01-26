@@ -7,78 +7,160 @@
     <link rel="icon" href="{% static 'images/favicon.PNG' %}" type="image/png">
     <style>
         body{
-            font-family: Arial, sans-serif;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
             padding: 0;
+            background-color: #f5f7fa;
+            color: #2c3e50;
         }
         .countainter{
-            max-width: 800px;
-            margin: 20px;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
         .search-container{
-            margin-bottom: 10px;
-            margin-left: 10px;
+            margin-bottom: 20px;
+            margin-left: 0;
+            padding: 15px 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .search-container input[type="text"],
+        .search-container select {
+            padding: 10px 14px;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+        .search-container input[type="text"]:focus,
+        .search-container select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+        .search-container label {
+            font-weight: 600;
+            color: #34495e;
+            font-size: 14px;
+            margin: 0;
         }
         .sidebar{
-            background-color: #33373A;
-            color: #b8b8b8;
-            padding: 1px 10px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            padding: 15px 25px;
             text-align: left;
-            margin-bottom: 20px;
-            height: 110px;
+            margin-bottom: 30px;
+            min-height: 90px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .sidebar-tabs {
             list-style: none;
             padding: 0;
             margin: 0;
             display: flex;
-            gap: 15px;
-            margin-left: 15px;
-            margin-top: 5px;
+            gap: 8px;
+            margin-left: 20px;
+            margin-top: 0;
+            align-items: center;
+        }
+
+        .sidebar-tabs li {
+            margin: 0;
         }
 
         .sidebar-tabs li a {
-            color: #fff;
+            color: #ffffff;
             text-decoration: none;
-            padding: 5px 10px;
-            border: 1px solid #fff;
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             font-weight: 500;
+            font-size: 14px;
             transition: all 0.3s ease;
-            background-color: transparent;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: inline-block;
+            white-space: nowrap;
         }
 
         .sidebar-tabs li a:hover {
-            background-color: #fff;
-            color: #33373A;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
         }
 
         table{
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
         th, td{
-            border: 1px solid #dddddd;
+            border-bottom: 1px solid #e1e8ed;
             text-align: left;
-            padding: 8px;
+            padding: 16px 20px;
         }
         th{
-            background-color: #f2f2f2;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #dee2e6;
+        }
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
         }
         .column2{
             width: 100%;
         }
         .merge-button{
-            padding: 5px 10px;
+            padding: 8px 16px;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2a5f8f 100%);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
+            transform: translateY(-1px);
         }
     </style>
 
@@ -92,20 +174,21 @@
             float: right;
             width: 95px;
             height: 95px;
-            margin-right: 10px; /* Adjust the right margin */
-            margin-top: 5px; /* Adjust the top margin */
+            margin-right: 10px;
+            margin-top: 5px;
         }
         .logo-image {
             float: left;
             width: auto;
             height: 60px;
-            margin-left: 10px; /* Adjust the right margin */
-            margin-top: 5px; /* Adjust the top margin */
+            margin-left: 10px;
+            margin-top: 5px;
         }
         .left-column {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
         }
 
     </style>
@@ -118,7 +201,7 @@
             <ul class="sidebar-tabs">
                 <li><a href="{% url 'matters' %}">Matters</a></li>
                 <li><a href="{% url 'fip_reports' %}">FIP Reports</a></li>
-                <li><a href="{% url 'merges' %}">Merges</a></li>
+                <li><a href="{% url 'members' %}">Merges</a></li>
                 <li><a href="{% url 'toolbox' %}">ToolBox</a></li>
                 <li><a href="{% url 'edit_template' %}">Edit Merge Templates</a></li>
             </ul>
@@ -266,7 +349,7 @@
         // Use jQuery ready to ensure DOM is loaded
         $(document).ready(function() {
             $(document).on('submit', '#uploadform', function(e) {
-                e.preventDefault();
+            e.preventDefault();
                 e.stopPropagation();
                 console.log('Form submit intercepted');
                 
@@ -275,7 +358,7 @@
                     return false;
                 }
                 
-                let formData = new FormData(this);
+            let formData = new FormData(this);
                 // Add the original file path so we can upload to the same location
                 formData.append('original_file_path', originalFilePath);
                 
@@ -293,11 +376,11 @@
                 console.log('Sending upload request to:', "{% url 'upload_template' %}");
                 
                 fetch("{% url 'upload_template' %}", {
-                    method: 'POST',
-                    headers: {
+                method: 'POST',
+                headers: {
                         'X-CSRFToken': csrftoken
-                    },
-                    body: formData
+                },
+                body: formData
                 }).then(response => {
                     console.log('Response status:', response.status);
                     // Check if response is ok and is JSON
@@ -314,7 +397,7 @@
                         });
                     }
                 })
-                .then(data => {
+            .then(data => {
                     console.log('Upload response:', data);
                     if (data.message && data.message.includes('successfully')) {
                         document.getElementById('uploadStatus').textContent = 'File uploaded successfully!';
@@ -323,7 +406,7 @@
                         setTimeout(function() {
                             $('#edittemp').modal('hide');
                         }, 2000);
-                    } else {
+                } else {
                         document.getElementById('uploadStatus').textContent = 'Upload failed: ' + (data.message || 'Unknown error');
                         document.getElementById('uploadStatus').style.color = 'red';
                     }
@@ -364,7 +447,7 @@
                                 <input type="file" name="document" accept=".doc,.docx" required class="form-control-file">
                             </div>
                             <button type="submit" class="btn btn-success">Upload Edited Document</button>
-                        </form>
+                    </form>
                         <p id="uploadStatus" style="margin-top: 10px; font-weight: bold;"></p>
                     </div>
                 </div>
