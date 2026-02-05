@@ -351,6 +351,9 @@
         #Statement373c .modal-dialog{
             max-width: 760px;
         }
+        #statement373cAssignees .modal-dialog{
+            max-width: 800px;
+        }
         #PTOAIA82 .modal-dialog{
             max-width: 635px;
         }
@@ -1287,7 +1290,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    &emsp;&emsp;Corporation: <input type="radio" id="statement373ccorprad" name="statement373crad" value="Corporation">
+                    &emsp;&emsp;Corporation: <input type="radio" id="statement373ccorprad" name="statement373crad" value="Corporation" checked>
                     &ensp;Partnership: <input type="radio" id="statement373cpartnerrad" name="statement373crad" value="Partnership">
                 </div>
                 <div>
@@ -1309,7 +1312,52 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(statement373crecordchk.checked, statement373cesign.checked, radioFill('statement373crad'), statement373clistoth.value, Statement373cSAdrop.value)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitStatement373c(Statement373cSAdrop.value)">Continue</button>
+            </div>
+        </div>
+    </div>Deploy
+</div>
+<!-- Statement373c Assignee Selection (Two Tables) -->
+<div class="modal fade" id="statement373cAssignees" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Select Assignee for Merge</h4>
+                <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 20px;">
+                    <!-- Left Table: Select Applicant/Patent Owner -->
+                    <div style="flex: 1;">
+                        <h5 style="font-weight: bold; margin-bottom: 10px;">Select Applicant/Patent Owner</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statement373c-applicant-info"></tbody>
+                        </table>
+                    </div>
+                    <!-- Right Table: Select Name of Assignee -->
+                    <div style="flex: 1;">
+                        <h5 style="font-weight: bold; margin-bottom: 10px;">Select Name of Assignee</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statement373c-assignee-info"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="statement373cAssigneesNext">Continue</button>
             </div>
         </div>
     </div>
@@ -6019,7 +6067,7 @@
                                 }
                             });
                             // For nsnotarialcert, call submitbtnmerge directly like corp-to-corp does
-                            submitbtnmerge('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
+                            submitbtnrecoinv('1', document.getElementById("recordationesign").checked, document.getElementById("recordationpagenum").value, radioFill('recordationoptions'), selectedData);
                         } else {
                             // Handle checkboxes for other merge methods
                             const checkboxesinv = document.querySelectorAll('input[type="checkbox"][name="invchk"]');
@@ -6184,6 +6232,7 @@
 
         function submitbtnrecoinv(...args){
             const inputData = document.getElementById("matterInput").value;
+            const isNsnotarialcert = currentMergemethod === 'nsnotarialcert';
             $.ajax({
                 type: 'POST',
                 url: 'merge_assignee/',
@@ -6199,10 +6248,19 @@
                         tableBody.innerHTML = '';
                         for(var i = 0; i < assigneeList.length; i++){
                             const newRow = document.createElement('tr');
-                            newRow.innerHTML = `
-                                <td><input type="checkbox" name = "assigneename"></td>
-                                <td>${assigneeList[i]}</td>
-                            `;
+                            if (isNsnotarialcert) {
+                                // Use radio buttons for nsnotarialcert (single selection)
+                                newRow.innerHTML = `
+                                    <td><input type="radio" name = "assigneename" value="${i}" ${i === 0 ? 'checked' : ''}></td>
+                                    <td>${assigneeList[i]}</td>
+                                `;
+                            } else {
+                                // Use checkboxes for other merges (multiple selection)
+                                newRow.innerHTML = `
+                                    <td><input type="checkbox" name = "assigneename"></td>
+                                    <td>${assigneeList[i]}</td>
+                                `;
+                            }
                             tableBody.appendChild(newRow);
                         }
                         $('#assignees').modal('show'); 
@@ -6210,13 +6268,24 @@
                         document.getElementById("assigneesnext").onclick = function() {
                         const selAssignees = [];
 
-                        const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="assigneename"]`);
-                        checkboxes.forEach((checkbox, index) => {
-                            if (checkbox.checked) {
+                        if (isNsnotarialcert) {
+                            // Handle radio buttons for nsnotarialcert (single selection)
+                            const selectedRadio = document.querySelector('input[type="radio"][name="assigneename"]:checked');
+                            if (selectedRadio) {
+                                const index = parseInt(selectedRadio.value);
                                 selAssignees.push(assigneeList[index]);
-                                selAssignees.push(ordernoList[index])
+                                selAssignees.push(ordernoList[index]);
                             }
-                        });
+                        } else {
+                            // Handle checkboxes for other merges (multiple selection)
+                            const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="assigneename"]`);
+                            checkboxes.forEach((checkbox, index) => {
+                                if (checkbox.checked) {
+                                    selAssignees.push(assigneeList[index]);
+                                    selAssignees.push(ordernoList[index])
+                                }
+                            });
+                        }
                         
                         submitbtnmerge(...args, 'SELASSIGNEE', selAssignees.map(entry => String(entry).replace(/,/g, '`')));
                         }
@@ -6398,8 +6467,21 @@
                 }
             });
         }
-
+ 
         function fillSA(mergemethod) {
+            const inputData = document.getElementById("matterInput").value;
+            
+            // For Statement373c, always load SA and show modal first
+            // Multiple assignee check will happen after user clicks Continue
+            if (mergemethod === 'Statement373c') {
+                loadStatement373cSA(mergemethod, -1, -1);
+            } else {
+                // For other merges, proceed normally
+                loadStatement373cSA(mergemethod, -1, -1);
+            }
+        }
+        
+        function loadStatement373cSA(mergemethod, applicantIndex, assigneeIndex) {
             const inputData = document.getElementById("matterInput").value;
             $.ajax({
                 type: 'POST',
@@ -6428,6 +6510,13 @@
                         opt.value = sattList[i];
                         sel.appendChild(opt);
                     }
+
+                    // Store the selected assignee indices for Statement373c
+                    if (mergemethod === 'Statement373c') {
+                        window.statement373cApplicantIndex = applicantIndex;
+                        window.statement373cAssigneeIndex = assigneeIndex;
+                    }
+
                     $('#' + mergemethod).modal('show');
                 },
                 error: function(error) {
@@ -6435,6 +6524,132 @@
                     console.error('Error:', error);
                 }
             });
+        }
+
+        function submitStatement373c(sadrop) {
+            const recordation = document.getElementById('statement373crecordchk').checked;
+            const esign = document.getElementById('statement373cesign').checked;
+            const orgType = radioFill('statement373crad');
+            const otherType = document.getElementById('statement373clistoth').value;
+            // Get SA name - use jQuery since it's dynamically populated and more reliable for modal elements
+            const saName = sadrop;
+            
+            // Store the form data for later use
+            window.statement373cFormData = {
+                recordation: recordation,
+                esign: esign,
+                orgType: orgType,
+                otherType: otherType,
+                saName: saName
+            };
+            
+            // Check for multiple assignees/applicants
+            const inputData = document.getElementById("matterInput").value;
+            $.ajax({
+                type: 'POST',
+                url: 'merge_assignee/',
+                data: {matterno: JSON.stringify(inputData)},
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function(response) {
+                    const assigneeList = response.message.assignees.split(';');
+                    const ordernoList = response.message.ordernos.split(';');
+                    
+                    // Check if there are multiple assignees/applicants
+                    if (assigneeList.length >= 2 && assigneeList[0] !== '') {
+                        // Multiple assignees - show the two-table modal
+                        const applicantTableBody = document.getElementById('statement373c-applicant-info');
+                        const assigneeTableBody = document.getElementById('statement373c-assignee-info');
+                        
+                        applicantTableBody.innerHTML = '';
+                        assigneeTableBody.innerHTML = '';
+                        
+                        for(var i = 0; i < assigneeList.length; i++) {
+                            if (assigneeList[i].trim() !== '') {
+                                // Left table (Applicant/Patent Owner) - radio buttons
+                                const applicantRow = document.createElement('tr');
+                                applicantRow.innerHTML = `
+                                    <td><input type="radio" name="statement373c-applicant" value="${i}" ${i === 0 ? 'checked' : ''}></td>
+                                    <td>${assigneeList[i]}</td>
+                                `;
+                                applicantTableBody.appendChild(applicantRow);
+                                
+                                // Right table (Assignee) - radio buttons
+                                const assigneeRow = document.createElement('tr');
+                                assigneeRow.innerHTML = `
+                                    <td><input type="radio" name="statement373c-assignee" value="${i}" ${i === 0 ? 'checked' : ''}></td>
+                                    <td>${assigneeList[i]}</td>
+                                `;
+                                assigneeTableBody.appendChild(assigneeRow);
+                            }
+                        }
+                        
+                        // Store assignee list and ordernos for later use
+                        window.statement373cAssigneeList = assigneeList;
+                        window.statement373cOrdernoList = ordernoList;
+                        
+                        // Close the Statement373c modal and show the assignee selection modal
+                        $('#Statement373c').modal('hide');
+                        $('#statement373cAssignees').modal('show');
+                        
+                        // Set up the Continue button handler
+                        document.getElementById("statement373cAssigneesNext").onclick = function() {
+                            const selectedApplicantRadio = document.querySelector('input[type="radio"][name="statement373c-applicant"]:checked');
+                            const selectedAssigneeRadio = document.querySelector('input[type="radio"][name="statement373c-assignee"]:checked');
+                            
+                            if (selectedApplicantRadio && selectedAssigneeRadio) {
+                                const applicantIndex = parseInt(selectedApplicantRadio.value);
+                                const assigneeIndex = parseInt(selectedAssigneeRadio.value);
+                                
+                                // Store the selected indices
+                                window.statement373cApplicantIndex = applicantIndex;
+                                window.statement373cAssigneeIndex = assigneeIndex;
+                                
+                                // Now proceed with the merge
+                                proceedWithStatement373cMerge();
+                            }
+                        };
+                    } else {
+                        // Single assignee - proceed directly with merge
+                        proceedWithStatement373cMerge();
+                    }
+                },
+                error: function(error) {
+                    console.error('Error checking assignees:', error);
+                    // On error, proceed with merge (single assignee behavior)
+                    proceedWithStatement373cMerge();
+                }
+            });
+        }
+        
+        function proceedWithStatement373cMerge() {
+            const formData = window.statement373cFormData || {};
+            let mergeArgs = [formData.recordation, formData.esign, formData.orgType, formData.otherType];
+            
+            // Check if we have selected assignees from the two-table modal
+            if (window.statement373cApplicantIndex !== undefined && window.statement373cApplicantIndex >= 0 &&
+                window.statement373cAssigneeIndex !== undefined && window.statement373cAssigneeIndex >= 0) {
+                // Multiple assignees selected - pass the selected assignees
+                const applicantName = window.statement373cAssigneeList[window.statement373cApplicantIndex];
+                const applicantOrderno = window.statement373cOrdernoList[window.statement373cApplicantIndex];
+                const assigneeName = window.statement373cAssigneeList[window.statement373cAssigneeIndex];
+                const assigneeOrderno = window.statement373cOrdernoList[window.statement373cAssigneeIndex];
+                
+                // Pass as: 'SELASSIGNEE', applicantName, applicantOrderno, assigneeName, assigneeOrderno
+                mergeArgs.push('SELASSIGNEE');
+                mergeArgs.push(applicantName.replace(/,/g, '`'));
+                mergeArgs.push(applicantOrderno.replace(/,/g, '`'));
+                mergeArgs.push(assigneeName.replace(/,/g, '`'));
+                mergeArgs.push(assigneeOrderno.replace(/,/g, '`'));
+            }
+            
+            // Add SA name if selected
+            if (formData.saName && formData.saName !== 'Select Signing Attorney' && formData.saName !== '') {
+                mergeArgs.push(formData.saName);
+            }
+            
+            submitbtnmerge(...mergeArgs);
         }
 
         function fillPCTSA(mergemethod) {

@@ -5,7 +5,7 @@ from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo, ClientSpec
-from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos, FvMatter4
+from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos, FvMatter4, CountryLookup
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db import connections
@@ -277,7 +277,7 @@ class mergefunctions:
                 'assigneeCity' : contact.city,
                 'assigneeState' : contact.state,
                 'assigneeZip' : contact.zip,
-                'assigneeCountry' : contact.country,
+                'assigneeCountry' : merge_fn.full_country(contact.country),
                 'assigneeStreet1' : contact.address1,
                 'assigneeStreet2' : contact.address2,
                 'assignee' : profile.orgname,
@@ -327,7 +327,7 @@ class mergefunctions:
                 'applicantCity' : contact.city,
                 'applicantState' : contact.state,
                 'applicantZip' : contact.zip,
-                'applicantCountry' : contact.country,
+                'applicantCountry' : merge_fn.full_country(contact.country),
                 'applicantStreet1' : contact.address1,
                 'applicantStreet2' : contact.address2,
                 'applicantStreet' : appstreet,
@@ -705,6 +705,29 @@ class mergefunctions:
                 'QAPhone' : '',
             }
         return info
+
+    def full_country(self, code: str) -> str:
+        print(code)
+        if not code:
+            return code
+        
+        c = code.strip().upper()
+        base = c[:2]   # handles CAON → CA, USOH → US
+
+        # Try exact code first
+        record = CountryLookup.objects.filter(code=c).first()
+
+        if record:
+            return record.country_name
+
+        # Fallback: Try first 2 letters as base country
+        record = CountryLookup.objects.filter(code=base).first()
+
+        if record:
+            return record.country_name
+
+        # Otherwise return the original code
+        return c
     
     def fullCountry(self, country):
         if 'US' in country:
@@ -880,7 +903,7 @@ class mergefunctions:
             'inventorSuffix' : profile.namesuffix,
             'inventorHomeCity' : contact.city,
             'inventorHomeState' : contact.state,
-            'inventorHomeCountry' : contact.country,
+            'inventorHomeCountry' : merge_fn.full_country(contact.country),
             'inventorHomeStreet1' : contact.address1,
             'inventorcitizen': profile.citizenship,
             'inventorHomeZip' : contact.zip,
@@ -890,11 +913,11 @@ class mergefunctions:
             'inventorMailingCity' : contact.city,
             'inventorMailingState' : contact.state,
             'inventorMailingZip' : contact.zip,
-            'inventorMailingCountry' : contact.country,
+            'inventorMailingCountry' : merge_fn.full_country(contact.country),
 
             'inventorName' : profile.fname + ' ' + profile.mname + ' ' + profile.lname,
             'inventorCityState' : contact.city + ' ' + contact.state,
-            'inventorCountry' : contact.country,
+            'inventorCountry' : merge_fn.full_country(contact.country),
             'inventorAddress' : contact.address1,
             'inventorAddress1' : contact.address1,
             'inventorAddress2' : contact.address2,

@@ -689,3 +689,11 @@ class FvContact4(models.Model):
     class Meta:
         managed = False
         db_table = 'FV_CONTACT_4'
+
+class CountryLookup(models.Model):
+    code = models.CharField(max_length=10, primary_key=True)
+    country_name = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'country_lookup'

@@ -212,11 +212,6 @@ class Statement373c:
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         
-        # Parse mergeinfo
-        # mergeinfo[0] = recordation checkbox (True/False)
-        # mergeinfo[1] = esign checkbox (True/False)
-        # mergeinfo[2] = orgType radio value (Corporation, Partnership, University, Government Agency, or "oth")
-        # mergeinfo[3] = "other" text if mergeinfo[2] == "oth"
         recordation = mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False
         esign = mergeinfo[1] == 'true' if len(mergeinfo) > 1 else True
         orgType = mergeinfo[2] if len(mergeinfo) > 2 else 'Corporation'
@@ -250,9 +245,52 @@ class Statement373c:
         replace.update(function_instance.esigncheck(esign))
         replace['orgType'] = orgTypePadded
         
+        # Check if assignees were selected from the UI (SELASSIGNEE marker)
+        selassignee_index = -1
+        for i in range(len(mergeinfo)):
+            if mergeinfo[i] == "SELASSIGNEE":
+                selassignee_index = i
+                break
+        
         # Handle assignee/applicant logic
-        if not lMultiples:
-            # Single assignee
+        if selassignee_index >= 0:
+            # User selected assignees from the two-table modal
+            # mergeinfo structure: [recordation, esign, orgType, otherType, 'SELASSIGNEE', applicantName, applicantOrderno, assigneeName, assigneeOrderno, ...]
+            applicantName = mergeinfo[selassignee_index + 1].replace('`', ',') if len(mergeinfo) > selassignee_index + 1 else ''
+            applicantOrderno = mergeinfo[selassignee_index + 2].replace('`', ',') if len(mergeinfo) > selassignee_index + 2 else ''
+            assigneeName = mergeinfo[selassignee_index + 3].replace('`', ',') if len(mergeinfo) > selassignee_index + 3 else ''
+            assigneeOrderno = mergeinfo[selassignee_index + 4].replace('`', ',') if len(mergeinfo) > selassignee_index + 4 else ''
+            
+            # Fill assignee using recordationRoleFill with the selected assignee orderno
+            try:
+                if assigneeOrderno:
+                    assignee_data = function_instance.recordationRoleFill(matter, assigneeOrderno)
+                    assigneeNameFromFill = assignee_data.get('assignee', assigneeName)
+                else:
+                    assigneeNameFromFill = assigneeName
+            except Exception as e:
+                print(f"Error in recordationRoleFill for Statement373c assignee: {e}")
+                assigneeNameFromFill = assigneeName
+            
+            # Pad assignee name to 55 characters
+            assigneeLength = len(assigneeNameFromFill)
+            addToA = max(0, 55 - assigneeLength)
+            replace['assignee'] = assigneeNameFromFill + ' ' * addToA
+            
+            # Fill applicant/patent owner using recordationRoleFill with the selected applicant orderno
+            try:
+                if applicantOrderno:
+                    applicant_data = function_instance.recordationRoleFill(matter, applicantOrderno)
+                    applicantNameFromFill = applicant_data.get('assignee', applicantName)  # recordationRoleFill returns 'assignee' key
+                else:
+                    applicantNameFromFill = applicantName
+            except Exception as e:
+                print(f"Error in recordationRoleFill for Statement373c applicant: {e}")
+                applicantNameFromFill = applicantName
+            
+            replace['appOrInvent'] = applicantNameFromFill
+        elif not lMultiples:
+            # Single assignee - no selection needed
             if assigneeCount > 0:
                 assignee_data = function_instance.assigneefill(matter, 1)
                 assigneeName = assignee_data.get('assignee', '')
@@ -272,8 +310,7 @@ class Statement373c:
             else:
                 replace['appOrInvent'] = ''
         else:
-            # Multiple assignees/applicants - for now, use first one
-            # In full implementation, this would need UI to select which ones
+            # Multiple assignees/applicants but no selection made - use first one
             if assigneeCount > 0:
                 assignee_data = function_instance.assigneefill(matter, 1)
                 assigneeName = assignee_data.get('assignee', '')
@@ -292,108 +329,109 @@ class Statement373c:
             else:
                 replace['appOrInvent'] = ''
         
-        # Query assignment data (reel/frame numbers)
-        # Check if this is a US1 matter or need to find US1 matter
-        nUs1Matter = 0
-        queryMatterId = matter_data.matterid
+       # Query reel and frame data from assignments
+        queryMatterId = int(matter_data.matterid)
+        query = f"""
+            SELECT 
+                startframe = 
+                (select cast(val as varchar(30))
+                    from AttributeVal av
+                    where label like '%Starting%'
+                    and objid = activity.activityId
+                ),
+                endframe = 
+                (select cast(val as varchar(30))
+                    from AttributeVal av
+                    where label like '%Ending%'
+                    and objid = activity.activityId
+                ),
+                reelno = 
+                (select cast(val as varchar(30))
+                    from AttributeVal av
+                    where label like '%Reel%'
+                    and objid = activity.activityId
+                )
+            FROM activity 
+            JOIN rvwActivityDateAttribute da on da.activityId = activity.activityid
+            WHERE activity.MATTERID = '{queryMatterId}'
+            and CODE in ('ASSN-11', 'ASSN-7', 'ASSN-2')
+            and attrValLabel like '%Record%'
+            and dateval is not null
+            ORDER by dateval
+        """
         
-        # Check if matter type is CON or DIV to determine if we need US1 matter
-        matterTypeDesc = ''
+        assignments = []
         try:
-            matterTypeDesc = matter_data.mattertypedescription or ''
-        except:
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                assignments = cursor.fetchall()
+        except Exception as e:
+            print(f"Error querying assignments: {e}")
             pass
         
-        if 'CON' in matterTypeDesc.upper() or 'DIV' in matterTypeDesc.upper():
-            # Need to find US1 matter
-            familyNo = matter_data.hostmatterno.split('.')[0] if '.' in matter_data.hostmatterno else matter_data.hostmatterno
-            familyNo = familyNo + 'US1'
+        # Initialize all reel and frame tags to empty/default
+        replace['reelNo'] = ''
+        replace['frameNo'] = ''
+        for r in range(1, 7):
+            replace[f'reel{r}'] = ''
+            replace[f'frame{r}'] = ''
+        
+        # Fill reel and frame tags dynamically based on query results
+        if len(assignments) == 1:
+            # Single assignment - use reelNo and frameNo
+            startframe, endframe, reelno = assignments[0]
             
-            try:
-                origMatter = Matter.objects.using('FIP').get(hostmatterno=familyNo)
-                queryMatterId = origMatter.matterid
-            except:
-                # Could not locate US1 matter - will use current matter
-                queryMatterId = matter_data.matterid
+            # Set reel number
+            if reelno and str(reelno).strip():
+                replace['reelNo'] = str(reelno).strip()
+            else:
+                replace['reelNo'] = ''
+            
+            # Set frame number (format: 'startframe - endframe')
+            if startframe and endframe and str(startframe).strip() and str(endframe).strip():
+                replace['frameNo'] = f"{str(startframe).strip()} - {str(endframe).strip()}"
+            elif startframe and str(startframe).strip():
+                replace['frameNo'] = str(startframe).strip()
+            elif endframe and str(endframe).strip():
+                replace['frameNo'] = str(endframe).strip()
+            else:
+                replace['frameNo'] = ''
+        elif len(assignments) > 1:
+            # Multiple assignments - use reel1-reel6 and frame1-frame6
+            for idx, assignment in enumerate(assignments[:6]):  # Limit to 6 assignments
+                # Query returns: (startframe, endframe, reelno) based on SELECT order
+                startframe, endframe, reelno = assignment
+                reel_num = idx + 1
+                
+                # Set reel number
+                if reelno and str(reelno).strip():
+                    replace[f'reel{reel_num}'] = str(reelno).strip()
+                else:
+                    replace[f'reel{reel_num}'] = ''
+                
+                # Set frame number (format: 'startframe - endframe')
+                if startframe and endframe and str(startframe).strip() and str(endframe).strip():
+                    replace[f'frame{reel_num}'] = f"{str(startframe).strip()} - {str(endframe).strip()}"
+                elif startframe and str(startframe).strip():
+                    replace[f'frame{reel_num}'] = str(startframe).strip()
+                elif endframe and str(endframe).strip():
+                    replace[f'frame{reel_num}'] = str(endframe).strip()
+                else:
+                    replace[f'frame{reel_num}'] = ''
         
-        # Query assignments - get reel and frame numbers from activity attributes
-        # This queries activity with name 'Assignment Recorded' and gets attributes
-        # query = f"""
-        #     SELECT 
-        #         CAST(av1.attributevalue AS VARCHAR(50)) AS reelno,
-        #         CAST(av2.attributevalue AS VARCHAR(50)) AS startframe,
-        #         CAST(av3.attributevalue AS VARCHAR(50)) AS endframe
-        #     FROM activity a
-        #     LEFT JOIN activityattribute av1 ON a.activityid = av1.activityid 
-        #         AND av1.attributename = 'Reel Number'
-        #     LEFT JOIN activityattribute av2 ON a.activityid = av2.activityid 
-        #         AND av2.attributename = 'Start Frame'
-        #     LEFT JOIN activityattribute av3 ON a.activityid = av3.activityid 
-        #         AND av3.attributename = 'End Frame'
-        #     WHERE a.matterid = {queryMatterId}
-        #         AND a.name = 'Assignment Recorded'
-        #     ORDER BY a.activityid
-        # """
+        # Handle SA name - check if SELASSIGNEE was present to determine correct index
+        sa_index = 4
+        if selassignee_index >= 0:
+            # If SELASSIGNEE is present, SA name is after the assignee data (index 9)
+            sa_index = selassignee_index + 5
         
-        # assignments = []
-        # try:
-        #     with connections['FIP'].cursor() as cursor:
-        #         cursor.execute(query)
-        #         assignments = cursor.fetchall()
-        # except Exception as e:
-        #     print(f"Error querying assignments: {e}")
-        #     pass
-        
-        # # Handle reel/frame numbers
-        # if len(assignments) == 0:
-        #     # No assignments - use placeholders
-        #     replace['reelNo'] = '____________'
-        #     replace['frameNo'] = '____________'
-        #     for r in range(1, 7):
-        #         replace[f'reel{r}'] = '____________'
-        #         replace[f'frame{r}'] = '____________'
-        # elif len(assignments) == 1:
-        #     # Single assignment
-        #     reel, startframe, endframe = assignments[0]
-        #     cReel = str(reel).strip() if reel and str(reel).strip() else '____________'
-        #     if startframe and endframe and str(startframe).strip() and str(endframe).strip():
-        #         cFrame = f"{str(startframe).strip()} - {str(endframe).strip()}"
-        #     else:
-        #         cFrame = '____________'
-        #     replace['reelNo'] = cReel
-        #     replace['frameNo'] = cFrame
-        #     for r in range(1, 7):
-        #         replace[f'reel{r}'] = '____________'
-        #         replace[f'frame{r}'] = '____________'
-        # else:
-        #     # Multiple assignments
-        #     replace['reelNo'] = ''
-        #     replace['frameNo'] = ''
-        #     for r in range(1, 7):
-        #         if r <= len(assignments):
-        #             reel, startframe, endframe = assignments[r-1]
-        #             cReel = str(reel).strip() if reel and str(reel).strip() else '____________'
-        #             if startframe and endframe and str(startframe).strip() and str(endframe).strip():
-        #                 cFrame = f"{str(startframe).strip()} - {str(endframe).strip()}"
-        #             else:
-        #                 cFrame = '____________'
-        #             replace[f'reel{r}'] = cReel
-        #             replace[f'frame{r}'] = cFrame
-        #         else:
-        #             replace[f'reel{r}'] = '____________'
-        #             replace[f'frame{r}'] = '____________'
-        
-        # Note: Content controls for recordation and single/multiple assignments
-        # would need to be handled in the Word document processing, not in the merge tags
-        # These are handled via Word Content Controls which are set programmatically
-        
-        if mergeinfo[4] != 'Select Signing Attorney' and mergeinfo[4] != '':
-            saname, regno = function_instance.fullSAName(mergeinfo[4])
+        if len(mergeinfo) > sa_index and mergeinfo[sa_index] != 'Select Signing Attorney' and mergeinfo[sa_index] != '':
+            saname, regno = function_instance.fullSAName(mergeinfo[sa_index])
             replace.update({
                 'SAName' : saname,
                 'SARegNo' : regno
             })
-            saphone = function_instance.phoneFillSA(mergeinfo[4])
+            saphone = function_instance.phoneFillSA(mergeinfo[sa_index])
             if saphone != '':
                 replace.update({
                     'SAPhone' : saphone
@@ -1781,21 +1819,6 @@ class pctcorrect:
                     'SAPhone' : saphone
                 })
         return replace
-
-# PTO Form - Application Data Sheet - On/after Sept 16, 2012
-class applicationdata_new2:
-    def applicationdata_new2(self, matter, mergeinfo, keys):
-        function_instance = mergefunctions.mergefunctions()
-        matter_data = function_instance.matterFill(matter)
-
-        replace = {}
-        replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.assigneefill(matter, 1))
-        replace.update(function_instance.applicantfill(matter, 1))
-        replace.update({
-            
-        })
-        return replace
     
 class pctextension:
     def pctextension(self, matter, mergeinfo, keys):
@@ -2058,24 +2081,49 @@ class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
         
         sadata = function_instance.rvwmatterpersonnelFill(matter_data)
 
-        replace = {}
-        replace.update(function_instance.mergebasic(keys, matter))
+        # Correspondence Information
+        if mergeinfo[1] == 'true':
+            replace.update({
+                'custNoEmail' : 'request@slwip.com'
+            })
+        else:
+            replace.update({
+                'custNoCorresp' : ''
+            })
+ 
+        # Application Information
+        if mergeinfo[2] == 'true':
+            replace.update({
+                'apptitle' : matter_data.title,
+                'appmatterNo' : matter_data.hostmatterno,
+                'appmatterType' : matter_data.mattertypedescription,
+                'drawingSheets' : mergeinfo[3],
+                'appprov' : 'Non-Provisional',
+            })
+        else:
+            replace.update({
+                'apptitle' : '',
+                'appmatterNo' : '',
+                'appmatterType' : '',
+                'drawingSheets' : '',
+                'appprov' : '',
+            })
+
         replace.update(function_instance.esigncheck(mergeinfo[7]))
         replace.update({
             # get update tag
             '' : mergeinfo[6],
-            'custNoEmail' : 'request@slwip.com',
-            'apptitle' : matter_data.title,
-            'appmatterNo' : matter_data.hostmatterno,
-            'appmatterType' : matter_data.mattertypedescription,
-            'drawingSheets' : mergeinfo[3],
-            'appprov' : 'Non-Provisional',
             'SAFirstName' : sadata.fname,
             'SALastName' : sadata.lname,
-            'SARegNo' : sadata.registrationno
+            'SARegNo' : sadata.registrationno,
+            'foreignNo' : '',
+            'foreignCntry' : '',
+            'foreignFiledDate' : ''
         })
         if mergeinfo[1] == 'false':
             replace.update({'custNoCorresp' : '', 'custNoEmail' : ''})
@@ -4811,9 +4859,33 @@ class nsnotarialcert:
         replace.update(function_instance.mergebasic(keys, matter))
         
         if mergeinfo[0] == '1':
-            show = 'documents show'
-            replace.update(function_instance.assigneefill(matter, 1))
-            selinv = ', '.join(map(str, mergeinfo[4:]))
+            show = 'documents show '
+            # Check if assignee data exists (SELASSIGNEE marker)
+            selassignee_index = -1
+            for i in range(len(mergeinfo)):
+                if mergeinfo[i] == "SELASSIGNEE":
+                    selassignee_index = i
+                    break
+            
+            # Process inventor list (stop before SELASSIGNEE if it exists)
+            if selassignee_index >= 0:
+                selinv = ', '.join(map(str, mergeinfo[4:selassignee_index]))
+            else:
+                selinv = ', '.join(map(str, mergeinfo[4:]))
+            
+            # If SELASSIGNEE found, extract roleid and use recordationRoleFill (like option '2')
+            if selassignee_index >= 0 and selassignee_index + 2 < len(mergeinfo):
+                # Pattern after SELASSIGNEE: assigneeName, orderno (for nsnotarialcert with radio, only one selection)
+                # The orderno should be in format "roleid/roleorderno" for recordationRoleFill
+                try:
+                    roleid = mergeinfo[selassignee_index + 2]  # orderno is at index + 2 (after assignee name)
+                    replace.update(function_instance.assigneefill(matter, roleid))
+                except:
+                    # If recordationRoleFill fails, fall back to default assigneefill
+                    replace.update(function_instance.assigneefill(matter, 1))
+            else:
+                # No assignee data, use default assigneefill
+                replace.update(function_instance.assigneefill(matter, 1))
             
         if mergeinfo[0] == '2':
             show = 'document shows'

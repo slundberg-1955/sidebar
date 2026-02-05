@@ -286,7 +286,7 @@ def addSA(request):
     if request.method == 'POST':
         # Query the database for distinct personLastNameFirstName values, sorted by fName
         SAs = (Rvwmatterpersonnel.objects.using('FIP')
-               .filter(roleid=34619, orgid=4)
+               .filter(roleid=34619, orgid=4, regno__isnull=False)
                .values('fname', 'lname')
                .distinct()
                .order_by('fname'))
@@ -858,6 +858,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx'))
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx')) 
             composer.append(doc3)
+            if invCount == 0:
+                    break
         
         composer.append(doc1)
         
@@ -885,6 +887,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx'))
             doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx')) 
             composer.append(doc4)
+            if appCount == 0:
+                break
 
         for i in range(0, assignCount):
             replace = {}
@@ -913,6 +917,8 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx'))
             doc5 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx')) 
             composer.append(doc5)
+            if assignCount == 0:
+                break
         
         composer.append(docend)
     
