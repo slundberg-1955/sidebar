@@ -255,9 +255,10 @@ class mergefunctions:
         return basicOut
 
     # assignee information fill 34606   
-    def assigneefill(self, matter, count):
+    def assigneefill(self, matter, count, matter_data=None):
         merge_fn = mergefunctions()
-        matter_data = merge_fn.matterFill(matter)
+        if matter_data is None:
+            matter_data = merge_fn.matterFill(matter)
         try:
             parts = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606', roleorderno = count)
             part = parts[0]
@@ -303,9 +304,10 @@ class mergefunctions:
         return info
     
     # Applicant information fill. Update roleid  56691
-    def applicantfill(self, matter, count):
+    def applicantfill(self, matter, count, matter_data=None):
         merge_fn = mergefunctions()
-        matter_data = merge_fn.matterFill(matter)
+        if matter_data is None:
+            matter_data = merge_fn.matterFill(matter)
         
         try:
             part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '56691', roleorderno = count)
@@ -729,25 +731,28 @@ class mergefunctions:
         # Otherwise return the original code
         return c
     
-    def fullCountry(self, country):
-        if 'US' in country:
-            return 'United States of America'
-        elif 'JP' in country:
-            return 'Japan'
-        elif 'DE' in country:
-            return 'Germany'
-        elif 'KR' in country:
-            return 'Korea'
-        elif 'IN' in country:
-            return 'India'
-        elif 'CN' in country:
-            return 'China'
-        elif 'BR' in country:
-            return 'Brazil'
-        elif 'EP' in country:
-            return 'European Patent Office'
-        else:
-            return country
+    def fullCountry(self, code: str) -> str:
+        print(code)
+        if not code:
+            return code
+        
+        c = code.strip().upper()
+        base = c[:2]   # handles CAON → CA, USOH → US
+
+        # Try exact code first
+        record = CountryLookup.objects.filter(code=c).first()
+
+        if record:
+            return record.country_name
+
+        # Fallback: Try first 2 letters as base country
+        record = CountryLookup.objects.filter(code=base).first()
+
+        if record:
+            return record.country_name
+
+        # Otherwise return the original code
+        return c
         
     def patentCountry(self, country):
         if 'EP' in country:
@@ -879,9 +884,10 @@ class mergefunctions:
             
         return info
     
-    def inventorInfo(self, matter, inv):
+    def inventorInfo(self, matter, inv, matter_data=None):
         merge_fn = mergefunctions()
-        matter_data = merge_fn.matterFill(matter)
+        if matter_data is None:
+            matter_data = merge_fn.matterFill(matter)
         part = Matterparticipant.objects.using('FIP').get(matterid = matter_data.matterid, roleid = '34608', roleorderno = inv)
         profile = Personprofile.objects.using('FIP').get(ppid = part.contactid)
         workcontact = Contactinfo.objects.using('FIP').get(contactinfoid = profile.workcontactinfoid)
@@ -1756,3 +1762,138 @@ class mergefunctions:
             info = ''
     
         return info
+    
+
+    def _safe_str(self, val):
+        return str(val) if val is not None else ''
+
+    def inventorInfoBulk(self, matter_data):
+        """Bulk fetch all inventors - 3 queries instead of ~5 per inventor."""
+        inventors = list(Matterparticipant.objects.using('FIP').filter(
+            matterid=matter_data.matterid, roleid='34608'
+        ).order_by('roleorderno'))
+        if not inventors:
+            return []
+        pp_ids = [p.contactid for p in inventors]
+        profiles = {p.ppid: p for p in Personprofile.objects.using('FIP').filter(ppid__in=pp_ids)}
+        contact_ids = set()
+        for p in profiles.values():
+            if p.workcontactinfoid:
+                contact_ids.add(p.workcontactinfoid)
+            if p.homecontactinfoid:
+                contact_ids.add(p.homecontactinfoid)
+        contacts = {c.contactinfoid: c for c in Contactinfo.objects.using('FIP').filter(contactinfoid__in=contact_ids)} if contact_ids else {}
+        inv_count = len(inventors)
+        result = []
+        for inv_num, part in enumerate(inventors, 1):
+            profile = profiles.get(part.contactid)
+            contact = contacts.get(profile.homecontactinfoid) if profile and profile.homecontactinfoid else None
+            if not profile or not contact:
+                result.append({
+                    'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ',
+                    'inventor': '',
+
+                    'invpre': '',
+                    'inventorFirstName': '',
+                    'inventorMiddleInitial': '',
+                    'inventorLastName': '',
+                    'inventorSuffix': '',
+
+                    'inventorHomeCity': '',
+                    'inventorHomeState': '',
+                    'inventorHomeCountry': '',
+
+                    'inventorMailingStreet1': '',
+                    'inventorMailingStreet2': '',
+                    'inventorMailingCity': '',
+                    'inventorMailingState': '',
+                    'inventorMailingZip': '',
+                    'inventorMailingCountry': '',
+                })
+                continue
+            inv_label = 'Inventor: ' if inv_count == 1 else inv_num
+            s = self._safe_str
+            inv_country = self.fullCountry(s(contact.country))
+            inv_citizenship = self.fullCountry(s(profile.citizenship))
+            result.append({
+                'inventorCnt': inv_label,
+                'inventor': f"{s(profile.fname)} {s(profile.mname)}. {s(profile.lname)}",
+
+                'invpre': s(profile.salutation),
+                'inventorFirstName': s(profile.fname),
+                'inventorMiddleInitial': s(profile.mname),
+                'inventorLastName': s(profile.lname),
+                'inventorSuffix': s(profile.namesuffix),
+
+                'inventorHomeCity': s(contact.city),
+                'inventorHomeState': s(contact.state),
+                'inventorHomeCountry': inv_country,
+
+                'inventorMailingStreet1': s(contact.address1),
+                'inventorMailingStreet2': s(contact.address2),
+                'inventorMailingCity': s(contact.city),
+                'inventorMailingState': s(contact.state),
+                'inventorMailingZip': s(contact.zip),
+                'inventorMailingCountry': inv_country,
+            })
+        return result
+
+    def applicantfillBulk(self, matter_data):
+        """Bulk fetch all applicants - 3 queries instead of ~4 per applicant."""
+        applicants = list(Matterparticipant.objects.using('FIP').filter(
+            matterid=matter_data.matterid, roleid='56691'
+        ).order_by('roleorderno'))
+        if not applicants:
+            return []
+        op_ids = [p.contactid for p in applicants]
+        profiles = {p.opid: p for p in Orgprofile.objects.using('FIP').filter(opid__in=op_ids)}
+        contact_ids = {profiles[p].contactinfoid for p in op_ids if p in profiles and profiles[p].contactinfoid is not None}
+        contacts = {c.contactinfoid: c for c in Contactinfo.objects.using('FIP').filter(contactinfoid__in=contact_ids)} if contact_ids else {}
+        app_count = len(applicants)
+        result = []
+        for app_num, part in enumerate(applicants, 1):
+            profile = profiles.get(part.contactid)
+            contact = contacts.get(profile.contactinfoid) if profile and profile.contactinfoid else None
+            if not profile or not contact:
+                result.append({'applCnt': app_num if app_count > 1 else 'Applicant: ', 'applicantCity': '', 'applicantState': '', 'applicantZip': '', 'applicantCountry': '', 'applicantStreet1': '', 'applicantStreet2': '', 'applicant': '', 'applicantName': ''})
+                continue
+            label = 'Applicant: ' if app_count == 1 else app_num
+            s = self._safe_str
+            result.append({
+                'applCnt': label, 'applicantCity': s(contact.city), 'applicantState': s(contact.state),
+                'applicantZip': s(contact.zip), 'applicantCountry': self.fullCountry(s(contact.country)),
+                'applicantStreet1': s(contact.address1), 'applicantStreet2': s(contact.address2),
+                'applicant': s(profile.orgname), 'applicantName': s(profile.orgname),
+            })
+        return result
+
+    def assigneefillBulk(self, matter_data):
+        """Bulk fetch all assignees - 3 queries instead of ~4 per assignee."""
+        assignees = list(Matterparticipant.objects.using('FIP').filter(
+            matterid=matter_data.matterid, roleid='34606'
+        ).order_by('roleorderno'))
+        if not assignees:
+            return []
+        op_ids = [p.contactid for p in assignees]
+        profiles = {p.opid: p for p in Orgprofile.objects.using('FIP').filter(opid__in=op_ids)}
+        contact_ids = {profiles[p].contactinfoid for p in op_ids if p in profiles and profiles[p].contactinfoid is not None}
+        contacts = {c.contactinfoid: c for c in Contactinfo.objects.using('FIP').filter(contactinfoid__in=contact_ids)} if contact_ids else {}
+        assign_count = len(assignees)
+        result = []
+        for assign_num, part in enumerate(assignees, 1):
+            profile = profiles.get(part.contactid)
+            contact = contacts.get(profile.contactinfoid) if profile and profile.contactinfoid else None
+            if not profile or not contact:
+                result.append({'assigneeCnt': assign_num if assign_count > 1 else 'Assignee: ', 'assigneeName': '', 'assigneeStreet': '', 'assigneeCity': '', 'assigneeState': '', 'assigneeZip': '', 'assigneeCountry': '', 'assigneeStreet1': '', 'assigneeStreet2': '', 'assignee': '', 'assigneeAddress': '', 'assigneeStateInc': ''})
+                continue
+            label = 'Assignee: ' if assign_count == 1 else assign_num
+            s = self._safe_str
+            addr = ', '.join(filter(None, [s(contact.address1), s(contact.city), s(contact.state), s(contact.zip)]))
+            result.append({
+                'assigneeCnt': label, 'assigneeName': s(profile.orgname), 'assigneeStreet': s(contact.address1),
+                'assigneeCity': s(contact.city), 'assigneeState': s(contact.state), 'assigneeZip': s(contact.zip),
+                'assigneeCountry': self.fullCountry(s(contact.country)), 'assigneeStreet1': s(contact.address1),
+                'assigneeStreet2': s(contact.address2), 'assignee': s(profile.orgname), 'assigneeAddress': addr,
+                'assigneeStateInc': f"{s(profile.incstate)}, {self.fullCountry(s(profile.inccountry))}",
+            })
+        return result

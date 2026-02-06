@@ -2079,6 +2079,7 @@ class PCTRptFileOfApp:
 # PTO Form - Update Application Data Sheet
 class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
+        print("top of main function")
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         replace = {}

@@ -128,11 +128,14 @@ def checkMatter(request):
         return JsonResponse({'error': 'Invalid request method'})
         
 def docx_replace2(doc, **kwargs: str):
-    for key, value in kwargs.items():
-        key = f"<<{key}>>"
-        for p in Paragraph.get_all(doc):
-            paragraph = Paragraph(p)
-            paragraph.replace_key(key, str(value))
+    replace_items = [(k, str(v)) for k, v in kwargs.items() if k is not None and k != ""]
+    if not replace_items:
+        return
+    paragraphs = Paragraph.get_all(doc)
+    for p in paragraphs:
+        paragraph = Paragraph(p)
+        for key, value in replace_items:
+            paragraph.replace_key(f"<<{key}>>", value)
 
 def docx_get_keys2(doc: Any) -> List[str]:
     result = set()  # unique items
@@ -813,113 +816,88 @@ def combinedoc(path, method, mergeinfo, matter, email):
         composer.append(doc4)
 
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
+        t0 = time.time()
+        print(f"[applicationdata_updnew] START combinedoc block, method={method}, mergeinfo={mergeinfo}")
         doc1.add_page_break()
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventor.docx'))
         docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2end.docx'))
         composer = Composer(doc2)
+        print(f"[applicationdata_updnew] Docs loaded {time.time()-t0:.2f}s")
 
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        inventors = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34608')
-        applicants = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '56691')
-        assignees = Matterparticipant.objects.using('FIP').filter(matterid = matter_data.matterid, roleid = '34606')
-        invCount = len(inventors) + 1
-        appCount = len(applicants) + 1
-        assignCount = len(assignees) + 1
+        print(f"[applicationdata_updnew] matterFill done {time.time()-t0:.2f}s")
 
-        for i in range(0, invCount):
-            replace = {}
-            if (method == 'applicationdata_updnew' and mergeinfo[0] == 'false') or invCount == 0:
-                blank = {            
-                    'inventorCnt' : '',
-                    'inventor' : '',
-                    'invpre' : '',
-                    'inventorFirstName' : '',
-                    'inventorMiddleInitial' : '',
-                    'inventorLastName' : '',
-                    'inventorSuffix' : '',
-                    'inventorHomeCity' : '',
-                    'inventorHomeState' : '',
-                    'inventorHomeCountry' : '',
-                    'inventorMailingStreet1' : '',
-                    'inventorMailingStreet2' : '',
-                    'inventorMailingCity' : '',
-                    'inventorMailingState' : '',
-                    'inventorMailingZip' : '',
-                    'inventorMailingCountry' : ''
-                    }
-                replace.update(blank)
-                invCount = 0
-            else:  
-                if i != 0:
-                    replace.update(merge_fn.inventorInfo(matter, i))
-            if i == 0 and invCount > 0:
-                continue
-            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx'))
-            doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx')) 
-            composer.append(doc3)
-            if invCount == 0:
-                    break
-        
+        # For applicationdata_updnew: only query participants for sections that are selected
+        need_inv = method != 'applicationdata_updnew' or (mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False)
+        need_app = method != 'applicationdata_updnew' or (mergeinfo[4] == 'true' if len(mergeinfo) > 4 else False)
+        need_assign = method != 'applicationdata_updnew' or (mergeinfo[5] == 'true' if len(mergeinfo) > 5 else False)
+
+        inv_blank = {
+            'inventorCnt': '', 'inventor': '', 'invpre': '', 'inventorFirstName': '',
+            'inventorMiddleInitial': '', 'inventorLastName': '', 'inventorSuffix': '',
+            'inventorHomeCity': '', 'inventorHomeState': '', 'inventorHomeCountry': '',
+            'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '',
+            'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''
+        }
+        inv_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple.docx')
+        inv_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx')
+
+        print(f"[applicationdata_updnew] Inventors: need_inv={need_inv} {time.time()-t0:.2f}s")
+        if not need_inv:
+            WordMerger(inv_template, dict(inv_blank), inv_temp_out)
+            composer.append(Document_compose(inv_temp_out))
+        else:
+            inv_replacements = merge_fn.inventorInfoBulk(matter_data)
+            print(f"[applicationdata_updnew] inventorInfoBulk returned {len(inv_replacements)} inventors {time.time()-t0:.2f}s")
+            for i, replace in enumerate(inv_replacements):
+                WordMerger(inv_template, replace, inv_temp_out)
+                composer.append(Document_compose(inv_temp_out))
+                if (i + 1) % 5 == 0:
+                    print(f"[applicationdata_updnew] Inventor block {i+1}/{len(inv_replacements)} {time.time()-t0:.2f}s")
+        print(f"[applicationdata_updnew] Inventors done {time.time()-t0:.2f}s")
         composer.append(doc1)
-        
-        for i in range(0, appCount):
-            replace = {}
-            if (method == 'applicationdata_updnew' and mergeinfo[4] == 'false') or appCount == 0:
-                blank = {            
-                    'applCnt' : '',
-                    'applicantCity' : '',
-                    'applicantState' : '',
-                    'applicantZip' : '',
-                    'applicantCountry' : '',
-                    'applicantStreet1' : '',
-                    'applicantStreet2' : '',
-                    'applicant' : '',
-                    'applicantName' : ''
-                }
-                replace.update(blank)
-                appCount = 0
-            else:
-                if i != 0:
-                    replace.update(merge_fn.applicantfill(matter, i))
-            if i == 0 and appCount > 0:
-                continue
-            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx'))
-            doc4 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx')) 
-            composer.append(doc4)
-            if appCount == 0:
-                break
 
-        for i in range(0, assignCount):
-            replace = {}
-            if (method == 'applicationdata_updnew' and mergeinfo[5] == 'false') or assignCount == 0:
-                blank = {            
-                    'assigneeCnt' : '',
-                    'assigneeName' : '',
-                    'assigneeStreet' : '',
-                    'assigneeCity' : '',
-                    'assigneeState' : '',
-                    'assigneeZip' : '',
-                    'assigneeCountry' : '',
-                    'assigneeStreet1' : '',
-                    'assigneeStreet2' : '',
-                    'assignee' : '',
-                    'assigneeAddress' : '',
-                    'assigneeStateInc' : ''
-                    }
-                replace.update(blank)
-                assignCount = 0
-            else: 
-                if i != 0:
-                    replace.update(merge_fn.assigneefill(matter, i))
-            if i == 0 and assignCount > 0:
-                continue
-            WordMerger(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti.docx'), replace, os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx'))
-            doc5 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx')) 
-            composer.append(doc5)
-            if assignCount == 0:
-                break
-        
+        app_blank = {
+            'applCnt': '', 'applicantCity': '', 'applicantState': '', 'applicantZip': '',
+            'applicantCountry': '', 'applicantStreet1': '', 'applicantStreet2': '',
+            'applicant': '', 'applicantName': ''
+        }
+        app_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti.docx')
+        app_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx')
+
+        print(f"[applicationdata_updnew] Applicants: need_app={need_app} {time.time()-t0:.2f}s")
+        if not need_app:
+            WordMerger(app_template, dict(app_blank), app_temp_out)
+            composer.append(Document_compose(app_temp_out))
+        else:
+            app_replacements = merge_fn.applicantfillBulk(matter_data)
+            print(f"[applicationdata_updnew] applicantfillBulk returned {len(app_replacements)} applicants {time.time()-t0:.2f}s")
+            for replace in app_replacements:
+                WordMerger(app_template, replace, app_temp_out)
+                composer.append(Document_compose(app_temp_out))
+        print(f"[applicationdata_updnew] Applicants done {time.time()-t0:.2f}s")
+
+        assign_blank = {
+            'assigneeCnt': '', 'assigneeName': '', 'assigneeStreet': '', 'assigneeCity': '',
+            'assigneeState': '', 'assigneeZip': '', 'assigneeCountry': '', 'assigneeStreet1': '',
+            'assigneeStreet2': '', 'assignee': '', 'assigneeAddress': '', 'assigneeStateInc': ''
+        }
+        assign_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti.docx')
+        assign_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx')
+
+        print(f"[applicationdata_updnew] Assignees: need_assign={need_assign} {time.time()-t0:.2f}s")
+        if not need_assign:
+            WordMerger(assign_template, dict(assign_blank), assign_temp_out)
+            composer.append(Document_compose(assign_temp_out))
+        else:
+            assign_replacements = merge_fn.assigneefillBulk(matter_data)
+            print(f"[applicationdata_updnew] assigneefillBulk returned {len(assign_replacements)} assignees {time.time()-t0:.2f}s")
+            for replace in assign_replacements:
+                WordMerger(assign_template, replace, assign_temp_out)
+                composer.append(Document_compose(assign_temp_out))
+        print(f"[applicationdata_updnew] Assignees done {time.time()-t0:.2f}s")
+
         composer.append(docend)
     
     if method == 'invchange':
@@ -1035,7 +1013,12 @@ def combinedoc(path, method, mergeinfo, matter, email):
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
         composer.append(doc3)
         
+    if method == 'applicationdata_updnew':
+        t_save = time.time()
+        print(f"[applicationdata_updnew] combinedoc: saving composer to multidocmerge {method}.docx")
     composer.save("documents/multidocmerge/" + method +".docx")
+    if method == 'applicationdata_updnew':
+        print(f"[applicationdata_updnew] combinedoc: composer.save done {time.time()-t_save:.2f}s")
 
 def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
     if mergeinfo_list[1] == 'ffSndItmsToAssoc':
@@ -1117,7 +1100,12 @@ def mergeDoc(matter, mergeinfo, request):
     doc = Document(input_path)
     keys = docx_get_keys2(doc)
 
+    if mergeinfo_list[1] == 'applicationdata_updnew':
+        t_merge = time.time()
+        print(f"[mergeDoc] applicationdata_updnew: calling merge class applicationdata_updnew")
     replace = getattr(merge_instance, class_name)(matter, mergefninfo, keys)
+    if mergeinfo_list[1] == 'applicationdata_updnew':
+        print(f"[mergeDoc] applicationdata_updnew: merge class done {time.time()-t_merge:.2f}s")
 
     # combine doc
     if contacts == 'TRUE':
@@ -1170,13 +1158,21 @@ def mergeDoc(matter, mergeinfo, request):
             input_path = input_path.replace('2012_2', '2012_att')
             
     if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw':
+        t_comb = time.time()
+        print(f"[mergeDoc] applicationdata_updnew: calling combinedoc for {mergeinfo_list[1]} matter={matter}")
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
+        print(f"[mergeDoc] applicationdata_updnew: combinedoc done {time.time()-t_comb:.2f}s")
         input_path = os.path.join(settings.BASE_DIR, 'documents', 'multidocmerge', mergeinfo_list[1] + '.docx')
         doc = Document(input_path)
 
     # doc merges
     if contacts == "FALSE":
+        if mergeinfo_list[1] == 'applicationdata_updnew':
+            t_wm = time.time()
+            print(f"[mergeDoc] applicationdata_updnew: calling WordMerger on combined doc")
         WordMerger(input_path, replace, output_path)
+        if mergeinfo_list[1] == 'applicationdata_updnew':
+            print(f"[mergeDoc] applicationdata_updnew: WordMerger done {time.time()-t_wm:.2f}s")
 
         ownerchange_email_url = None
         if mergeinfo_list[1] == 'ownerchange':
