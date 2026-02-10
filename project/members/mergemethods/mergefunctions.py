@@ -1767,8 +1767,13 @@ class mergefunctions:
     def _safe_str(self, val):
         return str(val) if val is not None else ''
 
-    def inventorInfoBulk(self, matter_data):
-        """Bulk fetch all inventors - 3 queries instead of ~5 per inventor."""
+    def inventorInfoBulk(self, matter_data, mailing_address_source='home'):
+        """
+        Bulk fetch all inventors. mailing_address_source: 'home' | 'client' | 'applicant'
+        - home: inventor's home contact
+        - client: inventor's work contact
+        - applicant: first applicant's contact (same for all inventors)
+        """
         inventors = list(Matterparticipant.objects.using('FIP').filter(
             matterid=matter_data.matterid, roleid='34608'
         ).order_by('roleorderno'))
@@ -1783,58 +1788,53 @@ class mergefunctions:
             if p.homecontactinfoid:
                 contact_ids.add(p.homecontactinfoid)
         contacts = {c.contactinfoid: c for c in Contactinfo.objects.using('FIP').filter(contactinfoid__in=contact_ids)} if contact_ids else {}
+
+        # Applicant contact for mailing_address_source='applicant'
+        applicant_contact = None
+        if mailing_address_source == 'applicant':
+            try:
+                app_part = Matterparticipant.objects.using('FIP').filter(
+                    matterid=matter_data.matterid, roleid='56691'
+                ).order_by('roleorderno').first()
+                if app_part:
+                    app_profile = Orgprofile.objects.using('FIP').get(opid=app_part.contactid)
+                    if app_profile.contactinfoid:
+                        applicant_contact = Contactinfo.objects.using('FIP').get(contactinfoid=app_profile.contactinfoid)
+            except Exception:
+                pass
+
         inv_count = len(inventors)
         result = []
         for inv_num, part in enumerate(inventors, 1):
             profile = profiles.get(part.contactid)
-            contact = contacts.get(profile.homecontactinfoid) if profile and profile.homecontactinfoid else None
-            if not profile or not contact:
-                result.append({
-                    'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ',
-                    'inventor': '',
-
-                    'invpre': '',
-                    'inventorFirstName': '',
-                    'inventorMiddleInitial': '',
-                    'inventorLastName': '',
-                    'inventorSuffix': '',
-
-                    'inventorHomeCity': '',
-                    'inventorHomeState': '',
-                    'inventorHomeCountry': '',
-
-                    'inventorMailingStreet1': '',
-                    'inventorMailingStreet2': '',
-                    'inventorMailingCity': '',
-                    'inventorMailingState': '',
-                    'inventorMailingZip': '',
-                    'inventorMailingCountry': '',
-                })
+            if not profile:
+                result.append({'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ', 'inventor': '', 'invpre': '', 'inventorFirstName': '', 'inventorMiddleInitial': '', 'inventorLastName': '', 'inventorSuffix': '', 'inventorHomeCity': '', 'inventorHomeState': '', 'inventorHomeCountry': '', 'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '', 'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''})
                 continue
+            home_contact = contacts.get(profile.homecontactinfoid) if profile.homecontactinfoid else None
+            work_contact = contacts.get(profile.workcontactinfoid) if profile.workcontactinfoid else None
+
+            if mailing_address_source == 'applicant' and applicant_contact:
+                mail_contact = applicant_contact
+            elif mailing_address_source == 'client' and work_contact:
+                mail_contact = work_contact
+            else:
+                mail_contact = home_contact
+
+            if not mail_contact:
+                result.append({'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ', 'inventor': '', 'invpre': '', 'inventorFirstName': '', 'inventorMiddleInitial': '', 'inventorLastName': '', 'inventorSuffix': '', 'inventorHomeCity': '', 'inventorHomeState': '', 'inventorHomeCountry': '', 'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '', 'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''})
+                continue
+
             inv_label = 'Inventor: ' if inv_count == 1 else inv_num
             s = self._safe_str
-            inv_country = self.fullCountry(s(contact.country))
-            inv_citizenship = self.fullCountry(s(profile.citizenship))
+            inv_country = self.fullCountry(s(mail_contact.country))
             result.append({
-                'inventorCnt': inv_label,
-                'inventor': f"{s(profile.fname)} {s(profile.mname)}. {s(profile.lname)}",
-
-                'invpre': s(profile.salutation),
-                'inventorFirstName': s(profile.fname),
-                'inventorMiddleInitial': s(profile.mname),
-                'inventorLastName': s(profile.lname),
-                'inventorSuffix': s(profile.namesuffix),
-
-                'inventorHomeCity': s(contact.city),
-                'inventorHomeState': s(contact.state),
-                'inventorHomeCountry': inv_country,
-
-                'inventorMailingStreet1': s(contact.address1),
-                'inventorMailingStreet2': s(contact.address2),
-                'inventorMailingCity': s(contact.city),
-                'inventorMailingState': s(contact.state),
-                'inventorMailingZip': s(contact.zip),
-                'inventorMailingCountry': inv_country,
+                'inventorCnt': inv_label, 'inventor': f"{s(profile.fname)} {s(profile.mname)}. {s(profile.lname)}",
+                'invpre': s(profile.salutation), 'inventorFirstName': s(profile.fname), 'inventorMiddleInitial': s(profile.mname),
+                'inventorLastName': s(profile.lname), 'inventorSuffix': s(profile.namesuffix),
+                'inventorHomeCity': s(home_contact.city) if home_contact else '', 'inventorHomeState': s(home_contact.state) if home_contact else '', 'inventorHomeCountry': self.fullCountry(s(home_contact.country)) if home_contact else '',
+                'inventorMailingStreet1': s(mail_contact.address1), 'inventorMailingStreet2': s(mail_contact.address2),
+                'inventorMailingCity': s(mail_contact.city), 'inventorMailingState': s(mail_contact.state),
+                'inventorMailingZip': s(mail_contact.zip), 'inventorMailingCountry': inv_country,
             })
         return result
 

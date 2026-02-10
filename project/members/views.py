@@ -289,7 +289,8 @@ def addSA(request):
     if request.method == 'POST':
         # Query the database for distinct personLastNameFirstName values, sorted by fName
         SAs = (Rvwmatterpersonnel.objects.using('FIP')
-               .filter(roleid=34619, orgid=4, regno__isnull=False)
+               .filter(roleid=34619, orgid=4, registrationno__isnull=False)
+               .exclude(rolename='Inactive Personnel')
                .values('fname', 'lname')
                .distinct()
                .order_by('fname'))
@@ -801,10 +802,10 @@ def combinedoc(path, method, mergeinfo, matter, email):
             doc2.add_page_break()
             composer.append(doc2)
 
-        minfo11 = int(mergeinfo[11]) if mergeinfo[11] else 0
-        minfo12 = int(mergeinfo[12]) if mergeinfo[12] else 0
-        minfo13 = int(mergeinfo[13]) if mergeinfo[13] else 0
-        minfo14 = int(mergeinfo[14]) if mergeinfo[14] else 0
+        minfo11 = int(mergeinfo[12]) if len(mergeinfo) > 12 and mergeinfo[12] else 0
+        minfo12 = int(mergeinfo[13]) if len(mergeinfo) > 13 and mergeinfo[13] else 0
+        minfo13 = int(mergeinfo[14]) if len(mergeinfo) > 14 and mergeinfo[14] else 0
+        minfo14 = int(mergeinfo[15]) if len(mergeinfo) > 15 and mergeinfo[15] else 0
         if minfo11 > 0 or minfo12 > 0 or minfo13 > 0 or minfo14 > 0:
             #doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'communications', 'MissingPartsXmit3.docx'))
             doc3 = Document_compose(get_template_docx('communications', 'MissingPartsXmit3.docx'))
@@ -848,7 +849,11 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(inv_template, dict(inv_blank), inv_temp_out)
             composer.append(Document_compose(inv_temp_out))
         else:
-            inv_replacements = merge_fn.inventorInfoBulk(matter_data)
+            # mergeinfo[8] = apprad (Inventor Mailing Address: home/client/applicant)
+            mailing_source = (mergeinfo[8] or 'home').lower().strip() if len(mergeinfo) > 8 else 'home'
+            if mailing_source not in ('home', 'client', 'applicant'):
+                mailing_source = 'home'
+            inv_replacements = merge_fn.inventorInfoBulk(matter_data, mailing_address_source=mailing_source)
             print(f"[applicationdata_updnew] inventorInfoBulk returned {len(inv_replacements)} inventors {time.time()-t0:.2f}s")
             for i, replace in enumerate(inv_replacements):
                 WordMerger(inv_template, replace, inv_temp_out)
@@ -1259,7 +1264,10 @@ def mergeDoc(matter, mergeinfo, request):
                 (doc_type == 'pctcorrect' and mergefninfo[3] == 'true') or
                 (doc_type == 'expressaban' and (mergefninfo[1] == '1' or mergefninfo[1] == '2' or mergefninfo[1] == '3')) or
                 (doc_type == 'issuefee' and mergefninfo[3] == 'true') or
-                (doc_type == 'missingpartsNw' and mergefninfo[1] != '')
+                (doc_type == 'missingpartsNw' and (
+                    mergefninfo[1] != '' or
+                    (len(mergefninfo) > 10 and mergefninfo[10] and str(mergefninfo[10]).strip())
+                ))
             )
 
             # Check if this is multi-doc
@@ -1328,12 +1336,23 @@ def mergeDoc(matter, mergeinfo, request):
                     else:
                         pass
 
-                    extime = mergeinfo.replace('missingpartsxmit', 'exttimeCF')
-                    extime = extime.replace('missingpartsNw', 'exttimeCF')
-                    extime = extime.replace('communications', 'transmittal')
-                    extime = extime.split(',')
-                    extime = ','.join(extime[:3] + [mergefninfo[1]] + extime[19:])
-                    data2, file_name2 = mergemultidoc(matter, extime)
+                    data2 = None
+                    file_name2 = None
+                    data3 = None
+                    file_name3 = None
+
+                    if mergefninfo[1] != '':
+                        extime = mergeinfo.replace('missingpartsxmit', 'exttimeCF')
+                        extime = extime.replace('missingpartsNw', 'exttimeCF')
+                        extime = extime.replace('communications', 'transmittal')
+                        extime = extime.split(',')
+                        extime = ','.join(extime[:3] + [mergefninfo[1]] + extime[19:])
+                        data2, file_name2 = mergemultidoc(matter, extime)
+
+                    commfr_has_value = len(mergefninfo) > 10 and mergefninfo[10] and str(mergefninfo[10]).strip()
+                    if commfr_has_value:
+                        ebdfee_str = 'communications/EBDfee.docx,EBDfeeCF,FALSE,' + ','.join(mergefninfo)
+                        data3, file_name3 = mergemultidoc(matter, ebdfee_str)
 
                 if mergeinfo_list[1] == 'pctcorrect':
                     pctext = mergeinfo.replace('pctcorrectdefects', 'PCTExtension')
@@ -1360,7 +1379,13 @@ def mergeDoc(matter, mergeinfo, request):
                 zip_buffer = io.BytesIO()
                 with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
                     zip_file.writestr(file_name, data)
-                    zip_file.writestr(file_name2, data2)
+                    if mergeinfo_list[1] == 'missingpartsNw':
+                        if data2 is not None and file_name2 is not None:
+                            zip_file.writestr(file_name2, data2)
+                        if data3 is not None and file_name3 is not None:
+                            zip_file.writestr(file_name3, data3)
+                    else:
+                        zip_file.writestr(file_name2, data2)
 
                 zip_buffer.seek(0)
                 zip_data = zip_buffer.read()

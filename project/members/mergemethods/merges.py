@@ -1215,12 +1215,19 @@ class missingpartsNw:
                 fcopyX = 'X'
                 fcopyTxt = '         Copy of Filing Receipt (2 pgs.).'
 
+            commfrX = ''
+            commfrTxt = ''
+            minfo10 = int(mergeinfo[10]) if len(mergeinfo) > 10 and mergeinfo[10] else 0
+            if minfo10 > 0 or (len(mergeinfo) > 10 and mergeinfo[10] and str(mergeinfo[10]).strip()):
+                commfrX = 'X'
+                commfrTxt = '         Communication Re:  Response to Request for Corrected Filing Receipt ('+ (str(mergeinfo[10]) if len(mergeinfo) > 10 else '') +' pgs.).'
+
             corrpapX = ''
             corrpapTxt = ''
-            minfo11 = int(mergeinfo[11]) if mergeinfo[11] else 0
-            minfo12 = int(mergeinfo[12]) if mergeinfo[12] else 0
-            minfo13 = int(mergeinfo[13]) if mergeinfo[13] else 0
-            minfo14 = int(mergeinfo[14]) if mergeinfo[14] else 0    
+            minfo11 = int(mergeinfo[12]) if len(mergeinfo) > 12 and mergeinfo[12] else 0
+            minfo12 = int(mergeinfo[13]) if len(mergeinfo) > 13 and mergeinfo[13] else 0
+            minfo13 = int(mergeinfo[14]) if len(mergeinfo) > 14 and mergeinfo[14] else 0
+            minfo14 = int(mergeinfo[15]) if len(mergeinfo) > 15 and mergeinfo[15] else 0    
             if minfo11 > 0 or minfo12 > 0 or minfo13 > 0 or minfo14 > 0:
                 corrpapX = 'X'
                 corrpapTxt = '         Communication Re:  Corrected Application Papers (1 pg.).'
@@ -1229,28 +1236,28 @@ class missingpartsNw:
             specTxt = ''
             if minfo11 > 0:
                 specX = 'X'
-                specTxt = '         Substitute Specification ('+ mergeinfo[11] +' pgs.).'
+                specTxt = '         Substitute Specification ('+ mergeinfo[12] +' pgs.).'
                 doc_items.append('a Substitute Specification')
 
             abstX = ''
             abstTxt = ''
             if minfo12 > 0:
                 abstX = 'X'
-                abstTxt = '         Abstract ('+ mergeinfo[12] +' pgs.).'
+                abstTxt = '         Abstract ('+ mergeinfo[13] +' pgs.).'
                 doc_items.append('a Substitute Abstract')
 
             seqX = ''
             seqTxt = ''
             if minfo13 > 0:
                 seqX = 'X'
-                seqTxt = '         Sequence Listing ('+ mergeinfo[13] +' pgs.).'
+                seqTxt = '         Sequence Listing ('+ mergeinfo[14] +' pgs.).'
                 doc_items.append('a Sequence Listing')
 
             drawX = ''
             drawTxt = ''
             if minfo14 > 0:
                 drawX = 'X'
-                drawTxt = '         Formal Drawings ('+ mergeinfo[14] +' pgs.).'
+                drawTxt = '         Formal Drawings ('+ mergeinfo[15] +' pgs.).'
                 doc_items.append('Formal Drawings')
 
             if len(doc_items) == 0:
@@ -1292,6 +1299,7 @@ class missingpartsNw:
                 (appdsX, appdstxt),
                 (filingrecX, filingrecTxt),
                 (fcopyX, fcopyTxt),
+                (commfrX, commfrTxt),
                 (corrpapX, corrpapTxt),
                 (specX, specTxt),
                 (abstX, abstTxt),
@@ -1331,7 +1339,7 @@ class missingpartsNw:
             replace.update(function_instance.mergebasic(keys, matter))
             replace.update(function_instance.esigncheck(mergeinfo[15]))
             replace.update({
-                'frctDate' : function_instance.formatDate(mergeinfo[8]),
+                'frctDate' : function_instance.formatDate(mergeinfo[11] if len(mergeinfo) > 11 else ''),
                 'upperFirmName' : 'Schwegman Lundberg & Woessner, P.A.',
                 'docList' : docList,
                 'depAccount' : function_instance.depnumFill(matter_data),
@@ -1350,6 +1358,38 @@ class missingpartsNw:
                 'surchargeText' : surcharge,
             })
             return replace
+
+# Communication - EBD Fee (Response to Request for Corrected Filing Receipt)
+class EBDfeeCF:
+    def EBDfeeCF(self, matter, mergeinfo, keys):
+        function_instance = mergefunctions.mergefunctions()
+        matter_data = function_instance.matterFill(matter)
+
+        # ADSdate - ADS filed date
+        try:
+            activity = function_instance.getactivityid(matter_data, 'ADSF')
+            adsdate = Task.objects.using('FIP').get(activityid=activity.activityid).nextdateval.strftime('%B %d, %Y')
+        except Exception:
+            try:
+                adsdate = matter_data.fileddate.strftime('%B %d, %Y')
+            except Exception:
+                adsdate = ''
+
+        # EBDFee - fee amount from mergeinfo[3] (EBD Fee over 6 or 9 years)
+        ebdfee = mergeinfo[3] if len(mergeinfo) > 3 and mergeinfo[3] else ''
+
+        # EntitySize
+        entitysize = function_instance.entityName(function_instance.entityfill(matter))
+
+        replace = {}
+        replace.update(function_instance.mergebasic(keys, matter))
+        replace.update(function_instance.esigncheck(mergeinfo[16] if len(mergeinfo) > 16 else ''))
+        replace.update({
+            'ADSdate': adsdate,
+            'EBDFee': ebdfee,
+            'EntitySize': entitysize,
+        })
+        return replace
     
 # Report Out - Issue Fee
 class rptissuefee:
@@ -2079,7 +2119,6 @@ class PCTRptFileOfApp:
 # PTO Form - Update Application Data Sheet
 class applicationdata_updnew:
     def applicationdata_updnew(self, matter, mergeinfo, keys):
-        print("top of main function")
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
         replace = {}

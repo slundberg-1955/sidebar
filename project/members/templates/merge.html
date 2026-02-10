@@ -253,7 +253,7 @@
             max-width: 800px;
         }
         #missingpartsNw .modal-dialog{
-            max-width: 650px;
+            max-width: 750px;
         }
         #PatentCoopTreaty2 .modal-dialog{
             max-width: 800px;
@@ -1577,6 +1577,10 @@
                             <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
+                            <td align="right"style="border: none;">  Comm re: Response to Request for Corrected Filing Receipt:</td>
+                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcommfr" name="updatepagect" placeholder="0" size="5"></td>
+                        </tr>
+                        <tr style="border: none;">
                             <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
                             <td align="left"style="border: none;"><input type="date" id="missingpartsNwmail" name="updatepagect"></td>
                         </tr>
@@ -1610,7 +1614,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmissingpartsNw(missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwndocx.value, missingpartsNwebd.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, missingpartsNwesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmissingpartsNw(missingpartsNwtotal.value, missingpartsNwextfee.value, missingpartsNwndocx.value, missingpartsNwebd.value, missingpartsNwdecpowpg.value, missingpartsNwpowpg.value, missingpartsNwdecpg.value, missingpartsNwapppg.value, missingpartsNwpream.value, missingpartsNwcomm.value, missingpartsNwcommfr.value, missingpartsNwmail.value, missingpartsNwsubpg.value, missingpartsNwabspg.value, missingpartsNwseqpg.value, missingpartsNwdrwpg.value, missingpartsNwesign.checked)">Continue</button>
             </div>
             <script>
                 function submitbtnmissingpartsNw(...args){
@@ -2579,7 +2583,7 @@
                     &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewassign"> Assignee Information
                 </div>
                 <div>
-                        Update Demestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
+                        Update Domestic Benefit/National Stage Information - # of Entries <input type="text" id="applicationdata_updnewupdt" size="5" placeholder = '0'>
                 </div>
                 <div>
                     &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewesign" checked> E-Sign Enable
