@@ -697,3 +697,26 @@ class CountryLookup(models.Model):
     class Meta:
         managed = False
         db_table = 'country_lookup'
+
+
+class Rvworgpersonnel(models.Model):
+    orgid = models.IntegerField(db_column='orgId', blank=True, null=True)  # Field name made lowercase.
+    ppid = models.IntegerField(db_column='ppId', blank=True, null=True)  # Field name made lowercase.
+    datejoined = models.DateTimeField(db_column='dateJoined', blank=True, null=True)  # Field name made lowercase.
+    status = models.CharField(max_length=50, blank=True, null=True)
+    access = models.CharField(max_length=50, blank=True, null=True)
+    rolename = models.CharField(db_column='roleName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    roledesc = models.CharField(db_column='roleDesc', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    fname = models.CharField(db_column='fName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    mname = models.CharField(db_column='mName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    lname = models.CharField(db_column='lName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    personname = models.CharField(db_column='personName', max_length=302, blank=True, null=True)  # Field name made lowercase.
+    title = models.CharField(max_length=100, blank=True, null=True)
+    orgname = models.CharField(db_column='orgName', max_length=255, blank=True, null=True)  # Field name made lowercase.
+    nickname = models.CharField(db_column='nickName', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    islicensedorgchild = models.BooleanField(db_column='isLicensedOrgChild', blank=True, null=True)  # Field name made lowercase.
+    encodedlineage = models.CharField(db_column='encodedLineage', max_length=500, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'rvwOrgPersonnel'

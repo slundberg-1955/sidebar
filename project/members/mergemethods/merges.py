@@ -729,21 +729,34 @@ class mpcapactions:
 class applicationdata_new2:
     def applicationdata_new2(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
-        entries = mergeinfo[0]
-        draw = mergeinfo[1]
-        earlypub = mergeinfo[2]
-        nopub = mergeinfo[3]
-        mailclient = mergeinfo[4]
-        mailapp = mergeinfo[5]
-        smallent = mergeinfo[6]
+        matter_data = function_instance.matterFill(matter)
+        # mergeinfo: [entries, draw, earlypub, nopub, client, app, claimed, radio, esign]
+        entries = mergeinfo[0] if len(mergeinfo) > 0 else ''
+        draw = mergeinfo[1] if len(mergeinfo) > 1 else ''
+        esign = mergeinfo[8] if len(mergeinfo) > 8 else ''
 
-        radio = mergeinfo[7]
+        sadata = function_instance.rvwmatterpersonnelFill(matter_data)
+        sadata_fname = sadata.fname if sadata else ''
+        sadata_lname = sadata.lname if sadata else ''
+        sadata_regno = sadata.registrationno if sadata else ''
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[11])) #or 2?
+        replace.update(function_instance.esigncheck(esign))
+        replace.update(function_instance.foreignfill(matter))
+        # Correspondence and Application info: always fill (same template setup as _updnew)
         replace.update({
-            'drawingSheets' : draw,
+            'custNoEmail': 'request@slwip.com',
+            'custNoCorresp': function_instance.corrcustnumFill(matter_data, 'corresp') if matter_data else '',
+            'apptitle': matter_data.title if matter_data else '',
+            'appmatterNo': matter_data.hostmatterno if matter_data else '',
+            'appmatterType': matter_data.mattertypedescription if matter_data else '',
+            'matterType': matter_data.mattertypedescription if matter_data else '',
+            'drawingSheets': draw,
+            'appprov': 'Non-Provisional',
+            'SAFirstName': sadata_fname,
+            'SALastName': sadata_lname,
+            'SARegNo': sadata_regno
         })
         return replace
         
@@ -1200,7 +1213,7 @@ class missingpartsNw:
                 appdsX = 'X'
                 appdstxt = '         Marked-up Application Data Sheet ('+ mergeinfo[7] +' pgs.)'
 
-                markupCopyA = 'We also submit a Marked-up copy of the Application Data sheet filed '+ filedte +', which shows an update to the '
+                markupCopyA = '\nWe also submit a Marked-up copy of the Application Data sheet filed '+ filedte +', which shows an update to the '
                 markupCopyB = 'It is respectfully requested that the USPTO update their records accordingly and provide confirmation of the above request.  '
                 markupComments = '[add update comments here]. '
 
@@ -2139,9 +2152,7 @@ class applicationdata_updnew:
         # Application Information
         if mergeinfo[2] == 'true':
             replace.update({
-                'apptitle' : matter_data.title,
-                'appmatterNo' : matter_data.hostmatterno,
-                'appmatterType' : matter_data.mattertypedescription,
+                'matterType' : matter_data.mattertypedescription,
                 'drawingSheets' : mergeinfo[3],
                 'appprov' : 'Non-Provisional',
             })
@@ -2155,15 +2166,13 @@ class applicationdata_updnew:
             })
 
         replace.update(function_instance.esigncheck(mergeinfo[7]))
+        replace.update(function_instance.foreignfill(matter))
         replace.update({
             # get update tag
             '' : mergeinfo[6],
             'SAFirstName' : sadata.fname,
             'SALastName' : sadata.lname,
             'SARegNo' : sadata.registrationno,
-            'foreignNo' : '',
-            'foreignCntry' : '',
-            'foreignFiledDate' : ''
         })
         if mergeinfo[1] == 'false':
             replace.update({'custNoCorresp' : '', 'custNoEmail' : ''})

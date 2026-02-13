@@ -513,6 +513,156 @@
         #appdataupdate .modal-dialog{
             max-width: 690px;
         }
+
+        /* Uniform modal formatting – applies to all merge interview modals */
+        .modal-content {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            padding: 14px 20px;
+            border-bottom: none;
+            align-items: center;
+        }
+        .modal-header .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+        .modal-header .close {
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 1;
+            font-size: 1.75rem;
+            font-weight: 300;
+            line-height: 1;
+            padding: 0;
+            margin: 0 0 0 auto;
+            text-shadow: none;
+        }
+        .modal-header .close:hover {
+            color: #fff;
+            opacity: 1;
+        }
+        .modal-body {
+            padding: 20px 24px;
+            background: #fff;
+            color: #2c3e50;
+            font-size: 14px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-body .form-group {
+            margin-bottom: 1rem;
+        }
+        .modal-body table {
+            border-collapse: collapse;
+            border: none;
+            width: 100%;
+            margin: 0 0 1rem 0;
+        }
+        .modal-body table tr {
+            border: none;
+        }
+        .modal-body table td {
+            border: none;
+            padding: 8px 12px 8px 0;
+            vertical-align: middle;
+        }
+        .modal-body table td[align="right"],
+        .modal-body table td:first-child {
+            width: 1%;
+            min-width: 44px;
+            white-space: nowrap;
+            padding: 8px 14px 8px 14px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        .modal-body table th:first-child {
+            padding-left: 14px;
+            padding-right: 14px;
+            width: 1%;
+            min-width: 44px;
+        }
+        .modal-body table td[align="left"]:last-child,
+        .modal-body table td:last-child {
+            width: auto;
+            text-align: left;
+        }
+        .modal-body input[type="text"],
+        .modal-body input[type="date"],
+        .modal-body input[type="number"],
+        .modal-body select {
+            padding: 8px 12px;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 80px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .modal-body input[type="text"]:focus,
+        .modal-body input[type="date"]:focus,
+        .modal-body input[type="number"]:focus,
+        .modal-body select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.12);
+        }
+        .modal-body input[type="checkbox"],
+        .modal-body input[type="radio"] {
+            margin-right: 8px;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+        .modal-body label {
+            margin: 0;
+            font-weight: 500;
+            color: #34495e;
+        }
+        .modal-body h6.modal-title,
+        .modal-body .modal-subtitle {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 1.25rem 0 0.5rem 0;
+            padding-bottom: 4px;
+        }
+        .modal-body > div:not(.form-group) {
+            margin-bottom: 0.75rem;
+        }
+        .modal-footer {
+            padding: 14px 24px;
+            border-top: 1px solid #e1e8ed;
+            background: #f8f9fa;
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-footer .btn-default {
+            background: #fff;
+            color: #2c3e50;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .modal-footer .btn-default:hover {
+            background: #f1f3f5;
+            border-color: #adb5bd;
+        }
+        .modal-footer .btn-primary {
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
         .header-image {
             float: right;
             width: 95px;
@@ -988,21 +1138,21 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="right" style="border: none;">                <input type="checkbox" id="LateSubmissionOfDecbox"></td>
-                        <td align="left"style="border: none;">Late Submission of Declaration Surcharge Paid</td>
+                        <td align="left" style="border: none;">Late Submission of Declaration Surcharge Paid</td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Pages in Declaration: </td>
-                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'
+                        <td align="right" style="border: none;">  Pages in Declaration: </td>
+                        <td align="left" style="border: none;"><input type="text" id="LateSubmissionOfDecpagedec" name="pagedecnum" size="10" placeholder = '0'
                             oninput="toggleInput('LateSubmissionOfDecpagedec', 'LateSubmissionOfDecpagesub')"></td></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Pages in Substitute Statement: </td>
-                        <td align="left"style="border: none;"><input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'
+                        <td align="right" style="border: none;">  Pages in Substitute Statement: </td>
+                        <td align="left" style="border: none;"><input type="text" id="LateSubmissionOfDecpagesub" name="pagesubnum" size="10" placeholder = '0'
                             oninput="toggleInput('LateSubmissionOfDecpagesub', 'LateSubmissionOfDecpagedec')"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">                <input type="checkbox" id="LateSubmissionOfDecesign" name="esign" checked></td>
-                        <td align="left"style="border: none;">Esign Enable</td>
+                        <td align="right" style="border: none;">                <input type="checkbox" id="LateSubmissionOfDecesign" name="esign" checked></td>
+                        <td align="left" style="border: none;">Esign Enable</td>
                     </tr>
                 </table>
             </div>
@@ -1406,27 +1556,27 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Extention of Time:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0.00" size="5"> Amount</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnext" name="updatepagect" placeholder="0.00" size="5"> Amount</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Substitute Specifications:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnsub" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                            <td align="right" style="border: none;">  Substitute Specifications:</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnsub" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Abstract:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnabs" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                            <td align="right" style="border: none;">  Abstract:</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnabs" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sequence Listing:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnseq" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                            <td align="right" style="border: none;">  Sequence Listing:</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnseq" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Formal Drawings:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnfor" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                            <td align="right" style="border: none;">  Formal Drawings:</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnfor" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="corrapplnmad" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
+                            <td align="right" style="border: none;">  Marked-up Application Data Sheet Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="corrapplnmad" name="updatepagect" placeholder="0" size="5"> # of Pages</td>
                         </tr>
                     </table>
                 </div>
@@ -1474,11 +1624,11 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  How many Domestic Benefit/National Stage Information Entries are there?</td>
-                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2entries" name="applicationdata_new2entries" placeholder="0" size="5"></td>
+                            <td align="left" style="border: none;"><input type="text" id="applicationdata_new2entries" name="applicationdata_new2entries" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Total number of drawing sheets?</td>
-                            <td align="left"style="border: none;"><input type="text" id="applicationdata_new2draw" name="applicationdata_new2draw" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Total number of drawing sheets?</td>
+                            <td align="left" style="border: none;"><input type="text" id="applicationdata_new2draw" name="applicationdata_new2draw" placeholder="0" size="5"></td>
                         </tr>
                     </table>
                 </div>
@@ -1498,16 +1648,16 @@
                       <input type="checkbox" id="applicationdata_new2claimed"> Small entity status claimed
                 </div>
                 <div>
-                   <br>   <input type="radio" id="applicationdata_new2incapp" name="applicationdata_new2options"> Include Applicant(Assignment Executed)
+                   <br>   <input type="radio" id="applicationdata_new2incapp" name="applicationdata_new2options" value="incapp" checked> Include Applicant(Assignment Executed)
                 </div>
                 <div>
-                      <input type="radio" id="applicationdata_new2incnon" name="applicationdata_new2options"> Include Non-Applicant Assignee
+                      <input type="radio" id="applicationdata_new2incnon" name="applicationdata_new2options" value="incnon"> Include Non-Applicant Assignee
                 </div>
                 <div>
-                      <input type="radio" id="applicationdata_new2noapp" name="applicationdata_new2options"> Do Not Include Applicant/Asignee Information (Applicant = Inventor(s))
+                      <input type="radio" id="applicationdata_new2noapp" name="applicationdata_new2options" value="noapp"> Do Not Include Applicant/Asignee Information (Applicant = Inventor(s))
                 </div>
                 <div>
-                      <input type="radio" id="applicationdata_new2both" name="applicationdata_new2options"> Include Both Applicant and Assignee Information
+                      <input type="radio" id="applicationdata_new2both" name="applicationdata_new2options" value="both"> Include Both Applicant and Assignee Information
                 </div>
                 <div>
                     <br>  Esign Enable: <input type="checkbox" id="applicationdata_new2esign" checked>
@@ -1535,19 +1685,19 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Total Filing/Search/Exam Fee Amount (if sending):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5"></td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwtotal" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Extention Fee Amount (if applicable):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5"></td>
+                            <td align="right" style="border: none;">  Extention Fee Amount (if applicable):</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwextfee" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Non-DOCX Fee:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwndocx" name="updatepagect" placeholder="0.00" size="5"></td>
+                            <td align="right" style="border: none;">  Non-DOCX Fee:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwndocx" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  EBD Fee Over 6 or 9 years:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwebd" name="updatepagect" placeholder="0.00" size="5"></td>
+                            <td align="right" style="border: none;">  EBD Fee Over 6 or 9 years:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwebd" name="updatepagect" placeholder="0.00" size="5"></td>
                         </tr>
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Combined Declaration & Power of Attorney Pages:</td>
@@ -1557,51 +1707,51 @@
                             </td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwpowpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Declaration Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Declaration Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwdecpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Marked-up Application Data Sheet Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Marked-up Application Data Sheet Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwapppg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Preliminary Amendment:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Preliminary Amendment:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwpream" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Comm re: Incorrect Filing Receipt Pages (if sending):</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Comm re: Incorrect Filing Receipt Pages (if sending):</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwcomm" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Comm re: Response to Request for Corrected Filing Receipt:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwcommfr" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Comm re: Response to Request for Corrected Filing Receipt:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwcommfr" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Mailing Date of Filing Receipt:</td>
-                            <td align="left"style="border: none;"><input type="date" id="missingpartsNwmail" name="updatepagect"></td>
+                            <td align="right" style="border: none;">  Mailing Date of Filing Receipt:</td>
+                            <td align="left" style="border: none;"><input type="date" id="missingpartsNwmail" name="updatepagect"></td>
                         </tr>
                     </table>
                     <h6 class="modal-title">Corrected Application Papers</h6>
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Substitute Specification Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwsubpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Abstract Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Abstract Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwabspg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sequence Listing Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sequence Listing Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwseqpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Formal Drawings Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Formal Drawings Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="missingpartsNwdrwpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                     </table>
                 </div>
@@ -1678,7 +1828,7 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  PCT Signing Attorney:</td>
-                            <td align="left"style="border: none;"><select id="PatentCoopTreaty2names">
+                            <td align="left" style="border: none;"><select id="PatentCoopTreaty2names">
                                 <option value="Bradley Scheer">Bradley Scheer</option>
                                 <option value="David Black">David Black</option>
                                 <option value="Marvin Beekman">Marvin Beekman</option>
@@ -1689,31 +1839,31 @@
                         </tr>
                         <tr style="border: none;">
                             <td align="right" style="border: none;">  Sheets of PCT Safe Request Form:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2pctpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2pctpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sheets of Description(excluding sequence listing):</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2descpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sheets of Description(excluding sequence listing):</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2descpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sheets of Claims:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2claimpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sheets of Claims:</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2claimpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sheets of Abstract:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2abspg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sheets of Abstract:</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2abspg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sheets of Drawings:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2drwpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sheets of Drawings:</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2drwpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Sheets of Sequence Listing:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2seqpg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Sheets of Sequence Listing:</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2seqpg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">  Power of Attorney Pages:</td>
-                            <td align="left"style="border: none;"><input type="text" id="PatentCoopTreaty2poapg" name="updatepagect" placeholder="0" size="5"></td>
+                            <td align="right" style="border: none;">  Power of Attorney Pages:</td>
+                            <td align="left" style="border: none;"><input type="text" id="PatentCoopTreaty2poapg" name="updatepagect" placeholder="0" size="5"></td>
                         </tr>
                     </table>
                 </div>
@@ -1965,19 +2115,19 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="right" style="border: none;">  Instruction Due</td>
-                        <td align="left"style="border: none;"><input type="date" id="PctSearchRepinstr"></td>
+                        <td align="left" style="border: none;"><input type="date" id="PctSearchRepinstr"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Article 19 Amendment Due</td>
-                        <td align="left"style="border: none;"><input type="date" id="PctSearchRep19"></td>
+                        <td align="right" style="border: none;">  Article 19 Amendment Due</td>
+                        <td align="left" style="border: none;"><input type="date" id="PctSearchRep19"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Article 34 Amendment Due</td>
-                        <td align="left"style="border: none;"><input type="date" id="PctSearchRep34"></td>
+                        <td align="right" style="border: none;">  Article 34 Amendment Due</td>
+                        <td align="left" style="border: none;"><input type="date" id="PctSearchRep34"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  National Phase Deadline (30 Month) Due</td>
-                        <td align="left"style="border: none;"><input type="date" id="PctSearchRepnat"></td>
+                        <td align="right" style="border: none;">  National Phase Deadline (30 Month) Due</td>
+                        <td align="left" style="border: none;"><input type="date" id="PctSearchRepnat"></td>
                     </tr>
                 </table>
             </div>
@@ -2320,11 +2470,11 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="right" style="border: none;">  Received From: </td>
-                        <td align="left"style="border: none;"><input type="text" id="abandonReportrec" size="20"></td>
+                        <td align="left" style="border: none;"><input type="text" id="abandonReportrec" size="20"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Date Received: </td>
-                        <td align="left"style="border: none;"><input type="date" id="abandonReportdate"></td>
+                        <td align="right" style="border: none;">  Date Received: </td>
+                        <td align="left" style="border: none;"><input type="date" id="abandonReportdate"></td>
                     </tr>
                 </table><br>
             </div>
@@ -2391,15 +2541,15 @@
                     <table style="border-collapse: collapse; border: none;">
                         <tr style="border: none;">
                             <td align="right" style="border: none;">            Description Replacement Pages </td>
-                            <td align="left"style="border: none;"><input type="text" id="pctcorrectdescpg" size="10"></td>
+                            <td align="left" style="border: none;"><input type="text" id="pctcorrectdescpg" size="10"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">            Claim Replacement Pages</td>
-                            <td align="left"style="border: none;"><input type="text" id="pctcorrectclaimpg" size="10"></td>
+                            <td align="right" style="border: none;">            Claim Replacement Pages</td>
+                            <td align="left" style="border: none;"><input type="text" id="pctcorrectclaimpg" size="10"></td>
                         </tr>
                         <tr style="border: none;">
-                            <td align="right"style="border: none;">            Abstract Replacement Pages</td>
-                            <td align="left"style="border: none;"><input type="text" id="pctcorrectabspg" size="10"></td>
+                            <td align="right" style="border: none;">            Abstract Replacement Pages</td>
+                            <td align="left" style="border: none;"><input type="text" id="pctcorrectabspg" size="10"></td>
                         </tr>
                     </table>
                 </div>
@@ -2596,11 +2746,6 @@
         </div>
     </div>
 </div>
-<style>
-    #RptInvtPayFees .modal-content {
-        padding: 15px;
-    }
-</style>
 <!-- PCT - Report out Invitation to Pay Additional Fees -->
 <div id="RptInvtPayFees" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="RptInvtPayFeesModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-dialog">
@@ -2811,47 +2956,47 @@
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
                         <td align="right" style="border: none;">  IDS/SIDS Pages</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFidssid" size="5"></td>
-                        <td align="right"style="border: none;">1449 Pages</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF1449" size="5"></td>
-                        <td align="left"style="border: none;"><input type="checkbox" id="generalxmitCFsupids"> Supplemental IDS</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFidssid" size="5"></td>
+                        <td align="right" style="border: none;">1449 Pages</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCF1449" size="5"></td>
+                        <td align="left" style="border: none;"><input type="checkbox" id="generalxmitCFsupids"> Supplemental IDS</td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Fee (if necessary)</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFfeeif" size="5"></td>
-                        <td align="right"style="border: none;"># Documents</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFdocnum" size="5"></td>
-                        <td align="left"style="border: none;"><input type="checkbox" id="generalxmitCFdocnot"> Documents Not Enclosed</td>
-                    </tr>
-                </table>
-                <table style="border-collapse: collapse; border: none;">
-                    <tr style="border: none;">
-                        <td align="right"style="border: none;">  Communication Concerning Prior and Copending Application Pages</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFcomm" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right"style="border: none;">  Formal Drawings (# of Sheets)</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFfdraw" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right"style="border: none;">  Terminal Disclaimer # of pages</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCFtermdisc" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right"style="border: none;">  <input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</td>
-                        <td align="left"style="border: none;"><input type="text" id="generalxmitCF373txt" size="5"></td>
+                        <td align="right" style="border: none;">  Fee (if necessary)</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFfeeif" size="5"></td>
+                        <td align="right" style="border: none;"># Documents</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFdocnum" size="5"></td>
+                        <td align="left" style="border: none;"><input type="checkbox" id="generalxmitCFdocnot"> Documents Not Enclosed</td>
                     </tr>
                 </table>
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Mail Stop </td>
-                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFmam" name="mailstopoptions"> Mail Stop Amendment</td>
-                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFmaf" name="mailstopoptions"> Mail Stop AF</td>
+                        <td align="right" style="border: none;">  Communication Concerning Prior and Copending Application Pages</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFcomm" size="5"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;"></td>
-                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFapppat" name="mailstopoptions"> Mail Stop Appeal Brief - Patents</td>
-                        <td align="left"style="border: none;"><input type="radio" id="generalxmitCFotherrad" name="mailstopoptions"> Other</td>
+                        <td align="right" style="border: none;">  Formal Drawings (# of Sheets)</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFfdraw" size="5"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  Terminal Disclaimer # of pages</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFtermdisc" size="5"></td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  <input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</td>
+                        <td align="left" style="border: none;"><input type="text" id="generalxmitCF373txt" size="5"></td>
+                    </tr>
+                </table>
+                <table style="border-collapse: collapse; border: none;">
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;">  Mail Stop </td>
+                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFmam" name="mailstopoptions"> Mail Stop Amendment</td>
+                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFmaf" name="mailstopoptions"> Mail Stop AF</td>
+                    </tr>
+                    <tr style="border: none;">
+                        <td align="right" style="border: none;"></td>
+                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFapppat" name="mailstopoptions"> Mail Stop Appeal Brief - Patents</td>
+                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFotherrad" name="mailstopoptions"> Other</td>
                     </tr>
                 </table>
                 <div>
@@ -3163,12 +3308,12 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter associate's correspondence date: </td>
-                        <td align="left"style="border: none;"><input type="date" id="DraftOAInstructcorr"></td>
+                        <td align="right" style="border: none;">  Enter associate's correspondence date: </td>
+                        <td align="left" style="border: none;"><input type="date" id="DraftOAInstructcorr"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter response due date:</td>
-                        <td align="left"style="border: none;"><input type="date" id="DraftOAInstructres"></td>
+                        <td align="right" style="border: none;">  Enter response due date:</td>
+                        <td align="left" style="border: none;"><input type="date" id="DraftOAInstructres"></td>
                     </tr>
                 </table>
                 <div>
@@ -3199,12 +3344,12 @@
                 </div>
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter the deadline date for filing a response </td>
-                        <td align="left"style="border: none;"><input type="date" id="ffOfficeActRcvddeadline"></td>
+                        <td align="right" style="border: none;">  Enter the deadline date for filing a response </td>
+                        <td align="left" style="border: none;"><input type="date" id="ffOfficeActRcvddeadline"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter the requested response date</td>
-                        <td align="left"style="border: none;"><input type="date" id="ffOfficeActRcvdresp"></td>
+                        <td align="right" style="border: none;">  Enter the requested response date</td>
+                        <td align="left" style="border: none;"><input type="date" id="ffOfficeActRcvdresp"></td>
                     </tr>
                 </table>
                 <div>
@@ -4959,12 +5104,12 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter 'Month' Deadline (ex:31): </td>
-                        <td align="left"style="border: none;"><input type="text" id="sendorderlettermo" size="25"></td>
+                        <td align="right" style="border: none;">  Enter 'Month' Deadline (ex:31): </td>
+                        <td align="left" style="border: none;"><input type="text" id="sendorderlettermo" size="25"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Confirm Filing Deadline: </td>
-                        <td align="left"style="border: none;"><input type="date" id="sendorderletterdate"></td>
+                        <td align="right" style="border: none;">  Confirm Filing Deadline: </td>
+                        <td align="left" style="border: none;"><input type="date" id="sendorderletterdate"></td>
                     </tr>
                 </table>
                 <div>
@@ -4989,16 +5134,16 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter the type of action </td>
-                        <td align="left"style="border: none;"><input type="text" id="ffMiscItemsDueact" size="30"></td>
+                        <td align="right" style="border: none;">  Enter the type of action </td>
+                        <td align="left" style="border: none;"><input type="text" id="ffMiscItemsDueact" size="30"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter the deadline date for filing a response </td>
-                        <td align="left"style="border: none;"><input type="date" id="ffMiscItemsDuedead"></td>
+                        <td align="right" style="border: none;">  Enter the deadline date for filing a response </td>
+                        <td align="left" style="border: none;"><input type="date" id="ffMiscItemsDuedead"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Enter the requested response date</td>
-                        <td align="left"style="border: none;"><input type="date" id="ffMiscItemsDueresp"></td>
+                        <td align="right" style="border: none;">  Enter the requested response date</td>
+                        <td align="left" style="border: none;"><input type="date" id="ffMiscItemsDueresp"></td>
                     </tr>
                 </table>
             </div>
@@ -5020,28 +5165,28 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  SLW is Responsible for Annuities</td>
-                        <td align="left"style="border: none;"><input type="checkbox" id="epOLPann"></td>
+                        <td align="right" style="border: none;">  SLW is Responsible for Annuities</td>
+                        <td align="left" style="border: none;"><input type="checkbox" id="epOLPann"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Confirm the due date for the next Annuity</td>
-                        <td align="left"style="border: none;"><input type="date" id="epOLPanndte"></td>
+                        <td align="right" style="border: none;">  Confirm the due date for the next Annuity</td>
+                        <td align="left" style="border: none;"><input type="date" id="epOLPanndte"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Unitary Patent</td>
-                        <td align="left"style="border: none;"><input type="checkbox" id="epOLPuni"></td>
+                        <td align="right" style="border: none;">  Unitary Patent</td>
+                        <td align="left" style="border: none;"><input type="checkbox" id="epOLPuni"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  Number of Claims</td>
-                        <td align="left"style="border: none;"><input type="text" id="epOLPcla" size="10" value="0"></td>
+                        <td align="right" style="border: none;">  Number of Claims</td>
+                        <td align="left" style="border: none;"><input type="text" id="epOLPcla" size="10" value="0"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  EP Validation countries (separate by comma) </td>
-                        <td align="left"style="border: none;"><textarea rows="2" cols="31" id="epOLPcou"></textarea></td>
+                        <td align="right" style="border: none;">  EP Validation countries (separate by comma) </td>
+                        <td align="left" style="border: none;"><textarea rows="2" cols="31" id="epOLPcou"></textarea></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  EP Validation Instructions Received?</td>
-                        <td align="left"style="border: none;"><input type="radio" id="epOLPyes" name="epOLPrad"> Yes <input type="radio" id="epOLPno" name="epOLPrad"> No</td>
+                        <td align="right" style="border: none;">  EP Validation Instructions Received?</td>
+                        <td align="left" style="border: none;"><input type="radio" id="epOLPyes" name="epOLPrad"> Yes <input type="radio" id="epOLPno" name="epOLPrad"> No</td>
                     </tr>
                 </table>
             </div>
@@ -5063,10 +5208,10 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  <input type="checkbox" id="noticeofAppealext"> Extension of Time Being Filed</td>
+                        <td align="right" style="border: none;">  <input type="checkbox" id="noticeofAppealext"> Extension of Time Being Filed</td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="right"style="border: none;">  <input type="checkbox" id="noticeofAppealesign" checked> E-Signature Enable</td>
+                        <td align="right" style="border: none;">  <input type="checkbox" id="noticeofAppealesign" checked> E-Signature Enable</td>
                     </tr>
                 </table>
             </div>
@@ -5089,22 +5234,22 @@
                     Verify the city, state, and country for the Applicant:
                 <table style="border-collapse: collapse;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  City </td>
-                        <td align="right"style="border: none;"> <input type="text" id="pctpoa_newcity" size="25">  State <input type="text" id="pctpoa_newstate" size="15"></td>
+                        <td align="left" style="border: none;">  City </td>
+                        <td align="right" style="border: none;"> <input type="text" id="pctpoa_newcity" size="25">  State <input type="text" id="pctpoa_newstate" size="15"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Country </td>
-                        <td align="right"style="border: none;"> <input type="text" id="pctpoa_newcountry" size="25"></td>
+                        <td align="left" style="border: none;">  Country </td>
+                        <td align="right" style="border: none;"> <input type="text" id="pctpoa_newcountry" size="25"></td>
                     </tr>
                 </table>
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Signor name: </td>
-                        <td align="right"style="border: none;"> <input type="text" id="pctpoa_newsname" size="25"></td>
+                        <td align="left" style="border: none;">  Signor name: </td>
+                        <td align="right" style="border: none;"> <input type="text" id="pctpoa_newsname" size="25"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Signor title: </td>
-                        <td align="right"style="border: none;"> <input type="text" id="pctpoa_newstitle" size="25"></td>
+                        <td align="left" style="border: none;">  Signor title: </td>
+                        <td align="right" style="border: none;"> <input type="text" id="pctpoa_newstitle" size="25"></td>
                     </tr>
                 </table>
                 <div>
@@ -5135,12 +5280,12 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Due Date: </td>
-                        <td align="right"style="border: none;">  <input type="date" id="nikeaction_newdue"></td>
+                        <td align="left" style="border: none;">  Due Date: </td>
+                        <td align="right" style="border: none;">  <input type="date" id="nikeaction_newdue"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Drop Dead Due Date: </td>
-                        <td align="right"style="border: none;">  <input type="date" id="nikeaction_newdead"></td>
+                        <td align="left" style="border: none;">  Drop Dead Due Date: </td>
+                        <td align="right" style="border: none;">  <input type="date" id="nikeaction_newdead"></td>
                     </tr>
                 </table>
             </div>
@@ -5162,24 +5307,24 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  The Intent to Proceed has been Received? </td>
-                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionintent"></td>
+                        <td align="left" style="border: none;">  The Intent to Proceed has been Received? </td>
+                        <td align="right" style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionintent"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Enter the Due Date </td>
-                        <td align="right"style="border: none;">  <input type="date" id="ffEPSrchRptandOpiniondue"></td>
+                        <td align="left" style="border: none;">  Enter the Due Date </td>
+                        <td align="right" style="border: none;">  <input type="date" id="ffEPSrchRptandOpiniondue"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  Enter the Requested Response Date </td>
-                        <td align="right"style="border: none;">  <input type="date" id="ffEPSrchRptandOpinionresp"></td>
+                        <td align="left" style="border: none;">  Enter the Requested Response Date </td>
+                        <td align="right" style="border: none;">  <input type="date" id="ffEPSrchRptandOpinionresp"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  A response to the search report and written opinion is mandatory </td>
-                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionsearch"></td>
+                        <td align="left" style="border: none;">  A response to the search report and written opinion is mandatory </td>
+                        <td align="right" style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionsearch"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;">  SLW is responsible to annuity payment </td>
-                        <td align="right"style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionann"></td>
+                        <td align="left" style="border: none;">  SLW is responsible to annuity payment </td>
+                        <td align="right" style="border: none;">  <input type="checkbox" id="ffEPSrchRptandOpinionann"></td>
                     </tr>
                 </table>
             </div>
@@ -5525,16 +5670,16 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Verify Date of the Final/Non-Final OA </td>
-                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3oa"></td>
+                        <td align="left" style="border: none;"> Verify Date of the Final/Non-Final OA </td>
+                        <td align="right" style="border: none;"><input type="date" id="AppealBrief3oa"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Verify Date of the Notice of Appeal was Mailed </td>
-                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3mail"></td>
+                        <td align="left" style="border: none;"> Verify Date of the Notice of Appeal was Mailed </td>
+                        <td align="right" style="border: none;"><input type="date" id="AppealBrief3mail"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Mailing Date of the Pre-Appeal Brief Decision </td>
-                        <td align="right"style="border: none;"><input type="date" id="AppealBrief3preap"></td>
+                        <td align="left" style="border: none;"> Mailing Date of the Pre-Appeal Brief Decision </td>
+                        <td align="right" style="border: none;"><input type="date" id="AppealBrief3preap"></td>
                     </tr>
                 </table>
                 <br>  List of the Claims being Appealed
@@ -5558,16 +5703,16 @@
             <div class="modal-body">
                 <table style="border-collapse: collapse; border: none;">
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Date Specified in the Request Letter </td>
-                        <td align="right"style="border: none;"><input type="date" id="auditletterreq"></td>
+                        <td align="left" style="border: none;"> Date Specified in the Request Letter </td>
+                        <td align="right" style="border: none;"><input type="date" id="auditletterreq"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Amount owed to SLW by the client (Unpaid Fees & Disb) </td>
-                        <td align="right"style="border: none;"><input type="text" id="auditletterslw" size="10" placeholder="0"></td>
+                        <td align="left" style="border: none;"> Amount owed to SLW by the client (Unpaid Fees & Disb) </td>
+                        <td align="right" style="border: none;"><input type="text" id="auditletterslw" size="10" placeholder="0"></td>
                     </tr>
                     <tr style="border: none;">
-                        <td align="left"style="border: none;"> Amount of unbilled fees and disbursements (Unbilled Fees & Disb) </td>
-                        <td align="right"style="border: none;"><input type="text" id="auditletterunb" size="10" placeholder="0"></td>
+                        <td align="left" style="border: none;"> Amount of unbilled fees and disbursements (Unbilled Fees & Disb) </td>
+                        <td align="right" style="border: none;"><input type="text" id="auditletterunb" size="10" placeholder="0"></td>
                     </tr>
                 </table>
                 <br>              <select id="auditletterSAdrop"><option>Select Signing Attorney</option></select>

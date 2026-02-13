@@ -30,7 +30,7 @@ from .models import Rvwmatterinventors
 from .models import MergeCategory
 from .models import MergeRole
 from .models import MergeDef
-from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity, Relatedmatter, FvContact4
+from .models import Orgprofile, Matterparticipant, Rvwmatterpersonnel, Contactinfo, Personprofile, Activity, Relatedmatter, FvContact4, Rvworgpersonnel
 from docx import Document
 from typing import Any, List
 import re
@@ -42,6 +42,7 @@ import requests
 from django.conf import settings
 from .auth_helper import get_token
 import base64
+from django.db.models import Q
 
 from msgraph import GraphServiceClient
 from msgraph.generated.models.message import Message
@@ -285,21 +286,46 @@ def addrecipients(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
     
+# def addSA(request):
+#     if request.method == 'POST':
+#         # Query the database for distinct personLastNameFirstName values, sorted by fName
+#         SAs = (Rvwmatterpersonnel.objects.using('FIP')
+#                .filter(roleid=34619, orgid=4, registrationno__isnull=False)
+#                .exclude(rolename='Inactive Personnel')
+#                .values('fname', 'lname')
+#                .distinct()
+#                .order_by('fname'))
+
+#         # Extract the required values into a list of concatenated strings
+#         SAarr = [f"{SA['fname']} {SA['lname']}" for SA in SAs]
+
+#         return JsonResponse({'message': SAarr})
+    
+#     else:
+#         return JsonResponse({'error': 'Invalid request method'})
+
 def addSA(request):
     if request.method == 'POST':
-        # Query the database for distinct personLastNameFirstName values, sorted by fName
-        SAs = (Rvwmatterpersonnel.objects.using('FIP')
-               .filter(roleid=34619, orgid=4, registrationno__isnull=False)
-               .exclude(rolename='Inactive Personnel')
-               .values('fname', 'lname')
-               .distinct()
-               .order_by('fname'))
+        # Pull distinct first/last names for contact attorneys and attorneys
+        attorneys = (
+            Rvworgpersonnel.objects.using('FIP')
+            .filter(
+                Q(rolename__in=['contact attorney', 'attorney']),
+                access='Granted',
+                orgid='4'
+            )
+            .exclude(fname__isnull=True)
+            .exclude(lname__isnull=True)
+            .exclude(lname='Test')
+            .values('fname', 'lname')
+            .distinct()
+            .order_by('fname', 'lname')
+        )
 
-        # Extract the required values into a list of concatenated strings
-        SAarr = [f"{SA['fname']} {SA['lname']}" for SA in SAs]
+        # Build array of "First Last"
+        names = [f"{a['fname']} {a['lname']}" for a in attorneys]
 
-        return JsonResponse({'message': SAarr})
-    
+        return JsonResponse({'message': names})
     else:
         return JsonResponse({'error': 'Invalid request method'})
 
@@ -819,7 +845,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
         t0 = time.time()
         print(f"[applicationdata_updnew] START combinedoc block, method={method}, mergeinfo={mergeinfo}")
-        doc1.add_page_break()
+        #doc1.add_page_break()
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventor.docx'))
         docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2end.docx'))
         composer = Composer(doc2)
@@ -830,9 +856,33 @@ def combinedoc(path, method, mergeinfo, matter, email):
         print(f"[applicationdata_updnew] matterFill done {time.time()-t0:.2f}s")
 
         # For applicationdata_updnew: only query participants for sections that are selected
-        need_inv = method != 'applicationdata_updnew' or (mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False)
-        need_app = method != 'applicationdata_updnew' or (mergeinfo[4] == 'true' if len(mergeinfo) > 4 else False)
-        need_assign = method != 'applicationdata_updnew' or (mergeinfo[5] == 'true' if len(mergeinfo) > 5 else False)
+        # For applicationdata_new2: need_inv always True; need_app/need_assign from radio (incapp/incnon/noapp/both)
+        if method == 'applicationdata_new2':
+            need_inv = True
+            if len(mergeinfo) > 7:
+                radio_val = (mergeinfo[7] or '').lower().strip()
+                need_app = radio_val in ('incapp', 'both')
+                need_assign = radio_val in ('incnon', 'both')
+            else:
+                need_app = need_assign = False
+        else:
+            need_inv = mergeinfo[0] == 'true' if len(mergeinfo) > 0 else False
+            need_app = mergeinfo[4] == 'true' if len(mergeinfo) > 4 else False
+            need_assign = mergeinfo[5] == 'true' if len(mergeinfo) > 5 else False
+
+        # Inventor mailing address source: applicationdata_updnew uses mergeinfo[8] (apprad);
+        # applicationdata_new2 derives from mergeinfo[4] (client) and mergeinfo[5] (app) checkboxes
+        if method == 'applicationdata_new2' and len(mergeinfo) > 5:
+            if mergeinfo[4] == 'true':
+                mailing_source = 'client'
+            elif mergeinfo[5] == 'true':
+                mailing_source = 'applicant'
+            else:
+                mailing_source = 'home'
+        else:
+            mailing_source = (mergeinfo[8] or 'home').lower().strip() if len(mergeinfo) > 8 else 'home'
+            if mailing_source not in ('home', 'client', 'applicant'):
+                mailing_source = 'home'
 
         inv_blank = {
             'inventorCnt': '', 'inventor': '', 'invpre': '', 'inventorFirstName': '',
@@ -849,10 +899,6 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(inv_template, dict(inv_blank), inv_temp_out)
             composer.append(Document_compose(inv_temp_out))
         else:
-            # mergeinfo[8] = apprad (Inventor Mailing Address: home/client/applicant)
-            mailing_source = (mergeinfo[8] or 'home').lower().strip() if len(mergeinfo) > 8 else 'home'
-            if mailing_source not in ('home', 'client', 'applicant'):
-                mailing_source = 'home'
             inv_replacements = merge_fn.inventorInfoBulk(matter_data, mailing_address_source=mailing_source)
             print(f"[applicationdata_updnew] inventorInfoBulk returned {len(inv_replacements)} inventors {time.time()-t0:.2f}s")
             for i, replace in enumerate(inv_replacements):
@@ -1018,12 +1064,12 @@ def combinedoc(path, method, mergeinfo, matter, email):
             doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'emailout.docx'))
         composer.append(doc3)
         
-    if method == 'applicationdata_updnew':
+    if method == 'applicationdata_updnew' or method == 'applicationdata_new2':
         t_save = time.time()
-        print(f"[applicationdata_updnew] combinedoc: saving composer to multidocmerge {method}.docx")
+        print(f"[{method}] combinedoc: saving composer to multidocmerge {method}.docx")
     composer.save("documents/multidocmerge/" + method +".docx")
-    if method == 'applicationdata_updnew':
-        print(f"[applicationdata_updnew] combinedoc: composer.save done {time.time()-t_save:.2f}s")
+    if method == 'applicationdata_updnew' or method == 'applicationdata_new2':
+        print(f"[{method}] combinedoc: composer.save done {time.time()-t_save:.2f}s")
 
 def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
     if mergeinfo_list[1] == 'ffSndItmsToAssoc':
