@@ -289,8 +289,90 @@
             max-width: 690px;
         }
         #generalxmitCF .modal-dialog{
-            max-width: 890px;
+            max-width: 920px;
         }
+        #generalxmitCF .modal-body {
+            font-size: 13px;
+            line-height: 1.45;
+            color: #2c3e50;
+        }
+        #generalxmitCF .gx-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 14px;
+            margin-bottom: 8px;
+        }
+        #generalxmitCF .gx-row-tight { margin-bottom: 4px; }
+        #generalxmitCF .gx-preappeal-pages {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 1.5em;
+            margin-bottom: 0;
+        }
+        #generalxmitCF .gx-label {
+            font-weight: 600;
+            color: #34495e;
+            white-space: nowrap;
+        }
+        #generalxmitCF .gx-grid-top {
+            display: grid;
+            grid-template-columns: 1fr minmax(160px, 220px);
+            gap: 10px 16px;
+            align-items: start;
+        }
+        @media (max-width: 700px) {
+            #generalxmitCF .gx-grid-top { grid-template-columns: 1fr; }
+        }
+        #generalxmitCF .gx-ext-box {
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 8px 10px;
+            background: #f8fafc;
+        }
+        #generalxmitCF .gx-ext-box .gx-label { display: block; margin-bottom: 4px; }
+        #generalxmitCF .gx-cumul {
+            color: #c0392b;
+            font-weight: 600;
+        }
+        #generalxmitCF .gx-claims-table {
+            width: 100%;
+            font-size: 12px;
+            margin: 6px 0 4px;
+            border-collapse: collapse;
+        }
+        #generalxmitCF .gx-claims-table th,
+        #generalxmitCF .gx-claims-table td {
+            border: 1px solid #e1e8ed;
+            padding: 4px 8px;
+            text-align: left;
+        }
+        #generalxmitCF .gx-claims-table th { background: #f5f7fa; font-weight: 600; }
+        #generalxmitCF .gx-claims-table input[type="text"] { width: 4.5em; }
+        #generalxmitCF .gx-misc-table { width: 100%; font-size: 12px; margin-top: 4px; }
+        #generalxmitCF .gx-misc-table td { padding: 3px 6px; vertical-align: middle; }
+        #generalxmitCF .gx-misc-table td:first-child { text-align: right; padding-right: 10px; }
+        #generalxmitCF .gx-mail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 4px 12px;
+            margin-top: 6px;
+        }
+        #generalxmitCF .gx-footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #ebeef2;
+        }
+        #generalxmitCF input[type="text"],
+        #generalxmitCF select.gx-select-wide {
+            font-size: 13px;
+        }
+        #generalxmitCF select.gx-select-wide { max-width: 100%; }
         #idsCommCfNew .modal-dialog{
             max-width: 800px;
         }
@@ -1465,7 +1547,7 @@
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitStatement373c(Statement373cSAdrop.value)">Continue</button>
             </div>
         </div>
-    </div>Deploy
+    </div>
 </div>
 <!-- Statement373c Assignee Selection (Two Tables) -->
 <div class="modal fade" id="statement373cAssignees" data-backdrop="static">
@@ -1633,10 +1715,10 @@
                     </table>
                 </div>
                 <div>
-                    <br>  <input type="checkbox" id="applicationdata_new2earlypub"> Request Early Publication (Fee required at time of Request 37 CFR 1.219)
+                    <br>  <input type="checkbox" id="applicationdata_new2earlypub" onchange="if(this.checked)applicationdata_new2notpub.checked=false"> Request Early Publication (Fee required at time of Request 37 CFR 1.219)
                 </div>
                 <div>
-                      <input type="checkbox" id="applicationdata_new2notpub"> Request to Not Publish
+                      <input type="checkbox" id="applicationdata_new2notpub" onchange="if(this.checked)applicationdata_new2earlypub.checked=false"> Request to Not Publish
                 </div>
                 <div>
                       <input type="checkbox" id="applicationdata_new2client"> The inventor mailing address is that of the client
@@ -2707,9 +2789,9 @@
                     &emsp;&emsp;<input type="checkbox" id="applicationdata_updnewinv"> Inventor Information
                 </div>
                 <div>
-                          Inventor Mailing Address Is: <input type="radio" id="applicationdata_updnewhomemail" name="applicationdata_updnewoptions" value="home" checked> Home
-                    <input type="radio" id="applicationdata_updnewclientmail" name="applicationdata_updnewoptions" value="client"> Client
-                    <input type="radio" id="applicationdata_updnewappmail" name="applicationdata_updnewoptions" value="applicant"> Applicant
+                          Inventor Mailing Address Is:  <input type="radio" id="applicationdata_updnewhomemail" name="applicationdata_updnewoptions" value="home" checked>Home 
+                    <input type="radio" id="applicationdata_updnewclientmail" name="applicationdata_updnewoptions" value="client">Client 
+                    <input type="radio" id="applicationdata_updnewappmail" name="applicationdata_updnewoptions" value="applicant">Applicant
                 </div>
                 <script>
                     function applicationdata_updnewsub(inv, corr, app, drw, appinfo, assign, updt, esign){
@@ -2905,116 +2987,180 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Transmittal - General</h4>
+                <h4 class="modal-title">General Transmittal</h4>
                 <button type="button" class="close" data-dismiss="modal" onclick="refreshmerge()">×</button>
             </div>
             <div class="modal-body">
-                  E-Filing:<input type="radio" id="generalxmitCFefile" name="fileoptions">
-                &ensp;Paper Filing:<input type="radio" id="generalxmitCFpaperfile" name="fileoptions">
-                  <input type="checkbox" id="generalxmitCFcertmail"> Include Certificate of Mailing
-                  Deposit Account <input type="radio" id="generalxmitCFdepacc" name="depoptions" value="1">
-                &ensp;Check <input type="radio" id="generalxmitCFcheck" name="depoptions" value="2">
-                &ensp;Credit Card <input type="radio" id="generalxmitCFcredit" name="depoptions" value="3">
-            </div>
-            <div>
-                    Due Date <input type="date" id="generalxmitCFduedate">
-            </div>
-            <div>
-                <br>    <select id="generalxmitCFselect">
-                  <option value="1.111">Amendment and Response Under 37 C.F.R. 1.111</option>
-                  <option value="1.116">Amendment and Response Under 37 C.F.R. 1.116</option>
-                  <option value="appeal">Appeal Brief</option>
-                  <option value="notice">Notice of Appeal</option>
-                  <option value="other">Other</option>
-                  <option value="Amendment">Preliminary Amendment</option>
-                  <option value="41.41">Reply Brief Under 37 C.F.R. 41.41</option>
-                  <option value="non">Response to Notice of Non-Compliance</option>
-                  <option value="restreq">Response to Restriction Requirement</option>
-                </select>
-                 # of Pages <input type="text" id="generalxmitCFnumpg" size="10" placeholder = "0">
-            </div>
-            <div>
-                  <input type="checkbox" id="generalxmitCFnotappeal"> Notice of Appeal and Appeal Brief fees paid prior to March 16, 2013
-            </div>
-            <div>
-                  <input type="checkbox" id="generalxmitCFrecalc"> Recalculate Necessary Fees
-                  Claims remaning after Amendment
-                  Highest number previously paid for
-            </div>
-            <div>
-                  Total Claims           <input type="text" id="generalxmitCFtotclaim" size="5" placeholder = "0">
-                           <input type="text" id="generalxmitCFtotclaim2" size="5" placeholder = "0">
-            </div>
-            <div>
-                  Independent Claims       &ensp;<input type="text" id="generalxmitCFinclaim" size="5" placeholder = "0">
-                           <input type="text" id="generalxmitCFinclaim2" size="5" placeholder = "0">
-            </div>
-            <div>
-                  <input type="checkbox" id="generalxmitCFmultidep"> Multiple dependent claims presented (and fee not paid previously)
-            </div>
-            <div>
-                <table style="border-collapse: collapse; border: none;">
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  IDS/SIDS Pages</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFidssid" size="5"></td>
-                        <td align="right" style="border: none;">1449 Pages</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCF1449" size="5"></td>
-                        <td align="left" style="border: none;"><input type="checkbox" id="generalxmitCFsupids"> Supplemental IDS</td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  Fee (if necessary)</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFfeeif" size="5"></td>
-                        <td align="right" style="border: none;"># Documents</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFdocnum" size="5"></td>
-                        <td align="left" style="border: none;"><input type="checkbox" id="generalxmitCFdocnot"> Documents Not Enclosed</td>
-                    </tr>
-                </table>
-                <table style="border-collapse: collapse; border: none;">
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  Communication Concerning Prior and Copending Application Pages</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFcomm" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  Formal Drawings (# of Sheets)</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFfdraw" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  Terminal Disclaimer # of pages</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCFtermdisc" size="5"></td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  <input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</td>
-                        <td align="left" style="border: none;"><input type="text" id="generalxmitCF373txt" size="5"></td>
-                    </tr>
-                </table>
-                <table style="border-collapse: collapse; border: none;">
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;">  Mail Stop </td>
-                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFmam" name="mailstopoptions"> Mail Stop Amendment</td>
-                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFmaf" name="mailstopoptions"> Mail Stop AF</td>
-                    </tr>
-                    <tr style="border: none;">
-                        <td align="right" style="border: none;"></td>
-                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFapppat" name="mailstopoptions"> Mail Stop Appeal Brief - Patents</td>
-                        <td align="left" style="border: none;"><input type="radio" id="generalxmitCFotherrad" name="mailstopoptions"> Other</td>
-                    </tr>
-                </table>
-                <div>
-                      <input type="checkbox" id="generalxmitCFfincon"> After Final Consideration Program Request
+                <div class="filing gx-row">
+                    <label><input type="checkbox" id="generalxmitCFcertmail"> Include Certificate of Mailing</label>
                 </div>
-                <div>
-                      <button type="button" onclick="adddocsadd()">Additional Documents</button>
-                      <select id="generalxmitCFSAdrop">
-                        <option value="select">Select Signing Attorney</option>
-                    </select>
-                      <input type="checkbox" id="generalxmitCFesign" checked> E-Signature Enable
+
+                <div class="gx-grid-top gx-section">
+                    <div>
+                        <div class="gx-row gx-row-tight">
+                            <span class="gx-label">Due Date</span>
+                            <input type="date" id="generalxmitCFduedate">
+                        </div>
+                        <div class="gx-row gx-row-tight" style="margin-top:8px;">
+                            <span class="gx-label">Filing type</span>
+                            <select id="generalxmitCFselect" class="gx-select-wide">
+                                <option value="1.111">Amendment and Response Under 37 C.F.R. 1.111</option>
+                                <option value="1.116">Amendment and Response Under 37 C.F.R. 1.116</option>
+                                <option value="appeal">Appeal Brief</option>
+                                <option value="notice">Notice of Appeal</option>
+                                <option value="other">Other</option>
+                                <option value="Amendment">Preliminary Amendment</option>
+                                <option value="41.41">Reply Brief Under 37 C.F.R. 41.41</option>
+                                <option value="non">Response to Notice of Non-Compliance</option>
+                                <option value="restreq">Response to Restriction Requirement</option>
+                            </select>
+                        </div>
+                        <div class="gx-row gx-row-tight" style="margin-top:6px;">
+                            <span class="gx-label"># of Pages</span>
+                            <input type="text" id="generalxmitCFnumpg" size="8" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="gx-ext-box">
+                        <span class="gx-label"># of Months being Extended:</span>
+                        <select id="generalxmitCFextMonths" class="gx-select-wide" style="margin-bottom:6px;">
+                            <option value="">None</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                        <div class="gx-row gx-row-tight">
+                            <span class="gx-label">Extension Fees</span>
+                            <input type="text" id="generalxmitCFextFee" size="10" placeholder="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="generalxmitCFtypeExtras" class="gx-section gx-type-extras" style="margin-top:8px;">
+                    <div id="generalxmitCFextraNotice" class="gx-row gx-row-tight" style="display:none;">
+                        <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+                            <label><input type="checkbox" id="generalxmitCFpreAppealBrief"> Request for Pre-Appeal Brief Review Conference</label>
+                            <div id="generalxmitCFpreAppealPagesWrap" class="gx-preappeal-pages" hidden>
+                                <label class="gx-label" for="generalxmitCFpreAppealPages" style="margin:0;">Pre-Appeal Brief # pages</label>
+                                <input type="text" id="generalxmitCFpreAppealPages" size="4" value="1" inputmode="numeric" aria-label="Pre-Appeal Brief number of pages">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="generalxmitCFextraOther" class="gx-row gx-row-tight" style="display:none;flex-direction:column;align-items:stretch;gap:4px;">
+                        <label class="gx-label" for="generalxmitCFotherText">Other</label>
+                        <textarea id="generalxmitCFotherText" class="form-control" rows="2" style="width:100%;max-width:100%;resize:vertical;" placeholder="" aria-label="Other filing description"></textarea>
+                    </div>
+                    <div id="generalxmitCFextra41" class="gx-row gx-row-tight" style="display:none;">
+                        <label><input type="checkbox" id="generalxmitCFnotappeal"> Notice of Appeal and Appeal Brief fees paid prior to March 16, 2013</label>
+                    </div>
+                </div>
+            
+                <div class="gx-row gx-row-tight">
+                    <label><input type="checkbox" id="generalxmitCFrecalc"> Recalculate Necessary Fees</label>
+                </div>
+
+                <div class="gx-section">
+                    <table class="gx-claims-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Claims remaining after amendment</th>
+                                <th>Highest number previously paid for</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Claims</strong></td>
+                                <td><input type="text" id="generalxmitCFtotclaim" placeholder="0"></td>
+                                <td><input type="text" id="generalxmitCFtotclaim2" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Independent Claims</strong></td>
+                                <td><input type="text" id="generalxmitCFinclaim" placeholder="0"></td>
+                                <td><input type="text" id="generalxmitCFinclaim2" placeholder="0"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="gx-row gx-row-tight">
+                        <label><input type="checkbox" id="generalxmitCFmultidep"> Multiple dependent claims presented (and fee not paid previously)</label>
+                    </div>
+                </div>
+
+                <div class="gx-section">
+                    <table class="gx-misc-table">
+                        <tr>
+                            <td>IDS/SIDS Pages</td>
+                            <td><input type="text" id="generalxmitCFidssid" size="6" placeholder="0"></td>
+                            <td>1449 Pages</td>
+                            <td><input type="text" id="generalxmitCF1449" size="6" placeholder="0"></td>
+                            <td> <label><input type="checkbox" id="generalxmitCFsupids"> Supplemental IDS</label></td>
+                        </tr>
+                        <tr>
+                            <td>Fee (if necessary)</td>
+                            <td><input type="text" id="generalxmitCFfeeif" size="8" placeholder="112.00" value="112.00"></td>
+                            <td># Documents</td>
+                            <td><input type="text" id="generalxmitCFdocnum" size="6" placeholder="0"></td>
+                            <td> <label><input type="checkbox" id="generalxmitCFdocnot"> Documents Not Enclosed</label></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="gx-section">
+                    <div class="gx-cumul gx-row gx-row-tight" style="flex-direction:column;align-items:flex-start;gap:4px;">
+                        <span>Cumulative references</span>
+                        <label><input type="radio" id="generalxmitCFcum51" name="cumulrefs" value="51-100"> 51–100 cited cumulative references</label>
+                        <label><input type="radio" id="generalxmitCFcum101" name="cumulrefs" value="101-200"> 101–200 cited cumulative references</label>
+                        <label><input type="radio" id="generalxmitCFcum201" name="cumulrefs" value="201+"> 201+ cited cumulative references</label>
+                        <label><input type="radio" id="generalxmitCFcumprev" name="cumulrefs" value="previously-paid"> Previously Paid cumulative reference fee then enter fee we need to pay</label>
+                    </div>
+                </div>
+
+                <div class="gx-section">
+                    <table class="gx-misc-table">
+                        <tr>
+                            <td>Communication Concerning Prior and Copending Application Pages</td>
+                            <td><input type="text" id="generalxmitCFcomm" size="6" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Formal Drawings (# of Sheets)</td>
+                            <td><input type="text" id="generalxmitCFfdraw" size="6" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Terminal Disclaimer # of pages</td>
+                            <td><input type="text" id="generalxmitCFtermdisc" size="6" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="generalxmitCF373chk"> 3.73 Statement and copy of Assignment (# of pages)</label></td>
+                            <td><input type="text" id="generalxmitCF373txt" size="6" placeholder="0"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="gx-section">
+                    <div class="gx-label" style="margin-bottom:4px;">Mail Stop</div>
+                    <div class="gx-mail-grid">
+                        <label><input type="radio" id="generalxmitCFmam" name="mailstopoptions" value="Mail Stop Amendment" checked> Mail Stop Amendment</label>
+                        <label><input type="radio" id="generalxmitCFmaf" name="mailstopoptions" value="Mail Stop AF"> Mail Stop AF</label>
+                        <label><input type="radio" id="generalxmitCFapppat" name="mailstopoptions" value="Mail Stop Appeal Brief - Patents"> Mail Stop Appeal Brief - Patents</label>
+                        <label><input type="radio" id="generalxmitCFotherrad" name="mailstopoptions" value="Other"> Other</label>
+                    </div>
+                </div>
+
+                <div class="gx-row gx-row-tight">
+                    <label><input type="checkbox" id="generalxmitCFfincon"> After Final Consideration Program Request</label>
+                </div>
+
+                <div class="gx-footer-actions">
+                    <button type="button" class="btn btn-default btn-sm" onclick="adddocsadd()">Additional Documents</button>
+                    <label class="gx-label" for="generalxmitCFSAdrop">Select Signing Attorney</label>
+                    <select id="generalxmitCFSAdrop" class="gx-select-wide" style="min-width:200px;"></select>
+                    <label><input type="checkbox" id="generalxmitCFesign" checked> E-Signature Enable</label>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(radioFill('fileoptions'), generalxmitCFcertmail.checked, radioFill('depoptions'), generalxmitCFduedate.value, generalxmitCFselect.value, generalxmitCFnumpg.value, generalxmitCFnotappeal.checked, generalxmitCFrecalc.checked, generalxmitCFtotclaim.value, generalxmitCFtotclaim2.value, generalxmitCFinclaim.value, 
-                generalxmitCFinclaim2.value, generalxmitCFmultidep.checked, generalxmitCFidssid.value, generalxmitCF1449.value, generalxmitCFsupids.checked, generalxmitCFfeeif.value, generalxmitCFdocnum.value, generalxmitCFdocnot.checked, generalxmitCFcomm.value, generalxmitCFfdraw.value, 
-                generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373txt.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFselSA.value, generalxmitCFesign.checked)">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtngeneralxmitCF(generalxmitCFcertmail.checked, generalxmitCFduedate.value, generalxmitCFselect.value, generalxmitCFnumpg.value, generalxmitCFNotAppealFeeValue(), generalxmitCFrecalc.checked, generalxmitCFtotclaim.value, generalxmitCFtotclaim2.value, generalxmitCFinclaim.value, generalxmitCFinclaim2.value, generalxmitCFmultidep.checked, generalxmitCFidssid.value, generalxmitCF1449.value, generalxmitCFsupids.checked, generalxmitCFfeeif.value, generalxmitCFdocnum.value, generalxmitCFdocnot.checked, generalxmitCFcomm.value, generalxmitCFfdraw.value, generalxmitCFtermdisc.value, generalxmitCF373chk.checked, generalxmitCF373txt.value, radioFill('mailstopoptions'), generalxmitCFfincon.checked, generalxmitCFSAdrop.value, generalxmitCFesign.checked, generalxmitCFextMonths.value, generalxmitCFextFee.value, radioFill('cumulrefs'), generalxmitCFPreAppealValue(), generalxmitCFPreAppealPagesValue(), generalxmitCFOtherTextValue())">Continue</button>
             </div>
         </div>
     </div>
@@ -4363,14 +4509,15 @@
                 <div>
                       <input type="radio" id="PTOAIA82inv" name="PTOAIA82rad" value="1"> Inventor(s)
                     <br>  <input type="radio" id="PTOAIA82leg" name="PTOAIA82rad" value="2"> Legal Represenative
-                    <br>  <input type="radio" id="PTOAIA82assign" name="PTOAIA82rad" value="3"> Assignee or Person to Whom the Inventor is Under Obligation to Assign
+                    <br>  <input type="radio" id="PTOAIA82assign" name="PTOAIA82rad" value="3" checked> Assignee or Person to Whom the Inventor is Under Obligation to Assign
                     <br>  <input type="radio" id="PTOAIA82prop" name="PTOAIA82rad" value="4"> Person Who Otherwise Shows Sufficient Proprietary Interest
                 </div><br>
+                  <input type="checkbox" id="PTOAIA82esign" checked> E-Signature Enable
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="refreshmerge()">Cancel</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PTOAIA82genpoa.checked, radioFill('PTOAIA82rad'))">Continue</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="submitbtnmerge(PTOAIA82genpoa.checked, radioFill('PTOAIA82rad'), PTOAIA82esign.checked)">Continue</button>
             </div>
         </div>
     </div>
@@ -6073,7 +6220,7 @@
                         Input.value += mergepath + ',';
                         // Input.value += mergeid + ',';
                         // mergemethod = 'appealfwd';
-                        Input.value += mergemethod + ',';
+                        Input.value += (mergemethod === 'appdataupdate' ? 'applicationdata_updnew' : mergemethod) + ',';
                         Input.value += contacts + ',';
                         document.getElementById("mergeform").appendChild(Input);
                         // contacts = 'TRUE';
@@ -6087,6 +6234,8 @@
                             $('#esign').modal('show');
                         } else if (otherMethods.includes(mergemethod)){
                             $('#' + mergemethod).modal('show');
+                        } else if (mergemethod === 'appdataupdate'){
+                            $('#applicationdata_updnew').modal('show');
                         }else if (mergemethod == 'recordation' || mergemethod == 'nsnotarialcert'){
                             fillInventor(mergemethod);
                         }else if (contacts == 'TRUE'){
@@ -6378,6 +6527,121 @@
             }
             isClicked = !isClicked;
         });
+
+        // generalxmitCF: filing-type extras ([4] Mar2013 fees; [29] pre-appeal conf.; [30] pre-appeal pages; [31] other text).
+        function syncGeneralxmitCFPreAppealPagesVisibility() {
+            const sel = document.getElementById('generalxmitCFselect');
+            const ck = document.getElementById('generalxmitCFpreAppealBrief');
+            const w = document.getElementById('generalxmitCFpreAppealPagesWrap');
+            if (!w || !ck) return;
+            const show = !!(sel && sel.value === 'notice' && ck.checked);
+            w.toggleAttribute('hidden', !show);
+        }
+        function syncGeneralxmitCFTypeExtras() {
+            const sel = document.getElementById('generalxmitCFselect');
+            if (!sel) return;
+            const v = sel.value;
+            const n = document.getElementById('generalxmitCFextraNotice');
+            const o = document.getElementById('generalxmitCFextraOther');
+            const f = document.getElementById('generalxmitCFextra41');
+            if (n) n.style.display = (v === 'notice') ? 'block' : 'none';
+            if (o) o.style.display = (v === 'other') ? 'flex' : 'none';
+            if (f) f.style.display = (v === '1.111' || v === '41.41') ? 'block' : 'none';
+            syncGeneralxmitCFPreAppealPagesVisibility();
+        }
+        function generalxmitCFNotAppealFeeValue() {
+            const sel = document.getElementById('generalxmitCFselect');
+            const ck = document.getElementById('generalxmitCFnotappeal');
+            const v = sel && sel.value;
+            return !!(sel && ck && (v === '1.111' || v === '41.41') && ck.checked);
+        }
+        function generalxmitCFPreAppealValue() {
+            const sel = document.getElementById('generalxmitCFselect');
+            const ck = document.getElementById('generalxmitCFpreAppealBrief');
+            return !!(sel && ck && sel.value === 'notice' && ck.checked);
+        }
+        function generalxmitCFPreAppealPagesValue() {
+            const sel = document.getElementById('generalxmitCFselect');
+            const ck = document.getElementById('generalxmitCFpreAppealBrief');
+            const inp = document.getElementById('generalxmitCFpreAppealPages');
+            if (!sel || sel.value !== 'notice' || !ck || !ck.checked) return '';
+            const n = parseInt(String((inp && inp.value) || '1'), 10);
+            if (!Number.isFinite(n) || n < 1) return '1';
+            return String(n);
+        }
+        function generalxmitCFOtherTextValue() {
+            const sel = document.getElementById('generalxmitCFselect');
+            const ta = document.getElementById('generalxmitCFotherText');
+            if (!sel || sel.value !== 'other' || !ta) return '';
+            return (ta.value || '').replace(/,/g, '`');
+        }
+                function fillGeneralxmitCFExtensionFeeFromMonths() {
+            const monthsSel = document.getElementById('generalxmitCFextMonths');
+            const feeInput = document.getElementById('generalxmitCFextFee');
+            const matterInput = document.getElementById('matterInput');
+            if (!monthsSel || !feeInput) return;
+            const months = (monthsSel.value || '').trim();
+            if (!months) {
+                feeInput.value = '';
+                return;
+            }
+            const matterRaw = matterInput ? String(matterInput.value || '').trim() : '';
+            if (!matterRaw) {
+                feeInput.value = '';
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'merge_generalxmit_ext_fee/',
+                data: {
+                    matterno: JSON.stringify(matterRaw),
+                    months: months,
+                },
+                headers: {
+                    'X-CSRFTOKEN': csrftoken,
+                },
+                success: function (resp) {
+                    if (resp && resp.ok && resp.fee !== undefined && resp.fee !== '') {
+                        feeInput.value = resp.fee;
+                    } else if (resp && resp.ok && (!resp.fee || resp.fee === '')) {
+                        feeInput.value = '';
+                    }
+                },
+                error: function () {
+                    feeInput.value = '';
+                },
+            });
+        }
+        $(document).on('change', '#generalxmitCFextMonths', fillGeneralxmitCFExtensionFeeFromMonths);
+        $(document).on('change', '#generalxmitCFselect', syncGeneralxmitCFTypeExtras);
+        $(document).on('change input', '#generalxmitCFpreAppealBrief', syncGeneralxmitCFPreAppealPagesVisibility);
+        $('#generalxmitCF').on('shown.bs.modal', function () {
+            syncGeneralxmitCFTypeExtras();
+            fillGeneralxmitCFExtensionFeeFromMonths();
+        });
+
+        // generalxmitCF: if months extended > 0, collect transmittal fields only, then open exttimeCF (same pattern as corrappln / missingpartsNw).
+        function submitbtngeneralxmitCF(...args){
+            const merged_data = args.join(',');
+            document.getElementById('mergedata').value += merged_data;
+            const extMonths = document.getElementById('generalxmitCFextMonths').value;
+            if (extMonths && Number(extMonths) > 0) {
+                document.getElementById('mergedata').value += ',';
+                const drop = document.getElementById('extTimedrop');
+                const labels = ['One-Month', 'Two-Month', 'Three-Month', 'Four-Month', 'Five-Month'];
+                const m = Math.min(Math.max(parseInt(extMonths, 10), 1), 5);
+                const want = labels[m - 1];
+                for (let i = 0; i < drop.options.length; i++) {
+                    if (drop.options[i].value === want || drop.options[i].text === want) {
+                        drop.selectedIndex = i;
+                        break;
+                    }
+                }
+                $('#exttimeCF').modal('show');
+            } else {
+                submitbtnmerge();
+            }
+        }
 
         function submitbtnrecoinv(...args){
             const inputData = document.getElementById("matterInput").value;

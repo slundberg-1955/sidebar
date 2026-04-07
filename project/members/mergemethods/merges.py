@@ -749,14 +749,13 @@ class applicationdata_new2:
             'custNoEmail': 'request@slwip.com',
             'custNoCorresp': function_instance.corrcustnumFill(matter_data, 'corresp') if matter_data else '',
             'apptitle': matter_data.title if matter_data else '',
-            'appmatterNo': matter_data.hostmatterno if matter_data else '',
-            'appmatterType': matter_data.mattertypedescription if matter_data else '',
-            'matterType': matter_data.mattertypedescription if matter_data else '',
             'drawingSheets': draw,
             'appprov': 'Non-Provisional',
             'SAFirstName': sadata_fname,
             'SALastName': sadata_lname,
-            'SARegNo': sadata_regno
+            'SARegNo': sadata_regno,
+            'appmatterNo' : function_instance.clientMatterNo(matter_data),
+            'appmatterType': matter_data.mattertypedescription.split('-')[0].strip()
         })
         return replace
         
@@ -1213,7 +1212,7 @@ class missingpartsNw:
                 appdsX = 'X'
                 appdstxt = '         Marked-up Application Data Sheet ('+ mergeinfo[7] +' pgs.)'
 
-                markupCopyA = '\nWe also submit a Marked-up copy of the Application Data sheet filed '+ filedte +', which shows an update to the '
+                markupCopyA = '\n\tWe also submit a Marked-up copy of the Application Data sheet filed '+ filedte +', which shows an update to the '
                 markupCopyB = 'It is respectfully requested that the USPTO update their records accordingly and provide confirmation of the above request.  '
                 markupComments = '[add update comments here]. '
 
@@ -2152,9 +2151,11 @@ class applicationdata_updnew:
         # Application Information
         if mergeinfo[2] == 'true':
             replace.update({
-                'matterType' : matter_data.mattertypedescription,
                 'drawingSheets' : mergeinfo[3],
                 'appprov' : 'Non-Provisional',
+                'apptitle' : matter_data.title,
+                'appmatterNo' : function_instance.clientMatterNo(matter_data),
+                'appmatterType': matter_data.mattertypedescription.split('-')[0].strip()
             })
         else:
             replace.update({
@@ -2240,68 +2241,375 @@ class generalxmitCF:
     def generalxmitCF(self, matter, mergeinfo, keys):
         function_instance = mergefunctions.mergefunctions()
         matter_data = function_instance.matterFill(matter)
+        matter_type_desc = (matter_data.mattertypedescription or '')
+        is_provisional = 'PROV' in matter_type_desc.upper()
+        depnum = function_instance.depnumFill(matter_data)
+        # allTextX is merged as one blob; <<depAccount>> inside it would stay literal—use the number here.
+        dep = (
+            f'Authorization to charge Deposit Account {depnum} in the amount of'
+            if depnum
+            else 'Authorization to charge Deposit Account in the amount of'
+        )
 
-        mailstop = 'Mail Stop Amendment'
-        aftFinal = ''
-        aftFinalX = ''
+        mi_list = list(mergeinfo)
+        extra_doc_flat = []
+        if 'DOCEXTRA' in mi_list:
+            _ex = mi_list.index('DOCEXTRA')
+            extra_doc_flat = mi_list[_ex + 1 :]
+            mi_list = mi_list[:_ex]
+        mergeinfo = mi_list
+
+        def _is_true(val):
+            return str(val).strip().lower() == 'true'
+
+        def _to_int(val):
+            try:
+                s = str(val).strip()
+                if not s:
+                    return 0
+                if s.lower() in ('true', 'false'):
+                    return 0
+                return int(float(s))
+            except (ValueError, TypeError):
+                return 0
+
+        mailstop = mergeinfo[22] if len(mergeinfo) > 22 and mergeinfo[22] else 'Mail Stop Amendment'
         terminal = ''
-        terminalX = ''
         formal = ''
-        formalX = ''
         ids = ''
-        idsX = ''
-        mainX = ''
-        main = ''
         comm = ''
-        commX = ''
-        if mergeinfo[8] != '' and int(mergeinfo[8]) > 0:
-            aftFinal = 'After Final Consideration Program Request (' + mergeinfo[8] + ' pg.)'
-            aftFinalX = 'X'
-        if mergeinfo[21] != '' and int(mergeinfo[21]) > 0:
-            terminal = 'Terminal Disclaimer (' + mergeinfo[21] + ' pgs.)'
-            terminalX = 'X'
-        if mergeinfo[20] != '' and int(mergeinfo[20]) > 0:
-            formal = 'Formal Drawings (' + mergeinfo[21] + ' pgs.)'
-            formalX = 'X'
-        if mergeinfo[13] != '' and mergeinfo[14] != '' and int(mergeinfo[13]) > 0 and int(mergeinfo[14]) > 0:
-            ids = 'Supplemental Information Disclosure Statement ('+ mergeinfo[13] +' pgs.), Form 1449 ('+ mergeinfo[14] +' pgs.)  Documents NOT enclosed, cited in parent application'
-            idsX = 'X'
-        if mergeinfo[5] != '' and int(mergeinfo[5]) > 0:
-            main = 'Amendment and Response under 37 C.F.R. § 1.111 (' + mergeinfo[5] + ' pgs.)'
-            mainX = 'X'
-        if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
-            comm = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[19] +' pgs.)'
-            commX = 'X'
-        #if mergeinfo[19] != '' and int(mergeinfo[19]) > 0:
-        #    extention = 'Petition for Extension of Time ('+ mergeinfo[19] +' pgs.)'
-        #    extX = 'X'
-        if mergeinfo[2] == '1':
-            dep = 'Authorization to charge Deposit Account <<depAccount>> in the amount of'
-        if mergeinfo[2] == '2':
-            dep = 'A check in the amount of'
-        if mergeinfo[2] == '3':
-            dep = 'Authorization to charge the credit card (details provided herewith) in the amount of'
+        _tpg = _to_int(mergeinfo[19] if len(mergeinfo) > 19 else '')
+        if _tpg > 0:
+            terminal = 'Terminal Disclaimer (' + str(mergeinfo[19]).strip() + ' pgs.)'
+        _fpg = _to_int(mergeinfo[18] if len(mergeinfo) > 18 else '')
+        if _fpg > 0:
+            formal = 'Formal Drawings (' + str(mergeinfo[18]).strip() + ' pgs.)'
+        if _to_int(mergeinfo[11] if len(mergeinfo) > 11 else '') > 0 and _to_int(mergeinfo[12] if len(mergeinfo) > 12 else '') > 0:
+            ids = 'Supplemental Information Disclosure Statement ('+ mergeinfo[11] +' pgs.), Form 1449 ('+ mergeinfo[12] +' pgs.)  Documents NOT enclosed, cited in parent application'
+        if _to_int(mergeinfo[17] if len(mergeinfo) > 17 else '') > 0:
+            comm = 'Communication Concerning Prior and Copending Applications ('+ mergeinfo[17] +' pgs.)'
+
+        def _to_money(val):
+            try:
+                return f"{float(str(val).strip()):,.2f}" if str(val).strip() != '' else ''
+            except Exception:
+                return str(val).strip()
+
+        def _pg(cnt):
+            try:
+                n = int(float(cnt))
+            except (TypeError, ValueError):
+                return 'pgs.'
+            return 'pg.' if n == 1 else 'pgs.'
+
+        ext_months = _to_int(mergeinfo[26] if len(mergeinfo) > 26 else '')
+
+        filing_type_map = {
+            '1.111': 'Amendment and Response under 37 C.F.R. § 1.111',
+            '1.116': 'Amendment and Response under 37 C.F.R. 1.116',
+            'appeal': 'Appeal Brief',
+            'notice': 'Notice of Appeal',
+            'other': 'Other',
+            'Amendment': 'Preliminary Amendment',
+            '41.41': 'Reply Brief under 37 C.F.R. 41.41',
+            'non': 'Response to Notice of Non-Compliance',
+            'restreq': 'Response to Restriction Requirement'
+        }
+
+        main_pages = _to_int(mergeinfo[3] if len(mergeinfo) > 3 else '')
+        filing_choice = (mergeinfo[2] if len(mergeinfo) > 2 else '') or ''
+        main_label = filing_type_map.get(filing_choice, filing_choice)
+        if len(mergeinfo) > 31:
+            pre_appeal_pages_raw = mergeinfo[30] if len(mergeinfo) > 30 else ''
+            other_raw = (mergeinfo[31] if len(mergeinfo) > 31 else '')
+        else:
+            pre_appeal_pages_raw = ''
+            other_raw = (mergeinfo[30] if len(mergeinfo) > 30 else '')
+        other_raw = other_raw.replace('`', ',').strip()
+        mainDocText = ''
+        # § 1.111 line always in allTextX when that filing type is selected, including 0 pages.
+        if filing_choice == '1.111':
+            mainDocText = f"Amendment and Response under 37 C.F.R. § 1.111 ({main_pages} {_pg(main_pages)})"
+        elif filing_choice == 'other':
+            if other_raw:
+                if main_pages > 0:
+                    mainDocText = f"{other_raw} ({main_pages} {_pg(main_pages)})"
+                else:
+                    mainDocText = other_raw
+        elif main_label and main_pages > 0:
+            mainDocText = f"{main_label} ({main_pages} {_pg(main_pages)})"
+
+        recalc_on = _is_true(mergeinfo[5] if len(mergeinfo) > 5 else '')
+
+        # Claims-as-amended table data (generaltrasmittalCLAMEND.docx; views.combinedoc appends that doc only when recalc_on).
+        claims_after = _to_int(mergeinfo[6] if len(mergeinfo) > 6 else 0)
+        claims_highest = _to_int(mergeinfo[7] if len(mergeinfo) > 7 else 0)
+        ind_after = _to_int(mergeinfo[8] if len(mergeinfo) > 8 else 0)
+        ind_highest = _to_int(mergeinfo[9] if len(mergeinfo) > 9 else 0)
+        multiple_paid = _is_true(mergeinfo[10] if len(mergeinfo) > 10 else '')
+
+        # Statutory floors for "highest number previously paid for" (total ≥20, independent ≥3); used in math and merge output.
+        claims_highest_calc = claims_highest if claims_highest >= 20 else 20
+        ind_highest_calc = ind_highest if ind_highest >= 3 else 3
+        extra_claims = max(claims_after - claims_highest_calc, 0)
+        extra_ind_claims = max(ind_after - ind_highest_calc, 0)
+        if not recalc_on:
+            extra_claims = 0
+            extra_ind_claims = 0
+
+        entity_status = function_instance.entityfill(matter)
+        # merge_fees.rule_id for generalxmitCF (SideBar merge_fees): 12=§1.16(i) excess claims, 9=§1.16(h) excess independent,
+        # 15=§1.16(j) multiple dependent, 111=§41.20(b)(1) notice of appeal, 115=§41.20(b)(4) appeal forwarding.
+        def _to_money_plain(val):
+            try:
+                return f"{float(val):.2f}"
+            except (TypeError, ValueError):
+                return ''
+
+        def _fee_or_default(rule_id, large_v, small_v, micro_v):
+            v = function_instance.merge_fee_amount(rule_id, matter)
+            if v is not None:
+                return v
+            if entity_status == 2:
+                return float(large_v)
+            if entity_status == 3:
+                return float(micro_v)
+            return float(small_v)
+
+        claim_rate = _fee_or_default(12, 200.0, 80.0, 40.0)
+        ind_rate = _fee_or_default(9, 600.0, 240.0, 120.0)
+        multiple_rate = _fee_or_default(15, 925.0, 370.0, 185.0)
+        notice_appeal_doc_fee = _fee_or_default(111, 905.0, 365.0, 181.0)
+        appeal_forwarding_fee = _fee_or_default(115, 2535.0, 1014.0, 507.0)
+
+        claim_fee = extra_claims * claim_rate
+        ind_fee = extra_ind_claims * ind_rate
+        multiple_fee = multiple_rate if (recalc_on and multiple_paid) else 0.00
+        total_fee = claim_fee + ind_fee + multiple_fee
+
+        # Narrative must match the claims table: mergeinfo[14] is the IDS "fee if" field (often 112), not recalculated claims.
+        recalcText = ''
+        if recalc_on:
+            if total_fee > 0:
+                recalcText = f"{dep} ${_to_money_plain(total_fee)} to cover the fee for additional claims."
+            else:
+                recalcText = "Recalculated fee for additional claims."
+
+        poaText = ''
+        if _is_true(mergeinfo[20] if len(mergeinfo) > 20 else ''):
+            poa_pages = _to_int(mergeinfo[21] if len(mergeinfo) > 21 else '')
+            if poa_pages > 0:
+                poaText = f"Power of Attorney (1 pg.), Statement Under 37 C.F.R. § 3.73(c) (2 pgs.), Copy of Assignment ({poa_pages} {_pg(poa_pages)})"
+            else:
+                poaText = "Power of Attorney (1 pg.), Statement Under 37 C.F.R. § 3.73(c) (2 pgs)."
+
+        extensionText = ''
+        extFeeText = ''
+        _ext_ui_raw = mergeinfo[27] if len(mergeinfo) > 27 else ''
+        try:
+            _ext_ui_val = float(str(_ext_ui_raw).replace(',', '').strip())
+            ext_fee = _to_money_plain(_ext_ui_val) if _ext_ui_val != 0 else ''
+        except (TypeError, ValueError):
+            ext_fee = ''
+        ext_fee_for_replace = ext_fee if ext_fee else ''
+        # §1.17(a)(1)–(5) non-provisional: rule_ids 28,31,34,37,40; provisional §1.17(u): 55,57,59,61,63
+        nonprov_ext_rule = {1: 28, 2: 31, 3: 34, 4: 37, 5: 40}
+        prov_ext_rule = {1: 55, 2: 57, 3: 59, 4: 61, 5: 63}
+        ext_rule_map = prov_ext_rule if is_provisional else nonprov_ext_rule
+        ext_amount_db = None
+        if 1 <= ext_months <= 5:
+            _erid = ext_rule_map.get(ext_months)
+            if _erid:
+                ext_amount_db = function_instance.merge_fee_amount(_erid, matter)
+
+        if ext_months > 0 or (ext_fee not in ('', '0.00', '0', '0.0')):
+            extensionText = "Petition for Extension of Time (1 pg.)"
+        # Prefer attorney-entered extension fee from UI when provided; otherwise statutory amount from merge_fees.
+        if ext_fee not in ('', '0.00', '0', '0.0'):
+            extFeeText = f"{dep} ${ext_fee} to cover the Extension of Time Fee."
+        elif ext_amount_db is not None:
+            ext_fee = _to_money_plain(ext_amount_db)
+            ext_fee_for_replace = _to_money_plain(ext_amount_db)
+            extFeeText = f"{dep} ${ext_fee} to cover the Extension of Time Fee."
+
+        idsFeeText = ''
+        ids_pages = _to_int(mergeinfo[11] if len(mergeinfo) > 11 else '')
+        form_1449_pages = _to_int(mergeinfo[12] if len(mergeinfo) > 12 else '')
+        if ids_pages > 0 or form_1449_pages > 0:
+            ids_amt = function_instance.merge_fee_amount(52, matter)
+            if ids_amt is None:
+                ids_amt = _fee_or_default(52, 280.0, 112.0, 56.0)
+            ids_fee_disp = _to_money_plain(ids_amt)
+            if ids_fee_disp:
+                idsFeeText = (
+                    f"{dep} ${ids_fee_disp} to cover the fee for consideration of "
+                    f"Information Disclosure Statement under 37 C.F.R. § 1.97(c)."
+                )
+
+        cumul_choice = str(mergeinfo[28] if len(mergeinfo) > 28 else '').strip()
+        idsCumRefFeeText = ''
+        cumul_rule_by_choice = {
+            '51-100': 65,
+            '101-200': 69,
+            '201+': 73,
+            'previously-paid': 65,
+        }
+        _cum_rid = cumul_rule_by_choice.get(cumul_choice)
+        cum_surcharge_amt = function_instance.merge_fee_amount(_cum_rid, matter) if _cum_rid else None
+        if cum_surcharge_amt is None and _cum_rid is not None:
+            cum_surcharge_amt = {
+                '51-100': 200.0,
+                '101-200': 500.0,
+                '201+': 800.0,
+                'previously-paid': 200.0,
+            }.get(cumul_choice)
+        if cum_surcharge_amt is not None:
+            amt_disp = _to_money_plain(cum_surcharge_amt)
+            if amt_disp:
+                if depnum:
+                    idsCumRefFeeText = (
+                        f'Authorization to charge Deposit Account {depnum} in the amount '
+                        f'${amt_disp} of the Information Disclosure Statement Reference Surcharge.'
+                    )
+                else:
+                    idsCumRefFeeText = (
+                        f'Authorization to charge Deposit Account in the amount '
+                        f'${amt_disp} of the Information Disclosure Statement Reference Surcharge.'
+                    )
+
+        termFeeText = ''
+        terminal_pages = _to_int(mergeinfo[19] if len(mergeinfo) > 19 else '')
+        if terminal_pages > 0:
+            t_amt = function_instance.merge_fee_amount(88, matter)
+            if t_amt is None:
+                t_amt = 183.0
+            termFeeText = f"{dep} ${_to_money_plain(t_amt)} to cover the fee for the Terminal Disclaimer."
+
+        afterFinalText = ''
+        if _is_true(mergeinfo[23] if len(mergeinfo) > 23 else ''):
+            afterFinalText = "After Final Consideration Program Request (1 pg.)"
+
+        # mergeinfo[4]: "fees paid prior to March 16, 2013" (1.111 / 41.41) — when true, omit appeal forwarding line.
+        fees_paid_prior = _is_true(mergeinfo[4] if len(mergeinfo) > 4 else '')
+        addlFeeText = ''
+        # Rule 111 = §41.20(b)(1) Notice of Appeal; also used for filing type "appeal" (Appeal Brief) — confirm if a separate rule applies.
+        if filing_choice in ('notice', 'appeal'):
+            amt = _to_money_plain(notice_appeal_doc_fee)
+            if amt:
+                addlFeeText = f"{dep} ${amt} to cover the fee for the {main_label}."
+        elif filing_choice in ('41.41', '1.111') and not fees_paid_prior:
+            amt = _to_money_plain(appeal_forwarding_fee)
+            if amt:
+                addlFeeText = f"{dep} ${amt} to cover the Appeal forwarding fee."
+
+        preconfText = ''
+        if filing_choice == 'notice' and _is_true(mergeinfo[29] if len(mergeinfo) > 29 else ''):
+            pre_pages = _to_int(pre_appeal_pages_raw)
+            if pre_pages < 1:
+                pre_pages = main_pages if main_pages > 0 else 1
+            preconfText = f"Pre-Appeal Brief ({pre_pages} {_pg(pre_pages)})"
+
+        doc_entries = [
+            ('X' if mainDocText else '', mainDocText),
+            ('X' if recalcText else '', recalcText),
+            ('X' if addlFeeText else '', addlFeeText),
+            ('X' if preconfText else '', preconfText),
+            ('X' if extensionText else '', extensionText),
+            ('X' if extFeeText else '', extFeeText),
+            ('X' if comm else '', comm),
+            ('X' if ids else '', ids),
+            ('X' if idsFeeText else '', idsFeeText),
+            ('X' if idsCumRefFeeText else '', idsCumRefFeeText),
+            ('X' if formal else '', formal),
+            ('X' if terminal else '', terminal),
+            ('X' if termFeeText else '', termFeeText),
+            ('X' if afterFinalText else '', afterFinalText),
+            ('X' if poaText else '', poaText),
+        ]
+        for i in range(0, len(extra_doc_flat), 2):
+            dtxt = (
+                str(extra_doc_flat[i]).strip().replace('`', ',')
+                if i < len(extra_doc_flat)
+                else ''
+            )
+            pgv = _to_int(extra_doc_flat[i + 1]) if i + 1 < len(extra_doc_flat) else 0
+            if not dtxt:
+                continue
+            doc_entries.append(('X', f"{dtxt} ({pgv} {_pg(pgv)})"))
+        # Combining low line (U+0332) after X approximates underline in Word; continuation lines start with tab for hanging indent.
+        _x_mark = 'X\u0332'
+
+        def _alltext_block(txt):
+            text = str(txt).lstrip()
+            lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+            if not lines:
+                return ''
+            rows = [f"{_x_mark}\t{lines[0]}"]
+            rows.extend(f"\t{ln}" for ln in lines[1:])
+            return '\n'.join(rows)
+
+        allTextX = '\n'.join(
+            _alltext_block(txt) for x, txt in doc_entries if x and txt
+        )
 
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
-        replace.update(function_instance.esigncheck(mergeinfo[0]))
+        replace.update(function_instance.esigncheck(mergeinfo[25] if len(mergeinfo) > 25 else 'true'))
+        # Default blanks so unselected UI values don't leave stale tags from mergebasic().
+        replace.update({
+            'SAName': '',
+            'SARegNo': ''
+        })
+        duedate_raw = mergeinfo[1] if len(mergeinfo) > 1 else ''
+        duedate_val = function_instance.formatDate(duedate_raw) if duedate_raw else ''
+        replace.update({
+            'depAccount': depnum,
+            'dueDate': duedate_val,
+        })
+        if len(mergeinfo) > 24 and mergeinfo[24] not in ('Select Signing Attorney', ''):
+            saname, regno = function_instance.fullSAName(mergeinfo[24])
+            replace.update({
+                'SAName': saname,
+                'SARegNo': regno
+            })
+        include_cert = _is_true(mergeinfo[0] if len(mergeinfo) > 0 else '')
+        replace.update({
+            'certificateCF': 'CERTIFICATE UNDER 37 CFR 1.8:  The undersigned hereby certifies that this correspondence is being filed using the USPTO\'s electronic filing system EFS-Web, and is addressed to The Commissioner for Patents, P.O. Box 1450, Alexandria, VA 22313-1450 on this ________ day of March, 2026.' if include_cert else '',
+            'nameLine': '_________________________________________________' if include_cert else '',
+            'sigLine': '_______________________________________________' if include_cert else '',
+            'namName': 'Name' if include_cert else '',
+            'sigSignature': 'Signature' if include_cert else '',
+        })
         replace.update({
             'mailStopText' : mailstop,
-            'afterFinalX' : aftFinalX,
-            'afterFinalText' : aftFinal,
-            'terminalX' : terminalX,
-            'terminalText' : terminal,
-            'idsX' : idsX,
-            'idsText' : ids,
-            'mainX' : mainX,
-            'mainDocText' : main,
-            'claimsAfter' : mergeinfo[8],
-            'indAfter' : mergeinfo[10],
-            'commText' : comm,
-            'commX' : commX,
-            'drawText' : formal,
-            'drawX' : formalX,
+            'addlFeeTableText': 'The fee for additional claims has been calculated as follows:',
+            'claimsAfter' : mergeinfo[6],
+            'claimsHighest': str(claims_highest_calc),
+            'extraClaims': str(extra_claims),
+            'claimRate': _to_money_plain(claim_rate),
+            'claimFee': _to_money_plain(claim_fee),
+            'indAfter' : mergeinfo[8],
+            'indHighest': str(ind_highest_calc),
+            'extraIndClaims': str(extra_ind_claims),
+            'indRate': _to_money_plain(ind_rate),
+            'indFee': _to_money_plain(ind_fee),
+            'multipleX': 'X' if (recalc_on and multiple_paid) else '',
+            'multipleFee': _to_money_plain(multiple_fee),
+            'totalFee': _to_money_plain(total_fee),
+            'allTextX': allTextX,
+            'addlFeeX': 'X' if addlFeeText else '',
+            'addlFeeText': addlFeeText,
+            'preconfX': 'X' if preconfText else '',
+            'preconfText': preconfText,
         })
+        if len(mergeinfo) > 26:
+            replace['extMonths'] = mergeinfo[26]
+        if ext_fee_for_replace != '':
+            replace['extFees'] = ext_fee_for_replace
+        elif len(mergeinfo) > 27:
+            replace['extFees'] = mergeinfo[27]
+        if len(mergeinfo) > 28:
+            replace['cumulativeRefs'] = mergeinfo[28]
         return replace
     
 # Report Out - Filing Receipt Received
@@ -5617,6 +5925,8 @@ class PTOAIA82:
         # Initialize replace dictionary
         replace = {}
         replace.update(function_instance.mergebasic(keys, matter))
+
+        replace['custNoPOA'] = function_instance.corrcustnumFill(matter_data, 'poa')
         
         # Get reference number (same as matterNo from mergebasic)
         refno = replace.get('matterNo', '')
@@ -5677,10 +5987,10 @@ class PTOAIA82:
         
         # Initialize signature fields (will be set by esigncheck if e-signature is enabled)
         # These are handled separately in the merge process
-        if 'signatureName' not in replace:
-            replace['signatureName'] = ''
-        if 'signatureDate' not in replace:
-            replace['signatureDate'] = ''
+        replace.update(function_instance.esigncheck(mergeinfo[2]))
+
+        replace['serialNo'] = 'test serial no'
+        print('serial no' + replace['serialNo'])
         
         # Note: E-signature (signatureName, signatureDate) is handled via esigncheck
         # which is typically called separately in the merge process

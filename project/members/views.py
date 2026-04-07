@@ -23,6 +23,8 @@ from io import BytesIO
 import io
 import zipfile
 
+from copy import deepcopy
+from lxml import etree as lxml_etree
 
 from concurrent.futures import ThreadPoolExecutor
 from .models import Matter
@@ -127,25 +129,59 @@ def checkMatter(request):
 
     else:
         return JsonResponse({'error': 'Invalid request method'})
-        
+
+def _iter_table_paragraphs(table):
+    """Yield all paragraphs in a table and in any nested tables inside its cells."""
+    for row in table.rows:
+        for cell in row.cells:
+            for p in cell.paragraphs:
+                yield p
+            for nested in getattr(cell, 'tables', []):
+                yield from _iter_table_paragraphs(nested)
+
+def _docx_paragraphs_with_headers_footers(doc):
+    """Yield all paragraphs in document body, tables (including nested), and headers/footers."""
+    # Body paragraphs (what Paragraph.get_all(doc) uses)
+    for p in Paragraph.get_all(doc):
+        yield p
+    # Paragraphs inside tables (and nested tables)
+    for table in getattr(doc, 'tables', []):
+        yield from _iter_table_paragraphs(table)
+    for section in doc.sections:
+        for header in (section.header, section.footer):
+            for p in header.paragraphs:
+                yield p
+        if getattr(section, 'different_first_page_header_footer', False):
+            for attr in ('first_page_header', 'first_page_footer'):
+                header = getattr(section, attr, None)
+                if header is not None:
+                    for p in header.paragraphs:
+                        yield p
+
 def docx_replace2(doc, **kwargs: str):
     replace_items = [(k, str(v)) for k, v in kwargs.items() if k is not None and k != ""]
     if not replace_items:
         return
-    paragraphs = Paragraph.get_all(doc)
-    for p in paragraphs:
+    for p in _docx_paragraphs_with_headers_footers(doc):
+        # Skip paragraphs that cannot contain merge tags (avoids Paragraph + N replace_key calls per para)
+        try:
+            if "<<" not in (p.text or ""):
+                continue
+        except Exception:
+            pass
         paragraph = Paragraph(p)
         for key, value in replace_items:
             paragraph.replace_key(f"<<{key}>>", value)
 
 def docx_get_keys2(doc: Any) -> List[str]:
     result = set()  # unique items
-    for p in Paragraph.get_all(doc):
+    for p in _docx_paragraphs_with_headers_footers(doc):
         paragraph = Paragraph(p)
         matches = re.finditer(r"<<([^<>]+)>>", paragraph.get_text())
         for match in matches:
             result.add(match.groups()[0])
     return list(result)
+
 
 def addinventors(request):
     if request.method == 'POST':
@@ -779,6 +815,17 @@ def find_checkbox_coordinates(element_coordinates):
             checkbox_coordinates[element_name] = (row, column)
     return checkbox_coordinates
 
+def remove_paragraph_after_last_table(doc):
+    body = doc.element.body
+    elements = list(body)
+
+    for i in range(len(elements) - 1):
+        if elements[i].tag.endswith('tbl') and elements[i + 1].tag.endswith('p'):
+            body.remove(elements[i + 1])
+            break  # only remove the first paragraph after the last table
+
+    return doc
+
 def combinedoc(path, method, mergeinfo, matter, email):
     doc1 = Document_compose(path)
 
@@ -845,7 +892,22 @@ def combinedoc(path, method, mergeinfo, matter, email):
     if method == 'applicationdata_new2' or method == 'applicationdata_updnew':
         t0 = time.time()
         print(f"[applicationdata_updnew] START combinedoc block, method={method}, mergeinfo={mergeinfo}")
+        update_suffix = '_update' if method == 'applicationdata_updnew' else ''
         #doc1.add_page_break()
+        # applicationdata_new2: check boxes 2, 3, 4 on doc1 (original ApplicationDataSheet) before adding inventors/etc.
+        if method == 'applicationdata_new2' and len(mergeinfo) >= 7:
+            app_new2_temp = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2_middle_temp.docx')
+            os.makedirs(os.path.dirname(app_new2_temp), exist_ok=True)
+            doc1.save(app_new2_temp)
+            if mergeinfo[6] in ('true', True):
+                check_checkbox_at_position_xmlsafe(app_new2_temp, 2, checked=True)
+            if mergeinfo[2] in ('true', True):
+                check_checkbox_at_position_xmlsafe(app_new2_temp, 3, checked=True)
+            if mergeinfo[3] in ('true', True):
+                check_checkbox_at_position_xmlsafe(app_new2_temp, 4, checked=True)
+            check_checkbox_at_position_xmlsafe(app_new2_temp, 5, checked=True)
+            doc1 = Document_compose(app_new2_temp)
+
         doc2 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventor.docx'))
         docend = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2end.docx'))
         composer = Composer(doc2)
@@ -891,7 +953,7 @@ def combinedoc(path, method, mergeinfo, matter, email):
             'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '',
             'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''
         }
-        inv_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple.docx')
+        inv_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2inventorMultiple' + update_suffix + '.docx')
         inv_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2inventorMultipleout.docx')
 
         print(f"[applicationdata_updnew] Inventors: need_inv={need_inv} {time.time()-t0:.2f}s")
@@ -899,22 +961,96 @@ def combinedoc(path, method, mergeinfo, matter, email):
             WordMerger(inv_template, dict(inv_blank), inv_temp_out)
             composer.append(Document_compose(inv_temp_out))
         else:
-            inv_replacements = merge_fn.inventorInfoBulk(matter_data, mailing_address_source=mailing_source)
+            inv_replacements = merge_fn.inventorInfoBulk(matter_data, method, mailing_address_source=mailing_source)
             print(f"[applicationdata_updnew] inventorInfoBulk returned {len(inv_replacements)} inventors {time.time()-t0:.2f}s")
             for i, replace in enumerate(inv_replacements):
                 WordMerger(inv_template, replace, inv_temp_out)
+                if method in ('applicationdata_new2', 'applicationdata_updnew'):
+                    country = (replace.get('inventorHomeCountry') or '').strip().lower()
+                    is_us = 'united states' in country or country in ('us', 'usa', 'u.s.', 'u.s.a.')
+                    check_checkbox_at_position_xmlsafe(inv_temp_out, 1, checked=is_us)
+                    check_checkbox_at_position_xmlsafe(inv_temp_out, 2, checked=not is_us)
                 composer.append(Document_compose(inv_temp_out))
                 if (i + 1) % 5 == 0:
                     print(f"[applicationdata_updnew] Inventor block {i+1}/{len(inv_replacements)} {time.time()-t0:.2f}s")
         print(f"[applicationdata_updnew] Inventors done {time.time()-t0:.2f}s")
         composer.append(doc1)
 
+        # Domestic Benefit/National Stage Information
+        # mergeinfo[0]
+        try:
+            if method == 'applicationdata_updnew' and len(mergeinfo) > 6:
+                raw = (mergeinfo[6] or '').strip()
+                n_rpoa = int(raw) if raw else 0
+            else:
+                n_rpoa = int(mergeinfo[0]) if (len(mergeinfo) > 0 and mergeinfo[0] not in (None, '')) else 0
+        except (ValueError, TypeError):
+            n_rpoa = 0
+        rpoa_count = 1 if n_rpoa <= 1 else n_rpoa
+        rpoa_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_Updated_RPOAstage.docx')
+        rpoa_template2 = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_Updated_RPOAstageblank.docx')
+        if n_rpoa == 0 and method == 'applicationdata_updnew':
+            composer.append(Document_compose(rpoa_template2))
+        else:
+            for _ in range(rpoa_count):
+                composer.append(Document_compose(rpoa_template))
+
+        # Foreign priority / filing info: first row uses foreign1 template; additional rows use foreignmulti (like inventor multiples).
+        foreign_replacements = merge_fn.foreignfillBulk(matter)
+        foreign_template = os.path.join(
+            settings.BASE_DIR, 'documents', 'formaldocuments',
+            'ApplicationDataSheet_NEW2Bforeign1.docx',
+        )
+        foreign_multi_template = os.path.join(
+            settings.BASE_DIR, 'documents', 'formaldocuments',
+            'ApplicationDataSheet_NEW2Bforeignmulti.docx',
+        )
+        foreign_temp_out = os.path.join(
+            settings.BASE_DIR, 'documents', 'temp',
+            'ApplicationDataSheet_NEW2Bforeign1out.docx',
+        )
+        foreign_multi_temp_out = os.path.join(
+            settings.BASE_DIR, 'documents', 'temp',
+            'ApplicationDataSheet_NEW2Bforeignmultiout.docx',
+        )
+        foreign_blank = {
+            'foreignNo': '',
+            'foreignCntry': '',
+            'foreignFiledDate': '',
+        }
+        # applicationdata_updnew: domestic stage count mergeinfo[6] is 0 or blank → one foreign1 page with empty tags only (no FIP foreign rows).
+        if method == 'applicationdata_updnew' and n_rpoa == 0:
+            WordMerger(foreign_template, dict(foreign_blank), foreign_temp_out)
+            composer.append(Document_compose(foreign_temp_out))
+        else:
+            foreign_replacements = merge_fn.foreignfillBulk(matter)
+            if len(foreign_replacements) == 1:
+                WordMerger(foreign_template, foreign_replacements[0], foreign_temp_out)
+                composer.append(Document_compose(foreign_temp_out))
+
+            elif len(foreign_replacements) > 1:
+                WordMerger(foreign_template, foreign_replacements[0], foreign_temp_out)
+                doc = Document_compose(foreign_temp_out)
+                doc = remove_paragraph_after_last_table(doc)
+                composer.append(doc)
+                for replace in foreign_replacements[1:]:
+                    WordMerger(foreign_multi_template, replace, foreign_multi_temp_out)
+                    doc = Document_compose(foreign_multi_temp_out)
+                    doc = remove_paragraph_after_last_table(doc)
+                    composer.append(doc)
+
+        B_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2B.docx')
+        if mergeinfo[3] in ('true', True) and method == 'applicationdata_new2':
+            check_checkbox_at_position_xmlsafe(B_template, 2, checked=True)
+            check_checkbox_at_position_xmlsafe(B_template, 3, checked=True)
+        composer.append(Document_compose(B_template))
+
         app_blank = {
             'applCnt': '', 'applicantCity': '', 'applicantState': '', 'applicantZip': '',
             'applicantCountry': '', 'applicantStreet1': '', 'applicantStreet2': '',
             'applicant': '', 'applicantName': ''
         }
-        app_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti.docx')
+        app_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2applicantMulti' + update_suffix + '.docx')
         app_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2applicantMultipleout.docx')
 
         print(f"[applicationdata_updnew] Applicants: need_app={need_app} {time.time()-t0:.2f}s")
@@ -924,17 +1060,29 @@ def combinedoc(path, method, mergeinfo, matter, email):
         else:
             app_replacements = merge_fn.applicantfillBulk(matter_data)
             print(f"[applicationdata_updnew] applicantfillBulk returned {len(app_replacements)} applicants {time.time()-t0:.2f}s")
+            assignee_names = {str(r.get('assignee') or r.get('assigneeName') or '').strip() for r in merge_fn.assigneefillBulk(matter_data)}
             for replace in app_replacements:
                 WordMerger(app_template, replace, app_temp_out)
+                if method in ('applicationdata_new2', 'applicationdata_updnew'):
+                    applicant_name = str(replace.get('applicant') or replace.get('applicantName') or '').strip()
+                    is_also_assignee = applicant_name and applicant_name in assignee_names
+                    check_checkbox_at_position_xmlsafe(app_temp_out, 1, checked=is_also_assignee)
+                    is_org = replace.get('applicantIsOrg') in (True, 'true', 'True')
+                    check_checkbox_at_position_xmlsafe(app_temp_out, 8, checked=is_org)
                 composer.append(Document_compose(app_temp_out))
         print(f"[applicationdata_updnew] Applicants done {time.time()-t0:.2f}s")
+
+        # Page break after applicant information
+        doc_app_break = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'miscellaneous', 'blank.docx'))
+        doc_app_break.add_page_break()
+        composer.append(doc_app_break)
 
         assign_blank = {
             'assigneeCnt': '', 'assigneeName': '', 'assigneeStreet': '', 'assigneeCity': '',
             'assigneeState': '', 'assigneeZip': '', 'assigneeCountry': '', 'assigneeStreet1': '',
             'assigneeStreet2': '', 'assignee': '', 'assigneeAddress': '', 'assigneeStateInc': ''
         }
-        assign_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti.docx')
+        assign_template = os.path.join(settings.BASE_DIR, 'documents', 'formaldocuments', 'ApplicationDataSheet_NEW2assigneeMulti' + update_suffix + '.docx')
         assign_temp_out = os.path.join(settings.BASE_DIR, 'documents', 'temp', 'ApplicationDataSheet_NEW2assigneeMultipleout.docx')
 
         print(f"[applicationdata_updnew] Assignees: need_assign={need_assign} {time.time()-t0:.2f}s")
@@ -946,6 +1094,9 @@ def combinedoc(path, method, mergeinfo, matter, email):
             print(f"[applicationdata_updnew] assigneefillBulk returned {len(assign_replacements)} assignees {time.time()-t0:.2f}s")
             for replace in assign_replacements:
                 WordMerger(assign_template, replace, assign_temp_out)
+                if method in ('applicationdata_new2', 'applicationdata_updnew'):
+                    is_org = replace.get('assigneeIsOrg') in (True, 'true', 'True')
+                    check_checkbox_at_position_xmlsafe(assign_temp_out, 1, checked=is_org)
                 composer.append(Document_compose(assign_temp_out))
         print(f"[applicationdata_updnew] Assignees done {time.time()-t0:.2f}s")
 
@@ -1050,6 +1201,26 @@ def combinedoc(path, method, mergeinfo, matter, email):
                 doc3 = Document_compose(os.path.join(settings.BASE_DIR, 'documents', 'temp', 'RecordationCoverSheet_Supplement1out.docx')) 
             composer.append(doc3)
 
+    if method == 'generalxmitCF':
+        composer = Composer(doc1)
+
+        # UI indices for generalxmitCF:
+        # [5] recalc fees, total claims (6), highest total (7), independent (8), highest independent (9)
+        # 32 payload fields before optional exttimeCF: [29] pre-appeal conf., [30] pre-appeal pages, [31] other text; [4] = Mar2013 fees (1.111 or 41.41)
+        recalc_fees = (
+            len(mergeinfo) > 5 and str(mergeinfo[5]).strip().lower() == 'true'
+        )
+        add_claim_amend = recalc_fees
+
+        claim_amend_doc = get_template_docx('transmittal', 'generaltrasmittalCLAMEND.docx')
+        end_doc = get_template_docx('transmittal', 'generaltransmittalEND.docx')
+
+        if add_claim_amend:
+            composer.append(Document_compose(claim_amend_doc))
+
+        # Always append END/signature document.
+        composer.append(Document_compose(end_doc))
+
     if email == 'TRUE':
         doc1.add_page_break()
         merge_fn = mergefunctions()
@@ -1072,6 +1243,9 @@ def combinedoc(path, method, mergeinfo, matter, email):
         print(f"[{method}] combinedoc: composer.save done {time.time()-t_save:.2f}s")
 
 def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
+    if mergeinfo_list[1] == 'applicationdata_updnew' and input_path.endswith('.docx'):
+        input_path = input_path[:-5] + '_update.docx'
+        
     if mergeinfo_list[1] == 'ffSndItmsToAssoc':
         if mergefninfo[6] == '1':
             input_path = input_path.replace('ffSndItmsToAssoc.docx', 'ffSndItmsToAssoc_HONU.docx')
@@ -1115,6 +1289,8 @@ def pathChanger(input_path, mergeinfo_list, mergefninfo, matter):
 # New separate function for merging documents
 def mergeDoc(matter, mergeinfo, request):
     merge_fn = mergefunctions()
+    generalxmit_has_ext = False
+    applicationdata_updnew_corrapplicant = False
     mergeinfo_list = mergeinfo.split(",") 
     module_name = ".mergemethods.merges"
     class_name = mergeinfo_list[1]
@@ -1137,8 +1313,25 @@ def mergeDoc(matter, mergeinfo, request):
         mergefninfo.pop(0)
         mergefninfo.pop(0)
 
+    # generalxmitCF: extension-of-time UI appends 10 exttimeCF fields after 31 generalxmit fields (merge class + combinedoc only use generalxmit).
+    if mergeinfo_list[1] == 'generalxmitCF':
+        mergefninfo, gx_addl_doc_flat = _generalxmit_split_enddoc_docs(mergefninfo)
+        # Emails already popped above; transmittal core is always 32 tokens before optional exttimeCF (10).
+        gx_end = 32
+        if len(mergefninfo) > gx_end:
+            generalxmit_has_ext = True
+            mergefninfo = mergefninfo[:gx_end]
+        if gx_addl_doc_flat:
+            mergefninfo = list(mergefninfo) + ['DOCEXTRA'] + gx_addl_doc_flat
+
     if mergeinfo_list[1] == 'blankletter':
         mergefninfo.append(request.headers.get('X-MS-CLIENT-PRINCIPAL-NAME'))
+
+    if mergeinfo_list[1] == 'applicationdata_updnew':
+        applicationdata_updnew_corrapplicant = (
+            len(mergefninfo) > 4
+            and str(mergefninfo[4]).strip().lower() == 'true'
+        )
 
     docpath[1] = pathChanger(docpath[1], mergeinfo_list, mergefninfo, matter)
 
@@ -1208,7 +1401,7 @@ def mergeDoc(matter, mergeinfo, request):
         if mergefninfo[0] == '2':
             input_path = input_path.replace('2012_2', '2012_att')
             
-    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw':
+    if mergeinfo_list[1] == 'applicationdata_new2' or mergeinfo_list[1] == 'invchange' or mergeinfo_list[1] == 'applicationdata_updnew' or mergeinfo_list[1] == 'BSCCombinedAssnDec' or mergeinfo_list[1] == 'aiashortdecl' or mergeinfo_list[1] == 'assignment2016' or mergeinfo_list[1] == 'appdataupdate' or mergeinfo_list[1] == 'recordation' or mergeinfo_list[1] == 'missingpartsNw' or mergeinfo_list[1] == 'generalxmitCF':
         t_comb = time.time()
         print(f"[mergeDoc] applicationdata_updnew: calling combinedoc for {mergeinfo_list[1]} matter={matter}")
         combinedoc(input_path, mergeinfo_list[1], mergefninfo, matter, contacts)
@@ -1224,6 +1417,31 @@ def mergeDoc(matter, mergeinfo, request):
         WordMerger(input_path, replace, output_path)
         if mergeinfo_list[1] == 'applicationdata_updnew':
             print(f"[mergeDoc] applicationdata_updnew: WordMerger done {time.time()-t_wm:.2f}s")
+
+        # Statement373c: checkboxes based on recordation and reel/frame
+        if mergeinfo_list[1] == 'Statement373c':
+            # Box 10: when "There is a recordation occurring..." is selected
+            if mergefninfo and mergefninfo[0] in ('true', True):
+                check_checkbox_at_position_xmlsafe(output_path, 10, checked=True)
+            # Box 7: exactly one reel/frame pair; Box 8: more than one reel/frame pair
+            reel_frame_count = merge_fn.statement373c_reel_frame_count(matter)
+            print(reel_frame_count)
+            if reel_frame_count == 1:
+                check_checkbox_at_position_xmlsafe(output_path, 7, checked=True)
+            elif reel_frame_count > 1:
+                check_checkbox_at_position_xmlsafe(output_path, 8, checked=True)
+
+        # PTOAIA82: check one of boxes 6–9 per radio selection (Inventor=6, Legal Rep=7, Assignee=8, Proprietary Interest=9)
+        if mergeinfo_list[1] == 'PTOAIA82' and len(mergefninfo) > 1:
+            rad = (mergefninfo[1] or '').strip()
+            if rad == '1':
+                check_checkbox_at_position_xmlsafe(output_path, 6, checked=True)
+            elif rad == '2':
+                check_checkbox_at_position_xmlsafe(output_path, 7, checked=True)
+            elif rad == '3':
+                check_checkbox_at_position_xmlsafe(output_path, 8, checked=True)
+            elif rad == '4':
+                check_checkbox_at_position_xmlsafe(output_path, 9, checked=True)
 
         ownerchange_email_url = None
         if mergeinfo_list[1] == 'ownerchange':
@@ -1313,8 +1531,11 @@ def mergeDoc(matter, mergeinfo, request):
                 (doc_type == 'missingpartsNw' and (
                     mergefninfo[1] != '' or
                     (len(mergefninfo) > 10 and mergefninfo[10] and str(mergefninfo[10]).strip())
-                ))
+                )) or
+                (doc_type == 'generalxmitCF' and generalxmit_has_ext) or
+                (doc_type == 'applicationdata_updnew' and applicationdata_updnew_corrapplicant)
             )
+
 
             # Check if this is multi-doc
             if not multidoc:
@@ -1421,6 +1642,42 @@ def mergeDoc(matter, mergeinfo, request):
                     stateofallow = mergeinfo.replace('issuefeexmit', 'stateofallowcomments')
                     stateofallow = stateofallow.replace('issuefee', 'stateofallow')
                     data2, file_name2 = mergemultidoc(matter, stateofallow)
+
+                if mergeinfo_list[1] == 'generalxmitCF' and generalxmit_has_ext:
+                    # Second document must use the extension-of-time Word template and exttimeCF merge only
+                    # (same transmittal catalog as corrappln/missingpartsNw after communications→transmittal).
+                    # Replacing only the method name leaves the general transmittal .docx in field [0]; build path explicitly.
+                    parts = mergeinfo.split(',')
+                    orig_path = parts[0]
+                    if '/' in orig_path:
+                        folder, _base = orig_path.rsplit('/', 1)
+                    else:
+                        folder = 'transmittal'
+                    folder = folder.replace('communications', 'transmittal')
+                    ext_template_path = f'{folder}/exttimeCF.docx'
+
+                    contacts_flag = (parts[2] if len(parts) > 2 else '') or ''
+                    email_offset = 3 if contacts_flag == 'TRUE' else 0
+                    tail = parts[3 + email_offset :]
+                    core_for_ext, _gx_docseg = _generalxmit_split_enddoc_docs(tail)
+                    ext_fields = (
+                        core_for_ext[32:42] if len(core_for_ext) >= 32 else []
+                    )
+                    while len(ext_fields) < 10:
+                        ext_fields.append('')
+                    if contacts_flag == 'TRUE' and len(parts) > 5:
+                        header = [ext_template_path, 'exttimeCF', parts[2], parts[3], parts[4], parts[5]]
+                    else:
+                        header = [ext_template_path, 'exttimeCF', parts[2]]
+                    extime = ','.join(header + ext_fields)
+                    data2, file_name2 = mergemultidoc(matter, extime)
+
+                if mergeinfo_list[1] == 'applicationdata_updnew' and applicationdata_updnew_corrapplicant:
+                    esign_val = mergefninfo[7] if len(mergefninfo) > 7 else 'true'
+                    corrapplicant_merge = ','.join(
+                        ['ptoforms/corrapplicant.docx', 'corrapplicant', 'FALSE', str(esign_val)]
+                    )
+                    data2, file_name2 = mergemultidoc(matter, corrapplicant_merge)
 
                 zip_buffer = io.BytesIO()
                 with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -1795,3 +2052,241 @@ def upload_template(request):
             return JsonResponse({"message": f"Error uploading file: {str(e)}"}, status=500)
     else:
         return JsonResponse({"message": "No file provided or invalid request method"}, status=400)
+
+# Namespaces used by WordprocessingML
+NS = {
+    'w':   'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+    'w14': 'http://schemas.microsoft.com/office/word/2010/wordml',
+    'mc':  'http://schemas.openxmlformats.org/markup-compatibility/2006',
+    'r':   'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+}
+
+def _first_text_run(elem):
+    """Return (node, inner_text) for the first <w:t> inside elem, else (None, None)."""
+    for t in elem.findall('.//w:t', namespaces=NS):
+        return t, (t.text or '')
+    return None, None
+
+def _first_symbol_run(elem):
+    """Return the first <w:sym> element inside elem, else None."""
+    for s in elem.findall('.//w:sym', namespaces=NS):
+        return s
+    return None
+
+def _first_run_and_rpr(elem):
+    """
+    Return (first_run, first_rPr_clone_or_None) under elem.
+    We clone rPr so we can reuse style when inserting new content.
+    """
+    r = elem.find('.//w:r', namespaces=NS)
+    if r is None:
+        return None, None
+    rpr = r.find('w:rPr', namespaces=NS)
+    return r, deepcopy(rpr) if rpr is not None else None
+
+def _ensure_r_with_text(parent, text_char, rpr=None):
+    """Create a <w:r>[<w:rPr>]<w:t>char</w:t></w:r> and append to parent."""
+    r = lxml_etree.SubElement(parent, f"{{{NS['w']}}}r")
+    if rpr is not None:
+        r.append(rpr)
+    t = lxml_etree.SubElement(r, f"{{{NS['w']}}}t")
+    t.text = text_char
+    # Preserve spacing per Word best practice
+    t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+    return r
+
+def _ensure_p_with_r_and_text(parent, text_char, rpr=None):
+    """Create <w:p><w:r>[<w:rPr>]<w:t>char</w:t></w:r></w:p> and append to parent."""
+    p = lxml_etree.SubElement(parent, f"{{{NS['w']}}}p")
+    _ensure_r_with_text(p, text_char, rpr=rpr)
+    return p
+
+def check_checkbox_at_position_xmlsafe(docx_path, position, checked=True):
+    """
+    Toggle the content-control checkbox at 1-based 'position' in a DOCX (in place):
+      1) Sets <w14:checked w14:val="1|0">
+      2) Updates the visible glyph in <w:sdtContent> to match checkedState/uncheckedState.
+
+    Run/block-aware insertion avoids Word's 'unreadable content' repair.
+    """
+
+    if not os.path.isfile(docx_path):
+        print("ERROR: input file not found.")
+        return
+
+    # 1) Read original DOCX contents
+    with zipfile.ZipFile(docx_path, 'r') as zin:
+        entries = {zi.filename: zin.read(zi.filename) for zi in zin.infolist()}
+
+    if 'word/document.xml' not in entries:
+        print("ERROR: word/document.xml not found in the DOCX.")
+        return
+
+    # 2) Parse document.xml with lxml (preserves namespace prefixes on serialize)
+    try:
+        parser = lxml_etree.XMLParser(recover=True, remove_blank_text=False)
+        root = lxml_etree.fromstring(entries['word/document.xml'], parser=parser)
+    except lxml_etree.XMLSyntaxError as e:
+        print("ERROR: document.xml is not valid XML (may have been previously corrupted).")
+        print("Details:", e)
+        return
+
+    # 3) Gather all <w:sdt> that have a <w14:checkbox> in <w:sdtPr>
+    sdts = []
+    for sdt in root.findall('.//w:sdt', namespaces=NS):
+        sdtPr = sdt.find('w:sdtPr', namespaces=NS)
+        if sdtPr is None:
+            continue
+        checkbox = sdtPr.find('w14:checkbox', namespaces=NS)
+        if checkbox is not None:
+            sdts.append((sdt, sdtPr, checkbox))
+
+    if not sdts:
+        print("No checkbox content controls found. These may be glyph-only boxes; different approach needed.")
+        return
+
+    # Resolve index
+    idx = len(sdts) - 1 if position == -1 else max(0, min(position - 1, len(sdts) - 1))
+
+    sdt, sdtPr, checkbox = sdts[idx]
+
+    # 4) Determine state codepoints (hex or decimal accepted) and font
+    cs = checkbox.find('w14:checkedState', namespaces=NS)
+    ucs = checkbox.find('w14:uncheckedState', namespaces=NS)
+    cs_val = cs.get(f"{{{NS['w14']}}}val") if cs is not None else '2611'    # ☑ default
+    ucs_val = ucs.get(f"{{{NS['w14']}}}val") if ucs is not None else '2610'  # ☐ default
+    # Prefer font declared on state (e.g., "MS Gothic") if present
+    state_font = (cs.get(f"{{{NS['w14']}}}font") if cs is not None and cs.get(f"{{{NS['w14']}}}font")
+                  else (ucs.get(f"{{{NS['w14']}}}font") if ucs is not None and ucs.get(f"{{{NS['w14']}}}font") else None))
+
+    def _code_to_char(code_str):
+        try:
+            return chr(int(code_str, 16))
+        except Exception:
+            try:
+                return chr(int(code_str, 10))
+            except Exception:
+                return '☑'
+
+    checked_char   = _code_to_char(cs_val)
+    unchecked_char = _code_to_char(ucs_val)
+    desired_char   = checked_char if checked else unchecked_char
+
+    # 5) Set <w14:checked w14:val="1|0">
+    chk = checkbox.find('w14:checked', namespaces=NS)
+    val = '1' if checked else '0'
+    if chk is None:
+        chk = lxml_etree.SubElement(checkbox, f"{{{NS['w14']}}}checked")
+    chk.set(f"{{{NS['w14']}}}val", val)
+
+    # 6) Update visible glyph inside <w:sdtContent> (run/block aware)
+    sdtContent = sdt.find('w:sdtContent', namespaces=NS)
+    if sdtContent is None:
+        print("WARNING: <w:sdtContent> not found; cannot update visible glyph.")
+    else:
+        # Prefer updating an existing text or symbol
+        t_node, _ = _first_text_run(sdtContent)
+        if t_node is not None:
+            t_node.text = desired_char
+            t_node.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+        else:
+            sym = _first_symbol_run(sdtContent)
+            if sym is not None:
+                sym.set(f"{{{NS['w']}}}char", f"{ord(desired_char):04X}")
+            else:
+                # Prepare rPr: clone an existing run's rPr or synthesize from state font (if given)
+                _, first_rpr = _first_run_and_rpr(sdtContent)
+                if first_rpr is None and state_font:
+                    first_rpr = lxml_etree.Element(f"{{{NS['w']}}}rPr")
+                    rfonts = lxml_etree.SubElement(first_rpr, f"{{{NS['w']}}}rFonts")
+                    rfonts.set(f"{{{NS['w']}}}ascii", state_font)
+                    rfonts.set(f"{{{NS['w']}}}hAnsi", state_font)
+
+                # Detect content level: block vs run
+                has_block = sdtContent.find('w:p', namespaces=NS) is not None or sdtContent.find('w:tbl', namespaces=NS) is not None
+                has_run   = sdtContent.find('w:r', namespaces=NS) is not None
+
+                if has_run and not has_block:
+                    # RUN-LEVEL SDT: insert a <w:r> directly (valid)
+                    _ensure_r_with_text(sdtContent, desired_char, rpr=first_rpr)
+                else:
+                    # BLOCK-LEVEL SDT (or empty): insert a proper paragraph
+                    _ensure_p_with_r_and_text(sdtContent, desired_char, rpr=first_rpr)
+
+    # 7) Serialize with lxml (preserves namespace prefixes - avoids Word "unreadable content")
+    new_xml = lxml_etree.tostring(
+        root, encoding='utf-8', xml_declaration=True,
+        method='xml', standalone=None, pretty_print=False
+    )
+    entries['word/document.xml'] = new_xml
+
+    # Important: ensure the read zip is closed before writing (it is, due to context manager)
+    with zipfile.ZipFile(docx_path, 'w', zipfile.ZIP_DEFLATED) as zout:
+        for name, data in entries.items():
+            zout.writestr(name, data)
+
+def generalxmit_extension_fee(request):
+    """
+    Return statutory extension fee for generalxmitCF from merge_fees (same rules as merges.generalxmitCF).
+    POST: matterno (JSON-stringified matter #), months (1-5).
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    raw = request.POST.get('matterno')
+    if raw is None:
+        return JsonResponse({'error': 'matterno required'}, status=400)
+    matter = raw.replace('"', '').strip()
+    months_raw = (request.POST.get('months') or '').strip()
+    if not matter:
+        return JsonResponse({'fee': '', 'ok': False, 'message': 'No matter number'})
+    if not months_raw:
+        return JsonResponse({'fee': '', 'ok': True})
+    try:
+        m = int(months_raw)
+    except ValueError:
+        return JsonResponse({'error': 'invalid months'}, status=400)
+    if m < 1 or m > 5:
+        return JsonResponse({'fee': '', 'ok': True})
+
+    merge_fn = mergefunctions()
+    try:
+        matter_data = merge_fn.matterFill(matter)
+    except Exception:
+        return JsonResponse({'fee': '', 'ok': False, 'message': 'Matter not found'})
+
+    desc = (matter_data.mattertypedescription or '')
+    is_provisional = 'PROV' in desc.upper()
+    nonprov_ext_rule = {1: 28, 2: 31, 3: 34, 4: 37, 5: 40}
+    prov_ext_rule = {1: 55, 2: 57, 3: 59, 4: 61, 5: 63}
+    ext_rule_map = prov_ext_rule if is_provisional else nonprov_ext_rule
+    rid = ext_rule_map.get(m)
+    if not rid:
+        return JsonResponse({'fee': '', 'ok': True})
+
+    amt = merge_fn.merge_fee_amount(rid, matter)
+    if amt is None:
+        return JsonResponse({'fee': '', 'ok': False, 'message': 'Fee lookup failed'})
+    return JsonResponse({'fee': f'{amt:.2f}', 'ok': True})
+
+def _generalxmit_split_enddoc_docs(mergefninfo):
+    """
+    Additional Documents appends 'ENDDOC' and doc/page pairs. That often runs *before* Continue on
+    the transmittal modal, so the payload is ...doc1,pg1,...,ENDDOC,cert,duedate,...
+    Split into (core_fields_for_generalxmit, flat_doc_pairs_before_or_after_marker).
+    """
+    mi = list(mergefninfo)
+    try:
+        di = mi.index('ENDDOC')
+    except ValueError:
+        return mi, []
+    before = mi[:di]
+    after = mi[di + 1 :]
+
+    def _gx_core_start(seg):
+        return bool(seg) and str(seg[0]).strip().lower() in ('true', 'false')
+
+    if _gx_core_start(after):
+        return after, before
+    if _gx_core_start(before):
+        return before, after
+    return mi, []

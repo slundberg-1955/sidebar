@@ -5,7 +5,7 @@ from ..models import Rvwmatterpersonnel
 from ..models import Matterparticipant
 from ..models import Orgprofile, Personprofile
 from ..models import Contactinfo, ClientSpec
-from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos, FvMatter4, CountryLookup
+from ..models import Patent, Customernumbers, CustomerNos, Activity, MergeFees, CustNos, FvMatter4, CountryLookup, Relatedmatter
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.db import connections
@@ -41,8 +41,12 @@ class mergefunctions:
                 
             matternumber = merge_fn.clientMatterNo(matter_data)
 
+            serialno = matter_data.fmtserialno
+            if serialno is None or (isinstance(serialno, str) and not serialno.strip()):
+                serialno = 'Unknown'
+
             basic = {
-                'serialNo' : matter_data.fmtserialno,
+                'serialNo' : serialno,
                 'filedDate' : filedte,
                 'title' : matter_data.title,
                 'matterNo' : matternumber,
@@ -935,22 +939,47 @@ class mergefunctions:
         }
         return info
     
-    def foreignfill(self, matter):
+    def foreignfillBulk(self, matter):
+        """One merge dict per non-US related matter (priority / foreign filing), in stable order."""
         merge_fn = mergefunctions()
         matter_data = merge_fn.matterFill(matter)
-        patent_data = merge_fn.patentFill(matter_data)
+        out = []
+        related_matters = Relatedmatter.objects.using('FIP').filter(
+            primarymatterid=matter_data.matterid
+        ).order_by('relatedmatterid')
+        for rel in related_matters:
+            try:
+                relation_desc = (rel.relationdesc or '').strip().lower()
+                if relation_desc == 'other':
+                    continue
+                rel_matter = Matter.objects.using('FIP').get(matterid=rel.relatedmatterid)
+                rel_country = (rel_matter.country or '').strip().upper()
+                if rel_country == 'US':
+                    continue
+                foreign_no = (rel_matter.fmtserialno or rel_matter.serialnumber or '').strip() or ''
+                foreign_country = (rel_matter.country or '').strip() or ''
+                try:
+                    foreign_date = rel_matter.fileddate.strftime("%Y-%m-%d") if rel_matter.fileddate else ''
+                except (AttributeError, ValueError):
+                    foreign_date = ''
+                out.append({
+                    'foreignNo': foreign_no,
+                    'foreignCntry': foreign_country,
+                    'foreignFiledDate': foreign_date,
+                })
+            except Matter.DoesNotExist:
+                continue
+        return out
 
-        if patent_data.prioritycountry != 'US':
-            foreignNo = patent_data.priorityappno
-            foreigncountry = patent_data.prioritycountry
-            foreigndate = patent_data.priorityappdate
-
-        info = {
-            'foreignNo' : foreignNo,
-            'foreignCntry' : foreigncountry,
-            'foreignFiledDate' : foreigndate,
+    def foreignfill(self, matter):
+        bulk = self.foreignfillBulk(matter)
+        if bulk:
+            return dict(bulk[0])
+        return {
+            'foreignNo': '',
+            'foreignCntry': '',
+            'foreignFiledDate': '',
         }
-        return info
 
     def entityfill(self, matter):
         merge_fn = mergefunctions()
@@ -1767,12 +1796,13 @@ class mergefunctions:
     def _safe_str(self, val):
         return str(val) if val is not None else ''
 
-    def inventorInfoBulk(self, matter_data, mailing_address_source='home'):
+    def inventorInfoBulk(self, matter_data, method, mailing_address_source='home'):
         """
-        Bulk fetch all inventors. mailing_address_source: 'home' | 'client' | 'applicant'
-        - home: inventor's home contact
-        - client: inventor's work contact
-        - applicant: first applicant's contact (same for all inventors)
+        Bulk fetch all inventors. Home address always from inventor's home contact.
+        mailing_address_source: 'home' | 'client' | 'applicant'
+        - home: inventor mailing address = inventor's home contact
+        - client: inventor mailing address = client (role 34617) contact
+        - applicant: inventor mailing address = first applicant's contact
         """
         inventors = list(Matterparticipant.objects.using('FIP').filter(
             matterid=matter_data.matterid, roleid='34608'
@@ -1791,6 +1821,7 @@ class mergefunctions:
 
         # Applicant contact for mailing_address_source='applicant'
         applicant_contact = None
+        applicant_orgname = ''
         if mailing_address_source == 'applicant':
             try:
                 app_part = Matterparticipant.objects.using('FIP').filter(
@@ -1798,8 +1829,25 @@ class mergefunctions:
                 ).order_by('roleorderno').first()
                 if app_part:
                     app_profile = Orgprofile.objects.using('FIP').get(opid=app_part.contactid)
+                    applicant_orgname = self._safe_str(app_profile.orgname)
                     if app_profile.contactinfoid:
                         applicant_contact = Contactinfo.objects.using('FIP').get(contactinfoid=app_profile.contactinfoid)
+            except Exception:
+                pass
+
+        # Client contact for mailing_address_source='client' (client org = role 34617)
+        client_contact = None
+        client_orgname = ''
+        if mailing_address_source == 'client':
+            try:
+                client_part = Matterparticipant.objects.using('FIP').filter(
+                    matterid=matter_data.matterid, roleid='34617'
+                ).order_by('roleorderno').first()
+                if client_part:
+                    client_profile = Orgprofile.objects.using('FIP').get(opid=client_part.contactid)
+                    client_orgname = self._safe_str(client_profile.orgname)
+                    if client_profile.contactinfoid:
+                        client_contact = Contactinfo.objects.using('FIP').get(contactinfoid=client_profile.contactinfoid)
             except Exception:
                 pass
 
@@ -1811,14 +1859,16 @@ class mergefunctions:
                 result.append({'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ', 'inventor': '', 'invpre': '', 'inventorFirstName': '', 'inventorMiddleInitial': '', 'inventorLastName': '', 'inventorSuffix': '', 'inventorHomeCity': '', 'inventorHomeState': '', 'inventorHomeCountry': '', 'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '', 'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''})
                 continue
             home_contact = contacts.get(profile.homecontactinfoid) if profile.homecontactinfoid else None
-            work_contact = contacts.get(profile.workcontactinfoid) if profile.workcontactinfoid else None
 
             if mailing_address_source == 'applicant' and applicant_contact:
                 mail_contact = applicant_contact
-            elif mailing_address_source == 'client' and work_contact:
-                mail_contact = work_contact
+                mail_orgname = applicant_orgname
+            elif mailing_address_source == 'client' and client_contact:
+                mail_contact = client_contact
+                mail_orgname = client_orgname
             else:
                 mail_contact = home_contact
+                mail_orgname = ''
 
             if not mail_contact:
                 result.append({'inventorCnt': inv_num if inv_count > 1 else 'Inventor: ', 'inventor': '', 'invpre': '', 'inventorFirstName': '', 'inventorMiddleInitial': '', 'inventorLastName': '', 'inventorSuffix': '', 'inventorHomeCity': '', 'inventorHomeState': '', 'inventorHomeCountry': '', 'inventorMailingStreet1': '', 'inventorMailingStreet2': '', 'inventorMailingCity': '', 'inventorMailingState': '', 'inventorMailingZip': '', 'inventorMailingCountry': ''})
@@ -1826,15 +1876,26 @@ class mergefunctions:
 
             inv_label = 'Inventor: ' if inv_count == 1 else inv_num
             s = self._safe_str
-            inv_country = self.fullCountry(s(mail_contact.country))
+            if mail_orgname:
+                mail_prefix = f"c/o {mail_orgname} "
+                mail_street1 = (mail_prefix + s(mail_contact.address1)).strip()
+                mail_street2 = (s(mail_contact.address2)).strip() if s(mail_contact.address2).strip() else ''
+            else:
+                mail_street1 = s(mail_contact.address1)
+                mail_street2 = s(mail_contact.address2)
+            if profile.mname != '' and profile.mname != None:
+                fullname = f"{s(profile.fname)} {s(profile.mname)} {s(profile.lname)}"
+            else:
+                fullname = f"{s(profile.fname)} {s(profile.lname)}"
+                
             result.append({
-                'inventorCnt': inv_label, 'inventor': f"{s(profile.fname)} {s(profile.mname)}. {s(profile.lname)}",
+                'inventorCnt': inv_label, 'inventor': fullname,
                 'invpre': s(profile.salutation), 'inventorFirstName': s(profile.fname), 'inventorMiddleInitial': s(profile.mname),
                 'inventorLastName': s(profile.lname), 'inventorSuffix': s(profile.namesuffix),
-                'inventorHomeCity': s(home_contact.city) if home_contact else '', 'inventorHomeState': s(home_contact.state) if home_contact else '', 'inventorHomeCountry': self.fullCountry(s(home_contact.country)) if home_contact else '',
-                'inventorMailingStreet1': s(mail_contact.address1), 'inventorMailingStreet2': s(mail_contact.address2),
+                'inventorHomeCity': s(home_contact.city) if home_contact else '', 'inventorHomeState': s(home_contact.state) if home_contact else '', 'inventorHomeCountry': (s(home_contact.country)) if home_contact else '',
+                'inventorMailingStreet1': mail_street1, 'inventorMailingStreet2': mail_street2,
                 'inventorMailingCity': s(mail_contact.city), 'inventorMailingState': s(mail_contact.state),
-                'inventorMailingZip': s(mail_contact.zip), 'inventorMailingCountry': inv_country,
+                'inventorMailingZip': s(mail_contact.zip), 'inventorMailingCountry': s(mail_contact.country),
             })
         return result
 
@@ -1855,15 +1916,15 @@ class mergefunctions:
             profile = profiles.get(part.contactid)
             contact = contacts.get(profile.contactinfoid) if profile and profile.contactinfoid else None
             if not profile or not contact:
-                result.append({'applCnt': app_num if app_count > 1 else 'Applicant: ', 'applicantCity': '', 'applicantState': '', 'applicantZip': '', 'applicantCountry': '', 'applicantStreet1': '', 'applicantStreet2': '', 'applicant': '', 'applicantName': ''})
+                result.append({'applCnt': app_num if app_count > 1 else 'Applicant: ', 'applicantCity': '', 'applicantState': '', 'applicantZip': '', 'applicantCountry': '', 'applicantStreet1': '', 'applicantStreet2': '', 'applicant': '', 'applicantName': '', 'applicantIsOrg': False})
                 continue
             label = 'Applicant: ' if app_count == 1 else app_num
             s = self._safe_str
             result.append({
                 'applCnt': label, 'applicantCity': s(contact.city), 'applicantState': s(contact.state),
-                'applicantZip': s(contact.zip), 'applicantCountry': self.fullCountry(s(contact.country)),
+                'applicantZip': s(contact.zip), 'applicantCountry': s(contact.country),
                 'applicantStreet1': s(contact.address1), 'applicantStreet2': s(contact.address2),
-                'applicant': s(profile.orgname), 'applicantName': s(profile.orgname),
+                'applicant': s(profile.orgname), 'applicantIsOrg': True,
             })
         return result
 
@@ -1884,16 +1945,75 @@ class mergefunctions:
             profile = profiles.get(part.contactid)
             contact = contacts.get(profile.contactinfoid) if profile and profile.contactinfoid else None
             if not profile or not contact:
-                result.append({'assigneeCnt': assign_num if assign_count > 1 else 'Assignee: ', 'assigneeName': '', 'assigneeStreet': '', 'assigneeCity': '', 'assigneeState': '', 'assigneeZip': '', 'assigneeCountry': '', 'assigneeStreet1': '', 'assigneeStreet2': '', 'assignee': '', 'assigneeAddress': '', 'assigneeStateInc': ''})
+
+                result.append({'assigneeCnt': assign_num if assign_count > 1 else 'Assignee: ', 'assigneeCity': '', 'assigneeState': '', 'assigneeZip': '', 'assigneeCountry': '', 'assigneeStreet1': '', 'assigneeStreet2': '', 'assignee': '', 'assigneeIsOrg': False})
                 continue
             label = 'Assignee: ' if assign_count == 1 else assign_num
             s = self._safe_str
-            addr = ', '.join(filter(None, [s(contact.address1), s(contact.city), s(contact.state), s(contact.zip)]))
             result.append({
-                'assigneeCnt': label, 'assigneeName': s(profile.orgname), 'assigneeStreet': s(contact.address1),
+                'assigneeCnt': label,
                 'assigneeCity': s(contact.city), 'assigneeState': s(contact.state), 'assigneeZip': s(contact.zip),
-                'assigneeCountry': self.fullCountry(s(contact.country)), 'assigneeStreet1': s(contact.address1),
-                'assigneeStreet2': s(contact.address2), 'assignee': s(profile.orgname), 'assigneeAddress': addr,
-                'assigneeStateInc': f"{s(profile.incstate)}, {self.fullCountry(s(profile.inccountry))}",
+                'assigneeCountry': s(contact.country), 'assigneeStreet1': s(contact.address1),
+                'assigneeStreet2': s(contact.address2), 'assignee': s(profile.orgname),
+                'assigneeIsOrg': True,
             })
         return result
+
+    def statement373c_reel_frame_count(self, matter):
+        """
+        Return count of reel/frame assignment pairs for Statement373c.
+        Same query as Statement373c in merges.py. Returns 0, 1, or >1.
+        """
+        matter_data = self.matterFill(matter)
+        query_matter_id = int(matter_data.matterid)
+        query = f"""
+            SELECT 
+                (select cast(val as varchar(30)) from AttributeVal av where label like '%Starting%' and objid = activity.activityId),
+                (select cast(val as varchar(30)) from AttributeVal av where label like '%Ending%' and objid = activity.activityId),
+                (select cast(val as varchar(30)) from AttributeVal av where label like '%Reel%' and objid = activity.activityId)
+            FROM activity 
+            JOIN rvwActivityDateAttribute da on da.activityId = activity.activityid
+            WHERE activity.MATTERID = '{query_matter_id}'
+            and CODE in ('ASSN-11', 'ASSN-7', 'ASSN-2')
+            and attrValLabel like '%Record%'
+            and dateval is not null
+            ORDER by dateval
+        """
+        try:
+            with connections['FIP'].cursor() as cursor:
+                cursor.execute(query)
+                assignments = cursor.fetchall()
+            return len(assignments)
+        except Exception as e:
+            print(f"Error in statement373c_reel_frame_count: {e}")
+            return 0
+
+    def merge_fee_amount(self, rule_id, matter):
+        """
+        Fee amount (float) from merge_fees for entity size, using the same old vs new columns as getFee():
+        if the effective date parsed from comments is on or before today, use *_new; otherwise *_old.
+        If no date is found in comments, uses *_old (matches getFee when date parsing fails).
+        """
+        try:
+            rid = str(rule_id).strip()
+            row = MergeFees.objects.using('SideBar').get(pk=rid)
+            entitystatus = self.entityfill(matter)
+            comments = row.comments or ''
+            eff = self.extract_date2(comments)
+            use_new = self.is_date_before_today(eff) if eff else False
+            if entitystatus == 2:
+                raw = row.large_new if use_new else row.large_old
+            elif entitystatus == 3:
+                raw = row.micro_new if use_new else row.micro_old
+            else:
+                raw = row.small_new if use_new else row.small_old
+            if raw is None or str(raw).strip() == '':
+                return None
+            s = str(raw).replace('$', '').replace(',', '').strip()
+            return float(s)
+        except (MergeFees.DoesNotExist, ValueError, TypeError, AttributeError):
+            return None
+
+    def merge_fee_new_amount(self, rule_id, matter):
+        """Deprecated alias: use merge_fee_amount (old/new per effective date)."""
+        return self.merge_fee_amount(rule_id, matter)
